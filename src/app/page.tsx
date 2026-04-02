@@ -1,10 +1,10 @@
 /** @fileoverview Homepage with section placeholders for iterative build. */
 
 import SectionHero from '@/components/sections/SectionHero'
+import SectionSocialProof from '@/components/sections/SectionSocialProof'
+import SectionHowItWorks from '@/components/sections/SectionHowItWorks'
 
 const placeholders = [
-	{ id: 'social-proof', surface: 'warm', bg: 'bg-cc-warm', label: 'S2 Social Proof', dark: false },
-	{ id: 'product', surface: 'dark-education', bg: 'bg-cc-foundation', label: 'S3 How It Works', dark: true },
 	{ id: 'features', surface: 'dark-features', bg: 'bg-cc-foundation', label: 'S4 Features', dark: true },
 	{ id: 'results', surface: 'warm', bg: 'bg-cc-warm', label: 'S5 Results', dark: false },
 	{ id: 'teams', surface: 'dark-teams', bg: 'bg-cc-foundation', label: 'S6 Teams', dark: true },
@@ -15,6 +15,8 @@ export default function HomePage() {
 	return (
 		<div>
 			<SectionHero />
+			<SectionSocialProof />
+			<SectionHowItWorks />
 			{placeholders.map((s) => (
 				<section
 					key={s.id}
