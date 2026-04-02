@@ -2,6 +2,8 @@
 
 import type { Metadata } from 'next'
 import { youngSerif, geistMono, inter } from '@/lib/fonts'
+import Header from '@/components/layout/Header'
+import SmoothScroll from '@/components/layout/SmoothScroll'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -39,7 +41,9 @@ export default function RootLayout({
 			className={`${youngSerif.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
 		>
 			<body className="flex min-h-full flex-col">
-				<main className="flex-1">
+				<SmoothScroll />
+				<Header />
+				<main className="flex-1 pt-16">
 					{children}
 				</main>
 			</body>
