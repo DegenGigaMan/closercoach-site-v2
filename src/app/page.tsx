@@ -1,7 +1,8 @@
 /** @fileoverview Homepage with section placeholders for iterative build. */
 
-const sections = [
-	{ id: 'hero', surface: 'dark-hero', bg: 'bg-cc-foundation', label: 'S1 Hero', dark: true },
+import SectionHero from '@/components/sections/SectionHero'
+
+const placeholders = [
 	{ id: 'social-proof', surface: 'warm', bg: 'bg-cc-warm', label: 'S2 Social Proof', dark: false },
 	{ id: 'product', surface: 'dark-education', bg: 'bg-cc-foundation', label: 'S3 How It Works', dark: true },
 	{ id: 'features', surface: 'dark-features', bg: 'bg-cc-foundation', label: 'S4 Features', dark: true },
@@ -13,7 +14,8 @@ const sections = [
 export default function HomePage() {
 	return (
 		<div>
-			{sections.map((s) => (
+			<SectionHero />
+			{placeholders.map((s) => (
 				<section
 					key={s.id}
 					id={s.id}

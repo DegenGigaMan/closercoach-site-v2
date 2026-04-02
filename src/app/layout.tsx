@@ -43,7 +43,7 @@ export default function RootLayout({
 			<body className="flex min-h-full flex-col">
 				<SmoothScroll />
 				<Header />
-				<main className="flex-1 pt-16">
+				<main className="flex-1 pt-14 md:pt-16">
 					{children}
 				</main>
 			</body>
