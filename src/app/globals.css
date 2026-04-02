@@ -1,26 +1,182 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "tw-animate-css";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+	/* Typography */
+	--font-sans: var(--font-inter);
+	--font-mono: var(--font-geist-mono);
+	--font-heading: var(--font-young-serif);
+
+	/* CloserCoach brand colors -- VIS Section 1 */
+	/* Dark surfaces */
+	--color-cc-foundation: #0D0F14;
+	--color-cc-surface: #1A1D26;
+	--color-cc-surface-card: #1E2230;
+	--color-cc-surface-border: oklch(1 0 0 / 6%);
+	--color-cc-surface-border-hover: oklch(1 0 0 / 12%);
+
+	/* Primary accent -- Emerald */
+	--color-cc-accent: #10B981;
+	--color-cc-accent-hover: #059669;
+	--color-cc-accent-glow: oklch(from #10B981 l c h / 15%);
+	--color-cc-accent-muted: oklch(from #10B981 l c h / 40%);
+
+	/* Secondary accent -- Amber */
+	--color-cc-amber: #F59E0B;
+	--color-cc-amber-muted: oklch(from #F59E0B l c h / 40%);
+
+	/* Warm light surfaces */
+	--color-cc-warm: #F5F0EB;
+	--color-cc-warm-secondary: #FAFAF8;
+	--color-cc-warm-border: oklch(0 0 0 / 6%);
+	--color-cc-light: #F5F0EB;
+
+	/* Text -- dark surfaces */
+	--color-cc-text-primary: #FFFFFF;
+	--color-cc-text-secondary: #94A3B8;
+	--color-cc-text-muted: #64748B;
+
+	/* Text -- warm surfaces */
+	--color-cc-text-primary-warm: #1A1D26;
+	--color-cc-text-secondary-warm: #475569;
+	--color-cc-text-muted-warm: #94A3B8;
+
+	/* Semantic scoring */
+	--color-cc-score-green: #22C55E;
+	--color-cc-score-red: #EF4444;
+	--color-cc-score-amber: #F59E0B;
+
+	/* shadcn semantic tokens mapped to CC dark palette */
+	--color-background: var(--color-cc-foundation);
+	--color-foreground: var(--color-cc-text-primary);
+	--color-card: var(--color-cc-surface-card);
+	--color-card-foreground: var(--color-cc-text-primary);
+	--color-popover: var(--color-cc-surface);
+	--color-popover-foreground: var(--color-cc-text-primary);
+	--color-primary: var(--color-cc-accent);
+	--color-primary-foreground: var(--color-cc-foundation);
+	--color-secondary: var(--color-cc-surface);
+	--color-secondary-foreground: var(--color-cc-text-secondary);
+	--color-muted: var(--color-cc-surface);
+	--color-muted-foreground: var(--color-cc-text-muted);
+	--color-accent: var(--color-cc-surface);
+	--color-accent-foreground: var(--color-cc-text-secondary);
+	--color-destructive: var(--color-cc-score-red);
+	--color-border: oklch(1 0 0 / 10%);
+	--color-input: oklch(1 0 0 / 15%);
+	--color-ring: var(--color-cc-accent);
+
+	/* Chart colors */
+	--color-chart-1: var(--color-cc-accent);
+	--color-chart-2: var(--color-cc-score-green);
+	--color-chart-3: var(--color-cc-score-amber);
+	--color-chart-4: #3B82F6;
+	--color-chart-5: var(--color-cc-score-red);
+
+	/* Radius -- VIS Section 4 */
+	--radius-sm: 0.5rem;
+	--radius-md: 0.75rem;
+	--radius-lg: 1rem;
+	--radius-xl: 1.5rem;
+	--radius-full: 9999px;
+
+	/* Spacing -- VIS Section 3 */
+	--spacing-section: 120px;
+	--spacing-section-warm: 96px;
+	--spacing-block: 64px;
+	--spacing-element: 32px;
+	--spacing-compact: 16px;
+	--animate-shimmer-slide: shimmer-slide var(--speed) ease-in-out infinite alternate;
+	--animate-spin-around: spin-around calc(var(--speed) * 2) infinite linear;
+	--animate-shiny-text: shiny-text 8s infinite;
+
+	@keyframes shimmer-slide {
+		to { transform: translate(calc(100cqw - 100%), 0); }
+	}
+	@keyframes spin-around {
+		0% { transform: translateZ(0) rotate(0); }
+		15%, 35% { transform: translateZ(0) rotate(90deg); }
+		65%, 85% { transform: translateZ(0) rotate(270deg); }
+		100% { transform: translateZ(0) rotate(360deg); }
+	}
+	@keyframes shiny-text {
+		0%, 90%, 100% { background-position: calc(-100% - var(--shiny-width)) 0; }
+		30%, 60% { background-position: calc(100% + var(--shiny-width)) 0; }
+	}
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+	}
+	body {
+		@apply bg-cc-foundation text-cc-text-primary;
+	}
+	html {
+		@apply font-sans;
+	}
+
+	/* Heading typography: Young Serif editorial serif */
+	h1, h2, h3, h4, h5, h6 {
+		font-family: var(--font-heading);
+		font-weight: 400;
+	}
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Typography scale -- VIS Section 2 */
+.display-xl { font-family: var(--font-heading); font-size: 4rem; line-height: 1.05; font-weight: 400; }
+.display-lg { font-family: var(--font-heading); font-size: 3rem; line-height: 1.1; font-weight: 400; }
+.display-md { font-family: var(--font-heading); font-size: 2.25rem; line-height: 1.15; font-weight: 400; }
+.display-sm { font-family: var(--font-heading); font-size: 1.5rem; line-height: 1.2; font-weight: 400; }
+.mono-stat { font-family: var(--font-mono); font-size: 3rem; font-weight: 500; }
+.mono-data { font-family: var(--font-mono); font-size: 1rem; font-weight: 400; }
+.mono-label { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500; }
+
+@media (max-width: 767px) {
+	.display-xl { font-size: 2.5rem; }
+	.display-lg { font-size: 2rem; }
+	.display-md { font-size: 1.75rem; }
+	.display-sm { font-size: 1.25rem; }
+	.mono-stat { font-size: 2rem; }
+}
+
+/* Selection */
+::selection {
+	background-color: oklch(from #10B981 l c h / 30%);
+	color: white;
+}
+
+/* S2 logo marquee */
+@keyframes marquee-scroll {
+	from { transform: translateX(0); }
+	to { transform: translateX(-50%); }
+}
+
+/* Cross-section emerald intensity narrative -- graduated emerald motif */
+[data-surface="dark-hero"] { --emerald-intensity: 0.08; }
+[data-surface="dark-education"] { --emerald-intensity: 0.03; }
+[data-surface="dark-features"] { --emerald-intensity: 0.02; }
+[data-surface="dark-teams"] { --emerald-intensity: 0.02; }
+[data-surface="dark-cta"] { --emerald-intensity: 0.12; }
+
+/* Emerald glow pulse -- VIS + Motion Spec */
+@keyframes glow-pulse {
+	0%, 100% { opacity: 0.15; }
+	50% { opacity: 0.20; }
+}
+
+/* S8 L1 gradient breathing -- Motion Spec Section 8 */
+@keyframes cta-breathe {
+	0%, 100% { background-position: 50% 50%; }
+	50% { background-position: 52% 48%; }
+}
+
+/* prefers-reduced-motion global reset (G15) */
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
 }
