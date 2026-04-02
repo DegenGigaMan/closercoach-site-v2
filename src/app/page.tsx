@@ -1,4 +1,4 @@
-/** @fileoverview Homepage with section placeholders for iterative build. */
+/** @fileoverview Homepage with all sections. */
 
 import SectionHero from '@/components/sections/SectionHero'
 import SectionSocialProof from '@/components/sections/SectionSocialProof'
@@ -6,10 +6,7 @@ import SectionHowItWorks from '@/components/sections/SectionHowItWorks'
 import SectionFeatures from '@/components/sections/SectionFeatures'
 import SectionResults from '@/components/sections/SectionResults'
 import SectionTeams from '@/components/sections/SectionTeams'
-
-const placeholders = [
-	{ id: 'cta', surface: 'dark-cta', bg: 'bg-cc-foundation', label: 'S8 CTA', dark: true },
-] as const
+import SectionCTA from '@/components/sections/SectionCTA'
 
 export default function HomePage() {
 	return (
@@ -20,23 +17,7 @@ export default function HomePage() {
 			<SectionFeatures />
 			<SectionResults />
 			<SectionTeams />
-			{placeholders.map((s) => (
-				<section
-					key={s.id}
-					id={s.id}
-					data-surface={s.surface}
-					className={`min-h-[50vh] ${s.bg}`}
-				>
-					<div className="mx-auto max-w-7xl px-6 py-24">
-						<h2 className={`display-lg ${s.dark ? 'text-white' : 'text-cc-text-primary-warm'}`}>
-							{s.label}
-						</h2>
-						<p className={`mt-4 text-lg ${s.dark ? 'text-cc-text-secondary' : 'text-cc-text-secondary-warm'}`}>
-							Section placeholder
-						</p>
-					</div>
-				</section>
-			))}
+			<SectionCTA />
 		</div>
 	)
 }

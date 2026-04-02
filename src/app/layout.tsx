@@ -3,6 +3,7 @@
 import type { Metadata } from 'next'
 import { youngSerif, geistMono, inter } from '@/lib/fonts'
 import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
 import SmoothScroll from '@/components/layout/SmoothScroll'
 import './globals.css'
 
@@ -46,6 +47,7 @@ export default function RootLayout({
 				<main className="flex-1 pt-14 md:pt-16">
 					{children}
 				</main>
+				<Footer />
 			</body>
 		</html>
 	)
