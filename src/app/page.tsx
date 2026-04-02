@@ -3,11 +3,11 @@
 import SectionHero from '@/components/sections/SectionHero'
 import SectionSocialProof from '@/components/sections/SectionSocialProof'
 import SectionHowItWorks from '@/components/sections/SectionHowItWorks'
+import SectionFeatures from '@/components/sections/SectionFeatures'
+import SectionResults from '@/components/sections/SectionResults'
+import SectionTeams from '@/components/sections/SectionTeams'
 
 const placeholders = [
-	{ id: 'features', surface: 'dark-features', bg: 'bg-cc-foundation', label: 'S4 Features', dark: true },
-	{ id: 'results', surface: 'warm', bg: 'bg-cc-warm', label: 'S5 Results', dark: false },
-	{ id: 'teams', surface: 'dark-teams', bg: 'bg-cc-foundation', label: 'S6 Teams', dark: true },
 	{ id: 'cta', surface: 'dark-cta', bg: 'bg-cc-foundation', label: 'S8 CTA', dark: true },
 ] as const
 
@@ -17,6 +17,9 @@ export default function HomePage() {
 			<SectionHero />
 			<SectionSocialProof />
 			<SectionHowItWorks />
+			<SectionFeatures />
+			<SectionResults />
+			<SectionTeams />
 			{placeholders.map((s) => (
 				<section
 					key={s.id}
