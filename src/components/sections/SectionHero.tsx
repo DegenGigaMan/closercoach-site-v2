@@ -6,11 +6,20 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { motion } from 'motion/react'
 import MotionCTA from '@/components/shared/motion-cta'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
 import ParticleCanvas from '@/components/atmosphere/particle-canvas'
 import PhoneMockup from '@/components/ui/phone-mockup'
 import { BRAND, STATS, CTA } from '@/lib/constants'
+
+const EASE = [0.25, 0.46, 0.45, 0.94] as const
+
+const fadeUp = (delay: number) => ({
+	initial: { opacity: 0, y: 20 },
+	animate: { opacity: 1, y: 0 },
+	transition: { duration: 0.6, delay, ease: EASE },
+})
 
 /**
  * @description S1 Hero with two-column split (55/45). Left: headline, subheadline,
@@ -47,41 +56,56 @@ export default function SectionHero() {
 					{/* Left column: text */}
 					<div className="flex flex-col gap-6">
 						{/* H1 */}
-						<h1 className="display-xl">
-							<span className="text-white">The AI Sales Coach That Lives </span>
-							<span className="text-[#10B981]">in Your Pocket</span>
-						</h1>
+						<motion.div {...fadeUp(0)}>
+							<h1 className="display-xl">
+								<span className="text-white">The AI Sales Coach That Lives </span>
+								<motion.span
+									className="text-[#10B981]"
+									initial={{ color: '#FFFFFF' }}
+									animate={{ color: '#10B981' }}
+									transition={{ duration: 0.6, delay: 0.8, ease: EASE }}
+								>
+									in Your Pocket
+								</motion.span>
+							</h1>
+						</motion.div>
 
 						{/* Subheadline */}
-						<p className="text-lg text-cc-text-secondary">
-							Practice closing deals. Record your meetings. Know exactly why you suck. All from your phone.
-						</p>
+						<motion.div {...fadeUp(0.1)}>
+							<p className="text-lg text-cc-text-secondary">
+								Practice closing deals. Record your meetings. Know exactly why you suck. All from your phone.
+							</p>
+						</motion.div>
 
 						{/* Body copy */}
-						<p className="max-w-xl text-base text-cc-text-secondary">
-							Load your website, train the AI, and have normal sales conversations. Pick your industry, run a roleplay, and get scored on what matters. No desktop. No setup. No annual contracts. Just open the app and start closing. 60 seconds to start increasing your close rate.
-						</p>
+						<motion.div {...fadeUp(0.2)}>
+							<p className="max-w-xl text-base text-cc-text-secondary">
+								Load your website, train the AI, and have normal sales conversations. Pick your industry, run a roleplay, and get scored on what matters. No desktop. No setup. No annual contracts. Just open the app and start closing. 60 seconds to start increasing your close rate.
+							</p>
+						</motion.div>
 
 						{/* Proof anchor */}
-						<p className="text-sm text-cc-text-secondary">
-							Join{' '}
-							<span className="font-semibold text-[#10B981]">{STATS.userCount}</span>
-							{' '}Sales Closers getting better.{' '}
-							{STATS.appStoreRating} stars, App Store.
-						</p>
+						<motion.div {...fadeUp(0.3)}>
+							<p className="text-sm text-cc-text-secondary">
+								Join{' '}
+								<span className="font-semibold text-[#10B981]">{STATS.userCount}</span>
+								{' '}Sales Closers getting better.{' '}
+								{STATS.appStoreRating} stars, App Store.
+							</p>
+						</motion.div>
 
 						{/* CTAs */}
-						<div className="flex flex-row flex-wrap gap-4">
+						<motion.div {...fadeUp(0.4)} className="flex flex-row flex-wrap gap-4">
 							<MotionCTA variant="primary" size="lg" href={CTA.tryFree.href}>
 								{CTA.tryFree.text}
 							</MotionCTA>
 							<MotionCTA variant="secondary" size="lg" href={BRAND.calendly}>
 								{CTA.contactSales.text}
 							</MotionCTA>
-						</div>
+						</motion.div>
 
 						{/* Store badges */}
-						<div className="flex flex-row gap-3">
+						<motion.div {...fadeUp(0.5)} className="flex flex-row gap-3">
 							<Link href={BRAND.appStore}>
 								<Image
 									src="/images/app-store-badge.svg"
@@ -98,7 +122,7 @@ export default function SectionHero() {
 									height={40}
 								/>
 							</Link>
-						</div>
+						</motion.div>
 					</div>
 
 					{/* Right column: phone mockup (desktop only) */}

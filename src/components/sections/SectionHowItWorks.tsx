@@ -5,6 +5,7 @@
 'use client'
 
 import MotionCTA from '@/components/shared/motion-cta'
+import ScrollReveal from '@/components/shared/scroll-reveal'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
 import { CTA } from '@/lib/constants'
 import { Check, Warning } from '@phosphor-icons/react'
@@ -224,14 +225,14 @@ export default function SectionHowItWorks() {
 			{/* Content */}
 			<div className="relative z-10 mx-auto max-w-7xl px-6">
 				{/* Section header */}
-				<div className="mb-20 text-center md:mb-24">
+				<ScrollReveal className="mb-20 text-center md:mb-24">
 					<h2 className="display-lg text-white">
 						Practice. Lose. Learn. Win.
 					</h2>
 					<p className="mx-auto mt-4 max-w-2xl text-lg text-cc-text-secondary">
 						Train before the call. Find out where you lost it. Fix it before it costs you again.
 					</p>
-				</div>
+				</ScrollReveal>
 
 				{/* Steps container with emerald thread */}
 				<div className="relative">
@@ -242,7 +243,7 @@ export default function SectionHowItWorks() {
 					/>
 
 					{/* ===== STEP 1: Before ===== */}
-					<div className="relative mb-24 md:mb-32 md:pl-16">
+					<ScrollReveal className="relative mb-24 md:mb-32 md:pl-16" delay={0}>
 						{/* Thread dot */}
 						<div className="absolute left-5 top-1 hidden h-3 w-3 rounded-full border-2 border-cc-accent bg-cc-foundation md:block" aria-hidden="true" />
 
@@ -288,10 +289,10 @@ export default function SectionHowItWorks() {
 								</div>
 							</div>
 						</div>
-					</div>
+					</ScrollReveal>
 
 					{/* ===== STEP 2: During ===== */}
-					<div className="relative mb-24 md:mb-32 md:pl-16">
+					<ScrollReveal className="relative mb-24 md:mb-32 md:pl-16" delay={0.1}>
 						{/* Thread dot */}
 						<div className="absolute left-5 top-1 hidden h-3 w-3 rounded-full border-2 border-cc-accent bg-cc-foundation md:block" aria-hidden="true" />
 
@@ -327,10 +328,10 @@ export default function SectionHowItWorks() {
 							{/* Replacement badge */}
 							<ReplacementBadge />
 						</div>
-					</div>
+					</ScrollReveal>
 
 					{/* ===== STEP 3: After ===== */}
-					<div className="relative mb-16 md:mb-20 md:pl-16">
+					<ScrollReveal className="relative mb-16 md:mb-20 md:pl-16" delay={0.15}>
 						{/* Thread dot */}
 						<div className="absolute left-5 top-1 hidden h-3 w-3 rounded-full border-2 border-cc-accent bg-cc-foundation md:block" aria-hidden="true" />
 
@@ -357,7 +358,7 @@ export default function SectionHowItWorks() {
 								<ScorecardComposite />
 							</div>
 						</div>
-					</div>
+					</ScrollReveal>
 				</div>
 
 				{/* Bottom CTA */}

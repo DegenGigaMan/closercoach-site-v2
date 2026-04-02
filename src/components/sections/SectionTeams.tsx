@@ -6,6 +6,7 @@
 
 import Image from 'next/image'
 import MotionCTA from '@/components/shared/motion-cta'
+import ScrollReveal from '@/components/shared/scroll-reveal'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
 import { BRAND, CTA } from '@/lib/constants'
 import { Users, ChartBar, Rocket, FileText, UserPlus, Plugs } from '@phosphor-icons/react'
@@ -152,7 +153,7 @@ export default function SectionTeams() {
 					{/* Left column: all content */}
 					<div className="flex flex-col gap-10">
 						{/* Header block */}
-						<div className="flex flex-col gap-4">
+						<ScrollReveal className="flex flex-col gap-4">
 							<span className="text-xs uppercase tracking-wider text-cc-accent">
 								For Sales Managers
 							</span>
@@ -163,7 +164,7 @@ export default function SectionTeams() {
 							<p className="text-base text-cc-text-secondary">
 								Over 20,000 closers already use CloserCoach individually. Now give your whole team the same edge.
 							</p>
-						</div>
+						</ScrollReveal>
 
 						{/* Manager onboarding */}
 						<p className="text-base text-cc-text-secondary">
@@ -176,7 +177,7 @@ export default function SectionTeams() {
 							{VALUE_PROPS.map((vp, i) => {
 								const Icon = vp.icon
 								return (
-									<div key={vp.title}>
+									<ScrollReveal key={vp.title} delay={i * 0.08}>
 										<div className="mb-2 flex items-center gap-3">
 											<Icon size={20} weight="bold" className="shrink-0 text-cc-accent" />
 											<span className="text-base font-semibold text-white">{vp.title}</span>
@@ -188,7 +189,7 @@ export default function SectionTeams() {
 												See every rep&rsquo;s performance from one dashboard -- scores, call recordings, and improvement trends over time. No more guessing who needs help or where they&rsquo;re struggling.
 											</p>
 										)}
-									</div>
+									</ScrollReveal>
 								)
 							})}
 						</div>
@@ -252,9 +253,11 @@ export default function SectionTeams() {
 
 					{/* Right column: sticky dashboard (desktop only) */}
 					<div className="hidden md:block">
-						<div className="sticky top-24">
-							<DashboardComposite />
-						</div>
+						<ScrollReveal direction="right" delay={0.2}>
+							<div className="sticky top-24">
+								<DashboardComposite />
+							</div>
+						</ScrollReveal>
 					</div>
 				</div>
 			</div>

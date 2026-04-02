@@ -1,9 +1,12 @@
 /** @fileoverview S5 Results section. Warm surface with proof stats, performance gains,
  * skill radar dashboard, testimonials, and CTA. Copy locked to lp-copy-deck-v5. */
 
+'use client'
+
 import MotionCTA from '@/components/shared/motion-cta'
+import ScrollReveal from '@/components/shared/scroll-reveal'
 import { STATS, CTA } from '@/lib/constants'
-import { Star } from '@phosphor-icons/react/dist/ssr'
+import { Star } from '@phosphor-icons/react'
 
 /* ---------- Data ---------- */
 
@@ -187,62 +190,73 @@ export default function SectionResults() {
 		<section id="results" data-surface="warm" className="bg-cc-warm py-24 md:py-32">
 			<div className="mx-auto max-w-7xl px-6">
 				{/* Headline + subheadline */}
-				<div className="mb-16 text-center">
+				<ScrollReveal className="mb-16 text-center">
 					<h2 className="display-lg text-cc-text-primary-warm">
 						The Undisputed Leader In Mobile-First Sales Training
 					</h2>
 					<p className="mt-4 text-lg text-cc-text-secondary-warm">
 						{STATS.userCount} closers. Real results.
 					</p>
-				</div>
+				</ScrollReveal>
 
 				{/* Proof strip */}
-				<ProofStrip />
+				<ScrollReveal delay={0.1}>
+					<ProofStrip />
+				</ScrollReveal>
 
 				{/* Performance gains */}
-				<div className="mt-16">
+				<ScrollReveal className="mt-16" delay={0.15}>
 					<PerformanceGains />
-				</div>
+				</ScrollReveal>
 
 				{/* Industry benchmark callout */}
-				<p className="mt-10 text-center text-sm italic text-cc-text-secondary-warm">
-					Coached weekly: {STATS.quotaHitRate} quota hit. Coached quarterly: {STATS.quotaWithout}. CloserCoach coaches you every day.
-				</p>
+				<ScrollReveal delay={0.1}>
+					<p className="mt-10 text-center text-sm italic text-cc-text-secondary-warm">
+						Coached weekly: {STATS.quotaHitRate} quota hit. Coached quarterly: {STATS.quotaWithout}. CloserCoach coaches you every day.
+					</p>
+				</ScrollReveal>
 
 				{/* Skill dashboard */}
-				<div className="mt-16">
+				<ScrollReveal className="mt-16" delay={0.1}>
 					<SkillDashboard />
-				</div>
+				</ScrollReveal>
 
 				{/* Data callout */}
-				<p className="mt-10 text-center text-sm font-medium text-cc-text-secondary-warm">
-					WPM. Clarity. Pace. Tonality. Every session. Every score. Your career in numbers.
-				</p>
+				<ScrollReveal delay={0.1}>
+					<p className="mt-10 text-center text-sm font-medium text-cc-text-secondary-warm">
+						WPM. Clarity. Pace. Tonality. Every session. Every score. Your career in numbers.
+					</p>
+				</ScrollReveal>
 
 				{/* Ego appeal */}
-				<p className="mx-auto mt-10 max-w-3xl text-center text-base text-cc-text-primary-warm">
-					After one roleplay you will know: B grade, Top 15%, 211 WPM, 64/36 talk-listen. Every number gets better.
-				</p>
+				<ScrollReveal delay={0.1}>
+					<p className="mx-auto mt-10 max-w-3xl text-center text-base text-cc-text-primary-warm">
+						After one roleplay you will know: B grade, Top 15%, 211 WPM, 64/36 talk-listen. Every number gets better.
+					</p>
+				</ScrollReveal>
 
 				{/* Testimonials */}
 				<div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2">
-					<TestimonialDimitriy />
-					{APP_REVIEWS.map((review) => (
-						<ReviewCard
-							key={review.author}
-							text={review.text}
-							author={review.author}
-							stars={review.stars}
-						/>
+					<ScrollReveal delay={0}>
+						<TestimonialDimitriy />
+					</ScrollReveal>
+					{APP_REVIEWS.map((review, i) => (
+						<ScrollReveal key={review.author} delay={(i + 1) * 0.1}>
+							<ReviewCard
+								text={review.text}
+								author={review.author}
+								stars={review.stars}
+							/>
+						</ScrollReveal>
 					))}
 				</div>
 
 				{/* CTA */}
-				<div className="mt-16 flex justify-center">
+				<ScrollReveal className="mt-16 flex justify-center" delay={0.1}>
 					<MotionCTA variant="primary" size="lg" href={CTA.tryFree.href} warmSurface>
 						{CTA.tryFree.text}
 					</MotionCTA>
-				</div>
+				</ScrollReveal>
 			</div>
 		</section>
 	)

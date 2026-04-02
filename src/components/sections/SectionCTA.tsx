@@ -8,6 +8,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { QRCodeSVG } from 'qrcode.react'
 import MotionCTA from '@/components/shared/motion-cta'
+import ScrollReveal from '@/components/shared/scroll-reveal'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
 import ParticleCanvas from '@/components/atmosphere/particle-canvas'
 import { BRAND, CTA } from '@/lib/constants'
@@ -46,7 +47,7 @@ export default function SectionCTA() {
 
 			{/* Content */}
 			<div className="relative z-10 mx-auto max-w-7xl px-6">
-				<div className="mx-auto flex max-w-2xl flex-col items-center gap-6 text-center">
+				<ScrollReveal className="mx-auto flex max-w-2xl flex-col items-center gap-6 text-center">
 					{/* Headline */}
 					<h2 className="display-lg text-white">
 						Find out what's actually losing you deals.
@@ -98,7 +99,7 @@ export default function SectionCTA() {
 					<MotionCTA variant="ghost" size="sm" href={CTA.contactSales.href}>
 						{CTA.contactSales.text}
 					</MotionCTA>
-				</div>
+				</ScrollReveal>
 			</div>
 		</section>
 	)

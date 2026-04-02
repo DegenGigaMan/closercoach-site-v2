@@ -6,6 +6,7 @@
 import { Target, Phone, MagnifyingGlass, ChartLineUp, Lightning } from '@phosphor-icons/react'
 import SpotlightCard from '@/components/ui/spotlight-card'
 import MotionCTA from '@/components/shared/motion-cta'
+import ScrollReveal from '@/components/shared/scroll-reveal'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
 import { CTA } from '@/lib/constants'
 
@@ -79,23 +80,29 @@ export default function SectionFeatures() {
 			{/* Content */}
 			<div className="relative z-10 mx-auto max-w-7xl px-6">
 				{/* Transition zone heading */}
-				<h2 className="display-lg mb-16 pt-10 text-center text-white md:mb-20">
-					An AI Sales Operating System in Your Pocket
-				</h2>
+				<ScrollReveal>
+					<h2 className="display-lg mb-16 pt-10 text-center text-white md:mb-20">
+						An AI Sales Operating System in Your Pocket
+					</h2>
+				</ScrollReveal>
 
 				{/* Masonry grid: 3 top + 2 bottom centered */}
 				<div className="flex flex-col gap-4">
 					{/* Top row: 3 cards */}
 					<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-						{FEATURES.slice(0, 3).map((feature) => (
-							<FeatureCard key={feature.title} {...feature} />
+						{FEATURES.slice(0, 3).map((feature, i) => (
+							<ScrollReveal key={feature.title} delay={i * 0.1}>
+								<FeatureCard {...feature} />
+							</ScrollReveal>
 						))}
 					</div>
 
 					{/* Bottom row: 2 cards centered */}
 					<div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:mx-auto md:max-w-[66.666%]">
-						{FEATURES.slice(3).map((feature) => (
-							<FeatureCard key={feature.title} {...feature} />
+						{FEATURES.slice(3).map((feature, i) => (
+							<ScrollReveal key={feature.title} delay={(i + 3) * 0.1}>
+								<FeatureCard {...feature} />
+							</ScrollReveal>
 						))}
 					</div>
 				</div>

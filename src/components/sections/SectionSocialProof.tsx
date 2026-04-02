@@ -1,7 +1,10 @@
 /** @fileoverview S2 Social Proof strip. Warm surface with trust label, infinite
  * logo marquee (CSS-only), and stat counters sourced from constants. */
 
+'use client'
+
 import Image from 'next/image'
+import ScrollReveal from '@/components/shared/scroll-reveal'
 import { STATS } from '@/lib/constants'
 
 const LOGOS = [
@@ -75,15 +78,16 @@ export default function SectionSocialProof() {
 				{/* Stat counters */}
 				<div className="flex flex-col items-center gap-6 md:flex-row md:justify-center md:gap-0">
 					{STAT_ITEMS.map((stat, i) => (
-						<div
+						<ScrollReveal
 							key={stat.label}
+							delay={i * 0.1}
 							className={`flex flex-col items-center${
 								i > 0 ? ' md:border-l md:border-cc-warm-border md:px-8' : ' md:px-8'
 							}`}
 						>
 							<span className="mono-stat text-cc-amber">{stat.value}</span>
 							<span className="text-sm text-cc-text-secondary-warm">{stat.label}</span>
-						</div>
+						</ScrollReveal>
 					))}
 				</div>
 			</div>
