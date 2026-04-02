@@ -5,6 +5,7 @@ import { youngSerif, geistMono, inter } from '@/lib/fonts'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import SmoothScroll from '@/components/layout/SmoothScroll'
+import CookieConsent from '@/components/layout/CookieConsent'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -48,6 +49,7 @@ export default function RootLayout({
 					{children}
 				</main>
 				<Footer />
+				<CookieConsent />
 			</body>
 		</html>
 	)
