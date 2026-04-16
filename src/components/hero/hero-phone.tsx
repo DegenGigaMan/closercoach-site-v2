@@ -58,10 +58,10 @@ const variantStyles: Record<BadgeConfig['variant'], string> = {
 }
 
 const positionStyles: Record<BadgeConfig['position'], string> = {
-	'top-left': '-left-16 top-16',
-	'top-right': '-right-16 top-20',
-	'bottom-left': '-left-14 bottom-28',
-	'bottom-right': '-right-14 bottom-24',
+	'top-left': 'left-[-130px] top-16',
+	'top-right': 'right-[-130px] top-20',
+	'bottom-left': 'left-[-130px] bottom-28',
+	'bottom-right': 'right-[-130px] bottom-24',
 }
 
 function FloatingBadge({ config }: { config: BadgeConfig }) {
@@ -139,7 +139,7 @@ export default function HeroPhone() {
 	}, [])
 
 	return (
-		<div className="relative flex items-center justify-center">
+		<div className="relative flex items-center justify-center px-36">
 			{/* 3-layer emerald glow behind phone */}
 			<div
 				className="pointer-events-none absolute inset-[-40%]"
@@ -177,7 +177,7 @@ export default function HeroPhone() {
 				{/* Screen */}
 				<div
 					className="relative overflow-hidden rounded-[2.25rem] bg-cc-foundation"
-					style={{ aspectRatio: '9 / 19.5' }}
+					style={{ aspectRatio: '9 / 16' }}
 				>
 					{/* Status bar */}
 					<div className="flex h-12 items-end justify-between px-6 pb-1">

@@ -347,15 +347,6 @@ export function HeroStateScore() {
 				>
 					<span className="font-[family-name:var(--font-heading)] text-3xl text-cc-amber">B</span>
 				</motion.div>
-				{/* Top 15% badge */}
-				<motion.div
-					className="absolute -top-1 rounded-full bg-cc-accent/20 px-2 py-0.5"
-					initial={{ opacity: 0, y: 8 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.3, delay: 1.2 }}
-				>
-					<span className="font-[family-name:var(--font-mono)] text-[8px] font-medium text-cc-accent">Top 15%</span>
-				</motion.div>
 			</div>
 
 			{/* AI Coach Says */}
