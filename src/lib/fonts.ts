@@ -1,11 +1,11 @@
-/** @fileoverview Font configuration for CloserCoach site. Young Serif (headings) + Inter (body) + Geist Mono (stats). */
+/** @fileoverview Font configuration for CloserCoach site. Lora (headings) + Inter (body) + Geist Mono (stats). */
 
-import { Young_Serif, Geist_Mono, Inter } from 'next/font/google'
+import { Lora, Geist_Mono, Inter } from 'next/font/google'
 
-export const youngSerif = Young_Serif({
-	variable: '--font-young-serif',
+export const lora = Lora({
+	variable: '--font-lora',
 	subsets: ['latin'],
-	weight: '400',
+	weight: ['400', '500', '600', '700'],
 	display: 'swap',
 })
 

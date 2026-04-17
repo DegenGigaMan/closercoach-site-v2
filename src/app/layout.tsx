@@ -1,7 +1,7 @@
 /** @fileoverview Root layout with fonts, metadata, and body wrapper. */
 
 import type { Metadata } from 'next'
-import { youngSerif, geistMono, inter } from '@/lib/fonts'
+import { lora, geistMono, inter } from '@/lib/fonts'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import SmoothScroll from '@/components/layout/SmoothScroll'
@@ -40,7 +40,7 @@ export default function RootLayout({
 	return (
 		<html
 			lang="en"
-			className={`${youngSerif.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
+			className={`${lora.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
 		>
 			<body className="flex min-h-full flex-col">
 				<SmoothScroll />
