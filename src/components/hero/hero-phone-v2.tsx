@@ -30,7 +30,7 @@ import {
 } from '@phosphor-icons/react'
 import NumberFlow from '@number-flow/react'
 
-const CYCLE_MS = 6000
+const CYCLE_MS = 7500
 const CAMIL_IMG = '/images/prospects/camil-reese.png'
 const CC_LOGO = '/images/closercoach-logo.svg'
 
@@ -224,83 +224,96 @@ function TrainState() {
 				</div>
 			</div>
 
-			{/* Processing zone: appears after URL is typed */}
-			<AnimatePresence mode="wait">
+			{/* Progress bar: persistent across processing → ready. Enters with processing, stays. */}
+			{subState !== 'input' && (
+				<div className="mt-4">
+					{/* Status text: swaps between "Learning..." and "AI Clone Ready!" */}
+					<AnimatePresence mode="wait">
+						{subState === 'processing' && (
+							<motion.div
+								key="learning-text"
+								className="mb-2 text-center text-[13px] font-medium text-cc-accent"
+								initial={{ opacity: 0, y: 4 }}
+								animate={{ opacity: 1, y: 0 }}
+								exit={{ opacity: 0, y: -4 }}
+								transition={{ duration: 0.25 }}
+							>
+								Learning your business...
+							</motion.div>
+						)}
+						{subState === 'ready' && (
+							<motion.div
+								key="ready-text"
+								className="mb-2 text-center text-[13px] font-medium text-cc-accent"
+								initial={{ opacity: 0, y: 4 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ duration: 0.25 }}
+							>
+								AI Clone Ready!
+							</motion.div>
+						)}
+					</AnimatePresence>
+
+					{/* Progress bar: stays, fills continuously */}
+					<div className="mb-4 h-[5px] w-full overflow-hidden rounded-full bg-cc-surface-elevated">
+						<motion.div
+							className="h-full rounded-full bg-cc-accent"
+							initial={{ width: '0%' }}
+							animate={{ width: subState === 'ready' ? '100%' : '75%' }}
+							transition={{ duration: subState === 'ready' ? 0.5 : 2, ease: 'easeOut' }}
+						/>
+					</div>
+				</div>
+			)}
+
+			{/* Checklist: only visible during processing */}
+			<AnimatePresence>
 				{subState === 'processing' && (
 					<motion.div
-						key="processing"
-						className="mt-4 flex flex-col items-center"
+						key="checklist"
+						className="flex flex-col gap-2 px-1"
 						initial={{ opacity: 0, y: 8 }}
 						animate={{ opacity: 1, y: 0 }}
-						exit={{ opacity: 0, y: -4 }}
-						transition={{ duration: 0.35 }}
+						exit={{ opacity: 0, y: -8 }}
+						transition={{ duration: 0.3 }}
 					>
-						<div className="mb-2 text-[13px] font-medium text-cc-accent">
-							Learning your business...
-						</div>
-
-						<div className="mb-4 h-[5px] w-full overflow-hidden rounded-full bg-cc-surface-elevated">
+						{CHECKLIST_ITEMS.map((item, i) => (
 							<motion.div
-								className="h-full rounded-full bg-cc-accent"
-								initial={{ width: '0%' }}
-								animate={{ width: '75%' }}
-								transition={{ duration: 2, ease: 'easeOut' }}
-							/>
-						</div>
-
-						<div className="flex w-full flex-col gap-2">
-							{CHECKLIST_ITEMS.map((item, i) => (
+								key={item}
+								className="flex items-center gap-2.5"
+								initial={{ opacity: 0, x: -8 }}
+								animate={{ opacity: 1, x: 0 }}
+								transition={{ duration: 0.2, delay: 0.2 + i * 0.25 }}
+							>
 								<motion.div
-									key={item}
-									className="flex items-center gap-2.5"
-									initial={{ opacity: 0, x: -8 }}
-									animate={{ opacity: 1, x: 0 }}
-									transition={{ duration: 0.2, delay: 0.2 + i * 0.25 }}
+									initial={{ scale: 0 }}
+									animate={{ scale: 1 }}
+									transition={{ duration: 0.15, delay: 0.35 + i * 0.25 }}
 								>
-									<motion.div
-										initial={{ scale: 0 }}
-										animate={{ scale: 1 }}
-										transition={{ duration: 0.15, delay: 0.35 + i * 0.25 }}
-									>
-										<Check size={14} weight="bold" className="text-cc-accent" />
-									</motion.div>
-									<span className="text-[13px] text-cc-text-secondary">{item}</span>
+									<Check size={14} weight="bold" className="text-cc-accent" />
 								</motion.div>
-							))}
-						</div>
+								<span className="text-[13px] text-cc-text-secondary">{item}</span>
+							</motion.div>
+						))}
 					</motion.div>
 				)}
+			</AnimatePresence>
 
+			{/* Prospect Card + Continue: only visible in ready state */}
+			<AnimatePresence>
 				{subState === 'ready' && (
 					<motion.div
-						key="ready"
-						className="mt-4 flex flex-1 flex-col"
+						key="result"
+						className="mt-auto flex flex-col"
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
-						transition={{ duration: 0.35 }}
+						transition={{ duration: 0.3, delay: 0.3 }}
 					>
-						{/* Status text morphed */}
-						<div className="mb-2 text-center text-[13px] font-medium text-cc-accent">
-							AI Clone Ready!
-						</div>
-
-						<div className="mb-4 h-[5px] w-full overflow-hidden rounded-full bg-cc-surface-elevated">
-							<motion.div
-								className="h-full rounded-full bg-cc-accent"
-								initial={{ width: '75%' }}
-								animate={{ width: '100%' }}
-								transition={{ duration: 0.4, ease: 'easeOut' }}
-							/>
-						</div>
-
-						<div className="flex-1" />
-
-						{/* Prospect Card */}
 						<motion.div
 							className="rounded-xl border border-cc-surface-border bg-cc-surface-card p-4"
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.4, delay: 0.2, ease: 'easeOut' }}
+							transition={{ duration: 0.4, delay: 0.4, ease: 'easeOut' }}
 						>
 							<div className="mb-2.5 flex items-center gap-3">
 								<motion.div layoutId="prospect-avatar" className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full">
@@ -308,7 +321,7 @@ function TrainState() {
 								</motion.div>
 								<div>
 									<motion.div layoutId="prospect-name" className="text-[14px] font-semibold text-white">Camil Reese</motion.div>
-									<motion.div layoutId="prospect-role" className="text-[11px] text-cc-text-muted">Finance Director @ Oracle</motion.div>
+									<div className="text-[11px] text-cc-text-muted">Finance Director @ Oracle</div>
 								</div>
 							</div>
 							<div className="mb-2">
@@ -322,14 +335,13 @@ function TrainState() {
 							</p>
 						</motion.div>
 
-						{/* Continue button */}
 						<motion.div
 							className="mt-3 flex items-center justify-center rounded-full bg-cc-accent py-3"
 							initial={{ opacity: 0, y: 8 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ delay: 0.5, duration: 0.3 }}
+							transition={{ delay: 0.7, duration: 0.3 }}
 						>
-							<span className="text-[14px] font-semibold text-white">Continue →</span>
+							<span className="text-[14px] font-semibold text-cc-foundation">Continue →</span>
 						</motion.div>
 					</motion.div>
 				)}
