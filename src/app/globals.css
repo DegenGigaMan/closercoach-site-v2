@@ -21,6 +21,9 @@
 	--color-cc-accent-glow: oklch(from #10B981 l c h / 15%);
 	--color-cc-accent-muted: oklch(from #10B981 l c h / 40%);
 
+	/* Victory mint -- success/CTA moments only (Hero S1 ready, S4 grade reveal) */
+	--color-cc-mint: #34E18E;
+
 	/* Secondary accent -- Amber */
 	--color-cc-amber: #F59E0B;
 	--color-cc-amber-muted: oklch(from #F59E0B l c h / 40%);

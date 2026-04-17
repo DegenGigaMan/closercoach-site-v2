@@ -20,6 +20,7 @@ import {
 	Globe,
 	Check,
 	Warning,
+	WarningOctagon,
 	CheckCircle,
 	Trophy,
 	Microphone,
@@ -28,6 +29,9 @@ import {
 	Users,
 	Timer,
 } from '@phosphor-icons/react'
+
+/* Shared card recipe — L1 elevated card with dual shadow */
+const CARD_SHADOW = 'shadow-[0_8px_16px_rgba(0,0,0,0.6),0_0_20px_rgba(16,185,129,0.15)]'
 import NumberFlow from '@number-flow/react'
 
 const CYCLE_MS = 5800
@@ -109,7 +113,7 @@ function DotIndicator({ activeIndex }: { activeIndex: number }) {
 					animate={{
 						width: i === activeIndex ? 16 : 6,
 						height: 6,
-						backgroundColor: i === activeIndex ? '#10B981' : 'rgba(255,255,255,0.12)',
+						backgroundColor: i === activeIndex ? '#34E18E' : 'rgba(255,255,255,0.12)',
 					}}
 					transition={{ type: 'spring', stiffness: 400, damping: 25 }}
 				/>
@@ -201,18 +205,18 @@ function TrainState() {
 	}, [])
 
 	return (
-		<div className="flex h-full flex-col px-5 pb-4 pt-2">
-			{/* Heading */}
-			<h2 className="mb-3 text-center text-[18px] font-semibold text-white">
+		<div className="flex h-full flex-col px-4 pb-4 pt-1">
+			{/* Heading — Inter Medium 20px (override the global serif h2 rule) */}
+			<h2 className="mb-[23px] text-center font-sans text-[20px] font-medium text-white">
 				What do you sell?
 			</h2>
 
-			{/* URL Input Card */}
-			<div className="rounded-xl border border-cc-accent/20 bg-cc-surface-elevated/80 px-4 py-3">
-				<div className="mb-1.5 text-[11px] text-cc-text-muted">Link to your website</div>
-				<div className="flex items-center gap-2">
-					<Globe size={14} className="shrink-0 text-cc-accent" weight="bold" />
-					<div className="flex-1 text-[13px] text-cc-text-secondary">
+			{/* URL Input Card — L1 recipe with dual shadow */}
+			<div className={`rounded-2xl border border-white/[0.14] bg-cc-surface-card p-3 ${CARD_SHADOW}`}>
+				<div className="text-[12px] text-white/50">Link to your website</div>
+				<div className="mt-2 flex items-center gap-2">
+					<Globe size={12} weight="bold" className="shrink-0 text-cc-accent" />
+					<div className="flex-1 font-[family-name:var(--font-mono)] text-[11px] text-[#D3DFF0]">
 						<TypeAnimation
 							sequence={['', 300, 'yoursite.com/product', 800]}
 							speed={55}
@@ -220,22 +224,22 @@ function TrainState() {
 							repeat={0}
 						/>
 					</div>
-					<span className="text-[12px] font-medium text-cc-accent">Paste</span>
+					<span className="text-[9px] font-medium text-cc-accent">Paste</span>
 				</div>
 			</div>
 
-			{/* Progress bar: persistent across processing → ready. Enters with processing, stays. */}
+			{/* Status block: enters with processing, stays through ready (progress bar + label persist) */}
 			{subState !== 'input' && (
-				<div className="mt-4">
-					{/* Status text: swaps between "Learning..." and "AI Clone Ready!" */}
+				<div className="mt-5 px-1">
+					{/* Status text: morphs in place between processing and ready */}
 					<AnimatePresence mode="wait">
 						{subState === 'processing' && (
 							<motion.div
 								key="learning-text"
-								className="mb-2 text-center text-[13px] font-medium text-cc-accent"
-								initial={{ opacity: 0, y: 4 }}
+								className="mb-3 text-center text-[10px] text-cc-accent/[0.51]"
+								initial={{ opacity: 0, y: 3 }}
 								animate={{ opacity: 1, y: 0 }}
-								exit={{ opacity: 0, y: -4 }}
+								exit={{ opacity: 0, y: -3 }}
 								transition={{ duration: 0.25 }}
 							>
 								Learning your business...
@@ -244,8 +248,8 @@ function TrainState() {
 						{subState === 'ready' && (
 							<motion.div
 								key="ready-text"
-								className="mb-2 text-center text-[13px] font-medium text-cc-accent"
-								initial={{ opacity: 0, y: 4 }}
+								className="mb-3 text-center text-[14px] text-cc-mint"
+								initial={{ opacity: 0, y: 3 }}
 								animate={{ opacity: 1, y: 0 }}
 								transition={{ duration: 0.25 }}
 							>
@@ -254,33 +258,36 @@ function TrainState() {
 						)}
 					</AnimatePresence>
 
-					{/* Progress bar: stays, fills continuously */}
-					<div className="mb-4 h-[5px] w-full overflow-hidden rounded-full bg-cc-surface-elevated">
+					{/* Progress bar — persistent. Color shifts from working green → victory mint at ready */}
+					<div className="h-[6px] w-full overflow-hidden rounded-full bg-white/[0.05]">
 						<motion.div
-							className="h-full rounded-full bg-cc-accent"
+							className="h-full rounded-full"
 							initial={{ width: '0%' }}
-							animate={{ width: subState === 'ready' ? '100%' : '75%' }}
+							animate={{
+								width: subState === 'ready' ? '100%' : '30%',
+								backgroundColor: subState === 'ready' ? '#34E18E' : '#10B981',
+							}}
 							transition={{ duration: subState === 'ready' ? 0.5 : 2, ease: 'easeOut' }}
 						/>
 					</div>
 				</div>
 			)}
 
-			{/* Checklist: only visible during processing */}
+			{/* Checklist: only visible during processing. 70% group opacity, slate-400 text. */}
 			<AnimatePresence>
 				{subState === 'processing' && (
 					<motion.div
 						key="checklist"
-						className="flex flex-col gap-2 px-1"
+						className="mt-4 flex flex-col gap-3 px-1 opacity-70"
 						initial={{ opacity: 0, y: 8 }}
-						animate={{ opacity: 1, y: 0 }}
+						animate={{ opacity: 0.7, y: 0 }}
 						exit={{ opacity: 0, y: -8 }}
 						transition={{ duration: 0.3 }}
 					>
 						{CHECKLIST_ITEMS.map((item, i) => (
 							<motion.div
 								key={item}
-								className="flex items-center gap-2.5"
+								className="flex items-center gap-2"
 								initial={{ opacity: 0, x: -8 }}
 								animate={{ opacity: 1, x: 0 }}
 								transition={{ duration: 0.2, delay: 0.2 + i * 0.25 }}
@@ -290,58 +297,58 @@ function TrainState() {
 									animate={{ scale: 1 }}
 									transition={{ duration: 0.15, delay: 0.35 + i * 0.25 }}
 								>
-									<Check size={14} weight="bold" className="text-cc-accent" />
+									<Check size={12} weight="bold" className="text-cc-accent" />
 								</motion.div>
-								<span className="text-[13px] text-cc-text-secondary">{item}</span>
+								<span className="text-[10px] text-[#94A3B8]">{item}</span>
 							</motion.div>
 						))}
 					</motion.div>
 				)}
 			</AnimatePresence>
 
-			{/* Prospect Card + Continue: only visible in ready state */}
+			{/* Prospect Card + Continue: only visible in ready state. Pinned to bottom of body. */}
 			<AnimatePresence>
 				{subState === 'ready' && (
 					<motion.div
 						key="result"
-						className="mt-auto flex flex-col"
+						className="mt-auto flex flex-col gap-3"
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						transition={{ duration: 0.3, delay: 0.3 }}
 					>
 						<motion.div
-							className="rounded-xl border border-cc-surface-border bg-cc-surface-card p-4"
+							className={`rounded-2xl border border-white/[0.14] bg-cc-surface-card p-3 ${CARD_SHADOW}`}
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.4, delay: 0.4, ease: 'easeOut' }}
 						>
-							<div className="mb-2.5 flex items-center gap-3">
-								<motion.div layoutId="prospect-avatar" className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full">
-									<Image src={CAMIL_IMG} alt="Camil Reese" fill className="object-cover" sizes="44px" />
+							<div className="flex items-center gap-3">
+								<motion.div layoutId="prospect-avatar" className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-white/15">
+									<Image src={CAMIL_IMG} alt="Camil Reese" fill className="object-cover" sizes="40px" />
 								</motion.div>
 								<div>
-									<motion.div layoutId="prospect-name" className="text-[14px] font-semibold text-white">Camil Reese</motion.div>
-									<div className="text-[11px] text-cc-text-muted">Finance Director @ Oracle</div>
+									<motion.div layoutId="prospect-name" className="text-[12px] font-semibold text-white">Camil Reese</motion.div>
+									<div className="text-[10px] text-white/50">Finance Director @ Oracle</div>
 								</div>
 							</div>
-							<div className="mb-2">
-								<span className="inline-flex items-center gap-1 rounded-full border border-cc-amber/30 bg-cc-amber/10 px-2 py-0.5 text-[9px] font-medium text-cc-amber">
-									<Warning size={10} weight="fill" />
+							<div className="mt-3">
+								<span className="inline-flex items-center gap-1 rounded-full border border-cc-amber/10 bg-cc-amber/10 px-1.5 py-0.5 text-[8px] font-medium text-cc-amber">
+									<WarningOctagon size={8} weight="fill" />
 									Skeptical
 								</span>
 							</div>
-							<p className="text-[13px] leading-relaxed text-cc-text-secondary">
+							<p className="mt-3 text-[16px] font-light leading-snug text-white">
 								&ldquo;How can I justify spending this much right now?&rdquo;
 							</p>
 						</motion.div>
 
 						<motion.div
-							className="mt-3 flex items-center justify-center rounded-full bg-cc-accent py-3"
+							className="flex items-center justify-center rounded-full bg-cc-mint py-2.5"
 							initial={{ opacity: 0, y: 8 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ delay: 0.7, duration: 0.3 }}
 						>
-							<span className="text-[14px] font-semibold text-cc-foundation">Continue →</span>
+							<span className="text-[14px] font-semibold text-black">Continue →</span>
 						</motion.div>
 					</motion.div>
 				)}
@@ -667,11 +674,11 @@ function PhoneFrame({ activeIndex, children }: { activeIndex: number, children: 
 					{/* Screen content area */}
 					<div className="relative" style={{ aspectRatio: '9 / 17.5' }}>
 						{/* App header bar */}
-						<div className="flex items-center justify-between px-4 py-2">
-							<img src={CC_LOGO} alt="CloserCoach" className="h-[18px] w-auto" />
+						<div className="flex items-center justify-between px-5 py-1.5">
+							<img src={CC_LOGO} alt="CloserCoach" className="h-6 w-auto" />
 							<div className="flex items-center gap-1">
 								<div className="h-1.5 w-1.5 rounded-full bg-cc-accent" />
-								<span className="text-[9px] text-cc-text-muted">{STATE_LABELS[activeIndex]}</span>
+								<span className="text-[8px] text-cc-text-muted">{STATE_LABELS[activeIndex]}</span>
 							</div>
 						</div>
 
