@@ -1,9 +1,9 @@
 /** @fileoverview Hero Phone V2 with Family Values transition model.
- * One mounted component. Shared elements (Sarah Chen avatar/name) morph
+ * One mounted component. Shared elements (Camil Reese avatar/name) morph
  * via layoutId across states. State content enters/exits directionally.
  * No crossfade teleportation. Elements fly, they don't teleport.
  *
- * Architecture: LayoutGroup wraps the phone. Sarah Chen's avatar and name
+ * Architecture: LayoutGroup wraps the phone. Camil Reese's avatar and name
  * have consistent layoutId props. When activeIndex changes, Motion
  * automatically animates their position, size, and shape.
  *
@@ -30,8 +30,9 @@ import {
 } from '@phosphor-icons/react'
 import NumberFlow from '@number-flow/react'
 
-const CYCLE_MS = 5500
-const SARAH_IMG = '/images/prospects/sarah-chen.png'
+const CYCLE_MS = 6000
+const CAMIL_IMG = '/images/prospects/camil-reese.png'
+const CC_LOGO = '/images/closercoach-logo.svg'
 
 /* ─── Floating Badges ────────────────────────────────────── */
 
@@ -180,104 +181,159 @@ function CoachingChip({ type, text, timestamp, delay = 0 }: {
 
 /* ─── State 1: TRAIN ─────────────────────────────────────── */
 
+const CHECKLIST_ITEMS = [
+	'Understanding call type',
+	'Understanding your product',
+	'Building a challenging customer',
+	'Baking in objectives',
+]
+
 function TrainState() {
+	const [subState, setSubState] = useState<'input' | 'processing' | 'ready'>('input')
+
+	useEffect(() => {
+		// Sub-state 1A: URL input visible, typing happens
+		// After typing completes (~1.8s), transition to processing
+		const t1 = setTimeout(() => setSubState('processing'), 1800)
+		// Sub-state 1B: Processing plays for ~2.2s, then result
+		const t2 = setTimeout(() => setSubState('ready'), 4000)
+		return () => { clearTimeout(t1); clearTimeout(t2) }
+	}, [])
+
 	return (
-		<div className="flex h-full flex-col justify-between px-4 pb-3 pt-1">
-			{/* Top: URL Input */}
-			<div>
-				<div className="rounded-lg border border-cc-surface-border bg-cc-surface-elevated px-3 py-2.5">
-					<div className="mb-1.5 text-[10px] font-medium text-cc-text-muted">What do you sell?</div>
-					<div className="flex items-center gap-2">
-						<Globe size={12} className="shrink-0 text-cc-accent" weight="bold" />
-						<div className="flex-1 font-[family-name:var(--font-mono)] text-[11px] text-cc-text-secondary">
-							<TypeAnimation
-								sequence={['', 400, 'yoursite.com/product', 1000]}
-								speed={60}
-								cursor={true}
-								repeat={0}
+		<div className="flex h-full flex-col px-5 pb-4 pt-2">
+			{/* Heading */}
+			<h2 className="mb-3 text-center text-[18px] font-semibold text-white">
+				What do you sell?
+			</h2>
+
+			{/* URL Input Card */}
+			<div className="rounded-xl border border-cc-accent/20 bg-cc-surface-elevated/80 px-4 py-3">
+				<div className="mb-1.5 text-[11px] text-cc-text-muted">Link to your website</div>
+				<div className="flex items-center gap-2">
+					<Globe size={14} className="shrink-0 text-cc-accent" weight="bold" />
+					<div className="flex-1 text-[13px] text-cc-text-secondary">
+						<TypeAnimation
+							sequence={['', 300, 'yoursite.com/product', 800]}
+							speed={55}
+							cursor={true}
+							repeat={0}
+						/>
+					</div>
+					<span className="text-[12px] font-medium text-cc-accent">Paste</span>
+				</div>
+			</div>
+
+			{/* Processing zone: appears after URL is typed */}
+			<AnimatePresence mode="wait">
+				{subState === 'processing' && (
+					<motion.div
+						key="processing"
+						className="mt-4 flex flex-col items-center"
+						initial={{ opacity: 0, y: 8 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -4 }}
+						transition={{ duration: 0.35 }}
+					>
+						<div className="mb-2 text-[13px] font-medium text-cc-accent">
+							Learning your business...
+						</div>
+
+						<div className="mb-4 h-[5px] w-full overflow-hidden rounded-full bg-cc-surface-elevated">
+							<motion.div
+								className="h-full rounded-full bg-cc-accent"
+								initial={{ width: '0%' }}
+								animate={{ width: '75%' }}
+								transition={{ duration: 2, ease: 'easeOut' }}
 							/>
 						</div>
-						<span className="rounded bg-cc-accent/20 px-1.5 py-0.5 text-[9px] font-medium text-cc-accent">Paste</span>
-					</div>
-				</div>
-			</div>
 
-			{/* Middle: AI Processing */}
-			<div className="flex flex-col items-center gap-3 py-4">
-				<motion.div
-					className="text-[10px] text-cc-accent"
-					animate={{ opacity: [0.4, 1, 0.4] }}
-					transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-				>
-					Learning your business...
-				</motion.div>
-
-				<div className="h-1.5 w-full overflow-hidden rounded-full bg-cc-surface-elevated">
-					<motion.div
-						className="h-full rounded-full bg-cc-accent"
-						initial={{ width: '0%' }}
-						animate={{ width: '90%' }}
-						transition={{ duration: 2, ease: 'easeOut' }}
-					/>
-				</div>
-
-				<div className="flex w-full flex-col gap-1.5 pt-1">
-					{['Understanding call type', 'Understanding your product', 'Building a challenging customer', 'Baking in objectives'].map((item, i) => (
-						<motion.div
-							key={item}
-							className="flex items-center gap-2"
-							initial={{ opacity: 0, x: -6 }}
-							animate={{ opacity: 1, x: 0 }}
-							transition={{ duration: 0.25, delay: 0.3 + i * 0.2 }}
-						>
-							<motion.div
-								initial={{ scale: 0 }}
-								animate={{ scale: 1 }}
-								transition={{ duration: 0.15, delay: 0.5 + i * 0.2 }}
-							>
-								<Check size={12} weight="bold" className="text-cc-accent" />
-							</motion.div>
-							<span className="text-[10px] text-cc-text-secondary">{item}</span>
-						</motion.div>
-					))}
-				</div>
-			</div>
-
-			{/* Bottom: Prospect Card (hero of this state) */}
-			<div>
-				<motion.div
-					className="rounded-xl border border-cc-accent/20 bg-cc-accent/5 p-3"
-					initial={{ opacity: 0, y: 16, scale: 0.95 }}
-					animate={{ opacity: 1, y: 0, scale: 1 }}
-					transition={{ duration: 0.5, delay: 1.4, ease: 'easeOut' }}
-				>
-					<div className="mb-2 flex items-center gap-2.5">
-						<motion.div layoutId="sarah-avatar" className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full">
-							<Image src={SARAH_IMG} alt="Sarah Chen" fill className="object-cover" sizes="36px" />
-						</motion.div>
-						<div>
-							<motion.div layoutId="sarah-name" className="text-[11px] font-medium text-white">Sarah Chen</motion.div>
-							<motion.div layoutId="sarah-role" className="text-[9px] text-cc-text-muted">VP Operations, GreenLeaf</motion.div>
+						<div className="flex w-full flex-col gap-2">
+							{CHECKLIST_ITEMS.map((item, i) => (
+								<motion.div
+									key={item}
+									className="flex items-center gap-2.5"
+									initial={{ opacity: 0, x: -8 }}
+									animate={{ opacity: 1, x: 0 }}
+									transition={{ duration: 0.2, delay: 0.2 + i * 0.25 }}
+								>
+									<motion.div
+										initial={{ scale: 0 }}
+										animate={{ scale: 1 }}
+										transition={{ duration: 0.15, delay: 0.35 + i * 0.25 }}
+									>
+										<Check size={14} weight="bold" className="text-cc-accent" />
+									</motion.div>
+									<span className="text-[13px] text-cc-text-secondary">{item}</span>
+								</motion.div>
+							))}
 						</div>
-					</div>
-					<div className="mb-2 text-[10px] leading-relaxed text-cc-text-secondary">
-						&ldquo;How can I justify spending this much right now?&rdquo;
-					</div>
-					<div className="flex gap-1.5">
-						<span className="rounded bg-cc-accent/15 px-1.5 py-0.5 text-[8px] text-cc-accent">AI Clone Ready</span>
-						<span className="rounded bg-cc-amber/15 px-1.5 py-0.5 text-[8px] text-cc-amber">Hard</span>
-					</div>
-				</motion.div>
+					</motion.div>
+				)}
 
-				<motion.div
-					className="mt-2 flex items-center justify-center rounded-lg bg-cc-accent py-2.5"
-					initial={{ opacity: 0, y: 8 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ delay: 1.8, duration: 0.3 }}
-				>
-					<span className="text-[11px] font-medium text-white">Continue →</span>
-				</motion.div>
-			</div>
+				{subState === 'ready' && (
+					<motion.div
+						key="ready"
+						className="mt-4 flex flex-1 flex-col"
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						transition={{ duration: 0.35 }}
+					>
+						{/* Status text morphed */}
+						<div className="mb-2 text-center text-[13px] font-medium text-cc-accent">
+							AI Clone Ready!
+						</div>
+
+						<div className="mb-4 h-[5px] w-full overflow-hidden rounded-full bg-cc-surface-elevated">
+							<motion.div
+								className="h-full rounded-full bg-cc-accent"
+								initial={{ width: '75%' }}
+								animate={{ width: '100%' }}
+								transition={{ duration: 0.4, ease: 'easeOut' }}
+							/>
+						</div>
+
+						<div className="flex-1" />
+
+						{/* Prospect Card */}
+						<motion.div
+							className="rounded-xl border border-cc-surface-border bg-cc-surface-card p-4"
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.4, delay: 0.2, ease: 'easeOut' }}
+						>
+							<div className="mb-2.5 flex items-center gap-3">
+								<motion.div layoutId="prospect-avatar" className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full">
+									<Image src={CAMIL_IMG} alt="Camil Reese" fill className="object-cover" sizes="44px" />
+								</motion.div>
+								<div>
+									<motion.div layoutId="prospect-name" className="text-[14px] font-semibold text-white">Camil Reese</motion.div>
+									<motion.div layoutId="prospect-role" className="text-[11px] text-cc-text-muted">Finance Director @ Oracle</motion.div>
+								</div>
+							</div>
+							<div className="mb-2">
+								<span className="inline-flex items-center gap-1 rounded-full border border-cc-amber/30 bg-cc-amber/10 px-2 py-0.5 text-[9px] font-medium text-cc-amber">
+									<Warning size={10} weight="fill" />
+									Skeptical
+								</span>
+							</div>
+							<p className="text-[13px] leading-relaxed text-cc-text-secondary">
+								&ldquo;How can I justify spending this much right now?&rdquo;
+							</p>
+						</motion.div>
+
+						{/* Continue button */}
+						<motion.div
+							className="mt-3 flex items-center justify-center rounded-full bg-cc-accent py-3"
+							initial={{ opacity: 0, y: 8 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ delay: 0.5, duration: 0.3 }}
+						>
+							<span className="text-[14px] font-semibold text-white">Continue →</span>
+						</motion.div>
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</div>
 	)
 }
@@ -289,12 +345,12 @@ function PracticeState() {
 		<div className="flex h-full flex-col justify-between px-3 pb-3 pt-1">
 			{/* Top: Call Header */}
 			<div className="flex items-center gap-2 rounded-lg bg-cc-surface-elevated/60 px-3 py-2">
-				<motion.div layoutId="sarah-avatar" className="relative h-6 w-6 shrink-0 overflow-hidden rounded-full">
-					<Image src={SARAH_IMG} alt="Sarah Chen" fill className="object-cover" sizes="24px" />
+				<motion.div layoutId="prospect-avatar" className="relative h-6 w-6 shrink-0 overflow-hidden rounded-full">
+					<Image src={CAMIL_IMG} alt="Camil Reese" fill className="object-cover" sizes="24px" />
 				</motion.div>
 				<div className="flex items-center gap-1">
 					<span className="rounded bg-blue-500/20 px-1 py-0.5 text-[7px] font-bold text-blue-400">AI</span>
-					<motion.div layoutId="sarah-name" className="text-[10px] font-medium text-white">Sarah Chen</motion.div>
+					<motion.div layoutId="prospect-name" className="text-[10px] font-medium text-white">Camil Reese</motion.div>
 				</div>
 				<span className="ml-auto font-[family-name:var(--font-mono)] text-[9px] text-cc-text-muted">00:33 / 10:00</span>
 			</div>
@@ -415,10 +471,10 @@ function RecordState() {
 					<span className="font-[family-name:var(--font-mono)] text-[10px] text-cc-text-muted">02:47</span>
 				</div>
 				<div className="flex items-center gap-1.5">
-					<motion.div layoutId="sarah-avatar" className="relative h-5 w-5 shrink-0 overflow-hidden rounded-full">
-						<Image src={SARAH_IMG} alt="Sarah Chen" fill className="object-cover" sizes="20px" />
+					<motion.div layoutId="prospect-avatar" className="relative h-5 w-5 shrink-0 overflow-hidden rounded-full">
+						<Image src={CAMIL_IMG} alt="Camil Reese" fill className="object-cover" sizes="20px" />
 					</motion.div>
-					<motion.div layoutId="sarah-name" className="text-[9px] text-cc-text-secondary">Sarah Chen</motion.div>
+					<motion.div layoutId="prospect-name" className="text-[9px] text-cc-text-secondary">Camil Reese</motion.div>
 				</div>
 			</div>
 
@@ -517,7 +573,7 @@ function ScoreState() {
 			>
 				<div className="mb-2 flex items-center gap-2">
 					<div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full">
-						<Image src={SARAH_IMG} alt="AI Coach" fill className="object-cover" sizes="28px" />
+						<Image src={CAMIL_IMG} alt="AI Coach" fill className="object-cover" sizes="28px" />
 					</div>
 					<div>
 						<span className="text-[9px] font-medium text-cc-accent">AI Coach Says..</span>
@@ -599,11 +655,11 @@ function PhoneFrame({ activeIndex, children }: { activeIndex: number, children: 
 					{/* Screen content area */}
 					<div className="relative" style={{ aspectRatio: '9 / 17.5' }}>
 						{/* App header bar */}
-						<div className="flex items-center justify-between px-5 py-1.5">
-							<span className="font-[family-name:var(--font-mono)] text-[8px] tracking-widest text-cc-text-muted">CLOSERCOACH</span>
+						<div className="flex items-center justify-between px-4 py-2">
+							<img src={CC_LOGO} alt="CloserCoach" className="h-[18px] w-auto" />
 							<div className="flex items-center gap-1">
 								<div className="h-1.5 w-1.5 rounded-full bg-cc-accent" />
-								<span className="text-[8px] text-cc-text-muted">{STATE_LABELS[activeIndex]}</span>
+								<span className="text-[9px] text-cc-text-muted">{STATE_LABELS[activeIndex]}</span>
 							</div>
 						</div>
 
