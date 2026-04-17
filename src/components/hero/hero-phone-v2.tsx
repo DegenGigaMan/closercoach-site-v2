@@ -30,7 +30,7 @@ import {
 } from '@phosphor-icons/react'
 import NumberFlow from '@number-flow/react'
 
-const CYCLE_MS = 6500
+const CYCLE_MS = 5800
 const CAMIL_IMG = '/images/prospects/camil-reese.png'
 const CC_LOGO = '/images/closercoach-logo.svg'
 
@@ -730,7 +730,7 @@ export default function HeroPhoneV2() {
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
-							transition={{ duration: 0.35 }}
+							transition={{ duration: 0.2 }}
 						>
 							{activeIndex === 0 && <TrainState />}
 							{activeIndex === 1 && <PracticeState />}
