@@ -73,24 +73,58 @@ const badgeVariantStyles: Record<BadgeConfig['variant'], string> = {
 	muted: 'border-cc-surface-border bg-cc-surface-card text-cc-text-secondary',
 }
 
-function FloatingBadges({ activeIndex }: { activeIndex: number }) {
+/* Direction tracks the cross-state narrative beat per transition map:
+ *  down  = 0→1 onboarding→practice (exit-up / enter-below)
+ *  right = 1→2 practice→real-call  (exit-left / enter-right)
+ *  center= 2→3 real-call→verdict   (contract / expand-from-center)
+ *  loop  = 3→0 verdict→new-cycle   (exit-up-fade / enter-cinematic)
+ * Directional deltas are shared between state content and floating badges so they
+ * travel together and do not lag during cross-fade windows (W4 §C3). */
+type TransitionDirection = 'down' | 'right' | 'center' | 'loop'
+
+const badgeDirectionOffset: Record<TransitionDirection, { x: number, y: number }> = {
+	down: { x: 0, y: 8 },
+	right: { x: -8, y: 0 },
+	center: { x: 0, y: 0 },
+	loop: { x: 0, y: -8 },
+}
+
+function FloatingBadges({
+	activeIndex,
+	direction,
+	prefersReducedMotion,
+}: {
+	activeIndex: number
+	direction: TransitionDirection
+	prefersReducedMotion: boolean
+}) {
+	const offset = badgeDirectionOffset[direction]
 	return (
-		<AnimatePresence mode="wait">
+		<AnimatePresence initial={false}>
 			<motion.div key={`badges-${activeIndex}`} className="pointer-events-none">
 				{BADGE_SETS[activeIndex].map((badge) => (
 					<motion.div
 						key={badge.text}
 						className={`absolute hidden items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-[10px] font-medium backdrop-blur-sm md:flex ${badgeVariantStyles[badge.variant]} ${badge.position === 'right' ? 'right-[-140px] top-[25%]' : 'left-[-140px] bottom-[25%]'}`}
-						initial={{ opacity: 0, scale: 0.85, x: badge.position === 'right' ? 12 : -12 }}
-						animate={{ opacity: 1, scale: 1, x: 0 }}
-						exit={{ opacity: 0, scale: 0.85, x: badge.position === 'right' ? 12 : -12 }}
-						transition={{ type: 'spring', stiffness: 400, damping: 25, delay: 0.2 }}
+						initial={prefersReducedMotion
+							? { opacity: 1, scale: 1, x: 0, y: 0 }
+							: { opacity: 0, scale: 0.9, x: -offset.x, y: -offset.y }
+						}
+						animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
+						exit={prefersReducedMotion
+							? { opacity: 0 }
+							: { opacity: 0, scale: 0.9, x: offset.x, y: offset.y }
+						}
+						transition={prefersReducedMotion
+							? { duration: 0 }
+							: { duration: 0.25, ease: 'easeOut' }
+						}
 					>
 						{badge.pulse && (
 							<motion.div
 								className="h-1.5 w-1.5 rounded-full bg-cc-score-red"
-								animate={{ opacity: [1, 0.3, 1] }}
-								transition={{ duration: 1, repeat: Infinity }}
+								animate={prefersReducedMotion ? { opacity: 1 } : { opacity: [1, 0.3, 1] }}
+								transition={prefersReducedMotion ? { duration: 0 } : { duration: 1, repeat: Infinity }}
 							/>
 						)}
 						{badge.text}
@@ -593,10 +627,14 @@ function PracticeState() {
 					>
 						<Microphone size={18} weight="fill" />
 					</motion.div>
+					{/* F7 (W4 §C7): muted state lifted from rgba(100,116,139,0.8) on cc-foundation
+					 * (~2.88:1, failed AA) to rgba(148,163,184,0.85) on the composited pill bg
+					 * (~5.44:1, clears AA 4.5 with buffer). Preserves dimmer read vs the active
+					 * state (1.0 alpha, ~7.0:1) so the brighten-on-2C transition still carries. */}
 					<motion.span
 						className="text-[11px]"
 						animate={{
-							color: isRecordingPrompt ? 'rgba(148,163,184,1)' : 'rgba(100,116,139,0.8)',
+							color: isRecordingPrompt ? 'rgba(148,163,184,1)' : 'rgba(148,163,184,0.85)',
 						}}
 						transition={{ duration: 0.3 }}
 					>
@@ -1178,19 +1216,68 @@ function PhoneFrame({ activeIndex, children }: { activeIndex: number, children: 
 
 /* ─── Main Component ─────────────────────────────────────── */
 
+/* Directional state variants per W4 transition map.
+ * Each state carries its own enter/exit vocabulary matching the narrative beat
+ * for the transition it participates in:
+ *   0 TRAIN   : cinematic enter (scale 1.05 → 1) + exit-up (setup fades upward)
+ *   1 PRACTICE: enter-from-below (call scene materializes) + exit-left (roleplay recedes)
+ *   2 RECORD  : enter-from-right (live call from future) + contract-to-center
+ *   3 SCORE   : enter-from-center (verdict expands) + exit-up-fade (score rises out)
+ * Spring stiffness 250 damping 22 per motion-spec §1.2. Reduced-motion collapses
+ * all variants to an instant cut via the transition guard at render time. */
+const stateVariants = {
+	0: {
+		initial: { opacity: 0, scale: 1.05, x: 0, y: 0 },
+		animate: { opacity: 1, scale: 1, x: 0, y: 0 },
+		exit: { opacity: 0, y: -24, scale: 1, x: 0 },
+	},
+	1: {
+		initial: { opacity: 0, y: 24, scale: 1, x: 0 },
+		animate: { opacity: 1, y: 0, x: 0, scale: 1 },
+		exit: { opacity: 0, x: -24, scale: 1, y: 0 },
+	},
+	2: {
+		initial: { opacity: 0, x: 24, scale: 1, y: 0 },
+		animate: { opacity: 1, x: 0, y: 0, scale: 1 },
+		exit: { opacity: 0, scale: 0.92, x: 0, y: 0 },
+	},
+	3: {
+		initial: { opacity: 0, scale: 0.92, x: 0, y: 0 },
+		animate: { opacity: 1, scale: 1, x: 0, y: 0 },
+		exit: { opacity: 0, y: -16, scale: 1, x: 0 },
+	},
+} as const
+
+function directionFor(prev: number, curr: number): TransitionDirection {
+	if (prev === 0 && curr === 1) return 'down'
+	if (prev === 1 && curr === 2) return 'right'
+	if (prev === 2 && curr === 3) return 'center'
+	return 'loop'
+}
+
 export default function HeroPhoneV2() {
+	const prefersReducedMotion = useReducedMotion() ?? false
 	const [activeIndex, setActiveIndex] = useState(0)
+	const [direction, setDirection] = useState<TransitionDirection>('down')
 
 	useEffect(() => {
-		const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-		if (prefersReduced) return
+		if (prefersReducedMotion) return
 
 		const interval = setInterval(() => {
-			setActiveIndex((prev) => (prev + 1) % 4)
+			setActiveIndex((prev) => {
+				const next = (prev + 1) % 4
+				setDirection(directionFor(prev, next))
+				return next
+			})
 		}, CYCLE_MS)
 
 		return () => clearInterval(interval)
-	}, [])
+	}, [prefersReducedMotion])
+
+	const variants = stateVariants[activeIndex as 0 | 1 | 2 | 3]
+	const stateTransition = prefersReducedMotion
+		? { duration: 0 }
+		: { type: 'spring' as const, stiffness: 250, damping: 22 }
 
 	return (
 		<LayoutGroup>
@@ -1201,18 +1288,22 @@ export default function HeroPhoneV2() {
 				<div className="pointer-events-none absolute inset-[-5%]" style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.22) 0%, transparent 25%)' }} />
 
 				{/* Floating badges */}
-				<FloatingBadges activeIndex={activeIndex} />
+				<FloatingBadges activeIndex={activeIndex} direction={direction} prefersReducedMotion={prefersReducedMotion} />
 
 				{/* Phone */}
 				<PhoneFrame activeIndex={activeIndex}>
-					<AnimatePresence mode="wait">
+					{/* popLayout lets Motion pop the exiting state out of layout so the
+					 * entering state takes its place, preserving layoutId continuity on
+					 * prospect-avatar and prospect-name across 0→1→2 while still allowing
+					 * overlapping exit/enter for directional motion (no blank-gap swap). */}
+					<AnimatePresence mode="popLayout" initial={false}>
 						<motion.div
 							key={activeIndex}
 							className="absolute inset-x-0 top-8 bottom-8"
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							exit={{ opacity: 0 }}
-							transition={{ duration: 0.2 }}
+							initial={variants.initial}
+							animate={variants.animate}
+							exit={variants.exit}
+							transition={stateTransition}
 						>
 							{activeIndex === 0 && <TrainState />}
 							{activeIndex === 1 && <PracticeState />}
