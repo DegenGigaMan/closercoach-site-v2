@@ -12,8 +12,8 @@
 
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
-import { motion, AnimatePresence, LayoutGroup } from 'motion/react'
+import { useState, useEffect, useMemo } from 'react'
+import { motion, AnimatePresence, LayoutGroup, useReducedMotion } from 'motion/react'
 import Image from 'next/image'
 import { TypeAnimation } from 'react-type-animation'
 import {
@@ -359,117 +359,278 @@ function TrainState() {
 
 /* ─── State 2: PRACTICE ──────────────────────────────────── */
 
+/* Exchange schedule. Delays are seconds relative to entry into sub-state 2B. */
+type ExchangeEntry =
+	| { delay: number, kind: 'ai', id: string, text: string }
+	| { delay: number, kind: 'user', id: string, text: string }
+	| { delay: number, kind: 'chip', id: string, type: 'positive' | 'negative', label: string, anchor: 'user' }
+
+const EXCHANGE_SCHEDULE: readonly ExchangeEntry[] = [
+	{ delay: 0.0, kind: 'ai', id: 'ai-1', text: 'We already have a vendor we\u2019re comfortable with.' },
+	{ delay: 0.8, kind: 'user', id: 'user-1', text: 'I hear you. Switching feels risky. What would need to be true?' },
+	{ delay: 1.3, kind: 'chip', id: 'chip-1', type: 'positive', label: 'Strong objection pivot', anchor: 'user' },
+	{ delay: 1.8, kind: 'ai', id: 'ai-2', text: 'If you could show me real ROI numbers...' },
+	{ delay: 2.4, kind: 'user', id: 'user-2', text: 'Let me send over a case study after.' },
+	{ delay: 2.9, kind: 'chip', id: 'chip-2', type: 'negative', label: 'Missed The Mark', anchor: 'user' },
+] as const
+
+type PracticeSubState = 'connecting' | 'exchange' | 'recording-prompt'
+
 function PracticeState() {
+	const prefersReducedMotion = useReducedMotion()
+	const [subState, setSubState] = useState<PracticeSubState>(
+		prefersReducedMotion ? 'recording-prompt' : 'connecting',
+	)
+	const [timer, setTimer] = useState(prefersReducedMotion ? 33 : 0)
+	const [checkpointsFilled, setCheckpointsFilled] = useState(prefersReducedMotion ? 2 : 1)
+
+	useEffect(() => {
+		if (prefersReducedMotion) return
+
+		const timers: ReturnType<typeof setTimeout>[] = []
+
+		/* 2A dwell: 0 \u2192 1.0s. Timer ticks 0 \u2192 33 over 1.8s of visual count-up handled by NumberFlow. */
+		timers.push(setTimeout(() => setTimer(33), 80))
+
+		/* 2A \u2192 2B at 1.0s */
+		timers.push(setTimeout(() => setSubState('exchange'), 1000))
+
+		/* Checkpoint fill at moment positive chip fires: 1.0s (2B start) + 1.3s chip delay = 2.3s total */
+		timers.push(setTimeout(() => setCheckpointsFilled(2), 2300))
+
+		/* 2B \u2192 2C at 4.2s (1.0s entry + 2.9s schedule tail + 0.3s land buffer) */
+		timers.push(setTimeout(() => setSubState('recording-prompt'), 4200))
+
+		return () => timers.forEach(clearTimeout)
+	}, [prefersReducedMotion])
+
+	const isConnecting = subState === 'connecting'
+	const isRecordingPrompt = subState === 'recording-prompt'
+	const showExchange = subState === 'exchange' || subState === 'recording-prompt'
+
 	return (
-		<div className="flex h-full flex-col justify-between px-4 pb-4 pt-1">
+		<div className="flex h-full flex-col px-4 pb-4 pt-1">
 			{/* Top: Call Header */}
-			<div className="flex items-center gap-2.5 rounded-xl bg-cc-surface-elevated/60 px-3 py-2.5">
-				<motion.div layoutId="prospect-avatar" className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full">
+			<div className="flex items-center gap-2.5 rounded-xl border border-white/[0.08] bg-cc-surface/60 px-3 py-2.5">
+				<motion.div layoutId="prospect-avatar" className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full ring-1 ring-white/10">
 					<Image src={CAMIL_IMG} alt="Camil Reese" fill className="object-cover" sizes="28px" />
 				</motion.div>
 				<div className="flex items-center gap-1.5">
-					<span className="rounded bg-blue-500/20 px-1.5 py-0.5 text-[8px] font-bold text-blue-400">AI</span>
+					<span className="rounded bg-blue-500/20 px-1.5 py-[2px] text-[9px] font-bold text-blue-400 ring-1 ring-blue-400/20">AI</span>
 					<motion.div layoutId="prospect-name" className="text-[12px] font-medium text-white">Camil Reese</motion.div>
+					<motion.div
+						className="ml-0.5 h-1.5 w-1.5 rounded-full bg-cc-accent"
+						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: [0.4, 1, 0.4] }}
+						transition={prefersReducedMotion ? { duration: 0 } : { duration: 1, repeat: Infinity, ease: 'easeInOut' }}
+					/>
 				</div>
-				<span className="ml-auto font-[family-name:var(--font-mono)] text-[10px] text-cc-text-muted">00:33 / 10:00</span>
+				<div className="ml-auto flex items-center gap-1 font-[family-name:var(--font-mono)] text-[10px] text-cc-text-muted tabular-nums">
+					<NumberFlow
+						value={timer}
+						format={{ minimumIntegerDigits: 2 }}
+						prefix="00:"
+					/>
+					<span className="text-cc-text-muted/60">/ 10:00</span>
+				</div>
 			</div>
 
 			{/* Middle: Conversation */}
-			<div className="flex flex-1 flex-col gap-2 overflow-hidden py-3">
-				{/* AI message */}
-				<motion.div
-					className="mr-auto max-w-[88%] rounded-xl rounded-bl-sm border-l-2 border-cc-accent/30 bg-cc-surface-elevated px-3 py-2.5"
-					initial={{ opacity: 0, x: -10 }}
-					animate={{ opacity: 1, x: 0 }}
-					transition={{ duration: 0.25, delay: 0.15 }}
-				>
-					<p className="text-[12px] leading-relaxed text-cc-text-secondary">We already have a vendor we&rsquo;re comfortable with.</p>
-				</motion.div>
-
-				{/* User message + chip */}
-				<motion.div
-					className="ml-auto max-w-[88%]"
-					initial={{ opacity: 0, x: 10 }}
-					animate={{ opacity: 1, x: 0 }}
-					transition={{ duration: 0.25, delay: 0.5 }}
-				>
-					<div className="rounded-xl rounded-br-sm bg-cc-accent/20 px-3 py-2.5">
-						<p className="text-[12px] leading-relaxed text-white">I hear you. Switching feels risky. What would need to be true?</p>
-					</div>
+			<div className="relative flex flex-1 flex-col gap-2 overflow-hidden py-3">
+				{isConnecting && (
 					<motion.div
-						className="mt-1.5 flex items-center gap-1"
-						initial={{ opacity: 0, scale: 0.8 }}
-						animate={{ opacity: 1, scale: 1 }}
-						transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 0.9 }}
+						className="m-auto flex flex-col items-center gap-1.5 text-center"
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						transition={{ duration: 0.25 }}
 					>
-						<CheckCircle size={12} weight="fill" className="text-cc-accent" />
-						<span className="text-[10px] font-medium text-cc-accent">Strong objection pivot</span>
+						<motion.div
+							className="h-1.5 w-1.5 rounded-full bg-cc-accent/60"
+							animate={prefersReducedMotion ? { scale: 1 } : { scale: [1, 1.4, 1] }}
+							transition={prefersReducedMotion ? { duration: 0 } : { duration: 1.1, repeat: Infinity, ease: 'easeInOut' }}
+						/>
+						<span className="text-[10px] text-cc-text-muted">Connecting...</span>
 					</motion.div>
-				</motion.div>
+				)}
 
-				{/* AI follow-up */}
-				<motion.div
-					className="mr-auto max-w-[88%] rounded-xl rounded-bl-sm border-l-2 border-cc-accent/30 bg-cc-surface-elevated px-3 py-2.5"
-					initial={{ opacity: 0, x: -10 }}
-					animate={{ opacity: 1, x: 0 }}
-					transition={{ duration: 0.25, delay: 1.2 }}
-				>
-					<p className="text-[12px] leading-relaxed text-cc-text-secondary">If you could show me real ROI numbers...</p>
-				</motion.div>
-
-				{/* User miss */}
-				<motion.div
-					className="ml-auto max-w-[88%]"
-					initial={{ opacity: 0, x: 10 }}
-					animate={{ opacity: 1, x: 0 }}
-					transition={{ duration: 0.25, delay: 1.6 }}
-				>
-					<div className="rounded-xl rounded-br-sm bg-cc-accent/20 px-3 py-2.5">
-						<p className="text-[12px] leading-relaxed text-white">Let me send over a case study after.</p>
-					</div>
-					<motion.div
-						className="mt-1.5 flex items-center gap-1"
-						initial={{ opacity: 0, scale: 0.8 }}
-						animate={{ opacity: 1, scale: 1 }}
-						transition={{ type: 'spring', stiffness: 400, damping: 20, delay: 2.0 }}
-					>
-						<Warning size={12} weight="fill" className="text-cc-score-red" />
-						<span className="text-[10px] font-medium text-cc-score-red">Missed The Mark</span>
-					</motion.div>
-				</motion.div>
+				{showExchange && (
+					<AnimatePresence>
+						{EXCHANGE_SCHEDULE.map((entry) => {
+							if (entry.kind === 'ai') {
+								return (
+									<motion.div
+										key={entry.id}
+										className={`mr-auto max-w-[88%] rounded-2xl rounded-bl-sm border border-white/[0.08] bg-cc-surface-card/80 px-3.5 py-2.5 shadow-[0_4px_8px_rgba(0,0,0,0.35)] before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[2px] before:rounded-full before:bg-cc-accent/30 relative`}
+										initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, x: -14 }}
+										animate={{ opacity: 1, x: 0 }}
+										transition={prefersReducedMotion
+											? { duration: 0 }
+											: { type: 'spring', stiffness: 320, damping: 24, delay: entry.delay }
+										}
+									>
+										<p className="text-[12px] leading-[1.5] text-cc-text-secondary">{entry.text}</p>
+									</motion.div>
+								)
+							}
+							if (entry.kind === 'user') {
+								return (
+									<motion.div
+										key={entry.id}
+										className="ml-auto max-w-[88%] rounded-2xl rounded-br-sm border border-cc-accent/20 bg-cc-accent/15 px-3.5 py-2.5"
+										initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, x: 14 }}
+										animate={{ opacity: 1, x: 0 }}
+										transition={prefersReducedMotion
+											? { duration: 0 }
+											: { type: 'spring', stiffness: 320, damping: 24, delay: entry.delay }
+										}
+									>
+										<p className="text-[12px] leading-[1.5] text-white">{entry.text}</p>
+									</motion.div>
+								)
+							}
+							return (
+								<div key={entry.id} className="ml-auto">
+									<CoachingPill
+										type={entry.type}
+										label={entry.label}
+										delay={entry.delay}
+										prefersReducedMotion={!!prefersReducedMotion}
+									/>
+								</div>
+							)
+						})}
+					</AnimatePresence>
+				)}
 			</div>
 
 			{/* Bottom: Checkpoint + Mic Bar */}
-			<div>
+			<div className="flex flex-col gap-3">
 				<motion.div
-					className="mb-2.5 flex items-center justify-between px-1"
-					initial={{ opacity: 0 }}
+					className="flex items-center justify-between px-1"
+					initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
 					animate={{ opacity: 1 }}
-					transition={{ delay: 0.4 }}
+					transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.1, duration: 0.3 }}
 				>
 					<div className="flex items-center gap-2">
-						{[true, true, false].map((done, i) => (
-							<div key={i} className={`h-2.5 w-2.5 rounded-full border ${done ? 'border-cc-accent bg-cc-accent' : 'border-cc-text-muted/40'}`} />
-						))}
+						{[0, 1, 2].map((i) => {
+							const isComplete = i < checkpointsFilled
+							const isCurrent = i === checkpointsFilled
+							return (
+								<motion.div
+									key={i}
+									className="relative h-2.5 w-2.5 rounded-full"
+									animate={{
+										borderColor: isComplete || isCurrent ? 'rgba(16,185,129,1)' : 'rgba(255,255,255,0.15)',
+										borderWidth: isCurrent ? 2 : 1,
+									}}
+									transition={{ duration: 0.2 }}
+									style={{ borderStyle: 'solid' }}
+								>
+									<motion.div
+										className="absolute inset-[1px] rounded-full bg-cc-accent"
+										initial={false}
+										animate={{ scale: isComplete ? 1 : 0 }}
+										transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+									/>
+								</motion.div>
+							)
+						})}
 						<span className="ml-1 text-[10px] text-cc-text-muted">Checkpoints</span>
 					</div>
-					<span className="font-[family-name:var(--font-mono)] text-[11px] font-medium text-cc-amber">2/3</span>
+					<span className="font-[family-name:var(--font-mono)] text-[11px] font-medium text-cc-amber tabular-nums">
+						{checkpointsFilled}/3
+					</span>
 				</motion.div>
 
 				<motion.div
-					className="flex items-center gap-2.5 rounded-xl bg-cc-surface-elevated px-4 py-3"
-					initial={{ opacity: 0, y: 8 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ delay: 0.3, duration: 0.3 }}
+					className="flex items-center gap-2.5 rounded-xl border border-white/[0.06] px-4 py-3"
+					initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 8 }}
+					animate={{
+						opacity: 1,
+						y: 0,
+						backgroundColor: isRecordingPrompt ? 'rgba(30,34,48,1)' : 'rgba(26,29,38,0.6)',
+						boxShadow: isRecordingPrompt
+							? '0 0 20px rgba(16,185,129,0.15)'
+							: '0 0 0px rgba(16,185,129,0)',
+					}}
+					whileHover={prefersReducedMotion ? undefined : { scale: 1.01 }}
+					whileTap={prefersReducedMotion ? undefined : { scale: 0.99 }}
+					transition={prefersReducedMotion
+						? { duration: 0 }
+						: { delay: 0.15, duration: 0.35 }
+					}
 				>
-					<Microphone size={18} weight="fill" className="shrink-0 text-cc-accent" />
-					<span className="text-[11px] text-cc-text-muted">Record your response</span>
-					<div className="ml-auto flex-1">
+					<motion.div
+						animate={{ color: isRecordingPrompt ? 'rgba(16,185,129,1)' : 'rgba(16,185,129,0.4)' }}
+						transition={{ duration: 0.3 }}
+					>
+						<Microphone size={18} weight="fill" />
+					</motion.div>
+					<motion.span
+						className="text-[11px]"
+						animate={{
+							color: isRecordingPrompt ? 'rgba(148,163,184,1)' : 'rgba(100,116,139,0.8)',
+						}}
+						transition={{ duration: 0.3 }}
+					>
+						Record your response
+					</motion.span>
+					<motion.div
+						className="ml-auto flex-1"
+						animate={{ opacity: isRecordingPrompt ? 1 : 0.4 }}
+						transition={{ duration: 0.3 }}
+					>
 						<Waveform bars={20} height={18} mini />
-					</div>
+					</motion.div>
 				</motion.div>
 			</div>
 		</div>
+	)
+}
+
+/* Coaching pill used inside the PRACTICE exchange. Positive chips flash a one-time emerald glow on land. */
+function CoachingPill({ type, label, delay, prefersReducedMotion }: {
+	type: 'positive' | 'negative'
+	label: string
+	delay: number
+	prefersReducedMotion: boolean
+}) {
+	const [landed, setLanded] = useState(false)
+	const isPositive = type === 'positive'
+
+	return (
+		<motion.span
+			className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium ${isPositive
+				? 'border-cc-accent/30 bg-cc-accent/10 text-cc-accent'
+				: 'border-cc-score-red/30 bg-cc-score-red/10 text-cc-score-red'
+			}`}
+			initial={prefersReducedMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.85, y: -4 }}
+			animate={{
+				opacity: 1,
+				scale: 1,
+				y: 0,
+				boxShadow: isPositive && landed && !prefersReducedMotion
+					? [
+						'0 0 0px rgba(16,185,129,0)',
+						'0 0 10px rgba(16,185,129,0.45)',
+						'0 0 0px rgba(16,185,129,0)',
+					]
+					: '0 0 0px rgba(16,185,129,0)',
+			}}
+			transition={prefersReducedMotion
+				? { duration: 0 }
+				: { type: 'spring', stiffness: 500, damping: 24, delay, boxShadow: { duration: 0.6, ease: 'easeOut' } }
+			}
+			onAnimationComplete={() => {
+				if (!landed) setLanded(true)
+			}}
+		>
+			{isPositive
+				? <CheckCircle size={12} weight="fill" />
+				: <Warning size={12} weight="fill" />
+			}
+			{label}
+		</motion.span>
 	)
 }
 
