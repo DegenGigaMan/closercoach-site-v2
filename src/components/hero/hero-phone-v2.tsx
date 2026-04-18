@@ -880,71 +880,177 @@ function RecordState() {
 
 /* ─── State 4: SCORE ─────────────────────────────────────── */
 
+/* Sub-state machine native to SCORE's "verdict and analysis" narrative.
+ *  4A reveal   (0 - 1.6s): ring track fades in, amber arc draws, letter B lands with bounce,
+ *                          Top 15% badge pops. THE delight moment.
+ *  4B cascade  (1.6 - 4.2s): AI Coach card slides in, WPM card from left, Confident from right,
+ *                            Talk/Listen bar fades in then fills sequentially.
+ *  4C settled  (4.2 - 5.8s): Top 15% dot pulse + grade ring gentle opacity breath.
+ *
+ * Entry-frame flash fix (DD W1 §7.4): outer container opacity 0 to 1 over 180ms on mount,
+ * so no empty-ring-only frame is visible during the 3 to 4 crossfade.
+ *
+ * WCAG AA carry-forward: sub-descriptions raised from cc-text-muted (3.51:1) to
+ * cc-text-secondary (6.80:1). "Personalized feedback" subtitle raised from cc-accent/60
+ * (4.35:1) to cc-accent/75 (5.19:1). Icon tints raised from /70 to /85 for graphical 3:1. */
+
+type ScoreSubState = 'reveal' | 'cascade' | 'settled'
+
+const SCORE_RING_RADIUS = 50
+const SCORE_RING_CIRC = 2 * Math.PI * SCORE_RING_RADIUS
+const SCORE_TARGET = 80
+const SCORE_TALK_PCT = 64
+const SCORE_LISTEN_PCT = 36
+const SCORE_WPM = 211
+
 function ScoreState() {
-	const [animatedValue, setAnimatedValue] = useState(0)
+	const prefersReducedMotion = useReducedMotion()
+	const [subState, setSubState] = useState<ScoreSubState>(
+		prefersReducedMotion ? 'settled' : 'reveal',
+	)
+	const [ringDrawn, setRingDrawn] = useState(prefersReducedMotion)
+	const [talkPct, setTalkPct] = useState(prefersReducedMotion ? SCORE_TALK_PCT : 0)
+	const [listenPct, setListenPct] = useState(prefersReducedMotion ? SCORE_LISTEN_PCT : 0)
 
 	useEffect(() => {
-		const timer = setTimeout(() => setAnimatedValue(80), 300)
-		return () => clearTimeout(timer)
-	}, [])
+		if (prefersReducedMotion) return
+
+		const timers: ReturnType<typeof setTimeout>[] = []
+
+		/* Trigger the amber arc draw at t=+0.25s (after the track fade lands). */
+		timers.push(setTimeout(() => setRingDrawn(true), 250))
+
+		/* 4A reveal -> 4B cascade at 1.6s. Ring, letter, badge all settled. */
+		timers.push(setTimeout(() => setSubState('cascade'), 1600))
+
+		/* Talk/Listen percentages count up as the bars fill. Talk begins at t=+3.0s; Listen at t=+3.5s. */
+		timers.push(setTimeout(() => setTalkPct(SCORE_TALK_PCT), 3000))
+		timers.push(setTimeout(() => setListenPct(SCORE_LISTEN_PCT), 3500))
+
+		/* 4B cascade -> 4C settled at 4.2s. All analysis present; ambient motion begins. */
+		timers.push(setTimeout(() => setSubState('settled'), 4200))
+
+		return () => { timers.forEach(clearTimeout) }
+	}, [prefersReducedMotion])
+
+	const isSettled = subState === 'settled'
 
 	return (
-		<div className="flex h-full flex-col justify-between px-4 pb-4 pt-1">
-			{/* Top: Grade Ring */}
+		<motion.div
+			className="flex h-full flex-col justify-between px-4 pb-4 pt-1"
+			initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+			animate={{ opacity: 1 }}
+			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.18, ease: 'easeOut' }}
+		>
+			{/* Top: Top 15% badge + Grade Ring.
+			 *  Badge pops at t=+1.25s (after letter lands).
+			 *  Ring track fades in at t=0; amber arc draws from t=+0.25s over 1.0s.
+			 *  Letter B lands with bounce at t=+0.85s (ring ~60% drawn). */}
 			<div className="flex flex-col items-center pt-1">
 				<motion.div
 					className="mb-1.5 rounded-full border border-cc-accent/30 bg-cc-accent/10 px-3 py-1"
-					initial={{ opacity: 0, y: -8 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ delay: 0.6, duration: 0.3 }}
+					initial={prefersReducedMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+					animate={{ opacity: 1, scale: 1 }}
+					transition={prefersReducedMotion
+						? { duration: 0 }
+						: { type: 'spring', stiffness: 400, damping: 22, delay: 1.25 }
+					}
 				>
 					<span className="flex items-center gap-1.5 text-[10px] font-medium text-cc-accent">
-						<div className="h-1.5 w-1.5 rounded-full bg-cc-accent" />
+						<motion.span
+							className="block h-1.5 w-1.5 rounded-full bg-cc-accent"
+							animate={isSettled && !prefersReducedMotion
+								? { opacity: [1, 0.5, 1] }
+								: { opacity: 1 }
+							}
+							transition={isSettled && !prefersReducedMotion
+								? { duration: 1.8, repeat: Infinity, ease: 'easeInOut' }
+								: { duration: 0 }
+							}
+						/>
 						Top 15%
 					</span>
 				</motion.div>
 
 				<div className="relative flex items-center justify-center">
-					<svg width="120" height="120" viewBox="0 0 120 120">
-						<circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
+					<motion.svg
+						width="120"
+						height="120"
+						viewBox="0 0 120 120"
+						initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+						animate={isSettled && !prefersReducedMotion
+							? { opacity: [1, 0.9, 1] }
+							: { opacity: 1 }
+						}
+						transition={isSettled && !prefersReducedMotion
+							? { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }
+							: prefersReducedMotion
+								? { duration: 0 }
+								: { duration: 0.2, ease: 'easeOut' }
+						}
+					>
+						<circle
+							cx="60"
+							cy="60"
+							r={SCORE_RING_RADIUS}
+							fill="none"
+							stroke="rgba(255,255,255,0.06)"
+							strokeWidth="6"
+						/>
 						<motion.circle
-							cx="60" cy="60" r="50"
+							cx="60"
+							cy="60"
+							r={SCORE_RING_RADIUS}
 							fill="none"
 							stroke="#F59E0B"
 							strokeWidth="6"
 							strokeLinecap="round"
-							strokeDasharray={`${2 * Math.PI * 50}`}
-							strokeDashoffset={`${2 * Math.PI * 50}`}
+							strokeDasharray={`${SCORE_RING_CIRC}`}
+							initial={{ strokeDashoffset: SCORE_RING_CIRC }}
+							animate={{
+								strokeDashoffset: ringDrawn
+									? SCORE_RING_CIRC * (1 - SCORE_TARGET / 100)
+									: SCORE_RING_CIRC,
+							}}
+							transition={prefersReducedMotion
+								? { duration: 0 }
+								: { duration: 1.0, ease: 'easeOut' }
+							}
 							style={{ transformOrigin: '60px 60px', transform: 'rotate(-90deg)' }}
-							animate={{ strokeDashoffset: 2 * Math.PI * 50 * (1 - animatedValue / 100) }}
-							transition={{ duration: 1.2, delay: 0.3, ease: 'easeOut' }}
 						/>
-					</svg>
+					</motion.svg>
 					<motion.div
 						className="absolute flex flex-col items-center"
-						initial={{ opacity: 0, scale: 0.5 }}
+						initial={prefersReducedMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }}
 						animate={{ opacity: 1, scale: 1 }}
-						transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.8 }}
+						transition={prefersReducedMotion
+							? { duration: 0 }
+							: { type: 'spring', stiffness: 300, damping: 18, delay: 0.85 }
+						}
 					>
 						<span className="font-[family-name:var(--font-heading)] text-4xl text-cc-amber">B</span>
 					</motion.div>
 				</div>
 			</div>
 
-			{/* Middle: AI Coach Card */}
+			{/* Middle: AI Coach Card. Slides in at 4B entry (t=+1.6s) with dual shadow
+			 *  echoing State 1 CARD_SHADOW recipe. */}
 			<motion.div
-				className="rounded-xl border border-cc-accent/20 bg-cc-accent/8 p-3.5"
-				initial={{ opacity: 0, y: 16 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.4, delay: 1.2 }}
+				className="rounded-2xl border border-cc-accent/25 bg-cc-accent/8 p-3.5 shadow-[0_6px_14px_rgba(0,0,0,0.45),0_0_18px_rgba(16,185,129,0.10)]"
+				initial={prefersReducedMotion ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 16, scale: 0.98 }}
+				animate={{ opacity: 1, y: 0, scale: 1 }}
+				transition={prefersReducedMotion
+					? { duration: 0 }
+					: { type: 'spring', stiffness: 250, damping: 22, delay: 1.6 }
+				}
 			>
 				<div className="mb-2 flex items-center gap-2.5">
-					<div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full">
+					<div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full ring-1 ring-white/15">
 						<Image src={CAMIL_IMG} alt="AI Coach" fill className="object-cover" sizes="32px" />
 					</div>
 					<div>
 						<span className="text-[11px] font-medium text-cc-accent">AI Coach Says..</span>
-						<div className="text-[9px] text-cc-accent/60">Personalized feedback</div>
+						<div className="text-[9px] text-cc-text-secondary">Personalized feedback</div>
 					</div>
 				</div>
 				<p className="text-[12px] leading-relaxed text-cc-text-secondary">
@@ -952,54 +1058,75 @@ function ScoreState() {
 				</p>
 			</motion.div>
 
-			{/* Bottom: Stats + Talk/Listen */}
-			<motion.div
-				className="flex flex-col gap-2.5"
-				initial={{ opacity: 0 }}
-				animate={{ opacity: 1 }}
-				transition={{ delay: 1.6 }}
-			>
+			{/* Bottom: Stat cards + Talk/Listen bar.
+			 *  WPM slides from left at t=+2.2s. Confident slides from right at t=+2.4s.
+			 *  Talk/Listen fades in at t=+3.0s; bars fill sequentially (Talk then Listen). */}
+			<div className="flex flex-col gap-2.5">
 				<div className="flex gap-2">
-					<div className="flex flex-1 items-center gap-2.5 rounded-xl bg-cc-surface-elevated px-3 py-2.5">
-						<Timer size={16} weight="duotone" className="shrink-0 text-cc-score-red/70" />
+					<motion.div
+						className="flex flex-1 items-center gap-2.5 rounded-xl border border-white/[0.06] bg-cc-surface/60 px-3 py-2.5 shadow-[0_2px_6px_rgba(0,0,0,0.25)]"
+						initial={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -12 }}
+						animate={{ opacity: 1, x: 0 }}
+						transition={prefersReducedMotion
+							? { duration: 0 }
+							: { type: 'spring', stiffness: 300, damping: 22, delay: 2.2 }
+						}
+					>
+						<Timer size={16} weight="duotone" className="shrink-0 text-cc-score-red/85" />
 						<div>
 							<div className="font-[family-name:var(--font-mono)] text-[14px] font-medium text-white">
-								<NumberFlow value={211} />
-								<span className="ml-0.5 text-[10px] text-cc-text-muted">wpm</span>
+								<NumberFlow value={prefersReducedMotion ? SCORE_WPM : (subState === 'reveal' ? 0 : SCORE_WPM)} />
+								<span className="ml-0.5 text-[10px] text-cc-text-secondary">wpm</span>
 							</div>
-							<div className="text-[8px] text-cc-text-muted">Too fast during...</div>
+							<div className="text-[8px] text-cc-text-secondary">Too fast during...</div>
 						</div>
-					</div>
-					<div className="flex flex-1 items-center gap-2.5 rounded-xl bg-cc-surface-elevated px-3 py-2.5">
-						<Users size={16} weight="duotone" className="shrink-0 text-blue-400/70" />
+					</motion.div>
+					<motion.div
+						className="flex flex-1 items-center gap-2.5 rounded-xl border border-white/[0.06] bg-cc-surface/60 px-3 py-2.5 shadow-[0_2px_6px_rgba(0,0,0,0.25)]"
+						initial={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 12 }}
+						animate={{ opacity: 1, x: 0 }}
+						transition={prefersReducedMotion
+							? { duration: 0 }
+							: { type: 'spring', stiffness: 300, damping: 22, delay: 2.4 }
+						}
+					>
+						<Users size={16} weight="duotone" className="shrink-0 text-blue-400/90" />
 						<div>
 							<div className="text-[14px] font-medium text-white">Confident</div>
-							<div className="text-[8px] text-cc-text-muted">Directly answered</div>
+							<div className="text-[8px] text-cc-text-secondary">Directly answered</div>
 						</div>
-					</div>
+					</motion.div>
 				</div>
 
-				{/* Talk/Listen bar */}
-				<div className="flex items-center gap-2.5 rounded-xl bg-cc-surface-elevated px-3 py-2.5">
-					<span className="text-[10px] font-medium text-blue-400">64% Talk</span>
-					<div className="flex h-2.5 flex-1 overflow-hidden rounded-full">
+				<motion.div
+					className="flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-cc-surface/60 px-3 py-2.5 shadow-[0_2px_6px_rgba(0,0,0,0.25)]"
+					initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+					animate={{ opacity: 1 }}
+					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3, delay: 3.0 }}
+				>
+					<span className="font-[family-name:var(--font-mono)] text-[10px] font-medium tabular-nums text-blue-400">
+						<NumberFlow value={talkPct} suffix="% Talk" />
+					</span>
+					<div className="flex h-2.5 flex-1 overflow-hidden rounded-full bg-white/[0.05]">
 						<motion.div
-							className="h-full rounded-l-full bg-blue-400"
+							className="h-full bg-blue-400"
 							initial={{ width: '0%' }}
-							animate={{ width: '64%' }}
-							transition={{ duration: 0.8, delay: 1.8 }}
+							animate={{ width: `${talkPct}%` }}
+							transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.7, ease: 'easeOut' }}
 						/>
 						<motion.div
-							className="h-full rounded-r-full bg-cc-accent"
+							className="h-full bg-cc-accent"
 							initial={{ width: '0%' }}
-							animate={{ width: '36%' }}
-							transition={{ duration: 0.8, delay: 1.8 }}
+							animate={{ width: `${listenPct}%` }}
+							transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.7, ease: 'easeOut' }}
 						/>
 					</div>
-					<span className="text-[10px] font-medium text-cc-accent">36%</span>
-				</div>
-			</motion.div>
-		</div>
+					<span className="font-[family-name:var(--font-mono)] text-[10px] font-medium tabular-nums text-cc-accent">
+						<NumberFlow value={listenPct} suffix="%" />
+					</span>
+				</motion.div>
+			</div>
+		</motion.div>
 	)
 }
 
