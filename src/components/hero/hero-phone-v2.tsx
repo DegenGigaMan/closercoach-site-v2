@@ -165,36 +165,6 @@ function Waveform({ bars = 48, height = 80, mini = false, pulse = true }: { bars
 	)
 }
 
-/* ─── Coaching Chip ──────────────────────────────────────── */
-
-function CoachingChip({ type, text, timestamp, delay = 0 }: {
-	type: 'positive' | 'negative'
-	text: string
-	timestamp?: string
-	delay?: number
-}) {
-	const isPositive = type === 'positive'
-	return (
-		<motion.div
-			className={`flex items-center gap-2 rounded-xl border px-3.5 py-2.5 ${isPositive ? 'border-cc-accent/20 bg-cc-accent/8' : 'border-cc-score-red/20 bg-cc-score-red/8'}`}
-			initial={{ opacity: 0, x: 20, scale: 0.9 }}
-			animate={{ opacity: 1, x: 0, scale: 1 }}
-			transition={{ type: 'spring', stiffness: 300, damping: 20, delay }}
-		>
-			{isPositive
-				? <CheckCircle size={14} weight="fill" className="shrink-0 text-cc-accent" />
-				: <Warning size={14} weight="fill" className="shrink-0 text-cc-score-red" />
-			}
-			<span className={`flex-1 text-[11px] ${isPositive ? 'text-cc-accent' : 'text-cc-score-red'}`}>{text}</span>
-			{timestamp && (
-				<span className={`font-[family-name:var(--font-mono)] text-[9px] ${isPositive ? 'text-cc-accent/50' : 'text-cc-score-red/50'}`}>
-					{timestamp}
-				</span>
-			)}
-		</motion.div>
-	)
-}
-
 /* ─── State 1: TRAIN ─────────────────────────────────────── */
 
 const CHECKLIST_ITEMS = [
@@ -645,17 +615,20 @@ function PracticeState() {
 	)
 }
 
-/* Coaching pill used inside the PRACTICE exchange.
- * Structure: wrapper position root → glow layer (behind, positive only) + pill (foreground).
+/* Coaching pill: unified vocabulary for PRACTICE (S2) and RECORD (S3).
+ * Structure: wrapper position root, glow layer (behind, positive only), pill (foreground).
  * Isolation: pill carries spring physics only; glow layer owns its own keyframe animation.
  * Re-renders of the parent cannot re-trigger the glow because the pill's animate prop is stable.
  * Negative chips render without a glow layer (misses do not celebrate).
- * F1: negative chip uses text-red-400 (#F87171) on bg-cc-score-red/10 → contrast 6.17:1 (AA clean). */
-function CoachingPill({ type, label, delay, prefersReducedMotion }: {
+ * Optional `timestamp` prop renders a mono micro-stamp at the right edge, used by S3 RECORD
+ * to anchor each annotation to a moment in the live call.
+ * F1 (W1.1): negative chip uses text-red-400 (#F87171) on bg-cc-score-red/10, contrast 5.87:1 AA. */
+function CoachingPill({ type, label, delay, prefersReducedMotion, timestamp }: {
 	type: 'positive' | 'negative'
 	label: string
 	delay: number
 	prefersReducedMotion: boolean
+	timestamp?: string
 }) {
 	const [landed, setLanded] = useState(false)
 	const isPositive = type === 'positive'
@@ -664,6 +637,10 @@ function CoachingPill({ type, label, delay, prefersReducedMotion }: {
 		? 'border-cc-accent/30 bg-cc-accent/10 text-cc-accent'
 		: 'border-cc-score-red/30 bg-cc-score-red/10 text-red-400'
 	}`
+
+	/* Timestamp alpha raised to /85 to clear WCAG AA 4.5:1 over the composited pill backgrounds.
+	 * Measured: neg 4.73:1, pos 5.17:1 at /85 (vs 2.98 / 3.25 at /60 which failed AA). */
+	const timestampClass = `ml-1 font-[family-name:var(--font-mono)] text-[9px] tabular-nums ${isPositive ? 'text-cc-accent/85' : 'text-red-400/85'}`
 
 	return (
 		<span className="relative inline-flex">
@@ -699,6 +676,7 @@ function CoachingPill({ type, label, delay, prefersReducedMotion }: {
 					: <Warning size={12} weight="fill" />
 				}
 				{label}
+				{timestamp && <span className={timestampClass}>{timestamp}</span>}
 			</motion.span>
 		</span>
 	)
@@ -706,55 +684,194 @@ function CoachingPill({ type, label, delay, prefersReducedMotion }: {
 
 /* ─── State 3: RECORD ────────────────────────────────────── */
 
+/* Sub-state machine native to RECORD's "live real-world call being captured" narrative:
+ *  3A capture     (0 - 0.9s): REC indicator enters, timer starts ticking, waveform low-amplitude
+ *  3B annotation  (0.9 - 4.3s): waveform full pulse, negative chip + positive chip + transcript fire
+ *  3C end-ready   (4.3 - 5.8s): End Call button gains gentle attention (background breathing)
+ *
+ * Timer entry: starts at 163 (02:43) and ticks 1Hz across the window, landing at ~02:48.
+ * Reduced-motion branch: jumps to end-ready with all chips and transcript present, no animations. */
+type RecordSubState = 'capture' | 'annotation' | 'end-ready'
+
+const REC_TIMER_START = 163
+const REC_NEGATIVE_DELAY = 1.5
+const REC_POSITIVE_DELAY = 2.6
+const REC_TRANSCRIPT_DELAY = 3.2
+
+function formatRecordTimer(total: number) {
+	const minutes = Math.floor(total / 60)
+	const seconds = total % 60
+	return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+}
+
 function RecordState() {
+	const prefersReducedMotion = useReducedMotion()
+	const [subState, setSubState] = useState<RecordSubState>(
+		prefersReducedMotion ? 'end-ready' : 'capture',
+	)
+	const [timer, setTimer] = useState(prefersReducedMotion ? REC_TIMER_START + 5 : REC_TIMER_START)
+
+	useEffect(() => {
+		if (prefersReducedMotion) return
+
+		const timers: ReturnType<typeof setTimeout>[] = []
+		let tickInterval: ReturnType<typeof setInterval> | null = null
+
+		/* Tick from 3A entry through 3C; call feels live the whole window. */
+		tickInterval = setInterval(() => {
+			setTimer((prev) => (prev < 599 ? prev + 1 : prev))
+		}, 1000)
+
+		/* 3A to 3B at 0.9s: annotations begin; waveform graduates to full pulse. */
+		timers.push(setTimeout(() => setSubState('annotation'), 900))
+
+		/* 3B to 3C at 4.3s: End Call attention arc begins. */
+		timers.push(setTimeout(() => setSubState('end-ready'), 4300))
+
+		return () => {
+			timers.forEach(clearTimeout)
+			if (tickInterval) clearInterval(tickInterval)
+		}
+	}, [prefersReducedMotion])
+
+	const isCapture = subState === 'capture'
+	const isAnnotation = subState === 'annotation' || subState === 'end-ready'
+	const isEndReady = subState === 'end-ready'
+
 	return (
 		<div className="flex h-full flex-col justify-between px-4 pb-4 pt-1">
 			{/* Top: Compact header */}
 			<div className="flex items-center justify-between py-1">
-				<div className="flex items-center gap-2">
-					<motion.div
-						className="h-2.5 w-2.5 rounded-full bg-cc-score-red"
-						animate={{ opacity: [1, 0.3, 1] }}
-						transition={{ duration: 1.2, repeat: Infinity }}
-					/>
-					<span className="font-[family-name:var(--font-mono)] text-[11px] font-medium text-cc-score-red">REC</span>
-					<span className="font-[family-name:var(--font-mono)] text-[11px] text-cc-text-muted">02:47</span>
+				<div className="relative flex items-center gap-2">
+					<span className="relative inline-flex h-2.5 w-2.5">
+						{!prefersReducedMotion && (
+							<motion.span
+								aria-hidden="true"
+								className="absolute inset-0 rounded-full"
+								style={{ boxShadow: '0 0 8px rgba(239,68,68,0.55)' }}
+								animate={{ opacity: [0.45, 0.95, 0.45] }}
+								transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+							/>
+						)}
+						<motion.span
+							className="relative h-2.5 w-2.5 rounded-full bg-cc-score-red"
+							animate={prefersReducedMotion ? { opacity: 1 } : { opacity: [1, 0.45, 1] }}
+							transition={prefersReducedMotion
+								? { duration: 0 }
+								: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' }
+							}
+						/>
+					</span>
+					<span className="font-[family-name:var(--font-mono)] text-[11px] font-semibold tracking-[0.04em] text-red-400">REC</span>
+					<span className="font-[family-name:var(--font-mono)] text-[11px] text-cc-text-muted-warm tabular-nums">
+						{formatRecordTimer(timer)}
+					</span>
 				</div>
 				<div className="flex items-center gap-2">
-					<motion.div layoutId="prospect-avatar" className="relative h-6 w-6 shrink-0 overflow-hidden rounded-full">
+					<motion.div layoutId="prospect-avatar" className="relative h-6 w-6 shrink-0 overflow-hidden rounded-full ring-1 ring-white/10">
 						<Image src={CAMIL_IMG} alt="Camil Reese" fill className="object-cover" sizes="24px" />
 					</motion.div>
 					<motion.div layoutId="prospect-name" className="text-[11px] text-cc-text-secondary">Camil Reese</motion.div>
 				</div>
 			</div>
 
-			{/* Middle: LARGE Waveform (hero of this state) */}
+			{/* Middle: LARGE Waveform (hero of this state).
+			 *  3A: subtle scale-down to read as low-amplitude idle pulse
+			 *  3B/3C: full amplitude, voice in flight */}
 			<div className="flex flex-1 flex-col items-center justify-center py-3">
-				<Waveform bars={56} height={80} />
+				<motion.div
+					className="w-full"
+					initial={prefersReducedMotion ? { scaleY: 1, opacity: 1 } : { scaleY: 0.55, opacity: 0.6 }}
+					animate={{
+						scaleY: isCapture ? 0.55 : 1,
+						opacity: isCapture ? 0.6 : 1,
+					}}
+					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.55, ease: 'easeOut' }}
+					style={{ transformOrigin: 'center' }}
+				>
+					<Waveform bars={56} height={80} pulse={!prefersReducedMotion} />
+				</motion.div>
 			</div>
 
 			{/* Bottom: Annotations + Transcript + End Call */}
-			<div className="flex flex-col gap-2.5">
-				<CoachingChip type="negative" text="You let the prospect defer" timestamp="01:47" delay={0.8} />
-				<CoachingChip type="positive" text="Great discovery question" timestamp="02:13" delay={1.5} />
+			<div className="flex flex-col gap-2">
+				<AnimatePresence>
+					{isAnnotation && (
+						<motion.div
+							key="annotation-stack"
+							className="flex flex-col items-end gap-1.5"
+							initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+							animate={{ opacity: 1 }}
+							transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2 }}
+						>
+							<CoachingPill
+								type="negative"
+								label="You let the prospect defer"
+								timestamp="01:47"
+								delay={prefersReducedMotion ? 0 : REC_NEGATIVE_DELAY - 0.9}
+								prefersReducedMotion={!!prefersReducedMotion}
+							/>
+							<CoachingPill
+								type="positive"
+								label="Great discovery question"
+								timestamp="02:13"
+								delay={prefersReducedMotion ? 0 : REC_POSITIVE_DELAY - 0.9}
+								prefersReducedMotion={!!prefersReducedMotion}
+							/>
+						</motion.div>
+					)}
+				</AnimatePresence>
+
+				<AnimatePresence>
+					{isAnnotation && (
+						<motion.div
+							key="transcript"
+							className="px-1 text-[10px] italic leading-relaxed text-cc-text-muted-warm/85"
+							initial={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -8 }}
+							animate={{ opacity: 1, x: 0 }}
+							transition={prefersReducedMotion
+								? { duration: 0 }
+								: { type: 'spring', stiffness: 180, damping: 22, delay: REC_TRANSCRIPT_DELAY - 0.9 }
+							}
+						>
+							&ldquo;...it needs to actually drive revenue. Not just look nicer...&rdquo;
+						</motion.div>
+					)}
+				</AnimatePresence>
 
 				<motion.div
-					className="px-1 text-[10px] leading-relaxed text-cc-text-muted/30"
-					initial={{ opacity: 0 }}
-					animate={{ opacity: 1 }}
-					transition={{ delay: 1.0 }}
+					className="relative flex items-center justify-center gap-2 rounded-xl border border-cc-score-red/20 py-2.5"
+					initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+					animate={prefersReducedMotion
+						? {
+							opacity: 1,
+							y: 0,
+							backgroundColor: 'rgba(239,68,68,0.16)',
+							boxShadow: '0 0 0 rgba(239,68,68,0)',
+						}
+						: isEndReady
+							? {
+								opacity: 1,
+								y: 0,
+								backgroundColor: ['rgba(239,68,68,0.12)', 'rgba(239,68,68,0.20)', 'rgba(239,68,68,0.12)'],
+								boxShadow: ['0 0 0 rgba(239,68,68,0)', '0 0 14px rgba(239,68,68,0.28)', '0 0 0 rgba(239,68,68,0)'],
+							}
+							: {
+								opacity: 1,
+								y: 0,
+								backgroundColor: 'rgba(239,68,68,0.12)',
+								boxShadow: '0 0 0 rgba(239,68,68,0)',
+							}
+					}
+					transition={prefersReducedMotion
+						? { duration: 0 }
+						: isEndReady
+							? { duration: 1.4, repeat: Infinity, ease: 'easeInOut' }
+							: { duration: 0.35, delay: 0.2 }
+					}
 				>
-					&ldquo;...it needs to actually drive revenue. Not just look nicer...&rdquo;
-				</motion.div>
-
-				<motion.div
-					className="flex items-center justify-center gap-2 rounded-xl bg-cc-score-red/12 py-2.5"
-					initial={{ opacity: 0, y: 8 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ delay: 0.3, duration: 0.3 }}
-				>
-					<PhoneDisconnect size={16} weight="fill" className="text-cc-score-red" />
-					<span className="text-[12px] font-medium text-cc-score-red">End Call</span>
+					<PhoneDisconnect size={16} weight="fill" className="text-red-400" />
+					<span className="text-[12px] font-semibold text-red-400">End Call</span>
 				</motion.div>
 			</div>
 		</div>
