@@ -919,14 +919,18 @@ function RecordState() {
 /* ─── State 4: SCORE ─────────────────────────────────────── */
 
 /* Sub-state machine native to SCORE's "verdict and analysis" narrative.
- *  4A reveal   (0 - 1.6s): ring track fades in, amber arc draws, letter B lands with bounce,
- *                          Top 15% badge pops. THE delight moment.
- *  4B cascade  (1.6 - 4.2s): AI Coach card slides in, WPM card from left, Confident from right,
+ *  4A reveal   (0.2 - 1.8s): ring track fades in, amber arc draws, letter B lands with bounce,
+ *                            Top 15% badge pops. THE delight moment.
+ *  4B cascade  (1.8 - 4.4s): AI Coach card slides in, WPM card from left, Confident from right,
  *                            Talk/Listen bar fades in then fills sequentially.
- *  4C settled  (4.2 - 5.8s): Top 15% dot pulse + grade ring gentle opacity breath.
+ *  4C settled  (4.4 - 5.8s): Top 15% dot pulse + grade ring gentle opacity breath.
  *
  * Entry-frame flash fix (DD W1 §7.4): outer container opacity 0 to 1 over 180ms on mount,
  * so no empty-ring-only frame is visible during the 3 to 4 crossfade.
+ *
+ * W4.1 outer-fade gate (DD W4 Rec #1 Option A): entire reveal chain shifted forward by 200ms
+ * so the letter B spring bounce lands AFTER W4's 200ms directional enter window completes,
+ * restoring the W3 signature delight moment that the popLayout outer fade was obscuring.
  *
  * WCAG AA carry-forward: sub-descriptions raised from cc-text-muted (3.51:1) to
  * cc-text-secondary (6.80:1). "Personalized feedback" subtitle raised from cc-accent/60
@@ -955,18 +959,18 @@ function ScoreState() {
 
 		const timers: ReturnType<typeof setTimeout>[] = []
 
-		/* Trigger the amber arc draw at t=+0.25s (after the track fade lands). */
-		timers.push(setTimeout(() => setRingDrawn(true), 250))
+		/* Trigger the amber arc draw at t=+0.45s (after the outer directional fade lands). */
+		timers.push(setTimeout(() => setRingDrawn(true), 450))
 
-		/* 4A reveal -> 4B cascade at 1.6s. Ring, letter, badge all settled. */
-		timers.push(setTimeout(() => setSubState('cascade'), 1600))
+		/* 4A reveal -> 4B cascade at 1.8s. Ring, letter, badge all settled. */
+		timers.push(setTimeout(() => setSubState('cascade'), 1800))
 
-		/* Talk/Listen percentages count up as the bars fill. Talk begins at t=+3.0s; Listen at t=+3.5s. */
-		timers.push(setTimeout(() => setTalkPct(SCORE_TALK_PCT), 3000))
-		timers.push(setTimeout(() => setListenPct(SCORE_LISTEN_PCT), 3500))
+		/* Talk/Listen percentages count up as the bars fill. Talk begins at t=+3.2s; Listen at t=+3.7s. */
+		timers.push(setTimeout(() => setTalkPct(SCORE_TALK_PCT), 3200))
+		timers.push(setTimeout(() => setListenPct(SCORE_LISTEN_PCT), 3700))
 
-		/* 4B cascade -> 4C settled at 4.2s. All analysis present; ambient motion begins. */
-		timers.push(setTimeout(() => setSubState('settled'), 4200))
+		/* 4B cascade -> 4C settled at 4.4s. All analysis present; ambient motion begins. */
+		timers.push(setTimeout(() => setSubState('settled'), 4400))
 
 		return () => { timers.forEach(clearTimeout) }
 	}, [prefersReducedMotion])
@@ -981,9 +985,9 @@ function ScoreState() {
 			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.18, ease: 'easeOut' }}
 		>
 			{/* Top: Top 15% badge + Grade Ring.
-			 *  Badge pops at t=+1.25s (after letter lands).
-			 *  Ring track fades in at t=0; amber arc draws from t=+0.25s over 1.0s.
-			 *  Letter B lands with bounce at t=+0.85s (ring ~60% drawn). */}
+			 *  Badge pops at t=+1.45s (after letter lands).
+			 *  Ring track fades in at t=0; amber arc draws from t=+0.45s over 1.0s.
+			 *  Letter B lands with bounce at t=+1.05s (ring ~60% drawn, outer fade complete). */}
 			<div className="flex flex-col items-center pt-1">
 				<motion.div
 					className="mb-1.5 rounded-full border border-cc-accent/30 bg-cc-accent/10 px-3 py-1"
@@ -991,7 +995,7 @@ function ScoreState() {
 					animate={{ opacity: 1, scale: 1 }}
 					transition={prefersReducedMotion
 						? { duration: 0 }
-						: { type: 'spring', stiffness: 400, damping: 22, delay: 1.25 }
+						: { type: 'spring', stiffness: 400, damping: 22, delay: 1.45 }
 					}
 				>
 					<span className="flex items-center gap-1.5 text-[10px] font-medium text-cc-accent">
@@ -1063,7 +1067,7 @@ function ScoreState() {
 						animate={{ opacity: 1, scale: 1 }}
 						transition={prefersReducedMotion
 							? { duration: 0 }
-							: { type: 'spring', stiffness: 300, damping: 18, delay: 0.85 }
+							: { type: 'spring', stiffness: 300, damping: 18, delay: 1.05 }
 						}
 					>
 						<span className="font-[family-name:var(--font-heading)] text-4xl text-cc-amber">B</span>
@@ -1071,7 +1075,7 @@ function ScoreState() {
 				</div>
 			</div>
 
-			{/* Middle: AI Coach Card. Slides in at 4B entry (t=+1.6s) with dual shadow
+			{/* Middle: AI Coach Card. Slides in at 4B entry (t=+1.8s) with dual shadow
 			 *  echoing State 1 CARD_SHADOW recipe. */}
 			<motion.div
 				className="rounded-2xl border border-cc-accent/25 bg-cc-accent/8 p-3.5 shadow-[0_6px_14px_rgba(0,0,0,0.45),0_0_18px_rgba(16,185,129,0.10)]"
@@ -1079,7 +1083,7 @@ function ScoreState() {
 				animate={{ opacity: 1, y: 0, scale: 1 }}
 				transition={prefersReducedMotion
 					? { duration: 0 }
-					: { type: 'spring', stiffness: 250, damping: 22, delay: 1.6 }
+					: { type: 'spring', stiffness: 250, damping: 22, delay: 1.8 }
 				}
 			>
 				<div className="mb-2 flex items-center gap-2.5">
@@ -1097,8 +1101,8 @@ function ScoreState() {
 			</motion.div>
 
 			{/* Bottom: Stat cards + Talk/Listen bar.
-			 *  WPM slides from left at t=+2.2s. Confident slides from right at t=+2.4s.
-			 *  Talk/Listen fades in at t=+3.0s; bars fill sequentially (Talk then Listen). */}
+			 *  WPM slides from left at t=+2.4s. Confident slides from right at t=+2.6s.
+			 *  Talk/Listen fades in at t=+3.2s; bars fill sequentially (Talk then Listen). */}
 			<div className="flex flex-col gap-2.5">
 				<div className="flex gap-2">
 					<motion.div
@@ -1107,7 +1111,7 @@ function ScoreState() {
 						animate={{ opacity: 1, x: 0 }}
 						transition={prefersReducedMotion
 							? { duration: 0 }
-							: { type: 'spring', stiffness: 300, damping: 22, delay: 2.2 }
+							: { type: 'spring', stiffness: 300, damping: 22, delay: 2.4 }
 						}
 					>
 						<Timer size={16} weight="duotone" className="shrink-0 text-cc-score-red/85" />
@@ -1125,7 +1129,7 @@ function ScoreState() {
 						animate={{ opacity: 1, x: 0 }}
 						transition={prefersReducedMotion
 							? { duration: 0 }
-							: { type: 'spring', stiffness: 300, damping: 22, delay: 2.4 }
+							: { type: 'spring', stiffness: 300, damping: 22, delay: 2.6 }
 						}
 					>
 						<Users size={16} weight="duotone" className="shrink-0 text-blue-400/90" />
@@ -1140,7 +1144,7 @@ function ScoreState() {
 					className="flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-cc-surface/60 px-3 py-2.5 shadow-[0_2px_6px_rgba(0,0,0,0.25)]"
 					initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
 					animate={{ opacity: 1 }}
-					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3, delay: 3.0 }}
+					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3, delay: 3.2 }}
 				>
 					<span className="font-[family-name:var(--font-mono)] text-[10px] font-medium tabular-nums text-blue-400">
 						<NumberFlow value={talkPct} suffix="% Talk" />
