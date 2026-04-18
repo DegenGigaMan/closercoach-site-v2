@@ -124,12 +124,15 @@ function DotIndicator({ activeIndex }: { activeIndex: number }) {
 
 /* ─── Waveform ───────────────────────────────────────────── */
 
-function Waveform({ bars = 48, height = 80, mini = false }: { bars?: number, height?: number, mini?: boolean }) {
+function Waveform({ bars = 48, height = 80, mini = false, pulse = true }: { bars?: number, height?: number, mini?: boolean, pulse?: boolean }) {
+	const prefersReducedMotion = useReducedMotion()
 	const barData = useMemo(() =>
 		Array.from({ length: bars }).map((_, i) => {
 			const base = Math.sin(i * 0.3) * 0.5 + 0.5
 			return { base, phase: i * 0.15, speed: 1 + Math.random() * 0.6 }
 		}), [bars])
+
+	const shouldAnimate = pulse && !prefersReducedMotion
 
 	return (
 		<div className={`flex w-full items-center justify-center ${mini ? 'gap-[1px]' : 'gap-px'}`} style={{ height }}>
@@ -137,16 +140,25 @@ function Waveform({ bars = 48, height = 80, mini = false }: { bars?: number, hei
 				<motion.div
 					key={i}
 					className={`rounded-full bg-cc-accent ${mini ? 'w-[2px]' : 'w-[3px]'}`}
-					animate={{
-						height: [`${bar.base * height * 0.7}px`, `${bar.base * height * 0.25}px`, `${bar.base * height * 0.7}px`],
-						opacity: [0.5, 0.9, 0.5],
-					}}
-					transition={{
-						duration: bar.speed,
-						repeat: Infinity,
-						ease: 'easeInOut',
-						delay: bar.phase * 0.05,
-					}}
+					animate={shouldAnimate
+						? {
+							height: [`${bar.base * height * 0.7}px`, `${bar.base * height * 0.25}px`, `${bar.base * height * 0.7}px`],
+							opacity: [0.5, 0.9, 0.5],
+						}
+						: {
+							height: `${bar.base * height * 0.5}px`,
+							opacity: 0.7,
+						}
+					}
+					transition={shouldAnimate
+						? {
+							duration: bar.speed,
+							repeat: Infinity,
+							ease: 'easeInOut',
+							delay: bar.phase * 0.05,
+						}
+						: { duration: 0 }
+					}
 				/>
 			))}
 		</div>
@@ -374,6 +386,38 @@ const EXCHANGE_SCHEDULE: readonly ExchangeEntry[] = [
 	{ delay: 2.9, kind: 'chip', id: 'chip-2', type: 'negative', label: 'Missed The Mark', anchor: 'user' },
 ] as const
 
+/* Render-time grouping: fold each user bubble + its immediately-following chip entry into a
+ * single group so the chip anchors visually to the response it annotates. AI entries stay
+ * as their own groups. The flat EXCHANGE_SCHEDULE remains the authoritative schedule.
+ * F5 fix (W1.1, 2026-04-18). */
+type ExchangeGroup =
+	| { kind: 'ai', entry: Extract<ExchangeEntry, { kind: 'ai' }> }
+	| {
+		kind: 'user',
+		user: Extract<ExchangeEntry, { kind: 'user' }>,
+		chip: Extract<ExchangeEntry, { kind: 'chip' }> | null,
+	}
+
+const GROUPED_EXCHANGE: readonly ExchangeGroup[] = (() => {
+	const groups: ExchangeGroup[] = []
+	for (let i = 0; i < EXCHANGE_SCHEDULE.length; i++) {
+		const entry = EXCHANGE_SCHEDULE[i]
+		if (entry.kind === 'ai') {
+			groups.push({ kind: 'ai', entry })
+		} else if (entry.kind === 'user') {
+			const next = EXCHANGE_SCHEDULE[i + 1]
+			if (next && next.kind === 'chip') {
+				groups.push({ kind: 'user', user: entry, chip: next })
+				i++
+			} else {
+				groups.push({ kind: 'user', user: entry, chip: null })
+			}
+		}
+		/* Orphan chips (no preceding user) are skipped. Schedule authors it that way. */
+	}
+	return groups
+})()
+
 type PracticeSubState = 'connecting' | 'exchange' | 'recording-prompt'
 
 function PracticeState() {
@@ -388,12 +432,18 @@ function PracticeState() {
 		if (prefersReducedMotion) return
 
 		const timers: ReturnType<typeof setTimeout>[] = []
+		let tickInterval: ReturnType<typeof setInterval> | null = null
 
 		/* 2A dwell: 0 \u2192 1.0s. Timer ticks 0 \u2192 33 over 1.8s of visual count-up handled by NumberFlow. */
 		timers.push(setTimeout(() => setTimer(33), 80))
 
-		/* 2A \u2192 2B at 1.0s */
-		timers.push(setTimeout(() => setSubState('exchange'), 1000))
+		/* 2A \u2192 2B at 1.0s. Start the tick interval here so the timer feels live through 2B and 2C. */
+		timers.push(setTimeout(() => {
+			setSubState('exchange')
+			tickInterval = setInterval(() => {
+				setTimer((prev) => (prev < 599 ? prev + 1 : prev))
+			}, 1000)
+		}, 1000))
 
 		/* Checkpoint fill at moment positive chip fires: 1.0s (2B start) + 1.3s chip delay = 2.3s total */
 		timers.push(setTimeout(() => setCheckpointsFilled(2), 2300))
@@ -401,7 +451,10 @@ function PracticeState() {
 		/* 2B \u2192 2C at 4.2s (1.0s entry + 2.9s schedule tail + 0.3s land buffer) */
 		timers.push(setTimeout(() => setSubState('recording-prompt'), 4200))
 
-		return () => timers.forEach(clearTimeout)
+		return () => {
+			timers.forEach(clearTimeout)
+			if (tickInterval) clearInterval(tickInterval)
+		}
 	}, [prefersReducedMotion])
 
 	const isConnecting = subState === 'connecting'
@@ -455,12 +508,13 @@ function PracticeState() {
 
 				{showExchange && (
 					<AnimatePresence>
-						{EXCHANGE_SCHEDULE.map((entry) => {
-							if (entry.kind === 'ai') {
+						{GROUPED_EXCHANGE.map((group) => {
+							if (group.kind === 'ai') {
+								const entry = group.entry
 								return (
 									<motion.div
 										key={entry.id}
-										className={`mr-auto max-w-[88%] rounded-2xl rounded-bl-sm border border-white/[0.08] bg-cc-surface-card/80 px-3.5 py-2.5 shadow-[0_4px_8px_rgba(0,0,0,0.35)] before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[2px] before:rounded-full before:bg-cc-accent/30 relative`}
+										className="relative mr-auto max-w-[88%] rounded-2xl rounded-bl-sm border border-l-2 border-white/[0.08] border-l-cc-accent/50 bg-cc-surface-card/80 px-3.5 py-2.5 shadow-[0_4px_8px_rgba(0,0,0,0.35)]"
 										initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, x: -14 }}
 										animate={{ opacity: 1, x: 0 }}
 										transition={prefersReducedMotion
@@ -472,30 +526,33 @@ function PracticeState() {
 									</motion.div>
 								)
 							}
-							if (entry.kind === 'user') {
-								return (
+							/* User-bubble + trailing chip are rendered as a single grouped container so the chip
+							 * visually attaches to the response it annotates (stamp on THIS response, not a
+							 * separate banner row). The wrapper owns right-alignment; the chip uses mt-1 to
+							 * sit tight beneath the bubble. */
+							return (
+								<div key={group.user.id} className="ml-auto flex max-w-[88%] flex-col items-end">
 									<motion.div
-										key={entry.id}
-										className="ml-auto max-w-[88%] rounded-2xl rounded-br-sm border border-cc-accent/20 bg-cc-accent/15 px-3.5 py-2.5"
+										className="rounded-2xl rounded-br-sm border border-cc-accent/20 bg-cc-accent/15 px-3.5 py-2.5"
 										initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, x: 14 }}
 										animate={{ opacity: 1, x: 0 }}
 										transition={prefersReducedMotion
 											? { duration: 0 }
-											: { type: 'spring', stiffness: 320, damping: 24, delay: entry.delay }
+											: { type: 'spring', stiffness: 320, damping: 24, delay: group.user.delay }
 										}
 									>
-										<p className="text-[12px] leading-[1.5] text-white">{entry.text}</p>
+										<p className="text-[12px] leading-[1.5] text-white">{group.user.text}</p>
 									</motion.div>
-								)
-							}
-							return (
-								<div key={entry.id} className="ml-auto">
-									<CoachingPill
-										type={entry.type}
-										label={entry.label}
-										delay={entry.delay}
-										prefersReducedMotion={!!prefersReducedMotion}
-									/>
+									{group.chip && (
+										<div className="mt-1">
+											<CoachingPill
+												type={group.chip.type}
+												label={group.chip.label}
+												delay={group.chip.delay}
+												prefersReducedMotion={!!prefersReducedMotion}
+											/>
+										</div>
+									)}
 								</div>
 							)
 						})}
@@ -580,7 +637,7 @@ function PracticeState() {
 						animate={{ opacity: isRecordingPrompt ? 1 : 0.4 }}
 						transition={{ duration: 0.3 }}
 					>
-						<Waveform bars={20} height={18} mini />
+						<Waveform bars={20} height={18} mini pulse={isRecordingPrompt} />
 					</motion.div>
 				</motion.div>
 			</div>
@@ -588,7 +645,12 @@ function PracticeState() {
 	)
 }
 
-/* Coaching pill used inside the PRACTICE exchange. Positive chips flash a one-time emerald glow on land. */
+/* Coaching pill used inside the PRACTICE exchange.
+ * Structure: wrapper position root → glow layer (behind, positive only) + pill (foreground).
+ * Isolation: pill carries spring physics only; glow layer owns its own keyframe animation.
+ * Re-renders of the parent cannot re-trigger the glow because the pill's animate prop is stable.
+ * Negative chips render without a glow layer (misses do not celebrate).
+ * F1: negative chip uses text-red-400 (#F87171) on bg-cc-score-red/10 → contrast 6.17:1 (AA clean). */
 function CoachingPill({ type, label, delay, prefersReducedMotion }: {
 	type: 'positive' | 'negative'
 	label: string
@@ -598,39 +660,47 @@ function CoachingPill({ type, label, delay, prefersReducedMotion }: {
 	const [landed, setLanded] = useState(false)
 	const isPositive = type === 'positive'
 
+	const pillClass = `relative inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium ${isPositive
+		? 'border-cc-accent/30 bg-cc-accent/10 text-cc-accent'
+		: 'border-cc-score-red/30 bg-cc-score-red/10 text-red-400'
+	}`
+
 	return (
-		<motion.span
-			className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium ${isPositive
-				? 'border-cc-accent/30 bg-cc-accent/10 text-cc-accent'
-				: 'border-cc-score-red/30 bg-cc-score-red/10 text-cc-score-red'
-			}`}
-			initial={prefersReducedMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.85, y: -4 }}
-			animate={{
-				opacity: 1,
-				scale: 1,
-				y: 0,
-				boxShadow: isPositive && landed && !prefersReducedMotion
-					? [
-						'0 0 0px rgba(16,185,129,0)',
-						'0 0 10px rgba(16,185,129,0.45)',
-						'0 0 0px rgba(16,185,129,0)',
-					]
-					: '0 0 0px rgba(16,185,129,0)',
-			}}
-			transition={prefersReducedMotion
-				? { duration: 0 }
-				: { type: 'spring', stiffness: 500, damping: 24, delay, boxShadow: { duration: 0.6, ease: 'easeOut' } }
-			}
-			onAnimationComplete={() => {
-				if (!landed) setLanded(true)
-			}}
-		>
-			{isPositive
-				? <CheckCircle size={12} weight="fill" />
-				: <Warning size={12} weight="fill" />
-			}
-			{label}
-		</motion.span>
+		<span className="relative inline-flex">
+			{isPositive && landed && !prefersReducedMotion && (
+				<motion.span
+					aria-hidden="true"
+					className="pointer-events-none absolute inset-0 rounded-full"
+					initial={{ boxShadow: '0 0 0px rgba(16,185,129,0)' }}
+					animate={{
+						boxShadow: [
+							'0 0 0px rgba(16,185,129,0)',
+							'0 0 10px rgba(16,185,129,0.45)',
+							'0 0 0px rgba(16,185,129,0)',
+						],
+					}}
+					transition={{ duration: 0.6, ease: 'easeOut' }}
+				/>
+			)}
+			<motion.span
+				className={pillClass}
+				initial={prefersReducedMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.85, y: -4 }}
+				animate={{ opacity: 1, scale: 1, y: 0 }}
+				transition={prefersReducedMotion
+					? { duration: 0 }
+					: { type: 'spring', stiffness: 500, damping: 24, delay }
+				}
+				onAnimationComplete={() => {
+					if (!landed) setLanded(true)
+				}}
+			>
+				{isPositive
+					? <CheckCircle size={12} weight="fill" />
+					: <Warning size={12} weight="fill" />
+				}
+				{label}
+			</motion.span>
+		</span>
 	)
 }
 
