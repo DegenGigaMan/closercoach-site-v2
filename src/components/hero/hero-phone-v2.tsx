@@ -158,7 +158,7 @@ function DotIndicator({ activeIndex }: { activeIndex: number }) {
 
 /* ─── Waveform ───────────────────────────────────────────── */
 
-function Waveform({ bars = 48, height = 80, mini = false, pulse = true }: { bars?: number, height?: number, mini?: boolean, pulse?: boolean }) {
+function Waveform({ bars = 48, height = 80, mini = false, pulse = true, ducked = false }: { bars?: number, height?: number, mini?: boolean, pulse?: boolean, ducked?: boolean }) {
 	const prefersReducedMotion = useReducedMotion()
 	const barData = useMemo(() =>
 		Array.from({ length: bars }).map((_, i) => {
@@ -167,9 +167,22 @@ function Waveform({ bars = 48, height = 80, mini = false, pulse = true }: { bars
 		}), [bars])
 
 	const shouldAnimate = pulse && !prefersReducedMotion
+	/* F3 (W5 §F3): amplitude duck on chip fire in S3 RECORD. When ducked=true,
+	 * bars shrink to 0.5 scale for ~200ms creating a causal link between the
+	 * audio event and the coaching annotation. Reduced-motion suppresses the duck. */
+	const shouldDuck = ducked && !prefersReducedMotion
 
 	return (
-		<div className={`flex w-full items-center justify-center ${mini ? 'gap-[1px]' : 'gap-px'}`} style={{ height }}>
+		<div
+			className={`flex w-full items-center justify-center transition-transform ${mini ? 'gap-[1px]' : 'gap-px'}`}
+			style={{
+				height,
+				transform: shouldDuck ? 'scaleY(0.5)' : 'scaleY(1)',
+				transformOrigin: 'center',
+				transitionDuration: shouldDuck ? '80ms' : '120ms',
+				transitionTimingFunction: 'ease-out',
+			}}
+		>
 			{barData.map((bar, i) => (
 				<motion.div
 					key={i}
@@ -493,6 +506,15 @@ function PracticeState() {
 
 			{/* Middle: Conversation */}
 			<div className="relative flex flex-1 flex-col gap-2 overflow-hidden py-3">
+				{/* F1 (W5 §F1): scroll-affordance hint. 24px static gradient fade at
+				 * top implies more conversation exists above the viewport during 2B/2C.
+				 * Static so reduced-motion safe. Only renders when messages are visible. */}
+				{showExchange && (
+					<div
+						aria-hidden="true"
+						className="pointer-events-none absolute left-0 right-0 top-0 z-10 h-6 bg-gradient-to-b from-cc-foundation to-transparent"
+					/>
+				)}
 				{isConnecting && (
 					<motion.div
 						className="m-auto flex flex-col items-center gap-1.5 text-center"
@@ -614,8 +636,6 @@ function PracticeState() {
 							? '0 0 20px rgba(16,185,129,0.15)'
 							: '0 0 0px rgba(16,185,129,0)',
 					}}
-					whileHover={prefersReducedMotion ? undefined : { scale: 1.01 }}
-					whileTap={prefersReducedMotion ? undefined : { scale: 0.99 }}
 					transition={prefersReducedMotion
 						? { duration: 0 }
 						: { delay: 0.15, duration: 0.35 }
@@ -671,7 +691,10 @@ function CoachingPill({ type, label, delay, prefersReducedMotion, timestamp }: {
 	const [landed, setLanded] = useState(false)
 	const isPositive = type === 'positive'
 
-	const pillClass = `relative inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium ${isPositive
+	/* F2 (W5 §F2): micro-lift on chip real-estate. Font size 10px -> 11px reads as
+	 * more deliberate weight; glow intensity + duration lift (below) makes the
+	 * signature moment perceptually more present without restructuring placement. */
+	const pillClass = `relative inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium ${isPositive
 		? 'border-cc-accent/30 bg-cc-accent/10 text-cc-accent'
 		: 'border-cc-score-red/30 bg-cc-score-red/10 text-red-400'
 	}`
@@ -690,11 +713,11 @@ function CoachingPill({ type, label, delay, prefersReducedMotion, timestamp }: {
 					animate={{
 						boxShadow: [
 							'0 0 0px rgba(16,185,129,0)',
-							'0 0 10px rgba(16,185,129,0.45)',
+							'0 0 14px rgba(16,185,129,0.60)',
 							'0 0 0px rgba(16,185,129,0)',
 						],
 					}}
-					transition={{ duration: 0.6, ease: 'easeOut' }}
+					transition={{ duration: 0.9, ease: 'easeOut' }}
 				/>
 			)}
 			<motion.span
@@ -748,6 +771,10 @@ function RecordState() {
 		prefersReducedMotion ? 'end-ready' : 'capture',
 	)
 	const [timer, setTimer] = useState(prefersReducedMotion ? REC_TIMER_START + 5 : REC_TIMER_START)
+	/* F3 (W5 §F3): waveform amplitude duck on chip fire. Transient boolean set
+	 * true for 200ms at each chip's landing moment, creating a causal link between
+	 * the audio event and the coaching annotation. Reduced-motion skips. */
+	const [waveformDucked, setWaveformDucked] = useState(false)
 
 	useEffect(() => {
 		if (prefersReducedMotion) return
@@ -762,6 +789,14 @@ function RecordState() {
 
 		/* 3A to 3B at 0.9s: annotations begin; waveform graduates to full pulse. */
 		timers.push(setTimeout(() => setSubState('annotation'), 900))
+
+		/* F3: duck on negative chip landing (900ms + REC_NEGATIVE_DELAY-0.9 delay = 1500ms). */
+		timers.push(setTimeout(() => setWaveformDucked(true), 1500))
+		timers.push(setTimeout(() => setWaveformDucked(false), 1700))
+
+		/* F3: duck on positive chip landing (900ms + REC_POSITIVE_DELAY-0.9 delay = 2600ms). */
+		timers.push(setTimeout(() => setWaveformDucked(true), 2600))
+		timers.push(setTimeout(() => setWaveformDucked(false), 2800))
 
 		/* 3B to 3C at 4.3s: End Call attention arc begins. */
 		timers.push(setTimeout(() => setSubState('end-ready'), 4300))
@@ -827,7 +862,7 @@ function RecordState() {
 					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.55, ease: 'easeOut' }}
 					style={{ transformOrigin: 'center' }}
 				>
-					<Waveform bars={56} height={80} pulse={!prefersReducedMotion} />
+					<Waveform bars={56} height={80} pulse={!prefersReducedMotion} ducked={waveformDucked} />
 				</motion.div>
 			</div>
 
@@ -1095,8 +1130,11 @@ function ScoreState() {
 						<div className="text-[9px] text-cc-text-secondary">Personalized feedback</div>
 					</div>
 				</div>
+				{/* F4 (W5 §F4): copy references the timestamped coaching events surfaced in
+				 * S3 RECORD (01:47 negative, 02:13 positive) so the AI Coach summary proves
+				 * the system actually saw the call. Hyphens only, no em dashes. */}
 				<p className="text-[12px] leading-relaxed text-cc-text-secondary">
-					You addressed risks clearly and secured next steps but could probe more on their team&rsquo;s concerns.
+					Great discovery question at 02:13, you opened space. At 01:47 you let the prospect defer, redirect earlier next call.
 				</p>
 			</motion.div>
 
@@ -1120,7 +1158,7 @@ function ScoreState() {
 								<NumberFlow value={prefersReducedMotion ? SCORE_WPM : (subState === 'reveal' ? 0 : SCORE_WPM)} />
 								<span className="ml-0.5 text-[10px] text-cc-text-secondary">wpm</span>
 							</div>
-							<div className="text-[8px] text-cc-text-secondary">Too fast during...</div>
+							<div className="text-[8px] text-cc-text-secondary">Too fast during rebuttal</div>
 						</div>
 					</motion.div>
 					<motion.div
@@ -1135,7 +1173,7 @@ function ScoreState() {
 						<Users size={16} weight="duotone" className="shrink-0 text-blue-400/90" />
 						<div>
 							<div className="text-[14px] font-medium text-white">Confident</div>
-							<div className="text-[8px] text-cc-text-secondary">Directly answered</div>
+							<div className="text-[8px] text-cc-text-secondary">Directly answered pushback</div>
 						</div>
 					</motion.div>
 				</div>

@@ -26,7 +26,7 @@ function CharacterCard() {
 			</div>
 			<div className="flex items-center gap-2">
 				<span className="text-[10px] text-cc-text-secondary">Difficulty</span>
-				<div className="h-1.5 flex-1 overflow-hidden rounded-full bg-cc-surface-elevated">
+				<div className="h-1.5 flex-1 overflow-hidden rounded-full bg-cc-surface/60">
 					<div className="h-full w-4/5 rounded-full bg-cc-accent" />
 				</div>
 				<span className="font-[family-name:var(--font-mono)] text-[10px] text-cc-accent">Hard</span>
@@ -79,7 +79,7 @@ function PhoneMockupStatic() {
 							<Warning size={14} weight="bold" />
 							<span>Missed The Mark</span>
 						</div>
-						<div className="rounded-lg border border-cc-surface-border bg-cc-surface-elevated p-3">
+						<div className="rounded-lg border border-cc-surface-border bg-cc-surface/60 p-3">
 							<div className="mb-2 text-[10px] text-cc-text-secondary">0:47 - Objection Handling</div>
 							<div className="text-xs text-white">&ldquo;Let me check with my team...&rdquo;</div>
 						</div>
@@ -87,7 +87,7 @@ function PhoneMockupStatic() {
 							<div className="text-[10px] font-medium text-[#EF4444]">You let the prospect defer.</div>
 							<div className="mt-1 text-[10px] text-cc-text-secondary">Try: isolate the real objection first.</div>
 						</div>
-						<div className="mt-1 rounded-lg border border-cc-surface-border bg-cc-surface-elevated p-3">
+						<div className="mt-1 rounded-lg border border-cc-surface-border bg-cc-surface/60 p-3">
 							<div className="mb-2 text-[10px] text-cc-text-secondary">1:23 - Discovery</div>
 							<div className="text-xs text-white">&ldquo;What&rsquo;s your current process?&rdquo;</div>
 						</div>

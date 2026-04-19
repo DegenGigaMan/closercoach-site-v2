@@ -24,10 +24,10 @@ function TrainingContent() {
 				<Globe size={14} weight="bold" className="text-cc-accent" />
 				<span>Training AI...</span>
 			</div>
-			<div className="rounded-lg border border-cc-surface-border bg-cc-surface-elevated px-3 py-2">
+			<div className="rounded-lg border border-cc-surface-border bg-cc-surface/60 px-3 py-2">
 				<span className="text-xs text-cc-text-secondary">https://yoursite.com</span>
 			</div>
-			<div className="h-2 w-full overflow-hidden rounded-full bg-cc-surface-elevated">
+			<div className="h-2 w-full overflow-hidden rounded-full bg-cc-surface/60">
 				<motion.div
 					className="h-full rounded-full bg-cc-accent"
 					initial={{ width: '0%' }}
@@ -51,7 +51,7 @@ function RoleplayContent() {
 				<div className="ml-auto max-w-[75%] rounded-xl rounded-br-sm bg-cc-accent px-3 py-2 text-xs text-white">
 					What sets your solution apart?
 				</div>
-				<div className="mr-auto max-w-[75%] rounded-xl rounded-bl-sm bg-cc-surface-elevated px-3 py-2 text-xs text-cc-text-secondary">
+				<div className="mr-auto max-w-[75%] rounded-xl rounded-bl-sm bg-cc-surface/60 px-3 py-2 text-xs text-cc-text-secondary">
 					We reduce onboarding time by 60%.
 				</div>
 				<div className="ml-auto max-w-[75%] rounded-xl rounded-br-sm bg-cc-accent px-3 py-2 text-xs text-white">
@@ -69,7 +69,7 @@ function AnnotationContent() {
 				<Warning size={14} weight="bold" />
 				<span>Missed The Mark</span>
 			</div>
-			<div className="rounded-lg border border-cc-surface-border bg-cc-surface-elevated p-3">
+			<div className="rounded-lg border border-cc-surface-border bg-cc-surface/60 p-3">
 				<div className="mb-2 text-[10px] text-cc-text-secondary">0:47 - Objection Handling</div>
 				<div className="text-xs text-white">&ldquo;Let me check with my team...&rdquo;</div>
 			</div>
@@ -99,7 +99,7 @@ function ScorecardContent() {
 				].map((m) => (
 					<div key={m.label} className="flex items-center gap-2">
 						<span className="w-20 text-[10px] text-cc-text-secondary">{m.label}</span>
-						<div className="h-1.5 flex-1 overflow-hidden rounded-full bg-cc-surface-elevated">
+						<div className="h-1.5 flex-1 overflow-hidden rounded-full bg-cc-surface/60">
 							<div
 								className="h-full rounded-full bg-cc-accent"
 								style={{ width: `${m.score}%` }}

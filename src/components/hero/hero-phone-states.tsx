@@ -36,7 +36,7 @@ export function HeroStateTraining() {
 	return (
 		<div className="flex flex-col gap-3 px-4 pb-3 pt-1">
 			{/* URL Input */}
-			<div className="rounded-lg border border-cc-surface-border bg-cc-surface-elevated px-3 py-2.5">
+			<div className="rounded-lg border border-cc-surface-border bg-cc-surface/60 px-3 py-2.5">
 				<div className="mb-1 text-[10px] font-medium text-cc-text-muted">What do you sell?</div>
 				<div className="flex items-center gap-2">
 					<Globe size={12} className="shrink-0 text-cc-accent" weight="bold" />
@@ -57,7 +57,7 @@ export function HeroStateTraining() {
 				</motion.div>
 
 				{/* Progress bar */}
-				<div className="h-1.5 w-full overflow-hidden rounded-full bg-cc-surface-elevated">
+				<div className="h-1.5 w-full overflow-hidden rounded-full bg-cc-surface/60">
 					<motion.div
 						className="h-full rounded-full bg-cc-accent"
 						initial={{ width: '0%' }}
@@ -120,7 +120,7 @@ export function HeroStatePractice() {
 	return (
 		<div className="flex flex-col gap-2 px-3 pb-3 pt-1">
 			{/* Call header */}
-			<div className="flex items-center justify-center gap-2 rounded-lg bg-cc-surface-elevated/60 px-3 py-1.5">
+			<div className="flex items-center justify-center gap-2 rounded-lg bg-cc-surface/60 px-3 py-1.5">
 				<div className="flex h-5 w-5 items-center justify-center rounded-full bg-cc-accent/20">
 					<UserCircle size={14} className="text-cc-accent" weight="fill" />
 				</div>
@@ -135,7 +135,7 @@ export function HeroStatePractice() {
 			<div className="flex flex-col gap-1.5">
 				{/* AI prospect message */}
 				<motion.div
-					className="mr-auto max-w-[85%] rounded-xl rounded-bl-sm bg-cc-surface-elevated px-2.5 py-2"
+					className="mr-auto max-w-[85%] rounded-xl rounded-bl-sm bg-cc-surface/60 px-2.5 py-2"
 					initial={{ opacity: 0, x: -10 }}
 					animate={{ opacity: 1, x: 0 }}
 					transition={{ duration: 0.3, delay: 0.2 }}
@@ -171,7 +171,7 @@ export function HeroStatePractice() {
 
 				{/* AI follow-up */}
 				<motion.div
-					className="mr-auto max-w-[85%] rounded-xl rounded-bl-sm bg-cc-surface-elevated px-2.5 py-2"
+					className="mr-auto max-w-[85%] rounded-xl rounded-bl-sm bg-cc-surface/60 px-2.5 py-2"
 					initial={{ opacity: 0, x: -10 }}
 					animate={{ opacity: 1, x: 0 }}
 					transition={{ duration: 0.3, delay: 1.4 }}
@@ -207,7 +207,7 @@ export function HeroStatePractice() {
 
 			{/* Checkpoint counter */}
 			<motion.div
-				className="flex items-center justify-between rounded-lg bg-cc-surface-elevated/40 px-3 py-1.5"
+				className="flex items-center justify-between rounded-lg bg-cc-surface/40 px-3 py-1.5"
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				transition={{ delay: 0.8 }}
@@ -351,7 +351,7 @@ export function HeroStateScore() {
 
 			{/* AI Coach Says */}
 			<motion.div
-				className="w-full rounded-lg border border-cc-surface-border bg-cc-surface-elevated/60 p-2.5"
+				className="w-full rounded-lg border border-cc-surface-border bg-cc-surface/60 p-2.5"
 				initial={{ opacity: 0, y: 12 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.4, delay: 1.5 }}
@@ -374,11 +374,11 @@ export function HeroStateScore() {
 				animate={{ opacity: 1 }}
 				transition={{ delay: 1.8 }}
 			>
-				<div className="flex-1 rounded-md bg-cc-surface-elevated/40 px-2 py-1.5 text-center">
+				<div className="flex-1 rounded-md bg-cc-surface/40 px-2 py-1.5 text-center">
 					<div className="font-[family-name:var(--font-mono)] text-[11px] text-white">211</div>
 					<div className="text-[7px] text-cc-text-muted">WPM</div>
 				</div>
-				<div className="flex-1 rounded-md bg-cc-surface-elevated/40 px-2 py-1.5 text-center">
+				<div className="flex-1 rounded-md bg-cc-surface/40 px-2 py-1.5 text-center">
 					<div className="font-[family-name:var(--font-mono)] text-[11px] text-white">64/36</div>
 					<div className="text-[7px] text-cc-text-muted">Talk/Listen</div>
 				</div>
