@@ -52,19 +52,16 @@ export default function SectionHero() {
 	const glowParallax = useTransform(scrollY, [0, 800], [0, -30])
 	const l1Parallax = useTransform(scrollY, [0, 800], [0, -15])
 
-	/* Shared entrance config. Reduced-motion collapses to instant visibility. */
-	const enter = (delay: number, fromY = 12, duration = 0.5) =>
-		prefersReducedMotion
-			? {
-				initial: false as const,
-				animate: { opacity: 1, y: 0 },
-				transition: { duration: 0 },
-			}
-			: {
-				initial: { opacity: 0, y: fromY },
-				animate: { opacity: 1, y: 0 },
-				transition: { duration, delay, ease: EASE },
-			}
+	/* Shared entrance config. Initial state is stable across SSR/client to avoid
+	 * hydration mismatch (useReducedMotion returns null on server, boolean on client).
+	 * Reduced-motion users get duration 0 which snaps from initial to final instantly. */
+	const enter = (delay: number, fromY = 12, duration = 0.5) => ({
+		initial: { opacity: 0, y: fromY },
+		animate: { opacity: 1, y: 0 },
+		transition: prefersReducedMotion
+			? { duration: 0 }
+			: { duration, delay, ease: EASE },
+	})
 
 	return (
 		<section
@@ -76,7 +73,7 @@ export default function SectionHero() {
 			<motion.div
 				className='pointer-events-none absolute inset-0 z-0'
 				aria-hidden='true'
-				initial={prefersReducedMotion ? false : { opacity: 0 }}
+				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.7, delay: 0.55, ease: 'easeInOut' }}
 				style={isDesktop && !prefersReducedMotion ? { y: l1Parallax } : undefined}
@@ -118,14 +115,14 @@ export default function SectionHero() {
 				{/* H1 headline -- clipPath line reveal, white with emerald italic accent. */}
 				<motion.h1
 					className='display-xl max-w-[920px] text-center text-white'
-					initial={prefersReducedMotion ? false : { clipPath: 'inset(0 0 100% 0)' }}
+					initial={{ clipPath: 'inset(0 0 100% 0)' }}
 					animate={{ clipPath: 'inset(0 0 0% 0)' }}
 					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.8, delay: 0.15, ease: EASE }}
 				>
 					The AI Sales Coach That Lives{' '}
 					<motion.span
 						className='font-heading italic'
-						initial={prefersReducedMotion ? false : { color: '#FFFFFF' }}
+						initial={{ color: '#FFFFFF' }}
 						animate={{ color: '#10B981' }}
 						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4, delay: 0.95, ease: 'easeOut' }}
 					>
@@ -144,7 +141,7 @@ export default function SectionHero() {
 				{/* CTA cluster -- centered pair, stacked on mobile, row on sm+. */}
 				<motion.div
 					className='mt-10 flex w-full max-w-[420px] flex-col items-center gap-3 sm:max-w-none sm:flex-row sm:justify-center sm:gap-4'
-					initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.96 }}
+					initial={{ opacity: 0, scale: 0.96 }}
 					animate={{ opacity: 1, scale: 1 }}
 					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, delay: 0.45, ease: EASE }}
 				>
@@ -169,7 +166,7 @@ export default function SectionHero() {
 				{/* Reassurance line. */}
 				<motion.p
 					className='mt-5 text-center font-sans text-sm text-cc-text-muted'
-					initial={prefersReducedMotion ? false : { opacity: 0 }}
+					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, delay: 0.55, ease: EASE }}
 				>
@@ -238,7 +235,7 @@ export default function SectionHero() {
 					<motion.div
 						className='pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
 						aria-hidden='true'
-						initial={prefersReducedMotion ? false : { opacity: 0 }}
+						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 1.1, ease: 'easeOut' }}
 						style={isDesktop && !prefersReducedMotion ? { y: glowParallax } : undefined}
@@ -254,7 +251,7 @@ export default function SectionHero() {
 					<motion.div
 						className='pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
 						aria-hidden='true'
-						initial={prefersReducedMotion ? false : { opacity: 0 }}
+						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 1.2, ease: 'easeOut' }}
 						style={isDesktop && !prefersReducedMotion ? { y: glowParallax } : undefined}
@@ -267,7 +264,7 @@ export default function SectionHero() {
 					<motion.div
 						className='pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
 						aria-hidden='true'
-						initial={prefersReducedMotion ? false : { opacity: 0 }}
+						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 1.3, ease: 'easeOut' }}
 						style={isDesktop && !prefersReducedMotion ? { y: glowParallax } : undefined}
@@ -285,14 +282,17 @@ export default function SectionHero() {
 						{/* Phone -- parallax on desktop, enters from below with subtle scale. */}
 						<motion.div
 							className='relative'
-							initial={prefersReducedMotion ? false : { opacity: 0, y: 32, scale: 0.97 }}
+							initial={{ opacity: 0, y: 32, scale: 0.97 }}
 							animate={{ opacity: 1, y: 0, scale: 1 }}
 							transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.8, delay: 0.8, ease: EASE }}
 							style={isDesktop && !prefersReducedMotion ? { y: phoneParallax } : undefined}
 						>
 							{/* Scale wrapper: down-scale on small viewports so the 640px composite
-							 * fits 390px mobile without overflow. lg+ renders at full scale. */}
-							<div className='origin-top scale-[0.58] sm:scale-[0.72] md:scale-[0.85] lg:scale-100'>
+							 * fits 390px mobile without overflow. lg+ renders at full scale.
+							 * Negative mb compensates for the scale-vs-layout gap (CSS scale does
+							 * not reduce the layout box, leaving dead space below at sub-lg scales).
+							 * Values: 655 * (1 - scale) per breakpoint, rounded. */}
+							<div className='origin-top scale-[0.58] sm:scale-[0.72] md:scale-[0.85] lg:scale-100 mb-[-275px] sm:mb-[-183px] md:mb-[-98px] lg:mb-0'>
 								<HeroPhoneV2 />
 							</div>
 						</motion.div>
