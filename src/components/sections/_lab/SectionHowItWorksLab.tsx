@@ -7,7 +7,8 @@
  * Step content composition is scoped to W2-W5. Production port is W6.
  *
  * Copy locked to vault/clients/closer-coach/copy/lp-copy-deck-v5.md §Section 3 (v5.2).
- * The em dash in Step 4 paragraph 2 is replaced with a colon per em-dash-ban (documented in W1 return). */
+ * Em dashes in Step 3 body and Step 4 paragraph 2 are replaced with colons per the project-wide
+ * em-dash-ban (both substitutions logged in vault/clients/closer-coach/design/build-deviations.md). */
 
 'use client'
 
@@ -161,11 +162,19 @@ function RightColumnVisual({ activeStep }: { activeStep: number }) {
 
 /* ---------- Shared copy primitives ---------- */
 
-function StepKicker({ children }: { children: ReactNode }) {
+function StepKicker({ number, children }: { number: string; children: ReactNode }) {
 	return (
-		<p className="font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.2em] text-cc-accent">
-			{children}
-		</p>
+		<div className="flex items-center gap-3">
+			<span
+				className="flex h-8 w-8 items-center justify-center rounded-full border border-cc-accent/30 bg-cc-foundation font-[family-name:var(--font-mono)] text-[12px] text-cc-accent lg:hidden"
+				aria-hidden="true"
+			>
+				{number}
+			</span>
+			<p className="font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.2em] text-cc-accent">
+				{children}
+			</p>
+		</div>
 	)
 }
 
@@ -190,9 +199,9 @@ function StepBody({ children }: { children: ReactNode }) {
 function Step1Plan() {
 	return (
 		<>
-			<StepKicker>PLAN</StepKicker>
+			<StepKicker number="01">PLAN</StepKicker>
 			<StepHeadline>
-				<em className="not-italic text-cc-accent">Clone Your Clients</em> Before The Meeting Even Starts.
+				<em className="not-italic text-cc-accent">Clone Your Clients</em> Before The Meeting Even Starts
 			</StepHeadline>
 			<StepBody>
 				Sync your calendar and CRM. CloserCoach pulls the buyer&rsquo;s profile, clones them, and hands you a practice partner that looks, talks, and pushes back exactly like the real person on your calendar.
@@ -218,9 +227,9 @@ function Step1Plan() {
 function Step2Practice() {
 	return (
 		<>
-			<StepKicker>PRACTICE</StepKicker>
+			<StepKicker number="02">PRACTICE</StepKicker>
 			<StepHeadline>
-				Roleplay Until <em className="not-italic text-cc-accent">Every Objection</em> Feels Predictable.
+				Roleplay Until <em className="not-italic text-cc-accent">Every Objection</em> Feels Predictable
 			</StepHeadline>
 			<StepBody>
 				The AI clone is realistic enough that prospects hang up when you fumble. Track your interest meter in real time, pull one-click suggested responses when you&rsquo;re stuck, and drill until your pitch is sharp.
@@ -244,7 +253,7 @@ function Step2Practice() {
 function Step3Sell() {
 	return (
 		<>
-			<StepKicker>SELL</StepKicker>
+			<StepKicker number="03">SELL</StepKicker>
 			<StepHeadline>
 				Take The Call. <em className="not-italic text-cc-accent">Close The Deal.</em>
 			</StepHeadline>
@@ -280,9 +289,9 @@ function Step3Sell() {
 function Step4Review() {
 	return (
 		<>
-			<StepKicker>REVIEW</StepKicker>
+			<StepKicker number="04">REVIEW</StepKicker>
 			<StepHeadline>
-				See <em className="not-italic text-cc-accent">Exactly</em> What&rsquo;s Losing You Deals.
+				See <em className="not-italic text-cc-accent">Exactly</em> What&rsquo;s Losing You Deals
 			</StepHeadline>
 			<StepBody>
 				Every call gets scored A through F, with industry-tailored scorecards and word-for-word talk-tracks showing you exactly what you should have said.
