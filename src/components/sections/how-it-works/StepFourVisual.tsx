@@ -467,8 +467,9 @@ function AICoachSummary({ revealed, prefersReducedMotion }: {
 					</span>
 				</span>
 			</div>
-			{/* PC4 callout: verbatim from copy deck / proof inventory. */}
-			<p className="font-[family-name:var(--font-mono)] text-[9.5px] italic leading-snug text-cc-text-muted">
+			{/* PC4 callout: verbatim from copy deck / proof inventory.
+			 * 10px floor per mobile-visual-a11y-checklist.md v1.0. */}
+			<p className="font-[family-name:var(--font-mono)] text-[10px] italic leading-snug text-cc-text-muted">
 				Scoring adapts to your conversation. Not a fixed rubric.
 			</p>
 		</motion.div>
