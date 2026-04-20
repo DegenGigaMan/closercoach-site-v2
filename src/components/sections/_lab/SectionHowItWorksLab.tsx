@@ -139,7 +139,10 @@ function StepRoom({
 	return (
 		<motion.div
 			ref={ref}
-			initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+			/* F39: stable initial across SSR/client hydration. Reduced-motion still
+			 * snaps via transition.duration: 0 below; the non-reduced initial is
+			 * what SSR renders (useReducedMotion returns null on server). */
+			initial={{ opacity: 0, y: 24 }}
 			animate={isInView ? { opacity: 1, y: 0 } : {}}
 			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
 			className="flex min-h-screen flex-col justify-center py-16"
@@ -176,7 +179,12 @@ function RightColumnVisual({ activeStep }: { activeStep: number }) {
 		<AnimatePresence mode="popLayout" initial={false}>
 			<motion.div
 				key={activeStep}
-				initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 24 }}
+				/* F39: stable initial across SSR/client hydration. Note: this branch
+				 * only renders when activeStep ∈ {3,4} (Steps 1-2 short-circuit
+				 * above). Even for those step swaps, AnimatePresence with `initial:
+				 * false` skips the first mount's enter, but the `initial` prop
+				 * still contributes to the SSR style attribute, so we stabilize. */
+				initial={{ opacity: 0, y: 24 }}
 				animate={{ opacity: 1, y: 0 }}
 				exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -24 }}
 				transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}

@@ -132,10 +132,9 @@ function InterestMeter({ subState, prefersReducedMotion }: {
 				<motion.span
 					aria-hidden="true"
 					className="block w-full rounded-full"
-					initial={prefersReducedMotion
-						? { height: `${value}%`, backgroundColor: color }
-						: { height: '50%', backgroundColor: '#F59E0B' }
-					}
+					/* F39: stable initial. Reduced-motion: subState=2E (value=72,
+					 * color=emerald) at settled, snaps via transition.duration: 0. */
+					initial={{ height: '50%', backgroundColor: '#F59E0B' }}
 					animate={{
 						height: `${value}%`,
 						backgroundColor: color,
@@ -185,7 +184,9 @@ function CoachingChip({ type, label, visible, prefersReducedMotion, align }: {
 			{visible && (
 				<motion.span
 					className={pillClass}
-					initial={prefersReducedMotion ? { opacity: 1, scale: 1, x: 0 } : { opacity: 0, scale: 0.9, x: offsetX }}
+					/* F39: stable initial. Inside AnimatePresence so SSR also renders
+					 * this when visible. Reduced-motion snaps via duration:0. */
+					initial={{ opacity: 0, scale: 0.9, x: offsetX }}
 					animate={{ opacity: 1, scale: 1, x: 0 }}
 					exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.9, x: offsetX }}
 					transition={prefersReducedMotion
@@ -225,7 +226,8 @@ function ChatBubble({ who, text, visible, prefersReducedMotion }: {
 			{visible && (
 				<motion.div
 					className={`${align} flex max-w-[82%] flex-col gap-1.5`}
-					initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+					/* F39: stable initial. Reduced-motion snaps via duration:0. */
+					initial={{ opacity: 0, y: 8 }}
 					animate={{ opacity: 1, y: 0 }}
 					exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
 					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4, ease: THREAD_EASE }}
@@ -258,7 +260,8 @@ function RoleplayCard({ subState, prefersReducedMotion }: {
 	return (
 		<motion.div
 			className={`relative flex w-full max-w-[420px] flex-col gap-3 rounded-3xl border border-white/[0.08] bg-cc-surface-card/80 p-5 backdrop-blur-sm ${CARD_SHADOW}`}
-			initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+			/* F39: stable initial. Reduced-motion snaps via duration:0. */
+			initial={{ opacity: 0, y: 12 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={prefersReducedMotion ? { duration: 0 } : CARD_ENTER_SPRING}
 		>
@@ -379,7 +382,9 @@ function SuggestedResponseAffordance({ lit, popoverOpen, settled, prefersReduced
 					<motion.div
 						role="tooltip"
 						className="absolute left-[calc(100%+12px)] top-1/2 z-20 w-[252px] -translate-y-1/2 rounded-xl border border-white/[0.08] bg-cc-surface/95 p-3 shadow-[0_12px_28px_rgba(0,0,0,0.55)] backdrop-blur-md"
-						initial={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -6, scale: 0.98 }}
+						/* F39: stable initial. Reduced-motion users land at 2E
+						 * (popoverOpen=true) and snap via duration:0 below. */
+						initial={{ opacity: 0, x: -6, scale: 0.98 }}
 						animate={{ opacity: 1, x: 0, scale: 1 }}
 						exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -6, scale: 0.98 }}
 						transition={prefersReducedMotion
@@ -481,7 +486,9 @@ function ReadinessGauge({ subState, prefersReducedMotion }: {
 						stroke="url(#cc-s3-w3-gauge-gradient)"
 						strokeWidth={8}
 						strokeLinecap="round"
-						initial={prefersReducedMotion ? { pathLength: target } : { pathLength: 0 }}
+						/* F39: stable initial. Reduced-motion users land at 2E
+						 * (target=0.72) and snap via duration:0 below. */
+						initial={{ pathLength: 0 }}
 						animate={{ pathLength: target }}
 						transition={prefersReducedMotion
 							? { duration: 0 }

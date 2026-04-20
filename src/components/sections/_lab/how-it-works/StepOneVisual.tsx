@@ -141,7 +141,9 @@ function CalendarWidget({ subState, prefersReducedMotion }: { subState: SubState
 	return (
 		<motion.div
 			className={`relative shrink-0 rounded-2xl border border-white/[0.08] bg-cc-surface-card/90 p-4 backdrop-blur-sm ${CARD_SHADOW}`}
-			initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+			/* F39: stable initial. Reduced-motion users get duration: 0 below,
+			 * which snaps from {opacity:0,y:12} to settled instantly. */
+			initial={{ opacity: 0, y: 12 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.5, ease: THREAD_EASE }}
 		>
@@ -259,7 +261,10 @@ function EnrichmentFlow({ subState, prefersReducedMotion }: { subState: SubState
 							stroke="url(#cc-s3-enrich-gradient)"
 							strokeWidth={1.25}
 							strokeLinecap="round"
-							initial={prefersReducedMotion ? { pathLength: 1 } : { pathLength: 0 }}
+							/* F39: stable initial. Reduced-motion users hit settled
+							 * state where finalPathLength=1, then transition.duration:0
+							 * snaps the path to full instantly. */
+							initial={{ pathLength: 0 }}
 							animate={{ pathLength: finalPathLength }}
 							transition={prefersReducedMotion
 								? { duration: 0 }
@@ -283,7 +288,10 @@ function CloneCard({ subState, prefersReducedMotion }: { subState: SubState, pre
 	return (
 		<motion.div
 			className={`relative shrink-0 rounded-2xl border border-cc-accent/25 bg-cc-surface-card/90 px-4 py-3.5 backdrop-blur-sm ${CARD_SHADOW}`}
-			initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 20, scale: 0.97 }}
+			/* F39: stable initial. Reduced-motion users land at subState=5 post-mount
+			 * (visible=true), animate target {opacity:1,y:0,scale:1}, transition
+			 * duration:0 → instant snap from initial to settled. */
+			initial={{ opacity: 0, y: 20, scale: 0.97 }}
 			animate={visible
 				? { opacity: 1, y: 0, scale: 1 }
 				: { opacity: 0, y: 20, scale: 0.97 }
@@ -332,7 +340,9 @@ function CloneCard({ subState, prefersReducedMotion }: { subState: SubState, pre
 			{/* PC1 proof badge: "7 Layers of Personalization". */}
 			<motion.div
 				className="mt-3 flex items-center justify-center border-t border-white/[0.06] pt-3"
-				initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 6 }}
+				/* F39: stable initial. Reduced-motion: badgeVisible=true at settled,
+				 * snaps from {opacity:0,y:6} → {opacity:1,y:0} via duration:0. */
+				initial={{ opacity: 0, y: 6 }}
 				animate={badgeVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 6 }}
 				transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.35, ease: 'easeOut' }}
 			>
@@ -369,7 +379,9 @@ function CloneField({ field, index, visible, prefersReducedMotion }: {
 				'grid grid-cols-[72px_1fr] items-baseline gap-3 rounded-md px-2 py-1',
 				field.italic ? 'border-l-2 border-cc-accent/60 bg-cc-accent/[0.04] pl-2' : '',
 			].join(' ').trim()}
-			initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 6 }}
+			/* F39: stable initial. Reduced-motion: visible=true at settled, snap
+			 * to settled via duration:0 below. */
+			initial={{ opacity: 0, y: 6 }}
 			animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 6 }}
 			transition={prefersReducedMotion
 				? { duration: 0 }
@@ -405,7 +417,9 @@ function DotLayers({ active, prefersReducedMotion }: { active: boolean, prefersR
 				<motion.span
 					key={i}
 					className="block h-1 w-1 rounded-full bg-cc-accent"
-					initial={prefersReducedMotion ? { opacity: 0.9, scale: 1 } : { opacity: 0, scale: 0.5 }}
+					/* F39: stable initial. Reduced-motion: active=true at settled,
+					 * snaps to active state via duration:0 transition below. */
+					initial={{ opacity: 0, scale: 0.5 }}
 					animate={active ? { opacity: 0.85, scale: 1 } : { opacity: 0, scale: 0.5 }}
 					transition={prefersReducedMotion
 						? { duration: 0 }
