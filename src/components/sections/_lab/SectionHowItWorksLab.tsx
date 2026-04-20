@@ -29,6 +29,7 @@ import StepIndicator, { type StepMeta } from './how-it-works/StepIndicator'
 import StepOneVisual from './how-it-works/StepOneVisual'
 import StepTwoVisual from './how-it-works/StepTwoVisual'
 import StepThreeVisual from './how-it-works/StepThreeVisual'
+import StepFourVisual from './how-it-works/StepFourVisual'
 
 const STEPS: readonly StepMeta[] = [
 	{ number: '01', label: 'PLAN' },
@@ -175,7 +176,7 @@ function RightColumnVisual({ activeStep }: { activeStep: number }) {
 	const prefersReducedMotion = useReducedMotion()
 
 	/* Step 1 is a real composition (W2). Step 2 is a real composition (W3).
-	 * Step 3 is a real composition (W4). Step 4 remains a W1 placeholder until W5. */
+	 * Step 3 is a real composition (W4). Step 4 is a real composition (W5). */
 	if (activeStep === 1) {
 		return (
 			<div className="flex h-full min-h-[36rem] items-center justify-center">
@@ -200,15 +201,20 @@ function RightColumnVisual({ activeStep }: { activeStep: number }) {
 		)
 	}
 
+	if (activeStep === 4) {
+		return (
+			<div className="flex h-full min-h-[36rem] items-center justify-center">
+				<StepFourVisual />
+			</div>
+		)
+	}
+
 	return (
 		<AnimatePresence mode="popLayout" initial={false}>
 			<motion.div
 				key={activeStep}
-				/* F39: stable initial across SSR/client hydration. Note: this branch
-				 * only renders when activeStep ∈ {3,4} (Steps 1-2 short-circuit
-				 * above). Even for those step swaps, AnimatePresence with `initial:
-				 * false` skips the first mount's enter, but the `initial` prop
-				 * still contributes to the SSR style attribute, so we stabilize. */
+				/* F39: stable initial across SSR/client hydration. Fallback branch for
+				 * unexpected activeStep values; Steps 1-4 short-circuit above. */
 				initial={{ opacity: 0, y: 24 }}
 				animate={{ opacity: 1, y: 0 }}
 				exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -24 }}
