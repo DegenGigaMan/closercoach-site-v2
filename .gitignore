@@ -42,3 +42,6 @@ next-env.d.ts
 
 # scratch (Playwright captures, DD review artifacts)
 scratch/
+
+# drafts (pre-edit backups per workspace convention)
+drafts/
