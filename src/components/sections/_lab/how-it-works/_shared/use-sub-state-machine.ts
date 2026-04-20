@@ -86,7 +86,12 @@ export function useSubStateMachine<T extends number | string>(
 	} = options
 
 	const resolvedSettled = settledState ?? states[states.length - 1]?.id ?? initialState
-	const [current, setCurrent] = useState<T>(reducedMotion ? resolvedSettled : initialState)
+	/* Always initialize to initialState. The reducedMotion branch in the effect
+	 * below advances to resolvedSettled post-mount via setTimeout(0). Gating
+	 * useState's initial value on reducedMotion would produce a SSR/client
+	 * hydration mismatch when useReducedMotion flips null->true across the
+	 * hydration boundary (F38). Fix matches the pattern SectionHero uses. */
+	const [current, setCurrent] = useState<T>(initialState)
 	const hasStartedRef = useRef(false)
 	const onSettleRef = useRef(onSettle)
 
