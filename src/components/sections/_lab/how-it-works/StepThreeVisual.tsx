@@ -19,9 +19,11 @@
  *   3E (5600 - 7200ms): SIGNATURE -- 4 coaching annotations emerge from phone
  *                       edges onto surrounding dark surface. Staggered springs
  *                       + emerald glow trail. Unique to S3.
- *   3F (7200ms+):       Settled. Replacement badge below phone: "CloserCoach
- *                       Replaces: Voice Memos + ChatGPT + Phone App" with 3
- *                       icons consolidating into 1 CC icon. Ambient idle.
+ *   3F (7200ms+):       Settled. Annotations breathe at anchor positions
+ *                       (ambient scale + opacity drift, staggered 0.4s per
+ *                       pill). Replacement badge rendered by left-column
+ *                       body copy (single source); right-column keeps the
+ *                       phone + annotations breathing as the payoff surface.
  *
  * Authority:
  *   - Visual spec: vault/clients/closer-coach/design/section-blueprint.md §S3 Step 3 (222-235)
@@ -62,7 +64,6 @@ import { useSubStateMachine } from './_shared/use-sub-state-machine'
 import {
 	CARD_ENTER_SPRING,
 	THREAD_EASE,
-	KICKER_MONO_EMERALD,
 } from './_shared/step-visual-defaults'
 
 const SARAH_IMG = '/images/prospects/sarah-chen.png'
@@ -540,10 +541,13 @@ function RoomBlurBackdrop({ active, prefersReducedMotion }: { active: boolean, p
 /* One annotation pill. Emerges from the phone edge (derived from anchor.startDX /
  * startDY) and lands at the anchor's absolute position. Arc is implied by the
  * spring + offset origin; no actual SVG path. Emerald/red glow trails the travel.
- * Reduced-motion: pill renders at final position with full opacity, no travel. */
-function AnnotationPill({ spec, visible, index, prefersReducedMotion }: {
+ * Reduced-motion: pill renders at final position with full opacity, no travel.
+ * At 3F (isSettled), pills gain an ambient breath (scale 1.02 cycle + opacity
+ * drift) to lift the post-arrival feel. Reduced-motion suppresses the breath. */
+function AnnotationPill({ spec, visible, isSettled, index, prefersReducedMotion }: {
 	spec: AnnotationSpec
 	visible: boolean
+	isSettled: boolean
 	index: number
 	prefersReducedMotion: boolean
 }) {
@@ -559,6 +563,20 @@ function AnnotationPill({ spec, visible, index, prefersReducedMotion }: {
 	const timestampClass = `ml-1 font-[family-name:var(--font-mono)] text-[8.5px] tabular-nums ${isPositive ? 'text-cc-accent/85' : 'text-red-400/85'}`
 	const glowColor = isPositive ? '16,185,129' : '239,68,68'
 
+	/* Ambient breath on settled pills (P1 polish). Scale 1.02 cycle + opacity
+	 * drift, 3.2s loop, staggered 0.4s per pill so they breathe out of sync.
+	 * Gated by isSettled AND !prefersReducedMotion. At 3E (visible but not
+	 * settled), the spring-arrival animation still runs on its own path. */
+	const breatheSettled = isSettled && !prefersReducedMotion
+	const settledAnimate = breatheSettled
+		? { opacity: [0.95, 1, 0.95], scale: [1, 1.02, 1], x: 0, y: 0 }
+		: { opacity: 1, scale: 1, x: 0, y: 0 }
+	const settledTransition = breatheSettled
+		? { duration: 3.2, repeat: Infinity, ease: 'easeInOut' as const, delay: index * 0.4 }
+		: prefersReducedMotion
+			? { duration: 0 }
+			: { type: 'spring' as const, stiffness: 260, damping: 22, delay: 0.15 * index, mass: 0.9 }
+
 	return (
 		<motion.div
 			className="absolute z-20"
@@ -567,12 +585,14 @@ function AnnotationPill({ spec, visible, index, prefersReducedMotion }: {
 			 * emerging start -> final via duration: 0. */
 			initial={{ opacity: 0, scale: 0.7, x: startDX, y: startDY }}
 			animate={visible
-				? { opacity: 1, scale: 1, x: 0, y: 0 }
+				? settledAnimate
 				: { opacity: 0, scale: 0.7, x: startDX, y: startDY }
 			}
-			transition={prefersReducedMotion
-				? { duration: 0 }
-				: { type: 'spring', stiffness: 260, damping: 22, delay: 0.15 * index, mass: 0.9 }
+			transition={visible
+				? settledTransition
+				: prefersReducedMotion
+					? { duration: 0 }
+					: { type: 'spring', stiffness: 260, damping: 22, delay: 0.15 * index, mass: 0.9 }
 			}
 		>
 			{/* Glow trail behind the pill. Only active during spring-out, fades after
@@ -604,53 +624,49 @@ function AnnotationPill({ spec, visible, index, prefersReducedMotion }: {
 	)
 }
 
-/* ─── Replacement badge (3F) ───────────────────────────────── */
+/* Edge-ripple source indicator at the phone edge, firing in sync with each
+ * annotation pill's 3E emergence. Positioned absolutely against the outer
+ * relative container (same coordinate space as AnnotationPill): left-side
+ * anchors ripple at `right: calc(50% + 120px)` (phone's left edge), right-side
+ * anchors ripple at `left: calc(50% + 120px)` (phone's right edge). A small
+ * emerald/red dot briefly expands + fades, matching each pill's 0.15 * index
+ * delay so the pill appears to originate from that ripple. Reduced-motion
+ * suppresses entirely via opacity 0 + duration 0. */
+function EdgeRipple({ spec, active, index, prefersReducedMotion }: {
+	spec: AnnotationSpec
+	active: boolean
+	index: number
+	prefersReducedMotion: boolean
+}) {
+	const isPositive = spec.type === 'positive'
+	const { top, side } = ANCHOR_POSITIONS[spec.anchor]
+	/* Anchor the ripple AT the phone edge (120px from container center).
+	 * Matches phone-left-edge for side='right' pills, phone-right-edge for
+	 * side='left' pills. Top offset is tuned to sit near the pill's vertical
+	 * anchor so the ripple and pill share a visible origin. */
+	const ripplePosition: React.CSSProperties = side === 'left'
+		? { top, right: 'calc(50% + 120px)' }
+		: { top, left: 'calc(50% + 120px)' }
+	const rippleClass = `pointer-events-none absolute h-3 w-3 -translate-y-1/2 rounded-full ${isPositive ? 'bg-cc-accent' : 'bg-cc-score-red'}`
 
-/* Abstract icon + label treatment. No real brand marks (Voice Memos / ChatGPT /
- * Phone app icons) per K7 guidance: abstract is the cleaner path. Three labeled
- * chips consolidate into a single emerald CC mark on the right via arrow
- * chevrons. Log: DEV-027 abstract treatment chosen over raster brand marks. */
-function ReplacementBadge({ active, prefersReducedMotion }: { active: boolean, prefersReducedMotion: boolean }) {
-	return (
-		<motion.div
-			className="mx-auto flex w-fit items-center justify-center gap-2.5 whitespace-nowrap rounded-full border border-white/[0.08] bg-cc-surface-card/60 px-4 py-2 backdrop-blur-sm"
-			/* F39: stable initial. Reduced-motion settled active=true via duration: 0. */
-			initial={{ opacity: 0, y: 8 }}
-			animate={{ opacity: active ? 1 : 0, y: active ? 0 : 8 }}
-			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.5, ease: 'easeOut' }}
-		>
-			<span className={KICKER_MONO_EMERALD}>Replaces</span>
-			<div className="flex items-center gap-1.5">
-				<ReplaceChip label="Voice Memos" />
-				<span className="text-[10px] text-cc-text-muted" aria-hidden="true">+</span>
-				<ReplaceChip label="ChatGPT" />
-				<span className="text-[10px] text-cc-text-muted" aria-hidden="true">+</span>
-				<ReplaceChip label="Phone App" />
-			</div>
-			<span className="text-[10px] text-cc-text-muted" aria-hidden="true">→</span>
-			<motion.div
-				className="flex h-6 w-6 items-center justify-center rounded-full bg-cc-accent"
-				aria-label="CloserCoach"
-				animate={active && !prefersReducedMotion
-					? { boxShadow: ['0 0 0 rgba(16,185,129,0)', '0 0 16px rgba(16,185,129,0.55)', '0 0 6px rgba(16,185,129,0.2)'] }
-					: { boxShadow: '0 0 0 rgba(16,185,129,0)' }
-				}
-				transition={active && !prefersReducedMotion
-					? { duration: 2.8, repeat: Infinity, ease: 'easeInOut' }
-					: { duration: 0 }
-				}
-			>
-				<span className="font-[family-name:var(--font-mono)] text-[10px] font-bold text-cc-foundation">CC</span>
-			</motion.div>
-		</motion.div>
-	)
-}
+	const canFire = active && !prefersReducedMotion
 
-function ReplaceChip({ label }: { label: string }) {
 	return (
-		<span className="inline-flex items-center whitespace-nowrap rounded-full border border-white/[0.06] bg-cc-surface/50 px-2 py-0.5 text-[10px] text-cc-text-secondary">
-			{label}
-		</span>
+		<motion.span
+			aria-hidden="true"
+			className={rippleClass}
+			style={ripplePosition}
+			/* F39: stable initial. All ripple motion lives in animate + transition. */
+			initial={{ opacity: 0, scale: 0 }}
+			animate={canFire
+				? { opacity: [0, 0.7, 0], scale: [0, 2.4, 3] }
+				: { opacity: 0, scale: 0 }
+			}
+			transition={canFire
+				? { duration: 0.6, delay: 0.15 * index, ease: 'easeOut' }
+				: { duration: 0 }
+			}
+		/>
 	)
 }
 
@@ -690,7 +706,8 @@ export default function StepThreeVisual() {
 
 	const modeBActive = subState === '3D' || subState === '3E' || subState === '3F'
 	const annotationsOut = subState === '3E' || subState === '3F'
-	const badgeActive = subState === '3F'
+	const isSettled = subState === '3F'
+	const ripplesFiring = subState === '3E'
 
 	return (
 		<div
@@ -739,6 +756,18 @@ export default function StepThreeVisual() {
 						</PhoneFrame>
 					</motion.div>
 
+					{/* Edge-ripples at phone edges, firing in sync with each pill's 3E
+					 * emergence stagger. Signals the pills originate FROM the phone. */}
+					{ANNOTATIONS.map((spec, i) => (
+						<EdgeRipple
+							key={`ripple-${spec.id}`}
+							spec={spec}
+							active={ripplesFiring}
+							index={i}
+							prefersReducedMotion={prefersReducedMotion}
+						/>
+					))}
+
 					{/* Annotations spring OUT around the phone (3E signature + 3F settled).
 					 * Positioned absolute against the full-width outer relative container
 					 * so left-side pills land on the surface LEFT of the phone, not inside it. */}
@@ -747,15 +776,13 @@ export default function StepThreeVisual() {
 							key={spec.id}
 							spec={spec}
 							visible={annotationsOut}
+							isSettled={isSettled}
 							index={i}
 							prefersReducedMotion={prefersReducedMotion}
 						/>
 					))}
 				</div>
 			</LayoutGroup>
-
-			{/* Replacement badge (below phone) */}
-			<ReplacementBadge active={badgeActive} prefersReducedMotion={prefersReducedMotion} />
 		</div>
 	)
 }
