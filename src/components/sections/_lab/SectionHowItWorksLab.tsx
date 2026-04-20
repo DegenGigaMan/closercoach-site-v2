@@ -17,6 +17,7 @@ import { motion, AnimatePresence, useInView, useReducedMotion } from 'motion/rea
 import { Sparkle, Microphone, PhoneCall } from '@phosphor-icons/react'
 import StepIndicator, { type StepMeta } from './how-it-works/StepIndicator'
 import StepOneVisual from './how-it-works/StepOneVisual'
+import StepTwoVisual from './how-it-works/StepTwoVisual'
 
 const STEPS: readonly StepMeta[] = [
 	{ number: '01', label: 'PLAN' },
@@ -26,7 +27,6 @@ const STEPS: readonly StepMeta[] = [
 ] as const
 
 const STEP_VISUAL_LABELS: Record<number, string> = {
-	2: 'Step 2 PRACTICE: Roleplay + interest meter + suggested responses',
 	3: 'Step 3 SELL: Phone morphing dialer / in-person record',
 	4: 'Step 4 REVIEW: Practice vs real scorecard + 1/20 deep-drill',
 }
@@ -138,11 +138,20 @@ function StepRoom({
 function RightColumnVisual({ activeStep }: { activeStep: number }) {
 	const prefersReducedMotion = useReducedMotion()
 
-	/* Step 1 is a real composition now (W2). Steps 2-4 remain W1 placeholders until W3-W5. */
+	/* Step 1 is a real composition (W2). Step 2 is a real composition (W3).
+	 * Steps 3-4 remain W1 placeholders until W4-W5. */
 	if (activeStep === 1) {
 		return (
 			<div className="flex h-full min-h-[36rem] items-center justify-center">
 				<StepOneVisual />
+			</div>
+		)
+	}
+
+	if (activeStep === 2) {
+		return (
+			<div className="flex h-full min-h-[36rem] items-center justify-center">
+				<StepTwoVisual />
 			</div>
 		)
 	}
