@@ -364,16 +364,24 @@ function SuggestedResponseAffordance({ lit, popoverOpen, settled, prefersReduced
 }) {
 	return (
 		<div className="relative">
-			{/* Popover: 2-3 rebuttal suggestions. Opens above the button.
-			 * Reduced-motion renders open in 2E with no toggle animation. */}
+			{/* Popover: 2-3 rebuttal suggestions. Side-peels from the right edge of
+			 * the card (F31 fix: previously opened UP-right from the mic bar and
+			 * overlapped the user bubble "What worked about the last tool before
+			 * it broke?", truncating it to "What " and undercutting the positive
+			 * coaching chip's narrative. Open-down overflowed onto the readiness
+			 * gauge. Side-peel right anchors outside the card's right gutter,
+			 * keeping the button-to-popover affordance relationship via the small
+			 * horizontal offset while leaving both the conversation area and the
+			 * gauge unobstructed.) Reduced-motion renders open in 2E with no
+			 * toggle animation. */}
 			<AnimatePresence>
 				{popoverOpen && (
 					<motion.div
 						role="tooltip"
-						className="absolute bottom-[calc(100%+10px)] right-0 z-20 w-[252px] rounded-xl border border-white/[0.08] bg-cc-surface/95 p-3 shadow-[0_12px_28px_rgba(0,0,0,0.55)] backdrop-blur-md"
-						initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 6, scale: 0.98 }}
-						animate={{ opacity: 1, y: 0, scale: 1 }}
-						exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 6, scale: 0.98 }}
+						className="absolute left-[calc(100%+12px)] top-1/2 z-20 w-[252px] -translate-y-1/2 rounded-xl border border-white/[0.08] bg-cc-surface/95 p-3 shadow-[0_12px_28px_rgba(0,0,0,0.55)] backdrop-blur-md"
+						initial={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -6, scale: 0.98 }}
+						animate={{ opacity: 1, x: 0, scale: 1 }}
+						exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -6, scale: 0.98 }}
 						transition={prefersReducedMotion
 							? { duration: 0 }
 							: { type: 'spring', stiffness: 320, damping: 26 }

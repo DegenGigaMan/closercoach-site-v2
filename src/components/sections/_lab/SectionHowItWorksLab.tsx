@@ -12,8 +12,18 @@
 
 'use client'
 
-import { useRef, useState, useEffect, useCallback, type ReactNode } from 'react'
+import { useRef, useState, useEffect, useCallback, useSyncExternalStore, type ReactNode } from 'react'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'motion/react'
+
+/* SSR-safe mount flag. useSyncExternalStore returns the SSR snapshot (false) on
+ * the server AND on the first client render, then switches to the client
+ * snapshot (true) AFTER hydration completes. This matches the pattern
+ * SectionHero uses for its media query and avoids the react-hooks/set-state-
+ * in-effect lint rule. F33 StepIndicator hydration mismatch fix. */
+function subscribeNoop() { return () => {} }
+function useMounted(): boolean {
+	return useSyncExternalStore(subscribeNoop, () => true, () => false)
+}
 import { Sparkle, Microphone, PhoneCall } from '@phosphor-icons/react'
 import StepIndicator, { type StepMeta } from './how-it-works/StepIndicator'
 import StepOneVisual from './how-it-works/StepOneVisual'
@@ -102,7 +112,12 @@ export default function SectionHowItWorksLab() {
 /**
  * @description One ~100vh step room in the left column. Uses useInView to fire
  * the onEnter callback exactly once when the room crosses 40% into viewport.
- */
+ *
+ * F33 hydration fix: activeStep advancement is gated behind a post-mount flag.
+ * SSR and first client render always produce activeStep=1 (the pinned initial),
+ * so the StepIndicator marker DOM matches across the hydration boundary. Only
+ * after mount can useInView's callback advance the state. Mirrors the stable-
+ * initial approach SectionHero uses (useSyncExternalStore SSR snapshot). */
 function StepRoom({
 	index,
 	onEnter,
@@ -115,10 +130,11 @@ function StepRoom({
 	const prefersReducedMotion = useReducedMotion()
 	const ref = useRef<HTMLDivElement>(null)
 	const isInView = useInView(ref, { amount: 0.4, once: true })
+	const mounted = useMounted()
 
 	useEffect(() => {
-		if (isInView) onEnter(index)
-	}, [isInView, index, onEnter])
+		if (mounted && isInView) onEnter(index)
+	}, [mounted, isInView, index, onEnter])
 
 	return (
 		<motion.div

@@ -6,8 +6,17 @@
 
 'use client'
 
-import { type RefObject } from 'react'
+import { useSyncExternalStore, type RefObject } from 'react'
 import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react'
+
+/* SSR-safe mount flag. SSR snapshot is false; client snapshot flips true only
+ * AFTER hydration completes. Used to gate any conditional render that depends
+ * on browser-only state (media queries, useReducedMotion) so first client
+ * paint matches the server HTML exactly. F33 StepIndicator hydration fix. */
+function subscribeNoop() { return () => {} }
+function useMounted(): boolean {
+	return useSyncExternalStore(subscribeNoop, () => true, () => false)
+}
 
 export interface StepMeta {
 	number: string
@@ -26,7 +35,14 @@ interface StepIndicatorProps {
  * with each step room's visual anchor via equal flex distribution.
  */
 export default function StepIndicator({ steps, activeStep, containerRef }: StepIndicatorProps) {
-	const prefersReducedMotion = useReducedMotion()
+	/* Normalize to boolean: useReducedMotion returns null on SSR and true/false
+	 * on client. `?? false` picks the motion branch as the shared default. */
+	const prefersReducedMotion = useReducedMotion() ?? false
+	/* Gate the conditional pulse-dot render behind mount so SSR and first client
+	 * paint produce identical DOM. Only after hydration can prefersReducedMotion
+	 * flip the pulse dot off. F33 fix. */
+	const mounted = useMounted()
+	const showPulseDot = mounted && !prefersReducedMotion
 
 	const { scrollYProgress } = useScroll({
 		target: containerRef,
@@ -43,7 +59,7 @@ export default function StepIndicator({ steps, activeStep, containerRef }: StepI
 					className="absolute top-0 w-px bg-cc-accent/80"
 					style={{ height: pulseY }}
 				/>
-				{!prefersReducedMotion && (
+				{showPulseDot && (
 					<motion.div
 						className="absolute left-1/2 h-[6px] w-[6px] -translate-x-1/2 rounded-full bg-cc-accent"
 						style={{
