@@ -433,13 +433,17 @@ function DotLayers({ active, prefersReducedMotion }: { active: boolean, prefersR
 
 /* ─── Main component ───────────────────────────────────────── */
 
-/* Dev-only sub-state pin. When `?pin=N` (N in 1-5) is in the URL, the chain is
- * bypassed and subState stays at N. Enables DD / Playwright captures of any
- * sub-state without racing the auto-advance timers. Zero production impact: the
- * check is one URLSearchParams read on mount. Not referenced in production links. */
-function useSubStatePin(): SubState | null {
+/* Dev-only sub-state pin. When enabled AND `?pin=N` (N in 1-5) is in the URL,
+ * the chain is bypassed and subState stays at N. Enables DD / Playwright
+ * captures of any sub-state without racing the auto-advance timers.
+ *
+ * W6: gated behind `enabled` prop (default false in production). Production
+ * callers never read URLSearchParams. Only the `/lab/how-it-works` preview
+ * route passes `devPin={true}` to re-enable the pin. */
+function useSubStatePin(enabled: boolean): SubState | null {
 	const [pin, setPin] = useState<SubState | null>(null)
 	useEffect(() => {
+		if (!enabled) return
 		const t = setTimeout(() => {
 			if (typeof window === 'undefined') return
 			const raw = new URLSearchParams(window.location.search).get('pin')
@@ -447,7 +451,7 @@ function useSubStatePin(): SubState | null {
 			if (n >= 1 && n <= 5) setPin(n as SubState)
 		}, 0)
 		return () => clearTimeout(t)
-	}, [])
+	}, [enabled])
 	return pin
 }
 
@@ -461,14 +465,14 @@ const STEP_ONE_STATES: ReadonlyArray<{ id: SubState, enterAtMs: number }> = [
 	{ id: 5, enterAtMs: T_1E },
 ] as const
 
-export default function StepOneVisual() {
+export default function StepOneVisual({ devPin = false }: { devPin?: boolean } = {}) {
 	const prefersReducedMotion = useReducedMotion() ?? false
 	const rootRef = useRef<HTMLDivElement>(null)
 	/* W2 composition auto-fires when the visual enters the sticky viewport slot. Because the
 	 * right column is sticky, useInView on the visual itself is reliable even though the left
 	 * column scroll owns activeStep. amount: 0.3 + once: true mirrors W1's StepRoom trigger. */
 	const inView = useInView(rootRef, { amount: 0.3, once: true })
-	const pin = useSubStatePin()
+	const pin = useSubStatePin(devPin)
 	/* Machine-driven sub-state (5-step chain). The pin value below overrides this
 	 * for dev/DD capture flows but the chain itself lives in the shared hook. */
 	const machineState = useSubStateMachine<SubState>({

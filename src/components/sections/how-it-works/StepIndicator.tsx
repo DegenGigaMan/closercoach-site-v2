@@ -44,6 +44,25 @@ export default function StepIndicator({ steps, activeStep, containerRef }: StepI
 	const mounted = useMounted()
 	const showPulseDot = mounted && !prefersReducedMotion
 
+	/* F5 (W6): Motion's "non-static position" warning fires once at hook
+	 * initialisation even though the containerRef is styled position: relative
+	 * (className "relative" + inline style={{position:'relative'}}). Deferred
+	 * per W6 brief permission for explicit-rationale deferral. See DEV-038.
+	 *
+	 * Why deferred (not fixed):
+	 *   - Attempted gating `target` on mount (mounted ? containerRef : undefined)
+	 *     did NOT silence the warning. The fallback to window-scroll itself
+	 *     tripped the same message.
+	 *   - Attempting to pass a second ref + mount gating added complexity
+	 *     without changing the rendered output. useScroll fires correctly once
+	 *     the containerRef attaches; the pulse animation works on every
+	 *     capture.
+	 *   - The warning is cosmetic dev-mode output. It does NOT appear in
+	 *     production builds (validated: `bun run build` + `next start` emits
+	 *     0 console warnings from Motion for this hook).
+	 *   - No runtime defect: all captures (desktop + mobile, default + RM)
+	 *     show the pulse traveling and the markers advancing correctly.
+	 * Revisit in a dedicated Motion-hook audit session. */
 	const { scrollYProgress } = useScroll({
 		target: containerRef,
 		offset: ['start center', 'end center'],

@@ -672,9 +672,11 @@ function EdgeRipple({ spec, active, index, prefersReducedMotion }: {
 
 /* ─── Dev pin hook ─────────────────────────────────────────── */
 
-function useSubStatePin(): SubState | null {
+/* Gated behind `enabled` prop (W6). Production never reads URLSearchParams. */
+function useSubStatePin(enabled: boolean): SubState | null {
 	const [pin, setPin] = useState<SubState | null>(null)
 	useEffect(() => {
+		if (!enabled) return
 		const t = setTimeout(() => {
 			if (typeof window === 'undefined') return
 			const raw = new URLSearchParams(window.location.search).get('pin')
@@ -683,17 +685,17 @@ function useSubStatePin(): SubState | null {
 			}
 		}, 0)
 		return () => clearTimeout(t)
-	}, [])
+	}, [enabled])
 	return pin
 }
 
 /* ─── Main component ───────────────────────────────────────── */
 
-export default function StepThreeVisual() {
+export default function StepThreeVisual({ devPin = false }: { devPin?: boolean } = {}) {
 	const prefersReducedMotion = useReducedMotion() ?? false
 	const rootRef = useRef<HTMLDivElement>(null)
 	const inView = useInView(rootRef, { amount: 0.3, once: true })
-	const pin = useSubStatePin()
+	const pin = useSubStatePin(devPin)
 	const machineState = useSubStateMachine<SubState>({
 		states: STEP_THREE_STATES,
 		trigger: inView,

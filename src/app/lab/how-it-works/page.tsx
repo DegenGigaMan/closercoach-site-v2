@@ -1,11 +1,20 @@
-/** @fileoverview Lab preview for S3 "How It Works" scroll experience (v2 lab).
- * Scroll-pinned split layout. 4 steps. Thread emergence motion.
- * Full S3 section rendered against dark background. No site chrome.
- * W6 ports approved lab into src/components/sections/SectionHowItWorks.tsx. */
+/** @fileoverview Lab preview for S3 "How It Works" (post-W6).
+ *
+ * After W6 the lab route renders the SAME production `SectionHowItWorks`
+ * component that the homepage uses. It passes `devPin={true}` so each step
+ * visual re-enables its `?pin=<state>` URL-param sub-state pin (useful for
+ * DD / Playwright captures of specific sub-states without racing the
+ * auto-advance chain).
+ *
+ * Production (homepage `/`) does NOT pass devPin, so it never reads
+ * URLSearchParams and never responds to URL pins.
+ *
+ * The outer lab-page chrome (header + label) remains so the route self-
+ * identifies as a preview surface. */
 
 'use client'
 
-import SectionHowItWorksLab from '@/components/sections/_lab/SectionHowItWorksLab'
+import SectionHowItWorks from '@/components/sections/SectionHowItWorks'
 
 export default function LabHowItWorks() {
 	return (
@@ -16,10 +25,11 @@ export default function LabHowItWorks() {
 				</p>
 				<h1 className="display-md mt-3 text-white">Section 3 Scroll Experience</h1>
 				<p className="mx-auto mt-3 max-w-xl text-sm text-cc-text-secondary">
-					Scroll-pinned split. 4 steps. Thread emergence motion.
+					Scroll-pinned split. 4 steps. Thread emergence motion. Dev pins:
+					<span className="font-[family-name:var(--font-mono)] text-[10px] text-cc-accent"> ?pin=1..5 / 2A-2E / 3A-3F / 4A-4E</span>
 				</p>
 			</div>
-			<SectionHowItWorksLab />
+			<SectionHowItWorks devPin />
 		</div>
 	)
 }

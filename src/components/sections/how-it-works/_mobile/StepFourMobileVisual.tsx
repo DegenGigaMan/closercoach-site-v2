@@ -134,13 +134,18 @@ export default function StepFourMobileVisual() {
 					<span className="font-semibold text-cc-accent">B grade.</span>
 					{' Top 15% this week.'}
 				</p>
-				{/* Stats: explicit flex-wrap for narrow viewports. */}
-				<div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 font-[family-name:var(--font-mono)] text-[9.5px] tabular-nums text-cc-text-secondary">
-					<span>211 WPM</span>
-					<span className="text-cc-text-muted">/</span>
-					<span>
-						64 / 36
-						<span className="text-cc-text-muted"> talk-listen</span>
+				{/* Stats: explicit flex-wrap for narrow viewports.
+				 * F60 (W6): aria-labels parity with desktop StepFourVisual so the
+				 * stats row announces full semantic content to screen readers.
+				 * F64-extended (W6): stats row 9.5px -> 10px for readability floor. */}
+				<div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 font-[family-name:var(--font-mono)] text-[10px] tabular-nums text-cc-text-secondary">
+					<span aria-label="211 words per minute">211 WPM</span>
+					<span aria-hidden="true" className="text-cc-text-muted">/</span>
+					<span aria-label="64 percent talk, 36 percent listen ratio">
+						<span aria-hidden="true">
+							64 / 36
+							<span className="text-cc-text-muted"> talk-listen</span>
+						</span>
 					</span>
 				</div>
 			</motion.div>

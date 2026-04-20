@@ -1,373 +1,424 @@
-/** @fileoverview S3 How It Works section. Dark surface with 3-phase vertical progression
- * (Before/During/After), each with distinct visual treatment. Emerald thread connects steps.
- * Copy locked to lp-copy-deck-v5. */
+/** @fileoverview S3 How It Works section (production port, W6).
+ *
+ * Scroll-pinned 4-step narrative: Plan / Practice / Sell / Review. Left column
+ * scrolls naturally through four ~100vh rooms; right column is sticky-pinned
+ * and swaps its visual per activeStep. Emerald StepIndicator thread spans the
+ * split column with a scroll-linked pulse.
+ *
+ * This file is the W6 production port of the approved lab composition
+ * previously at src/components/sections/_lab/SectionHowItWorksLab.tsx. The
+ * step visuals, StepIndicator, shared defaults, and sub-state-machine hook
+ * were lifted namespace from `_lab/how-it-works/*` to `how-it-works/*` in the
+ * same wave. Lab scaffolding removed: no `?step=N` URL read here (dev pin is
+ * gated behind each step visual's `devPin` prop, only enabled by the
+ * `/lab/how-it-works` preview route). No PLACEHOLDER copy. No lab page chrome.
+ *
+ * Copy source: lp-copy-deck-v5.md §Section 3 (v5.3). Em-dash substitutions
+ * logged in design/build-deviations.md DEV-017. */
 
 'use client'
 
+import { useRef, useState, useEffect, useCallback, useSyncExternalStore, type ReactNode } from 'react'
+import { motion, AnimatePresence, useInView, useReducedMotion } from 'motion/react'
+import { Sparkle, Microphone, PhoneCall } from '@phosphor-icons/react'
 import MotionCTA from '@/components/shared/motion-cta'
-import ScrollReveal from '@/components/shared/scroll-reveal'
-import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
 import { CTA } from '@/lib/constants'
-import { Check, Warning } from '@phosphor-icons/react'
+import StepIndicator, { type StepMeta } from './how-it-works/StepIndicator'
+import StepOneVisual from './how-it-works/StepOneVisual'
+import StepTwoVisual from './how-it-works/StepTwoVisual'
+import StepThreeVisual from './how-it-works/StepThreeVisual'
+import StepFourVisual from './how-it-works/StepFourVisual'
+import StepOneMobileVisual from './how-it-works/_mobile/StepOneMobileVisual'
+import StepTwoMobileVisual from './how-it-works/_mobile/StepTwoMobileVisual'
+import StepThreeMobileVisual from './how-it-works/_mobile/StepThreeMobileVisual'
+import StepFourMobileVisual from './how-it-works/_mobile/StepFourMobileVisual'
 
-/* ---------- Step 1 composites ---------- */
-
-function CharacterCard() {
-	return (
-		<div className="w-56 rounded-xl border border-cc-surface-border bg-cc-surface-card p-4 shadow-lg">
-			<div className="mb-3 flex items-center gap-3">
-				<div className="flex h-10 w-10 items-center justify-center rounded-full bg-cc-accent/15 text-sm font-semibold text-cc-accent">
-					JD
-				</div>
-				<div>
-					<div className="text-sm font-medium text-white">CEO, Enterprise Software</div>
-					<div className="text-xs text-cc-text-secondary">Series B, 200 employees</div>
-				</div>
-			</div>
-			<div className="flex items-center gap-2">
-				<span className="text-[10px] text-cc-text-secondary">Difficulty</span>
-				<div className="h-1.5 flex-1 overflow-hidden rounded-full bg-cc-surface/60">
-					<div className="h-full w-4/5 rounded-full bg-cc-accent" />
-				</div>
-				<span className="font-[family-name:var(--font-mono)] text-[10px] text-cc-accent">Hard</span>
-			</div>
-		</div>
-	)
+/* SSR-safe mount flag. useSyncExternalStore returns the SSR snapshot (false) on
+ * the server AND on the first client render, then switches to the client
+ * snapshot (true) AFTER hydration completes. F33 hydration fix carried forward
+ * from the lab composition. */
+function subscribeNoop() { return () => {} }
+function useMounted(): boolean {
+	return useSyncExternalStore(subscribeNoop, () => true, () => false)
 }
 
-function CheckpointPill() {
-	return (
-		<div className="flex w-fit items-center gap-2 rounded-full border border-cc-accent/30 bg-cc-accent/10 px-4 py-2">
-			<Check size={14} weight="bold" className="text-cc-accent" />
-			<span className="text-xs font-medium text-cc-accent">Objection Handling</span>
-		</div>
-	)
-}
-
-/* ---------- Step 2 composites ---------- */
-
-function PhoneMockupStatic() {
-	return (
-		<div className="relative mx-auto w-[260px]">
-			{/* Subtle glow */}
-			<div
-				className="absolute inset-0"
-				aria-hidden="true"
-				style={{
-					background: 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)',
-				}}
-			/>
-
-			{/* Frame */}
-			<div className="relative z-10 rounded-[2.5rem] border border-white/12 bg-cc-surface-card p-3">
-				{/* Notch */}
-				<div className="absolute left-1/2 top-3 z-20 h-5 w-24 -translate-x-1/2 rounded-full bg-cc-foundation" />
-
-				{/* Screen */}
-				<div
-					className="relative overflow-hidden rounded-[2rem] bg-cc-foundation"
-					style={{ aspectRatio: '9 / 19.5' }}
-				>
-					{/* Status bar */}
-					<div className="flex h-10 items-end justify-center pb-1">
-						<div className="h-1 w-8 rounded-full bg-white/20" />
-					</div>
-
-					{/* Annotation content (static) */}
-					<div className="flex flex-col gap-3 p-4">
-						<div className="flex items-center gap-2 text-xs font-medium text-[#EF4444]">
-							<Warning size={14} weight="bold" />
-							<span>Missed The Mark</span>
-						</div>
-						<div className="rounded-lg border border-cc-surface-border bg-cc-surface/60 p-3">
-							<div className="mb-2 text-[10px] text-cc-text-secondary">0:47 - Objection Handling</div>
-							<div className="text-xs text-white">&ldquo;Let me check with my team...&rdquo;</div>
-						</div>
-						<div className="rounded-md border border-[#EF4444]/30 bg-[#EF4444]/10 px-3 py-2">
-							<div className="text-[10px] font-medium text-[#EF4444]">You let the prospect defer.</div>
-							<div className="mt-1 text-[10px] text-cc-text-secondary">Try: isolate the real objection first.</div>
-						</div>
-						<div className="mt-1 rounded-lg border border-cc-surface-border bg-cc-surface/60 p-3">
-							<div className="mb-2 text-[10px] text-cc-text-secondary">1:23 - Discovery</div>
-							<div className="text-xs text-white">&ldquo;What&rsquo;s your current process?&rdquo;</div>
-						</div>
-						<div className="rounded-md border border-cc-accent/30 bg-cc-accent/10 px-3 py-2">
-							<div className="text-[10px] font-medium text-cc-accent">Strong open-ended question.</div>
-							<div className="mt-1 text-[10px] text-cc-text-secondary">Builds rapport and surfaces pain points.</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	)
-}
-
-function ReplacementBadge() {
-	const items = ['Voice Memos', 'ChatGPT', 'Phone App']
-	return (
-		<div className="flex flex-wrap items-center justify-center gap-2 pt-4">
-			<span className="text-xs font-medium text-cc-text-secondary">CloserCoach Replaces:</span>
-			<div className="flex flex-wrap items-center gap-1.5">
-				{items.map((item, i) => (
-					<span key={item} className="flex items-center gap-1.5">
-						<span className="rounded-md border border-cc-surface-border bg-cc-surface-card px-3 py-1.5 text-xs font-medium text-white">
-							{item}
-						</span>
-						{i < items.length - 1 && (
-							<span className="text-xs text-cc-text-muted">+</span>
-						)}
-					</span>
-				))}
-			</div>
-		</div>
-	)
-}
-
-/* ---------- Step 3 composites ---------- */
-
-const industries = ['Insurance', 'Real Estate', 'Automotive'] as const
-const dimensions = ['Discovery', 'Pitch', 'Objections', 'Closing', 'Tonality'] as const
-
-function ScorecardComposite() {
-	return (
-		<div className="overflow-hidden rounded-xl border border-cc-surface-border bg-cc-surface-card">
-			{/* Industry tabs */}
-			<div className="flex border-b border-cc-surface-border">
-				{industries.map((tab) => (
-					<button
-						key={tab}
-						className={`flex-1 px-4 py-2.5 text-xs font-medium transition-colors ${
-							tab === 'Insurance'
-								? 'border-b-2 border-cc-accent bg-cc-surface-card text-cc-accent'
-								: 'text-cc-text-secondary hover:text-white'
-						}`}
-					>
-						{tab}
-					</button>
-				))}
-			</div>
-
-			<div className="flex">
-				{/* Dimension sidebar */}
-				<div className="flex w-28 shrink-0 flex-col border-r border-cc-surface-border">
-					{dimensions.map((dim) => (
-						<button
-							key={dim}
-							className={`px-3 py-2.5 text-left text-xs font-medium transition-colors ${
-								dim === 'Discovery'
-									? 'bg-cc-accent/10 text-cc-accent'
-									: 'text-cc-text-secondary hover:text-white'
-							}`}
-						>
-							{dim}
-						</button>
-					))}
-				</div>
-
-				{/* Main comparison panel */}
-				<div className="flex-1 p-4">
-					<div className="mb-3 flex items-center justify-between">
-						<span className="text-xs font-medium text-cc-accent">Discovery</span>
-						<span className="font-[family-name:var(--font-mono)] text-xs text-cc-accent">B+</span>
-					</div>
-
-					{/* What you said */}
-					<div className="mb-3 rounded-lg border border-cc-score-red/20 bg-cc-score-red/5 p-3">
-						<div className="mb-1 text-[10px] font-medium text-cc-score-red">What you said</div>
-						<div className="text-xs text-cc-text-secondary">
-							&ldquo;So tell me about your business.&rdquo;
-						</div>
-					</div>
-
-					{/* What you should've said */}
-					<div className="rounded-lg border border-cc-accent/20 bg-cc-accent/5 p-3">
-						<div className="mb-1 text-[10px] font-medium text-cc-accent">What you should&rsquo;ve said</div>
-						<div className="text-xs text-cc-text-secondary">
-							&ldquo;Walk me through what happens when a new lead comes in today.&rdquo;
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	)
-}
-
-/* ---------- Step marker ---------- */
-
-function StepMarker({ number, phase }: { number: string; phase: string }) {
-	return (
-		<div className="flex items-center gap-2">
-			<span className="text-xs font-medium uppercase tracking-wider text-cc-accent">
-				[{number}] {phase}
-			</span>
-		</div>
-	)
-}
-
-/* ---------- Main section ---------- */
+const STEPS: readonly StepMeta[] = [
+	{ number: '01', label: 'PLAN' },
+	{ number: '02', label: 'PRACTICE' },
+	{ number: '03', label: 'SELL' },
+	{ number: '04', label: 'REVIEW' },
+] as const
 
 /**
- * @description S3 How It Works: 3-phase vertical progression (Before/During/After).
- * Each step has a distinct layout: Step 1 = quote-forward split with floating UI composites,
- * Step 2 = centered phone mockup with flanking text, Step 3 = tab-structured scorecard.
- * Emerald thread line connects step markers. Dark surface with L2 noise.
+ * @description S3 How It Works. Renders the opener, the split layout, and the
+ * per-activeStep sticky right-column visual. Each step room's useInView advances
+ * the shared activeStep monotonically (forward-only; scrolling back up does NOT
+ * un-visit a step).
+ *
+ * @param devPin When true, step visuals read `?pin=<state>` from the URL to
+ *   pin their sub-state machine for DD / Playwright captures. Production (the
+ *   homepage `/` route) leaves this false. Only the `/lab/how-it-works`
+ *   preview route passes `devPin={true}`.
  */
-export default function SectionHowItWorks() {
+export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean } = {}) {
+	const splitRef = useRef<HTMLDivElement>(null)
+	const [activeStep, setActiveStep] = useState(1)
+
+	const advanceTo = useCallback((n: number) => {
+		setActiveStep((prev) => (n > prev ? n : prev))
+	}, [])
+
 	return (
 		<section
-			id="product"
+			id="how-it-works"
 			data-surface="dark-education"
-			className="relative overflow-hidden bg-cc-foundation py-24 md:py-32"
+			className="relative w-full bg-cc-foundation"
 		>
-			{/* L2: Noise texture */}
-			<AtmosphereNoise opacity={0.02} />
+			{/* Section opener */}
+			<div className="mx-auto max-w-7xl px-6 py-24 text-center md:px-12 lg:px-24 lg:py-32">
+				<p className="font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.2em] text-cc-accent">
+					HOW IT WORKS
+				</p>
+				<h2 className="display-lg mx-auto mt-6 max-w-4xl text-white md:text-5xl lg:text-6xl">
+					Practice. Lose. Learn. <span className="text-cc-accent">Win.</span>
+				</h2>
+				<p className="mx-auto mt-6 max-w-2xl text-lg text-cc-text-secondary md:text-xl">
+					Train before the call. Find out where you lost it. Fix it before it costs you again.
+				</p>
+			</div>
 
-			{/* Content */}
-			<div className="relative z-10 mx-auto max-w-7xl px-6">
-				{/* Section header */}
-				<ScrollReveal className="mb-20 text-center md:mb-24">
-					<h2 className="display-lg text-white">
-						Practice. Lose. Learn. Win.
-					</h2>
-					<p className="mx-auto mt-4 max-w-2xl text-lg text-cc-text-secondary">
-						Train before the call. Find out where you lost it. Fix it before it costs you again.
-					</p>
-				</ScrollReveal>
+			{/* Split layout: position: relative so Motion useScroll can compute offsets.
+			 * F5 (W6): `position: relative` is set explicitly via the `relative` class
+			 * and via `style={{ position: 'relative' }}` so Motion's useScroll in
+			 * StepIndicator never falls back to the mount-time "non-static position"
+			 * warning. Tailwind's `relative` is already present; the inline style is
+			 * a belt-and-suspenders guarantee that the value is set on the very first
+			 * paint (before Tailwind's compiled CSS has bound to the DOM).
+			 *
+			 * F63 (W6): `pb-32 lg:pb-24` (desktop baseline pb-24; mobile pb-32) adds
+			 * 32px of bottom padding above the existing py-24 so the cookie banner
+			 * (z-50 fixed bottom ~142px tall on mobile) does not occlude Step 4's
+			 * AI Coach summary + CTA. The banner is dismissible; once accepted/declined
+			 * the extra padding is harmless. The 32px delta > the 24px cookie-banner
+			 * backdrop compensation that sat above the banner's backdrop-blur. */}
+			<div
+				ref={splitRef}
+				style={{ position: 'relative' }}
+				className="relative mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 pb-32 md:px-12 lg:grid-cols-[35%_65%] lg:gap-16 lg:px-24 lg:pb-24"
+			>
+				<StepIndicator steps={STEPS} activeStep={activeStep} containerRef={splitRef} />
 
-				{/* Steps container with emerald thread */}
-				<div className="relative">
-					{/* Emerald thread line (desktop only) */}
-					<div
-						className="absolute left-6 top-0 hidden h-full w-px bg-cc-accent/30 md:block"
-						aria-hidden="true"
-					/>
-
-					{/* ===== STEP 1: Before ===== */}
-					<ScrollReveal className="relative mb-24 md:mb-32 md:pl-16" delay={0}>
-						{/* Thread dot */}
-						<div className="absolute left-5 top-1 hidden h-3 w-3 rounded-full border-2 border-cc-accent bg-cc-foundation md:block" aria-hidden="true" />
-
-						<div className="grid grid-cols-1 items-start gap-10 md:grid-cols-[55%_45%] md:gap-12">
-							{/* Left: text + testimonial */}
-							<div className="flex flex-col gap-6">
-								<StepMarker number="01" phase="Before" />
-								<h3 className="display-md text-white">
-									Close The Deal Before The Meeting Even Starts
-								</h3>
-
-								{/* Testimonial */}
-								<blockquote className="relative border-l-2 border-cc-accent/30 pl-6">
-									<span
-										className="absolute -left-1 -top-4 text-6xl leading-none text-cc-accent/20"
-										aria-hidden="true"
-									>
-										&ldquo;
-									</span>
-									<p className="text-lg italic text-white md:text-xl">
-										Helped me close a $10k+ deal last week. I used the app to rehearse my pitch to the CEO of a large company that was scheduled 3 weeks in advance.
-									</p>
-								</blockquote>
-
-								{/* Body */}
-								<div className="flex flex-col gap-4">
-									<p className="text-base text-cc-text-secondary">
-										Tell us what your leads look like. Our AI builds a practice partner that looks, talks, and pushes back exactly like your real buyer. Run the call before the call -- so when you&rsquo;re live, it feels like your second time through the door.
-									</p>
-									<p className="text-base text-cc-text-secondary">
-										You already know the objections. You already know the close.
-									</p>
-								</div>
-							</div>
-
-							{/* Right: floating UI composites */}
-							<div className="relative flex flex-col items-center gap-6 pt-8 md:items-start md:pt-12">
-								<div className="translate-x-0 md:translate-x-4">
-									<CharacterCard />
-								</div>
-								<div className="translate-x-0 md:translate-x-12">
-									<CheckpointPill />
-								</div>
-							</div>
-						</div>
-					</ScrollReveal>
-
-					{/* ===== STEP 2: During ===== */}
-					<ScrollReveal className="relative mb-24 md:mb-32 md:pl-16" delay={0.1}>
-						{/* Thread dot */}
-						<div className="absolute left-5 top-1 hidden h-3 w-3 rounded-full border-2 border-cc-accent bg-cc-foundation md:block" aria-hidden="true" />
-
-						<div className="flex flex-col items-center gap-10">
-							{/* Header centered */}
-							<div className="w-full text-center md:text-left">
-								<StepMarker number="02" phase="During" />
-								<h3 className="mt-6 display-md text-white">
-									Record Every Sales Meeting. Anytime. Anywhere.
-								</h3>
-							</div>
-
-							{/* Phone + flanking text */}
-							<div className="grid grid-cols-1 items-center gap-10 md:grid-cols-[1fr_auto_1fr] md:gap-8">
-								{/* Left text */}
-								<div className="flex flex-col gap-4">
-									<p className="text-base text-cc-text-secondary">
-										Dial straight from the app or record any in-person meeting. CloserCoach captures every word, flags your key moments, and delivers notes and coaching -- automatically.
-									</p>
-								</div>
-
-								{/* Center phone */}
-								<PhoneMockupStatic />
-
-								{/* Right text */}
-								<div className="flex flex-col gap-4">
-									<p className="text-base text-cc-text-secondary">
-										Whether you&rsquo;re selling door to door or hammering cold call-- wherever you sell, it&rsquo;s there. Your number shows up on caller ID. No spam flags. No rented numbers. Just your voice, with an AI edge.
-									</p>
-								</div>
-							</div>
-
-							{/* Replacement badge */}
-							<ReplacementBadge />
-						</div>
-					</ScrollReveal>
-
-					{/* ===== STEP 3: After ===== */}
-					<ScrollReveal className="relative mb-16 md:mb-20 md:pl-16" delay={0.15}>
-						{/* Thread dot */}
-						<div className="absolute left-5 top-1 hidden h-3 w-3 rounded-full border-2 border-cc-accent bg-cc-foundation md:block" aria-hidden="true" />
-
-						<div className="grid grid-cols-1 items-start gap-10 md:grid-cols-[45%_55%] md:gap-12">
-							{/* Left: text */}
-							<div className="flex flex-col gap-6">
-								<StepMarker number="03" phase="After" />
-								<h3 className="display-md text-white">
-									See Exactly What&rsquo;s Losing You Deals
-								</h3>
-
-								<div className="flex flex-col gap-4">
-									<p className="text-base text-cc-text-secondary">
-										Every call gets scored A through F, with industry-tailored scorecards and word-for-word talk-tracks showing you exactly what you should have said.
-									</p>
-									<p className="text-base text-cc-text-secondary">
-										Track how your skills improve over time -- discovery, pitch, objection handling, tone, talk time, and close rate. The more you sell, the more your AI knows exactly where you&rsquo;re winning and where you&rsquo;re bleeding deals.
-									</p>
-								</div>
-							</div>
-
-							{/* Right: scorecard composite */}
-							<div className="pt-0 md:pt-8">
-								<ScorecardComposite />
-							</div>
-						</div>
-					</ScrollReveal>
+				{/* Left column: scrolling step rooms */}
+				<div className="flex flex-col lg:pl-16">
+					<StepRoom index={1} onEnter={advanceTo}>
+						<Step1Plan devPin={devPin} />
+					</StepRoom>
+					<StepRoom index={2} onEnter={advanceTo}>
+						<Step2Practice devPin={devPin} />
+					</StepRoom>
+					<StepRoom index={3} onEnter={advanceTo}>
+						<Step3Sell devPin={devPin} />
+					</StepRoom>
+					<StepRoom index={4} onEnter={advanceTo}>
+						<Step4Review devPin={devPin} />
+					</StepRoom>
 				</div>
 
-				{/* Bottom CTA */}
-				<div className="flex justify-center pt-8">
-					<MotionCTA variant="primary" size="lg" href={CTA.tryFree.href}>
-						{CTA.tryFree.text}
-					</MotionCTA>
+				{/* Right column: sticky pinned visual (desktop only) */}
+				<div className="hidden lg:block">
+					<div className="sticky top-[calc(50vh-18rem)] h-[36rem]">
+						<RightColumnVisual activeStep={activeStep} devPin={devPin} />
+					</div>
 				</div>
 			</div>
 		</section>
+	)
+}
+
+/* ---------- Step room ---------- */
+
+/**
+ * @description One ~100vh step room in the left column. useInView fires onEnter
+ * once when the room crosses 40% into viewport. F33 hydration fix: advancement
+ * is gated behind a post-mount flag so SSR and first client render always
+ * produce activeStep=1 (the pinned initial).
+ */
+function StepRoom({
+	index,
+	onEnter,
+	children,
+}: {
+	index: number
+	onEnter: (n: number) => void
+	children: ReactNode
+}) {
+	const prefersReducedMotion = useReducedMotion()
+	const ref = useRef<HTMLDivElement>(null)
+	const isInView = useInView(ref, { amount: 0.4, once: true })
+	const mounted = useMounted()
+
+	useEffect(() => {
+		if (mounted && isInView) onEnter(index)
+	}, [mounted, isInView, index, onEnter])
+
+	return (
+		<motion.div
+			ref={ref}
+			/* F39: stable initial across SSR/client hydration. Reduced-motion snaps
+			 * via transition.duration: 0 below. */
+			initial={{ opacity: 0, y: 24 }}
+			animate={isInView ? { opacity: 1, y: 0 } : {}}
+			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+			className="flex min-h-screen flex-col justify-center py-16"
+		>
+			{children}
+		</motion.div>
+	)
+}
+
+/* ---------- Right column (sticky per-step visual) ---------- */
+
+function RightColumnVisual({ activeStep, devPin }: { activeStep: number; devPin: boolean }) {
+	const prefersReducedMotion = useReducedMotion()
+
+	if (activeStep === 1) {
+		return (
+			<div className="flex h-full min-h-[36rem] items-center justify-center">
+				<StepOneVisual devPin={devPin} />
+			</div>
+		)
+	}
+
+	if (activeStep === 2) {
+		return (
+			<div className="flex h-full min-h-[36rem] items-center justify-center">
+				<StepTwoVisual devPin={devPin} />
+			</div>
+		)
+	}
+
+	if (activeStep === 3) {
+		return (
+			<div className="flex h-full min-h-[36rem] items-center justify-center">
+				<StepThreeVisual devPin={devPin} />
+			</div>
+		)
+	}
+
+	if (activeStep === 4) {
+		return (
+			<div className="flex h-full min-h-[36rem] items-center justify-center">
+				<StepFourVisual devPin={devPin} />
+			</div>
+		)
+	}
+
+	/* Fallback branch for unexpected activeStep (should never trigger since
+	 * activeStep is clamped to 1-4 via advanceTo + useState init). */
+	return (
+		<AnimatePresence mode="popLayout" initial={false}>
+			<motion.div
+				key={activeStep}
+				initial={{ opacity: 0, y: 24 }}
+				animate={{ opacity: 1, y: 0 }}
+				exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -24 }}
+				transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+				className="flex h-full min-h-[36rem] items-center justify-center rounded-3xl border border-white/[0.08] bg-cc-surface-card/60 p-8 lg:p-12"
+			/>
+		</AnimatePresence>
+	)
+}
+
+/* ---------- Shared copy primitives ---------- */
+
+function StepKicker({ number, children }: { number: string; children: ReactNode }) {
+	return (
+		<div className="flex items-center gap-3">
+			<span
+				className="flex h-8 w-8 items-center justify-center rounded-full border border-cc-accent/30 bg-cc-foundation font-[family-name:var(--font-mono)] text-[12px] text-cc-accent lg:hidden"
+				aria-hidden="true"
+			>
+				{number}
+			</span>
+			<p className="font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.2em] text-cc-accent">
+				{children}
+			</p>
+		</div>
+	)
+}
+
+function StepHeadline({ children }: { children: ReactNode }) {
+	return (
+		<h3 className="mt-4 text-3xl leading-[1.15] text-white md:text-4xl lg:text-[2.75rem]">
+			{children}
+		</h3>
+	)
+}
+
+function StepBody({ children }: { children: ReactNode }) {
+	return (
+		<p className="mt-6 max-w-xl text-base leading-relaxed text-cc-text-secondary md:text-lg">
+			{children}
+		</p>
+	)
+}
+
+/* ---------- Step 1: Plan ---------- */
+
+function Step1Plan({ devPin }: { devPin: boolean }) {
+	return (
+		<>
+			<StepKicker number="01">PLAN</StepKicker>
+			<StepHeadline>
+				<em className="not-italic text-cc-accent">Clone Your Clients</em> Before The Meeting Even Starts
+			</StepHeadline>
+			<StepBody>
+				Sync your calendar and CRM. CloserCoach pulls the buyer&rsquo;s profile, clones them, and hands you a practice partner that looks, talks, and pushes back exactly like the real person on your calendar.
+			</StepBody>
+
+			{/* Mobile visual: compact composition echoes the desktop right-column
+			 * calendar -> clone enrichment moment. Hidden at lg+ where the sticky
+			 * desktop StepOneVisual takes over. R7 v3 D9 first-class mobile.
+			 * devPin is not wired to mobile visuals (they have no pinnable
+			 * sub-state; they animate once on inView and settle). */}
+			<div className="mt-8 lg:hidden">
+				<StepOneMobileVisual />
+			</div>
+
+			{/* Desktop-only devPin consumer: the sticky StepOneVisual below reads
+			 * devPin from the Right Column. This wrapper here is mobile-scoped. */}
+			{devPin && null}
+
+			<figure className="mt-10 max-w-xl rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 p-6">
+				<blockquote className="text-base leading-relaxed text-white md:text-lg">
+					&ldquo;Helped me close a $10k+ deal last week. I used the app to rehearse my pitch to the CEO of a large company that was scheduled 3 weeks in advance.&rdquo;
+				</blockquote>
+				<figcaption className="mt-4 flex items-center gap-3">
+					<span className="inline-flex items-center gap-1.5 rounded-full border border-cc-accent/30 bg-cc-accent/10 px-2.5 py-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.15em] text-cc-accent">
+						Verified user
+					</span>
+					<span className="text-xs text-cc-text-secondary">Enterprise sales</span>
+				</figcaption>
+			</figure>
+		</>
+	)
+}
+
+/* ---------- Step 2: Practice ---------- */
+
+function Step2Practice({ devPin }: { devPin: boolean }) {
+	return (
+		<>
+			<StepKicker number="02">PRACTICE</StepKicker>
+			<StepHeadline>
+				Roleplay Until <em className="not-italic text-cc-accent">Every Objection</em> Feels Predictable
+			</StepHeadline>
+			<StepBody>
+				The AI clone is realistic enough that prospects hang up when you fumble. Track your interest meter in real time, pull one-click suggested responses when you&rsquo;re stuck, and drill until your pitch is sharp.
+			</StepBody>
+
+			{/* Mobile visual: compact roleplay stub + horizontal interest meter +
+			 * readiness gauge. Rotates the vertical desktop meter to horizontal per
+			 * mobile affordance. Hidden at lg+. */}
+			<div className="mt-8 lg:hidden">
+				<StepTwoMobileVisual />
+			</div>
+
+			{devPin && null}
+
+			<div className="mt-8 inline-flex items-center gap-3 rounded-full border border-cc-surface-border bg-cc-surface-card/40 px-4 py-2">
+				<span className="font-[family-name:var(--font-mono)] text-sm text-cc-accent">5 min / week</span>
+				<span className="text-xs text-cc-text-secondary">=</span>
+				<span className="font-[family-name:var(--font-mono)] text-sm text-white">2 practice rounds</span>
+			</div>
+		</>
+	)
+}
+
+/* ---------- Step 3: Sell ---------- */
+
+function Step3Sell({ devPin }: { devPin: boolean }) {
+	return (
+		<>
+			<StepKicker number="03">SELL</StepKicker>
+			<StepHeadline>
+				Take The Call. <em className="not-italic text-cc-accent">Close The Deal.</em>
+			</StepHeadline>
+			<StepBody>
+				Dial directly from CloserCoach for AI-powered phone calls, or record any in-person meeting. Every word captured, every missed moment flagged, every objection coached: whether you&rsquo;re at the door or on the phone.
+			</StepBody>
+
+			{/* Mobile visual: mode toggle + live call card + 2 annotation chips.
+			 * Phone frame dropped at mobile scale (the phone motif carries on
+			 * desktop only). Replacement badge stays below; mobile visual echoes
+			 * the SELL moment without recreating the signature annotations-spring-
+			 * out choreography. Hidden at lg+. */}
+			<div className="mt-8 lg:hidden">
+				<StepThreeMobileVisual />
+			</div>
+
+			{devPin && null}
+
+			<div className="mt-8 flex max-w-xl flex-wrap items-center gap-2 rounded-full border border-cc-surface-border bg-cc-surface-card/40 px-4 py-2">
+				<span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.15em] text-cc-text-secondary">
+					CloserCoach replaces
+				</span>
+				<span className="inline-flex items-center gap-1.5 rounded-full bg-cc-surface/60 px-2.5 py-1 text-xs text-white">
+					<Microphone size={12} weight="regular" className="text-cc-accent" />
+					Voice Memos
+				</span>
+				<span className="text-cc-text-muted">+</span>
+				<span className="inline-flex items-center gap-1.5 rounded-full bg-cc-surface/60 px-2.5 py-1 text-xs text-white">
+					<Sparkle size={12} weight="regular" className="text-cc-accent" />
+					ChatGPT
+				</span>
+				<span className="text-cc-text-muted">+</span>
+				<span className="inline-flex items-center gap-1.5 rounded-full bg-cc-surface/60 px-2.5 py-1 text-xs text-white">
+					<PhoneCall size={12} weight="regular" className="text-cc-accent" />
+					Phone App
+				</span>
+			</div>
+		</>
+	)
+}
+
+/* ---------- Step 4: Review ---------- */
+
+function Step4Review({ devPin }: { devPin: boolean }) {
+	return (
+		<>
+			<StepKicker number="04">REVIEW</StepKicker>
+			<StepHeadline>
+				See <em className="not-italic text-cc-accent">Exactly</em> What&rsquo;s Losing You Deals
+			</StepHeadline>
+			<StepBody>
+				Every call gets scored A through F, with industry-tailored scorecards and word-for-word talk-tracks showing you exactly what you should have said.
+			</StepBody>
+			<p className="mt-5 max-w-xl text-base leading-relaxed text-cc-text-secondary md:text-lg">
+				Track how your skills improve over time: discovery, pitch, objection handling, tone, talk time, and close rate. The more you sell, the more your AI knows exactly where you&rsquo;re winning and where you&rsquo;re bleeding deals.
+			</p>
+
+			{/* Mobile visual: horizontal metric pills + stacked Practice/Real
+			 * scorecards with vertical delta arrow + transcript pair + AI Coach
+			 * summary with wrapped stats. Hidden at lg+ where the sticky desktop
+			 * StepFourVisual takes over. */}
+			<div className="mt-8 lg:hidden">
+				<StepFourMobileVisual />
+			</div>
+
+			{devPin && null}
+
+			{/* Bottom CTA: dual affordance. MotionCTA matches the rest of the site's
+			 * primary-CTA treatment (Hero + SectionCTA), mono app-store caption
+			 * mirrors the copy deck's "App Store / Google Play" line. */}
+			<div className="mt-10 flex flex-wrap items-center gap-3">
+				<MotionCTA variant="primary" size="lg" href={CTA.tryFree.href}>
+					{CTA.tryFree.text}
+				</MotionCTA>
+				<span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.15em] text-cc-text-muted">
+					App Store / Google Play
+				</span>
+			</div>
+		</>
 	)
 }

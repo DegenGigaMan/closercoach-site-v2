@@ -448,16 +448,23 @@ function AICoachSummary({ revealed, prefersReducedMotion }: {
 				<span className="font-semibold text-cc-accent">B grade.</span>
 				{' Top 15% this week.'}
 			</p>
-			{/* Stats row (PC6). NumberFlow on the WPM value so the reveal feels measured. */}
+			{/* Stats row (PC6). NumberFlow on the WPM value so the reveal feels measured.
+			 * F60 (W6): explicit aria-label on the NumberFlow wrapper and sr-only text
+			 * below so the animated digit reveal doesn't leave assistive-tech users with
+			 * an un-announced statistic. */}
 			<div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-[family-name:var(--font-mono)] text-[10.5px] text-cc-text-secondary tabular-nums">
-				<span>
-					<NumberFlow value={revealed ? AI_SUMMARY_STATS_WPM : 0} />
-					{' WPM'}
+				<span aria-label={`${AI_SUMMARY_STATS_WPM} words per minute`}>
+					<span aria-hidden="true">
+						<NumberFlow value={revealed ? AI_SUMMARY_STATS_WPM : 0} />
+						{' WPM'}
+					</span>
 				</span>
-				<span className="text-cc-text-muted">/</span>
-				<span>
-					{`${AI_SUMMARY_STATS_TALK} / ${AI_SUMMARY_STATS_LISTEN}`}
-					<span className="text-cc-text-muted">{' talk-listen'}</span>
+				<span aria-hidden="true" className="text-cc-text-muted">/</span>
+				<span aria-label={`${AI_SUMMARY_STATS_TALK} percent talk, ${AI_SUMMARY_STATS_LISTEN} percent listen ratio`}>
+					<span aria-hidden="true">
+						{`${AI_SUMMARY_STATS_TALK} / ${AI_SUMMARY_STATS_LISTEN}`}
+						<span className="text-cc-text-muted">{' talk-listen'}</span>
+					</span>
 				</span>
 			</div>
 			{/* PC4 callout: verbatim from copy deck / proof inventory. */}
@@ -470,9 +477,11 @@ function AICoachSummary({ revealed, prefersReducedMotion }: {
 
 /* --------------- Dev pin hook --------------- */
 
-function useSubStatePin(): SubState | null {
+/* Gated behind `enabled` prop (W6). Production never reads URLSearchParams. */
+function useSubStatePin(enabled: boolean): SubState | null {
 	const [pin, setPin] = useState<SubState | null>(null)
 	useEffect(() => {
+		if (!enabled) return
 		const t = setTimeout(() => {
 			if (typeof window === 'undefined') return
 			const raw = new URLSearchParams(window.location.search).get('pin')
@@ -481,17 +490,17 @@ function useSubStatePin(): SubState | null {
 			}
 		}, 0)
 		return () => clearTimeout(t)
-	}, [])
+	}, [enabled])
 	return pin
 }
 
 /* --------------- Main component --------------- */
 
-export default function StepFourVisual() {
+export default function StepFourVisual({ devPin = false }: { devPin?: boolean } = {}) {
 	const prefersReducedMotion = useReducedMotion() ?? false
 	const rootRef = useRef<HTMLDivElement>(null)
 	const inView = useInView(rootRef, { amount: 0.3, once: true })
-	const pin = useSubStatePin()
+	const pin = useSubStatePin(devPin)
 	const machineState = useSubStateMachine<SubState>({
 		states: STEP_FOUR_STATES,
 		trigger: inView,

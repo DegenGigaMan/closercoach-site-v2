@@ -518,12 +518,13 @@ function ReadinessGauge({ subState, prefersReducedMotion }: {
 
 /* ─── Main component ───────────────────────────────────────── */
 
-/* Dev-only sub-state pin. Mirrors W2 StepOneVisual's useSubStatePin. When
- * `?pin=2A..2E` is in the URL, the chain is bypassed and subState stays pinned.
- * Enables DD / Playwright captures of any sub-state without racing auto-advance. */
-function useSubStatePin(): SubState | null {
+/* Dev-only sub-state pin. Gated behind `enabled` prop (W6). Production callers
+ * never read URLSearchParams; only the `/lab/how-it-works` preview passes
+ * devPin={true} to re-enable. Same signature as sibling step visuals. */
+function useSubStatePin(enabled: boolean): SubState | null {
 	const [pin, setPin] = useState<SubState | null>(null)
 	useEffect(() => {
+		if (!enabled) return
 		const t = setTimeout(() => {
 			if (typeof window === 'undefined') return
 			const raw = new URLSearchParams(window.location.search).get('pin')
@@ -532,16 +533,16 @@ function useSubStatePin(): SubState | null {
 			}
 		}, 0)
 		return () => clearTimeout(t)
-	}, [])
+	}, [enabled])
 	return pin
 }
 
-export default function StepTwoVisual() {
+export default function StepTwoVisual({ devPin = false }: { devPin?: boolean } = {}) {
 	const prefersReducedMotion = useReducedMotion() ?? false
 	const rootRef = useRef<HTMLDivElement>(null)
 	/* Auto-fire on sticky viewport entry. amount: 0.3 + once: true mirrors W1/W2. */
 	const inView = useInView(rootRef, { amount: 0.3, once: true })
-	const pin = useSubStatePin()
+	const pin = useSubStatePin(devPin)
 	const machineState = useSubStateMachine<SubState>({
 		states: STEP_TWO_STATES,
 		trigger: inView,
