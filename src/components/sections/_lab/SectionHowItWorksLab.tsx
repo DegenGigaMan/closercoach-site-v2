@@ -30,6 +30,10 @@ import StepOneVisual from './how-it-works/StepOneVisual'
 import StepTwoVisual from './how-it-works/StepTwoVisual'
 import StepThreeVisual from './how-it-works/StepThreeVisual'
 import StepFourVisual from './how-it-works/StepFourVisual'
+import StepOneMobileVisual from './how-it-works/_mobile/StepOneMobileVisual'
+import StepTwoMobileVisual from './how-it-works/_mobile/StepTwoMobileVisual'
+import StepThreeMobileVisual from './how-it-works/_mobile/StepThreeMobileVisual'
+import StepFourMobileVisual from './how-it-works/_mobile/StepFourMobileVisual'
 
 const STEPS: readonly StepMeta[] = [
 	{ number: '01', label: 'PLAN' },
@@ -281,6 +285,13 @@ function Step1Plan() {
 				Sync your calendar and CRM. CloserCoach pulls the buyer&rsquo;s profile, clones them, and hands you a practice partner that looks, talks, and pushes back exactly like the real person on your calendar.
 			</StepBody>
 
+			{/* Mobile visual: compact composition echoes the desktop right-column
+			 * calendar->clone enrichment moment. Hidden at lg+ where the sticky
+			 * desktop StepOneVisual takes over. R7 v3 D9 first-class mobile. */}
+			<div className="mt-8 lg:hidden">
+				<StepOneMobileVisual />
+			</div>
+
 			<figure className="mt-10 max-w-xl rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 p-6">
 				<blockquote className="text-base leading-relaxed text-white md:text-lg">
 					&ldquo;Helped me close a $10k+ deal last week. I used the app to rehearse my pitch to the CEO of a large company that was scheduled 3 weeks in advance.&rdquo;
@@ -309,6 +320,13 @@ function Step2Practice() {
 				The AI clone is realistic enough that prospects hang up when you fumble. Track your interest meter in real time, pull one-click suggested responses when you&rsquo;re stuck, and drill until your pitch is sharp.
 			</StepBody>
 
+			{/* Mobile visual: compact roleplay stub + horizontal interest meter +
+			 * readiness gauge. Rotates the vertical desktop meter to horizontal per
+			 * mobile affordance. Hidden at lg+. */}
+			<div className="mt-8 lg:hidden">
+				<StepTwoMobileVisual />
+			</div>
+
 			<div className="mt-8 inline-flex items-center gap-3 rounded-full border border-cc-surface-border bg-cc-surface-card/40 px-4 py-2">
 				<span className="font-[family-name:var(--font-mono)] text-sm text-cc-accent">5 min / week</span>
 				<span className="text-xs text-cc-text-secondary">=</span>
@@ -334,6 +352,15 @@ function Step3Sell() {
 			<StepBody>
 				Dial directly from CloserCoach for AI-powered phone calls, or record any in-person meeting. Every word captured, every missed moment flagged, every objection coached: whether you&rsquo;re at the door or on the phone.
 			</StepBody>
+
+			{/* Mobile visual: mode toggle + live call card + 2 annotation chips.
+			 * Phone frame dropped at mobile scale (the phone motif carries on
+			 * desktop only). Replacement badge stays below; mobile visual echoes
+			 * the SELL moment without recreating the signature annotations-spring-
+			 * OUT choreography. Hidden at lg+. */}
+			<div className="mt-8 lg:hidden">
+				<StepThreeMobileVisual />
+			</div>
 
 			<div className="mt-8 flex max-w-xl flex-wrap items-center gap-2 rounded-full border border-cc-surface-border bg-cc-surface-card/40 px-4 py-2">
 				<span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.15em] text-cc-text-secondary">
@@ -373,6 +400,14 @@ function Step4Review() {
 			<p className="mt-5 max-w-xl text-base leading-relaxed text-cc-text-secondary md:text-lg">
 				Track how your skills improve over time: discovery, pitch, objection handling, tone, talk time, and close rate. The more you sell, the more your AI knows exactly where you&rsquo;re winning and where you&rsquo;re bleeding deals.
 			</p>
+
+			{/* Mobile visual: horizontal metric pills + stacked Practice/Real
+			 * scorecards with vertical delta arrow + transcript pair + AI Coach
+			 * summary with wrapped stats. Per W5 agent's 6-decision mobile scoping.
+			 * Hidden at lg+ where the sticky desktop StepFourVisual takes over. */}
+			<div className="mt-8 lg:hidden">
+				<StepFourMobileVisual />
+			</div>
 
 			<div className="mt-10 flex flex-wrap items-center gap-3">
 				<button
