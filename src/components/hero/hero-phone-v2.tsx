@@ -444,7 +444,9 @@ function PracticeState() {
 									<motion.div
 										key={entry.id}
 										className="relative mr-auto max-w-[88%] rounded-2xl rounded-bl-sm border border-l-2 border-white/[0.08] border-l-cc-accent/50 bg-cc-surface-card/80 px-3.5 py-2.5 shadow-[0_4px_8px_rgba(0,0,0,0.35)]"
-										initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, x: -14 }}
+										/* F42: stable initial. Reduced-motion users get duration: 0
+										 * below, which snaps from {opacity:0,x:-14} to settled instantly. */
+										initial={{ opacity: 0, x: -14 }}
 										animate={{ opacity: 1, x: 0 }}
 										transition={prefersReducedMotion
 											? { duration: 0 }
@@ -463,7 +465,9 @@ function PracticeState() {
 								<div key={group.user.id} className="ml-auto flex max-w-[88%] flex-col items-end">
 									<motion.div
 										className="rounded-2xl rounded-br-sm border border-cc-accent/20 bg-cc-accent/15 px-3.5 py-2.5"
-										initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, x: 14 }}
+										/* F42: stable initial. Reduced-motion users get duration: 0
+										 * below, which snaps from {opacity:0,x:14} to settled instantly. */
+										initial={{ opacity: 0, x: 14 }}
 										animate={{ opacity: 1, x: 0 }}
 										transition={prefersReducedMotion
 											? { duration: 0 }
@@ -493,7 +497,9 @@ function PracticeState() {
 			<div className="flex flex-col gap-3">
 				<motion.div
 					className="flex items-center justify-between px-1"
-					initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+					/* F42: stable initial. Reduced-motion users get duration: 0
+					 * below, which snaps from {opacity:0} to settled instantly. */
+					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.1, duration: 0.3 }}
 				>
@@ -530,7 +536,9 @@ function PracticeState() {
 
 				<motion.div
 					className="flex items-center gap-2.5 rounded-xl border border-white/[0.06] px-4 py-3"
-					initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, y: 8 }}
+					/* F42: stable initial. Reduced-motion users get duration: 0
+					 * below, which snaps from {opacity:0,y:8} to settled instantly. */
+					initial={{ opacity: 0, y: 8 }}
 					animate={{
 						opacity: 1,
 						y: 0,
@@ -625,7 +633,9 @@ function CoachingPill({ type, label, delay, prefersReducedMotion, timestamp }: {
 			)}
 			<motion.span
 				className={pillClass}
-				initial={prefersReducedMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.85, y: -4 }}
+				/* F42: stable initial. Reduced-motion users get duration: 0
+				 * below, which snaps from {opacity:0,scale:0.85,y:-4} to settled instantly. */
+				initial={{ opacity: 0, scale: 0.85, y: -4 }}
 				animate={{ opacity: 1, scale: 1, y: 0 }}
 				transition={prefersReducedMotion
 					? { duration: 0 }
@@ -757,7 +767,9 @@ function RecordState() {
 			<div className="flex flex-1 flex-col items-center justify-center py-3">
 				<motion.div
 					className="w-full"
-					initial={prefersReducedMotion ? { scaleY: 1, opacity: 1 } : { scaleY: 0.55, opacity: 0.6 }}
+					/* F42: stable initial. Reduced-motion users get duration: 0
+					 * below, which snaps from {scaleY:0.55,opacity:0.6} to settled instantly. */
+					initial={{ scaleY: 0.55, opacity: 0.6 }}
 					animate={{
 						scaleY: isCapture ? 0.55 : 1,
 						opacity: isCapture ? 0.6 : 1,
@@ -776,7 +788,9 @@ function RecordState() {
 						<motion.div
 							key="annotation-stack"
 							className="flex flex-col items-end gap-1.5"
-							initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+							/* F42: stable initial. Reduced-motion users get duration: 0
+							 * below, which snaps from {opacity:0} to settled instantly. */
+							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2 }}
 						>
@@ -803,7 +817,9 @@ function RecordState() {
 						<motion.div
 							key="transcript"
 							className="px-1 text-[10px] italic leading-relaxed text-cc-text-muted-warm/85"
-							initial={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -8 }}
+							/* F42: stable initial. Reduced-motion users get duration: 0
+							 * below, which snaps from {opacity:0,x:-8} to settled instantly. */
+							initial={{ opacity: 0, x: -8 }}
 							animate={{ opacity: 1, x: 0 }}
 							transition={prefersReducedMotion
 								? { duration: 0 }
@@ -817,7 +833,9 @@ function RecordState() {
 
 				<motion.div
 					className="relative flex items-center justify-center gap-2 rounded-xl border border-cc-score-red/20 py-2.5"
-					initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+					/* F42: stable initial. Reduced-motion users get duration: 0
+					 * below, which snaps from {opacity:0,y:8} to settled instantly. */
+					initial={{ opacity: 0, y: 8 }}
 					animate={prefersReducedMotion
 						? {
 							opacity: 1,
@@ -918,7 +936,9 @@ function ScoreState() {
 	return (
 		<motion.div
 			className="flex h-full flex-col justify-between px-4 pb-4 pt-1"
-			initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+			/* F42: stable initial. Reduced-motion users get duration: 0
+			 * below, which snaps from {opacity:0} to settled instantly. */
+			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
 			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.18, ease: 'easeOut' }}
 		>
@@ -929,7 +949,9 @@ function ScoreState() {
 			<div className="flex flex-col items-center pt-1">
 				<motion.div
 					className="mb-1.5 rounded-full border border-cc-accent/30 bg-cc-accent/10 px-3 py-1"
-					initial={prefersReducedMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+					/* F42: stable initial. Reduced-motion users get duration: 0
+					 * below, which snaps from {opacity:0,scale:0.8} to settled instantly. */
+					initial={{ opacity: 0, scale: 0.8 }}
 					animate={{ opacity: 1, scale: 1 }}
 					transition={prefersReducedMotion
 						? { duration: 0 }
@@ -957,7 +979,10 @@ function ScoreState() {
 						width="120"
 						height="120"
 						viewBox="0 0 120 120"
-						initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+						/* F42: stable initial. Reduced-motion users get duration: 0
+						 * below (via the else-else branch), which snaps from {opacity:0}
+						 * to settled {opacity:1} instantly. */
+						initial={{ opacity: 0 }}
 						animate={isSettled && !prefersReducedMotion
 							? { opacity: [1, 0.9, 1] }
 							: { opacity: 1 }
@@ -1001,7 +1026,9 @@ function ScoreState() {
 					</motion.svg>
 					<motion.div
 						className="absolute flex flex-col items-center"
-						initial={prefersReducedMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }}
+						/* F42: stable initial. Reduced-motion users get duration: 0
+						 * below, which snaps from {opacity:0,scale:0.5} to settled instantly. */
+						initial={{ opacity: 0, scale: 0.5 }}
 						animate={{ opacity: 1, scale: 1 }}
 						transition={prefersReducedMotion
 							? { duration: 0 }
@@ -1017,7 +1044,9 @@ function ScoreState() {
 			 *  echoing State 1 CARD_SHADOW recipe. */}
 			<motion.div
 				className="rounded-2xl border border-cc-accent/25 bg-cc-accent/8 p-3.5 shadow-[0_6px_14px_rgba(0,0,0,0.45),0_0_18px_rgba(16,185,129,0.10)]"
-				initial={prefersReducedMotion ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 16, scale: 0.98 }}
+				/* F42: stable initial. Reduced-motion users get duration: 0
+				 * below, which snaps from {opacity:0,y:16,scale:0.98} to settled instantly. */
+				initial={{ opacity: 0, y: 16, scale: 0.98 }}
 				animate={{ opacity: 1, y: 0, scale: 1 }}
 				transition={prefersReducedMotion
 					? { duration: 0 }
@@ -1048,7 +1077,9 @@ function ScoreState() {
 				<div className="flex gap-2">
 					<motion.div
 						className="flex flex-1 items-center gap-2.5 rounded-xl border border-white/[0.06] bg-cc-surface/60 px-3 py-2.5 shadow-[0_2px_6px_rgba(0,0,0,0.25)]"
-						initial={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -12 }}
+						/* F42: stable initial. Reduced-motion users get duration: 0
+						 * below, which snaps from {opacity:0,x:-12} to settled instantly. */
+						initial={{ opacity: 0, x: -12 }}
 						animate={{ opacity: 1, x: 0 }}
 						transition={prefersReducedMotion
 							? { duration: 0 }
@@ -1066,7 +1097,9 @@ function ScoreState() {
 					</motion.div>
 					<motion.div
 						className="flex flex-1 items-center gap-2.5 rounded-xl border border-white/[0.06] bg-cc-surface/60 px-3 py-2.5 shadow-[0_2px_6px_rgba(0,0,0,0.25)]"
-						initial={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 12 }}
+						/* F42: stable initial. Reduced-motion users get duration: 0
+						 * below, which snaps from {opacity:0,x:12} to settled instantly. */
+						initial={{ opacity: 0, x: 12 }}
 						animate={{ opacity: 1, x: 0 }}
 						transition={prefersReducedMotion
 							? { duration: 0 }
@@ -1083,7 +1116,9 @@ function ScoreState() {
 
 				<motion.div
 					className="flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-cc-surface/60 px-3 py-2.5 shadow-[0_2px_6px_rgba(0,0,0,0.25)]"
-					initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+					/* F42: stable initial. Reduced-motion users get duration: 0
+					 * below, which snaps from {opacity:0} to settled instantly. */
+					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3, delay: 3.2 }}
 				>
