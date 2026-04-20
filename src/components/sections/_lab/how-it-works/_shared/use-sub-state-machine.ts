@@ -38,6 +38,15 @@
  *
  * Per-step side effects (waveform duck, sound cue, etc.) live OUTSIDE the hook
  * in consumer-level useEffect blocks keyed on the returned subState.
+ *
+ * WARNING — states array identity:
+ *   The `states` array is a dependency of the internal effect. Inlining an
+ *   array literal in the consumer (`states: [{ id: 1, enterAtMs: 0 }, ...]`)
+ *   creates a NEW reference every render and, with `once: false`, will
+ *   restart the chain on every render. Pin states in a module-level const
+ *   (e.g., `const STEP_ONE_STATES = [...] as const`) or wrap in `useMemo` to
+ *   stabilize identity. `once: true` (default) is safe either way because
+ *   the chain only runs once regardless of dep changes.
  */
 
 'use client'

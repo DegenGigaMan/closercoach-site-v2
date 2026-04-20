@@ -8,10 +8,18 @@
  *   - PC badge pill (7 Layers of Personalization shape, reusable for PC2/PC3)
  *
  * Per-component tuning may diverge where a specific composition needs a
- * different value. Document any divergence in the consuming component.
+ * different value (e.g., StepOneVisual uses 8.5px/10.5px/8.5px instead of
+ * 9/12/10 for the 36rem sticky slot fit). Document any divergence at the call
+ * site with a comment referencing the shared constant name.
+ *
+ * DO NOT "normalize" a consuming component by swapping inline values to the
+ * shared default without verifying visual parity first -- shared defaults are
+ * the ORIGIN of the vocabulary, not the ground truth of every consumer. Agents
+ * touching these consts: run a Playwright parity capture before + after any
+ * consumer refactor.
  *
  * Authority sources:
- *   - src/components/hero/hero-phone-v2.tsx (CARD_SHADOW origin)
+ *   - src/components/hero/hero-phone-v2.tsx (CARD_SHADOW + spring physics origin)
  *   - vault/clients/closer-coach/design/motion-spec.md (Thread Emergence ease)
  *   - vault/clients/closer-coach/research/r7-visual-direction.md (emerald tokens)
  */
@@ -24,13 +32,12 @@
 export const CARD_SHADOW = 'shadow-[0_8px_16px_rgba(0,0,0,0.6),0_0_20px_rgba(16,185,129,0.15)]'
 
 /**
- * @description Spring physics for card entrance motion. Mirrors Hero V2 card
- * entrance vocabulary (stiffness 260, damping 24 in W2 baseline). W2.5
- * normalises damping to 28 for lighter, more layered arrival; W2 baseline used
- * 24 which is preserved below as CARD_ENTER_SPRING_HPV2 for parity.
+ * @description Spring physics for card entrance motion. Canonical vocabulary
+ * established by Hero V2 + W2 StepOneVisual: stiffness 260, damping 24.
+ * Step visuals W3-W5 should use this directly. If a consumer needs a different
+ * feel (e.g., tighter or more layered), set inline and document why.
  */
-export const CARD_ENTER_SPRING = { type: 'spring' as const, stiffness: 260, damping: 28 } as const
-export const CARD_ENTER_SPRING_HPV2 = { type: 'spring' as const, stiffness: 260, damping: 24 } as const
+export const CARD_ENTER_SPRING = { type: 'spring' as const, stiffness: 260, damping: 24 } as const
 
 /**
  * @description Spring physics for field-row cascade motion. Tighter than card
