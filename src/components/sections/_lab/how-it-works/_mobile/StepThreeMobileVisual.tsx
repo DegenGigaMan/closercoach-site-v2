@@ -42,22 +42,26 @@ export default function StepThreeMobileVisual() {
 				animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
 				transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, ease: THREAD_EASE }}
 			>
-				<span
+				<button
+					type="button"
 					role="tab"
 					aria-selected="true"
-					className="inline-flex items-center gap-1 rounded-full border border-cc-accent/40 bg-cc-accent/10 px-2.5 py-1 font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase tracking-[0.15em] text-cc-accent"
+					tabIndex={0}
+					className="inline-flex items-center gap-1 rounded-full border border-cc-accent/40 bg-cc-accent/10 px-2.5 py-1 font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase tracking-[0.15em] text-cc-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent/60"
 				>
 					<PhoneIcon size={9} weight="fill" aria-hidden="true" />
 					AI Phone Call
-				</span>
-				<span
+				</button>
+				<button
+					type="button"
 					role="tab"
 					aria-selected="false"
-					className="inline-flex items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.02] px-2.5 py-1 font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase tracking-[0.15em] text-cc-text-muted"
+					tabIndex={-1}
+					className="inline-flex items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.02] px-2.5 py-1 font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase tracking-[0.15em] text-cc-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent/60"
 				>
 					<Microphone size={9} weight="fill" aria-hidden="true" />
 					Record
-				</span>
+				</button>
 			</motion.div>
 
 			{/* Live call card. Replaces phone frame at mobile scale. */}
@@ -110,7 +114,7 @@ export default function StepThreeMobileVisual() {
 				>
 					<CheckCircle size={10} weight="fill" aria-hidden="true" />
 					Great discovery question
-					<span className="font-[family-name:var(--font-mono)] text-[8px] tabular-nums text-cc-accent/70">02:13</span>
+					<span className="font-[family-name:var(--font-mono)] text-[10px] tabular-nums text-cc-accent/70">02:13</span>
 				</motion.span>
 				<motion.span
 					className="inline-flex items-center gap-1 rounded-full border border-cc-score-red/30 bg-cc-score-red/10 px-2 py-0.5 font-[family-name:var(--font-mono)] text-[9px] font-medium text-cc-score-red"
@@ -120,7 +124,7 @@ export default function StepThreeMobileVisual() {
 				>
 					<Warning size={10} weight="fill" aria-hidden="true" />
 					Rushed the rebuttal
-					<span className="font-[family-name:var(--font-mono)] text-[8px] tabular-nums text-cc-score-red/70">03:04</span>
+					<span className="font-[family-name:var(--font-mono)] text-[10px] tabular-nums text-cc-score-red/70">03:04</span>
 				</motion.span>
 			</div>
 		</div>

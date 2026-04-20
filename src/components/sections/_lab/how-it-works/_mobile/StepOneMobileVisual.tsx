@@ -40,7 +40,7 @@ export default function StepOneMobileVisual() {
 					<CalendarBlank size={12} weight="regular" className="text-cc-accent" />
 				</span>
 				<div className="min-w-0 flex-1">
-					<span className="block truncate font-[family-name:var(--font-mono)] text-[8.5px] uppercase tracking-[0.1em] text-cc-text-muted">
+					<span className="block truncate font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.1em] text-cc-text-muted">
 						Today 2pm
 					</span>
 					<span className="block truncate text-[11px] font-medium text-white">
@@ -81,7 +81,7 @@ export default function StepOneMobileVisual() {
 			{/* Clone chip: avatar disc + label + PC1 badge. */}
 			<div className="flex min-w-0 flex-1 flex-col gap-1.5 rounded-lg border border-cc-accent/20 bg-cc-surface/60 px-2 py-2">
 				<div className="flex items-center gap-1.5">
-					<span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-cc-accent/20 font-[family-name:var(--font-mono)] text-[8.5px] font-semibold text-cc-accent">
+					<span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-cc-accent/20 font-[family-name:var(--font-mono)] text-[11px] font-semibold text-cc-accent">
 						SC
 					</span>
 					<span className="truncate text-[11px] font-medium text-white">AI Clone</span>

@@ -54,18 +54,20 @@ export default function StepFourMobileVisual() {
 				{METRIC_PILLS.map((pill) => {
 					const isActive = pill === ACTIVE_METRIC
 					return (
-						<span
+						<button
 							key={pill}
+							type="button"
 							role="tab"
 							aria-selected={isActive}
-							className={`shrink-0 rounded-full border px-2 py-0.5 font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase tracking-[0.1em] ${
+							tabIndex={isActive ? 0 : -1}
+							className={`shrink-0 rounded-full border px-2 py-0.5 font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase tracking-[0.1em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent/60 ${
 								isActive
 									? 'border-cc-accent/40 bg-cc-accent/10 text-cc-accent'
 									: 'border-white/[0.08] bg-white/[0.02] text-cc-text-muted'
 							}`}
 						>
 							{pill}
-						</span>
+						</button>
 					)
 				})}
 			</div>
@@ -121,10 +123,10 @@ export default function StepFourMobileVisual() {
 				transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, ease: THREAD_EASE, delay: 0.85 }}
 			>
 				<div className="flex items-center gap-1.5">
-					<span className="flex h-4 w-4 items-center justify-center rounded-full border border-cc-accent/30 bg-cc-accent/10 font-[family-name:var(--font-mono)] text-[8px] font-semibold text-cc-accent">
+					<span className="flex h-4 w-4 items-center justify-center rounded-full border border-cc-accent/30 bg-cc-accent/10 font-[family-name:var(--font-mono)] text-[11px] font-semibold text-cc-accent">
 						AI
 					</span>
-					<span className="font-[family-name:var(--font-mono)] text-[8px] uppercase tracking-[0.2em] text-cc-text-muted">
+					<span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.2em] text-cc-text-muted">
 						AI Coach Summary
 					</span>
 				</div>
@@ -220,7 +222,7 @@ function VerticalDeltaArrow({ drawn, prefersReducedMotion }: { drawn: boolean; p
 					initial={{ opacity: 0 }} animate={{ opacity: drawn ? 1 : 0 }}
 					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.25, delay: 1.0 }} />
 			</svg>
-			<span className="inline-flex items-center gap-0.5 rounded-full border border-cc-accent/30 bg-cc-accent/10 px-1.5 py-0 font-[family-name:var(--font-mono)] text-[8px] font-medium uppercase tracking-[0.1em] text-cc-accent tabular-nums">
+			<span className="inline-flex items-center gap-0.5 rounded-full border border-cc-accent/30 bg-cc-accent/10 px-1.5 py-0 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.1em] text-cc-accent tabular-nums">
 				+2 grades
 			</span>
 		</motion.div>
