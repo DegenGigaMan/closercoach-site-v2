@@ -28,6 +28,7 @@ import { Sparkle, Microphone, PhoneCall } from '@phosphor-icons/react'
 import StepIndicator, { type StepMeta } from './how-it-works/StepIndicator'
 import StepOneVisual from './how-it-works/StepOneVisual'
 import StepTwoVisual from './how-it-works/StepTwoVisual'
+import StepThreeVisual from './how-it-works/StepThreeVisual'
 
 const STEPS: readonly StepMeta[] = [
 	{ number: '01', label: 'PLAN' },
@@ -37,7 +38,6 @@ const STEPS: readonly StepMeta[] = [
 ] as const
 
 const STEP_VISUAL_LABELS: Record<number, string> = {
-	3: 'Step 3 SELL: Phone morphing dialer / in-person record',
 	4: 'Step 4 REVIEW: Practice vs real scorecard + 1/20 deep-drill',
 }
 
@@ -45,10 +45,27 @@ const STEP_VISUAL_LABELS: Record<number, string> = {
  * @description S3 lab section shell. Renders the opener, the split layout, and the
  * placeholder right-column visual per active step. Each step room's useInView advances
  * the shared activeStep state monotonically (step state never goes backward).
- */
+ *
+ * Dev-only `?step=N` query param pins activeStep to N (1-4). Enables DD / Playwright
+ * captures of any step without scrolling through prior rooms. Zero production impact:
+ * the check is one URLSearchParams read on mount. Paired with per-step `?pin=` params
+ * inside each StepVisual for sub-state control. */
 export default function SectionHowItWorksLab() {
 	const splitRef = useRef<HTMLDivElement>(null)
 	const [activeStep, setActiveStep] = useState(1)
+
+	/* Dev pin: `?step=N` overrides the scroll-driven activeStep. Applied post-mount
+	 * via setTimeout(0) to match the repo-wide setState-in-effect lint pattern and
+	 * to keep SSR + first client render consistent (activeStep=1 on both). */
+	useEffect(() => {
+		const t = setTimeout(() => {
+			if (typeof window === 'undefined') return
+			const raw = new URLSearchParams(window.location.search).get('step')
+			const n = raw ? Number.parseInt(raw, 10) : NaN
+			if (n >= 1 && n <= 4) setActiveStep(n)
+		}, 0)
+		return () => clearTimeout(t)
+	}, [])
 
 	const advanceTo = useCallback((n: number) => {
 		setActiveStep((prev) => (n > prev ? n : prev))
@@ -158,7 +175,7 @@ function RightColumnVisual({ activeStep }: { activeStep: number }) {
 	const prefersReducedMotion = useReducedMotion()
 
 	/* Step 1 is a real composition (W2). Step 2 is a real composition (W3).
-	 * Steps 3-4 remain W1 placeholders until W4-W5. */
+	 * Step 3 is a real composition (W4). Step 4 remains a W1 placeholder until W5. */
 	if (activeStep === 1) {
 		return (
 			<div className="flex h-full min-h-[36rem] items-center justify-center">
@@ -171,6 +188,14 @@ function RightColumnVisual({ activeStep }: { activeStep: number }) {
 		return (
 			<div className="flex h-full min-h-[36rem] items-center justify-center">
 				<StepTwoVisual />
+			</div>
+		)
+	}
+
+	if (activeStep === 3) {
+		return (
+			<div className="flex h-full min-h-[36rem] items-center justify-center">
+				<StepThreeVisual />
 			</div>
 		)
 	}
