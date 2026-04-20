@@ -2,8 +2,9 @@
  * Atmosphere: L1 dual radial gradient (emerald, centered), L2 noise, L3 particles (desktop only),
  * H11 bottom progressive blur.
  * Stack: AnimatedBadge -> H1 -> subhead -> CTAs -> reassurance -> stars -> app badges -> phone.
- * Phone is HeroPhoneV2 (self-cycling 4-state composite) wrapped in three-layer emerald glow
- * with flanking floating components (grade A, Great Response chip, skill radar) on lg+.
+ * Phone is HeroPhoneV2 (self-cycling 4-state composite) wrapped in three-layer emerald glow.
+ * Perimeter is clean -- no external chips. HeroPhoneV2's internal coaching pills are
+ * the only chip moments in the section.
  * Entrance choreography: motion/react translation of v1's GSAP+SplitText timeline.
  * Copy: lp-copy-deck-v5 Section 1 (verbatim). */
 
@@ -278,9 +279,8 @@ export default function SectionHero() {
 					</motion.div>
 
 					{/* Phone frame wrapper. HeroPhoneV2 ships a 320px phone inside px-40 gutters
-					 * (640px outer footprint). Flanking components anchor to this wrapper at
-					 * calc(50% +/- 208px) so they sit tight against the actual phone edge
-					 * rather than the outer gutter edge. */}
+					 * (640px outer footprint). No external chips -- the phone stands alone,
+					 * with its internal coaching pills carrying all chip moments. */}
 					<div className='relative'>
 						{/* Phone -- parallax on desktop, enters from below with subtle scale. */}
 						<motion.div
@@ -296,95 +296,6 @@ export default function SectionHero() {
 								<HeroPhoneV2 />
 							</div>
 						</motion.div>
-
-						{/* Flanking floating components -- lg+ only.
-						 * Offsets: phone frame is 320px centered inside a 640px wrapper. Its edges
-						 * sit at calc(50% +/- 160px). Flanking chips use calc(50% - 208px) and
-						 * calc(50% + 160px + 8px) for A / radar (left) and Great Response (right),
-						 * placing them roughly 48px from the phone edge. Matches v1's tight
-						 * anchoring (-left-12 / -right-14 against a 280px phone). */}
-						{isDesktop && (
-							<>
-								{/* Top-left of phone: Grade A badge. */}
-								<motion.div
-									className='absolute top-[18%] z-10 hidden h-12 w-12 items-center justify-center rounded-full border border-cc-accent/20 bg-cc-surface-card shadow-[0_0_20px_rgba(16,185,129,0.08)] lg:flex'
-									style={{ left: 'calc(50% - 208px)' }}
-									aria-hidden='true'
-									initial={prefersReducedMotion ? false : { opacity: 0 }}
-									animate={prefersReducedMotion
-										? { opacity: 1 }
-										: { opacity: 1, y: [0, -8, 0] }
-									}
-									transition={prefersReducedMotion
-										? { duration: 0 }
-										: {
-											opacity: { duration: 0.5, delay: 1.4, ease: EASE },
-											y: { duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 1.4 },
-										}
-									}
-								>
-									<span className='font-heading text-lg text-cc-accent'>A</span>
-								</motion.div>
-
-								{/* Right of phone: Great Response chip. */}
-								<motion.div
-									className='absolute top-[28%] z-10 hidden items-center gap-1.5 rounded-full border border-cc-score-green/20 bg-cc-surface-card px-3 py-1.5 shadow-[0_0_20px_rgba(34,197,94,0.08)] lg:flex'
-									style={{ left: 'calc(50% + 168px)' }}
-									aria-hidden='true'
-									initial={prefersReducedMotion ? false : { opacity: 0 }}
-									animate={prefersReducedMotion
-										? { opacity: 1 }
-										: { opacity: 1, y: [0, 6, 0] }
-									}
-									transition={prefersReducedMotion
-										? { duration: 0 }
-										: {
-											opacity: { duration: 0.5, delay: 1.5, ease: EASE },
-											y: { duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 1.9 },
-										}
-									}
-								>
-									<div className='h-1.5 w-1.5 rounded-full bg-cc-score-green' />
-									<span className='font-mono text-[10px] font-medium text-cc-score-green'>Great Response</span>
-								</motion.div>
-
-								{/* Bottom-left of phone: Skill radar mini. */}
-								<motion.div
-									className='absolute bottom-[20%] z-10 hidden lg:block'
-									style={{ left: 'calc(50% - 220px)' }}
-									aria-hidden='true'
-									initial={prefersReducedMotion ? false : { opacity: 0 }}
-									animate={prefersReducedMotion
-										? { opacity: 1 }
-										: { opacity: 1, y: [0, 10, 0] }
-									}
-									transition={prefersReducedMotion
-										? { duration: 0 }
-										: {
-											opacity: { duration: 0.5, delay: 1.6, ease: EASE },
-											y: { duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 2.4 },
-										}
-									}
-								>
-									<div className='flex h-[60px] w-[60px] items-center justify-center rounded-xl border border-cc-surface-border bg-cc-surface-card shadow-[0_0_20px_rgba(16,185,129,0.06)]'>
-										<svg viewBox='0 0 40 40' className='h-8 w-8'>
-											<polygon
-												points='20,4 34,14 30,30 10,30 6,14'
-												fill='rgba(16,185,129,0.12)'
-												stroke='#10B981'
-												strokeWidth='1.5'
-											/>
-											<polygon
-												points='20,10 28,16 26,26 14,26 12,16'
-												fill='none'
-												stroke='rgba(16,185,129,0.2)'
-												strokeWidth='0.5'
-											/>
-										</svg>
-									</div>
-								</motion.div>
-							</>
-						)}
 					</div>
 				</div>
 			</div>

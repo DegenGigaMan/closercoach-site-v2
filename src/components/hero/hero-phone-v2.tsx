@@ -38,103 +38,6 @@ const CYCLE_MS = 5800
 const CAMIL_IMG = '/images/prospects/camil-reese.png'
 const CC_LOGO = '/images/closercoach-logo.svg'
 
-/* ─── Floating Badges ────────────────────────────────────── */
-
-interface BadgeConfig {
-	text: string
-	variant: 'emerald' | 'amber' | 'red' | 'muted'
-	position: 'right' | 'left'
-	pulse?: boolean
-}
-
-const BADGE_SETS: BadgeConfig[][] = [
-	[
-		{ text: '60 seconds to start', variant: 'emerald', position: 'right' },
-		{ text: 'AI-personalized', variant: 'muted', position: 'left' },
-	],
-	[
-		{ text: 'Real-time coaching', variant: 'emerald', position: 'right' },
-		{ text: '3 checkpoints', variant: 'amber', position: 'left' },
-	],
-	[
-		{ text: 'LIVE', variant: 'red', position: 'right', pulse: true },
-		{ text: 'Your caller ID', variant: 'muted', position: 'left' },
-	],
-	[
-		{ text: 'See Detailed Feedback', variant: 'emerald', position: 'right' },
-		{ text: '20 pages of feedback', variant: 'emerald', position: 'left' },
-	],
-]
-
-const badgeVariantStyles: Record<BadgeConfig['variant'], string> = {
-	emerald: 'border-cc-accent/30 bg-cc-accent/10 text-cc-accent',
-	amber: 'border-cc-amber/30 bg-cc-amber/10 text-cc-amber',
-	red: 'border-cc-score-red/30 bg-cc-score-red/10 text-cc-score-red',
-	muted: 'border-cc-surface-border bg-cc-surface-card text-cc-text-secondary',
-}
-
-/* Direction tracks the cross-state narrative beat per transition map:
- *  down  = 0→1 onboarding→practice (exit-up / enter-below)
- *  right = 1→2 practice→real-call  (exit-left / enter-right)
- *  center= 2→3 real-call→verdict   (contract / expand-from-center)
- *  loop  = 3→0 verdict→new-cycle   (exit-up-fade / enter-cinematic)
- * Directional deltas are shared between state content and floating badges so they
- * travel together and do not lag during cross-fade windows (W4 §C3). */
-type TransitionDirection = 'down' | 'right' | 'center' | 'loop'
-
-const badgeDirectionOffset: Record<TransitionDirection, { x: number, y: number }> = {
-	down: { x: 0, y: 8 },
-	right: { x: -8, y: 0 },
-	center: { x: 0, y: 0 },
-	loop: { x: 0, y: -8 },
-}
-
-function FloatingBadges({
-	activeIndex,
-	direction,
-	prefersReducedMotion,
-}: {
-	activeIndex: number
-	direction: TransitionDirection
-	prefersReducedMotion: boolean
-}) {
-	const offset = badgeDirectionOffset[direction]
-	return (
-		<AnimatePresence initial={false}>
-			<motion.div key={`badges-${activeIndex}`} className="pointer-events-none">
-				{BADGE_SETS[activeIndex].map((badge) => (
-					<motion.div
-						key={badge.text}
-						className={`absolute hidden items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 text-[10px] font-medium backdrop-blur-sm md:flex ${badgeVariantStyles[badge.variant]} ${badge.position === 'right' ? 'right-[-140px] top-[25%]' : 'left-[-140px] bottom-[25%]'}`}
-						initial={prefersReducedMotion
-							? { opacity: 1, scale: 1, x: 0, y: 0 }
-							: { opacity: 0, scale: 0.9, x: -offset.x, y: -offset.y }
-						}
-						animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
-						exit={prefersReducedMotion
-							? { opacity: 0 }
-							: { opacity: 0, scale: 0.9, x: offset.x, y: offset.y }
-						}
-						transition={prefersReducedMotion
-							? { duration: 0 }
-							: { duration: 0.25, ease: 'easeOut' }
-						}
-					>
-						{badge.pulse && (
-							<motion.div
-								className="h-1.5 w-1.5 rounded-full bg-cc-score-red"
-								animate={prefersReducedMotion ? { opacity: 1 } : { opacity: [1, 0.3, 1] }}
-								transition={prefersReducedMotion ? { duration: 0 } : { duration: 1, repeat: Infinity }}
-							/>
-						)}
-						{badge.text}
-					</motion.div>
-				))}
-			</motion.div>
-		</AnimatePresence>
-	)
-}
-
 /* ─── Dot Indicator ──────────────────────────────────────── */
 
 function DotIndicator({ activeIndex }: { activeIndex: number }) {
@@ -1290,27 +1193,15 @@ const stateVariants = {
 	},
 } as const
 
-function directionFor(prev: number, curr: number): TransitionDirection {
-	if (prev === 0 && curr === 1) return 'down'
-	if (prev === 1 && curr === 2) return 'right'
-	if (prev === 2 && curr === 3) return 'center'
-	return 'loop'
-}
-
 export default function HeroPhoneV2() {
 	const prefersReducedMotion = useReducedMotion() ?? false
 	const [activeIndex, setActiveIndex] = useState(0)
-	const [direction, setDirection] = useState<TransitionDirection>('down')
 
 	useEffect(() => {
 		if (prefersReducedMotion) return
 
 		const interval = setInterval(() => {
-			setActiveIndex((prev) => {
-				const next = (prev + 1) % 4
-				setDirection(directionFor(prev, next))
-				return next
-			})
+			setActiveIndex((prev) => (prev + 1) % 4)
 		}, CYCLE_MS)
 
 		return () => clearInterval(interval)
@@ -1328,9 +1219,6 @@ export default function HeroPhoneV2() {
 				<div className="pointer-events-none absolute inset-[-40%]" style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)' }} />
 				<div className="pointer-events-none absolute inset-[-15%]" style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.14) 0%, transparent 45%)' }} />
 				<div className="pointer-events-none absolute inset-[-5%]" style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.22) 0%, transparent 25%)' }} />
-
-				{/* Floating badges */}
-				<FloatingBadges activeIndex={activeIndex} direction={direction} prefersReducedMotion={prefersReducedMotion} />
 
 				{/* Phone */}
 				<PhoneFrame activeIndex={activeIndex}>
