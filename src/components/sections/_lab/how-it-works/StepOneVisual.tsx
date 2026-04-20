@@ -12,6 +12,16 @@
  *   - Copy spec:   vault/clients/closer-coach/copy/lp-copy-deck-v5.md §Section 3 Step 1 (v5.3)
  *   - Motion:      vault/clients/closer-coach/design/motion-spec.md §Thread Emergence
  *   - Vocabulary:  src/components/hero/hero-phone-v2.tsx (CARD_SHADOW, spring physics, reduced-motion)
+ *   - Shared utils: ./_shared/use-sub-state-machine (chain) + ./_shared/step-visual-defaults (tokens)
+ *
+ * Refactor note (MR-S3-W2.5, 2026-04-19): chain extracted to `useSubStateMachine`
+ * hook per DD-S3-W2 F18; shared vocabulary sourced from `step-visual-defaults`
+ * per F19. Behavior is byte-identical to MR-S3-W2 baseline (commit 67a2cd0);
+ * visual output verified via Playwright parity capture at 1E settled.
+ * Per-component tuning that diverges from shared defaults (field label 8.5px
+ * vs shared 9px, field value 10.5px vs shared 12px, ENRICHED kicker 8.5px vs
+ * shared 10px) is intentional to fit the composition inside the 36rem slot and
+ * is documented inline at each call site.
  *
  * Reduced-motion guard collapses the entire chain to state 1E instantly.
  * NO phone frame here: phone is reserved for Step 3 per D3 phone allocation.
@@ -27,11 +37,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useInView, useReducedMotion } from 'motion/react'
 import { CalendarBlank } from '@phosphor-icons/react'
-
-/* L1 elevated card dual shadow, mirroring hero-phone-v2 CARD_SHADOW recipe. */
-const CARD_SHADOW = 'shadow-[0_8px_16px_rgba(0,0,0,0.6),0_0_20px_rgba(16,185,129,0.15)]'
+import { useSubStateMachine } from './_shared/use-sub-state-machine'
+/* Imports from step-visual-defaults. FIELD_LABEL / FIELD_VALUE / KICKER_MONO_EMERALD
+ * are NOT imported because this composition diverges from those defaults for
+ * per-row size tuning (see divergence comments at call sites). */
+import {
+	CARD_SHADOW,
+	PC_BADGE_PILL,
+	THREAD_EASE,
+} from './_shared/step-visual-defaults'
 
 /* Sub-state timings (ms). Each value is the moment the state begins. */
+const T_1A = 0
 const T_1B = 500
 const T_1C = 1400
 const T_1D = 2800
@@ -126,7 +143,7 @@ function CalendarWidget({ subState, prefersReducedMotion }: { subState: SubState
 			className={`relative shrink-0 rounded-2xl border border-white/[0.08] bg-cc-surface-card/90 p-4 backdrop-blur-sm ${CARD_SHADOW}`}
 			initial={prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
 			animate={{ opacity: 1, y: 0 }}
-			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.5, ease: THREAD_EASE }}
 		>
 			{/* Header row: date kicker + integration lockup. */}
 			<div className="mb-3 flex items-center justify-between">
@@ -246,7 +263,7 @@ function EnrichmentFlow({ subState, prefersReducedMotion }: { subState: SubState
 							animate={{ pathLength: finalPathLength }}
 							transition={prefersReducedMotion
 								? { duration: 0 }
-								: { duration: 0.8, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }
+								: { duration: 0.8, delay: i * 0.08, ease: THREAD_EASE }
 							}
 						/>
 					))}
@@ -290,6 +307,10 @@ function CloneCard({ subState, prefersReducedMotion }: { subState: SubState, pre
 					</div>
 					<span className="text-[9.5px] text-cc-text-secondary">VP Ops, Apex Industries</span>
 				</div>
+				{/* Diverges from shared KICKER_MONO_EMERALD (10px) to 8.5px so the
+				 * card header fits avatar + name + pill + kicker in a single row at
+				 * the 36rem sticky slot. Alpha-lowered to /85 for the "system status"
+				 * read versus full-accent active labels. */}
 				<span className="font-[family-name:var(--font-mono)] text-[8.5px] font-medium uppercase tracking-[0.2em] text-cc-accent/85">
 					Enriched
 				</span>
@@ -316,7 +337,7 @@ function CloneCard({ subState, prefersReducedMotion }: { subState: SubState, pre
 				transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.35, ease: 'easeOut' }}
 			>
 				<motion.div
-					className="relative inline-flex items-center gap-2 rounded-full border border-cc-accent/30 bg-cc-accent/10 px-3 py-1 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.15em] text-cc-accent"
+					className={`relative ${PC_BADGE_PILL}`}
 					animate={settled && !prefersReducedMotion
 						? { boxShadow: ['0 0 0 rgba(16,185,129,0)', '0 0 18px rgba(16,185,129,0.35)', '0 0 0 rgba(16,185,129,0)'] }
 						: badgeVisible && !prefersReducedMotion
@@ -355,9 +376,15 @@ function CloneField({ field, index, visible, prefersReducedMotion }: {
 				: { type: 'spring', stiffness: 320, damping: 24, delay }
 			}
 		>
+			{/* Diverges from shared FIELD_LABEL (9px, 0.15em) to 8.5px / 0.16em so
+			 * the 8-row cascade fits the clone-card vertical budget. Tracking
+			 * compensates for the tighter x-height. */}
 			<span className="font-[family-name:var(--font-mono)] text-[8.5px] font-medium uppercase tracking-[0.16em] text-cc-text-muted">
 				{field.label}
 			</span>
+			{/* Diverges from shared FIELD_VALUE (12px) to 10.5px with tight leading
+			 * so multi-word values stay on a single row without wrapping. Italic +
+			 * white color applies on the OBJECTION row per section-blueprint. */}
 			<span
 				className={[
 					'text-[10.5px] leading-[1.35]',
@@ -410,6 +437,16 @@ function useSubStatePin(): SubState | null {
 	return pin
 }
 
+/* Sub-state chain definition. Consumed by useSubStateMachine; mirrors W2's
+ * original inline timer chain (0 / 500 / 1400 / 2800 / 3400 ms). */
+const STEP_ONE_STATES: ReadonlyArray<{ id: SubState, enterAtMs: number }> = [
+	{ id: 1, enterAtMs: T_1A },
+	{ id: 2, enterAtMs: T_1B },
+	{ id: 3, enterAtMs: T_1C },
+	{ id: 4, enterAtMs: T_1D },
+	{ id: 5, enterAtMs: T_1E },
+] as const
+
 export default function StepOneVisual() {
 	const prefersReducedMotion = useReducedMotion() ?? false
 	const rootRef = useRef<HTMLDivElement>(null)
@@ -418,30 +455,17 @@ export default function StepOneVisual() {
 	 * column scroll owns activeStep. amount: 0.3 + once: true mirrors W1's StepRoom trigger. */
 	const inView = useInView(rootRef, { amount: 0.3, once: true })
 	const pin = useSubStatePin()
-	const [subState, setSubState] = useState<SubState>(prefersReducedMotion ? 5 : 1)
-
-	useEffect(() => {
-		const timers: ReturnType<typeof setTimeout>[] = []
-
-		if (pin !== null) {
-			timers.push(setTimeout(() => setSubState(pin), 0))
-			return () => timers.forEach(clearTimeout)
-		}
-
-		if (prefersReducedMotion) {
-			timers.push(setTimeout(() => setSubState(5), 0))
-			return () => timers.forEach(clearTimeout)
-		}
-
-		if (!inView) return
-
-		timers.push(setTimeout(() => setSubState(2), T_1B))
-		timers.push(setTimeout(() => setSubState(3), T_1C))
-		timers.push(setTimeout(() => setSubState(4), T_1D))
-		timers.push(setTimeout(() => setSubState(5), T_1E))
-
-		return () => timers.forEach(clearTimeout)
-	}, [inView, prefersReducedMotion, pin])
+	/* Machine-driven sub-state (5-step chain). The pin value below overrides this
+	 * for dev/DD capture flows but the chain itself lives in the shared hook. */
+	const machineState = useSubStateMachine<SubState>({
+		states: STEP_ONE_STATES,
+		trigger: inView,
+		reducedMotion: prefersReducedMotion,
+		initialState: 1,
+		settledState: 5,
+		once: true,
+	})
+	const subState: SubState = pin ?? machineState
 
 	return (
 		<div
