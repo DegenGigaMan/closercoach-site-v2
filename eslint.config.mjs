@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Scratch dir holds DD verification scripts + Playwright captures (gitignored).
+    "scratch/**",
   ]),
 ]);
 
