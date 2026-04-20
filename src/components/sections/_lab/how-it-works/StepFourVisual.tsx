@@ -302,9 +302,16 @@ function DeltaArrow({ drawn, prefersReducedMotion }: {
 	prefersReducedMotion: boolean
 }) {
 	return (
-		<div
+		<motion.div
 			aria-hidden="true"
+			data-arrow-drawn={drawn}
 			className="pointer-events-none relative flex w-12 shrink-0 flex-col items-center justify-center"
+			/* F58 fix: outer opacity gate suppresses stroke-linecap dot artifacts at
+			 * 4A/4B before pathLength draws. Fade in at 4C with a short crossfade
+			 * ahead of the draw start so the arc appears to emerge, not pop. */
+			initial={{ opacity: 0 }}
+			animate={{ opacity: drawn ? 1 : 0 }}
+			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2, ease: 'easeOut' }}
 		>
 			<svg width="48" height="32" viewBox="0 0 48 32" className="overflow-visible">
 				<motion.path
@@ -338,7 +345,7 @@ function DeltaArrow({ drawn, prefersReducedMotion }: {
 			>
 				+2 grades
 			</motion.span>
-		</div>
+		</motion.div>
 	)
 }
 
@@ -353,9 +360,11 @@ function TranscriptRow({ label, body, tone, index, revealed, prefersReducedMotio
 	prefersReducedMotion: boolean
 }) {
 	const kickerClass = tone === 'coached' ? KICKER_MONO_EMERALD : KICKER_MONO_MUTED
-	const bodyClass = tone === 'coached'
-		? 'text-cc-accent'
-		: 'text-white'
+	/* F59 fix: both tones render body in white. Semantic "coached" signal lives
+	 * on the emerald kicker + emerald border + emerald/6 bg. Removing the full-
+	 * emerald body equalizes visual weight with the YOU SAID panel so the pair
+	 * reads as parallel dialogue, not a louder rewrite. */
+	const bodyClass = 'text-white'
 	const borderClass = tone === 'coached'
 		? 'border-cc-accent/20 bg-cc-accent/[0.06]'
 		: 'border-white/[0.08] bg-cc-surface/60'
