@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Taylor Martinez placeholder portrait">
+	<defs>
+		<radialGradient id="taylorBg" cx="50%" cy="40%" r="75%">
+			<stop offset="0%" stop-color="#1E2230"/>
+			<stop offset="65%" stop-color="#141720"/>
+			<stop offset="100%" stop-color="#0D0F14"/>
+		</radialGradient>
+		<linearGradient id="taylorFig" x1="0" y1="0" x2="1" y2="1">
+			<stop offset="0%" stop-color="#10B981" stop-opacity="0.22"/>
+			<stop offset="100%" stop-color="#059669" stop-opacity="0.08"/>
+		</linearGradient>
+	</defs>
+	<circle cx="100" cy="100" r="100" fill="url(#taylorBg)"/>
+	<circle cx="100" cy="82" r="34" fill="url(#taylorFig)"/>
+	<path d="M36 200 C36 140 164 140 164 200 Z" fill="url(#taylorFig)"/>
+	<text x="100" y="116" text-anchor="middle" font-family="Lora, Georgia, serif" font-weight="700" font-size="64" fill="#F8FAFC" letter-spacing="2">TM</text>
+	<circle cx="100" cy="100" r="98.5" fill="none" stroke="#10B981" stroke-opacity="0.45" stroke-width="1.5"/>
+</svg>
