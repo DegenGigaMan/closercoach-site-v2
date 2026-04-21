@@ -1,94 +1,178 @@
-/** @fileoverview S2 Social Proof strip. Warm surface with trust label, infinite
- * logo marquee (CSS-only), and stat counters sourced from constants. */
+/** @fileoverview S2 Social Proof. Warm editorial strip per section-blueprint v2.
+ * Three elements: industries headline (SP3 inline text), avatar anchor (3 headshots + G4
+ * humanized to "+19,997 closers"), and continuous logo marquee (SP1 enterprise logos).
+ * V2 redundancy killed: no activity ticker, no industry pill counters, no extra stat counters.
+ * Warm surface (#F5F0EB). Stacks on mobile, single editorial row on desktop. */
 
 'use client'
 
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import ScrollReveal from '@/components/shared/scroll-reveal'
-import { STATS } from '@/lib/constants'
 
-const LOGOS = [
-	{ src: '/logos/toyota.svg', alt: 'Toyota', w: 80, h: 32 },
-	{ src: '/logos/state-farm.svg', alt: 'State Farm', w: 80, h: 32 },
-	{ src: '/logos/mercedes-benz.svg', alt: 'Mercedes Benz', w: 80, h: 32 },
-	{ src: '/logos/morgan-stanley.svg', alt: 'Morgan Stanley', w: 100, h: 32 },
-	{ src: '/logos/liberty-mutual.svg', alt: 'Liberty Mutual', w: 100, h: 32 },
-	{ src: '/logos/vivint-solar.svg', alt: 'Vivint Solar', w: 80, h: 32 },
-	{ src: '/logos/family-first-life.png', alt: 'Family First Life', w: 80, h: 32 },
-	{ src: '/logos/aroma360.svg', alt: 'Aroma360', w: 80, h: 32 },
-	{ src: '/logos/cardone-capital.webp', alt: 'Cardone Capital', w: 80, h: 32 },
-	{ src: '/logos/sysco.svg', alt: 'Sysco', w: 80, h: 32 },
+const AVATARS = [
+	{ src: '/images/avatars/closer-1.svg', alt: 'Closer placeholder 1' },
+	{ src: '/images/avatars/closer-2.svg', alt: 'Closer placeholder 2' },
+	{ src: '/images/avatars/closer-3.svg', alt: 'Closer placeholder 3' },
 ] as const
 
-const STAT_ITEMS = [
-	{ value: STATS.userCount, label: 'Closers' },
-	{ value: `${STATS.appStoreRating}/5`, label: 'App Store' },
-	{ value: STATS.appStoreReviews, label: 'Ratings' },
+const LOGOS = [
+	{ name: 'Toyota', file: '/logos/toyota.svg', width: 100, height: 32 },
+	{ name: 'State Farm', file: '/logos/state-farm.svg', width: 100, height: 32 },
+	{ name: 'Mercedes-Benz', file: '/logos/mercedes-benz.svg', width: 32, height: 32 },
+	{ name: 'Morgan Stanley', file: '/logos/morgan-stanley.svg', width: 120, height: 32 },
+	{ name: 'Liberty Mutual', file: '/logos/liberty-mutual.svg', width: 100, height: 32 },
+	{ name: 'Vivint Solar', file: '/logos/vivint-solar.svg', width: 100, height: 32 },
+	{ name: 'Family First Life', file: '/logos/family-first-life.png', width: 100, height: 32 },
+	{ name: 'Aroma360', file: '/logos/aroma360.svg', width: 100, height: 32 },
+	{ name: 'Cardone Capital', file: '/logos/cardone-capital.webp', width: 100, height: 32 },
+	{ name: 'Sysco', file: '/logos/sysco.svg', width: 80, height: 32 },
 ] as const
 
 /**
- * @description Renders a single pass of logos for the marquee. Duplicated to create
- * seamless infinite scroll via translateX(-50%) keyframe.
+ * @description Single pass of logos. Duplicated by the marquee track for a seamless
+ * loop. Grayscale + muted opacity by default, color on hover.
  */
-function LogoStrip() {
+function LogoPass({ ariaHidden = false }: { ariaHidden?: boolean }) {
 	return (
-		<div className="flex shrink-0 items-center gap-12">
+		<div className='flex items-center' aria-hidden={ariaHidden}>
 			{LOGOS.map((logo) => (
-				<Image
-					key={logo.alt}
-					src={logo.src}
-					alt={logo.alt}
-					width={logo.w}
-					height={logo.h}
-					className="h-8 w-auto opacity-60 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
-				/>
+				<div
+					key={`${ariaHidden ? 'b' : 'a'}-${logo.name}`}
+					className='mx-8 inline-flex shrink-0 select-none items-center transition-all duration-300 [filter:grayscale(1)_opacity(0.75)] hover:[filter:grayscale(0)_opacity(1)]'
+					aria-label={ariaHidden ? undefined : logo.name}
+				>
+					<Image
+						src={logo.file}
+						alt={ariaHidden ? '' : logo.name}
+						width={logo.width}
+						height={logo.height}
+						className='h-8 w-auto object-contain'
+						loading='lazy'
+					/>
+				</div>
 			))}
 		</div>
 	)
 }
 
 /**
- * @description S2 Social Proof section. Narrow warm strip with trust label,
- * infinite CSS marquee of 10 client logos, and three stat counters from constants.
+ * @description S2 Social Proof. Avatar anchor + logo marquee + industries line on
+ * a warm surface. Pauses animation for reduced-motion. Mobile stacks vertically.
  */
 export default function SectionSocialProof() {
+	const trackContainerRef = useRef<HTMLDivElement>(null)
+	const [duration, setDuration] = useState(0)
+
+	const measure = useCallback(() => {
+		const container = trackContainerRef.current
+		if (!container) return
+		const track = container.querySelector('[data-marquee-track]') as HTMLElement | null
+		if (!track) return
+		const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		if (prefersReduced) {
+			setDuration(0)
+			return
+		}
+		const trackWidth = track.scrollWidth / 2
+		if (trackWidth > 0) setDuration(trackWidth / 40)
+	}, [])
+
+	useEffect(() => {
+		const frame = requestAnimationFrame(measure)
+		const track = trackContainerRef.current?.querySelector('[data-marquee-track]') as HTMLElement | null
+		if (!track) return () => cancelAnimationFrame(frame)
+		const observer = new ResizeObserver(measure)
+		observer.observe(track)
+		return () => {
+			cancelAnimationFrame(frame)
+			observer.disconnect()
+		}
+	}, [measure])
+
 	return (
-		<section id="social-proof" data-surface="warm" className="bg-cc-warm py-12 md:py-16">
-			<div className="mx-auto max-w-7xl px-6">
-				{/* Trust label */}
-				<p className="mb-8 text-center text-xs uppercase tracking-wider text-cc-text-secondary-warm">
+		<section
+			id='social-proof'
+			data-surface='warm'
+			className='relative bg-cc-warm py-14 md:py-16'
+		>
+			{/* Top transition: soft fade from dark S1 */}
+			<div
+				className='pointer-events-none absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-cc-foundation/10 to-transparent'
+				aria-hidden='true'
+			/>
+
+			<div className='mx-auto max-w-7xl px-6'>
+				{/* Industries headline (SP3 inline, not pills) */}
+				<p className='mx-auto mb-8 max-w-2xl text-center text-xs uppercase tracking-[0.14em] text-cc-text-secondary-warm md:mb-10 md:text-[13px]'>
 					Trusted by closers across Insurance, Financial, Real Estate, Automotive, and Home Services.
 				</p>
 
-				{/* Logo marquee */}
-				<div className="relative mb-12 overflow-hidden">
-					{/* Fade edges */}
-					<div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-cc-warm to-transparent" />
-					<div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-cc-warm to-transparent" />
-
-					<div
-						className="flex w-max gap-12"
-						style={{ animation: 'marquee-scroll 40s linear infinite' }}
-					>
-						<LogoStrip />
-						<LogoStrip />
+				{/* Editorial row: avatar anchor + marquee */}
+				<div className='flex flex-col items-center gap-8 md:flex-row md:items-center md:gap-10'>
+					{/* Avatar anchor (G4 humanized) */}
+					<div className='flex shrink-0 items-center gap-3'>
+						<div className='flex -space-x-3'>
+							{AVATARS.map((avatar, i) => (
+								<div
+									key={avatar.src}
+									className='relative h-10 w-10 overflow-hidden rounded-full ring-2 ring-cc-warm'
+									style={{ zIndex: AVATARS.length - i }}
+								>
+									<Image
+										src={avatar.src}
+										alt={avatar.alt}
+										fill
+										sizes='40px'
+										className='object-cover'
+									/>
+								</div>
+							))}
+						</div>
+						<div className='flex flex-col leading-tight'>
+							<span className='font-[family-name:var(--font-mono)] text-sm text-cc-accent-hover'>
+								+ 19,997
+							</span>
+							<span className='text-xs text-cc-text-secondary-warm'>
+								closers
+							</span>
+						</div>
 					</div>
-				</div>
 
-				{/* Stat counters */}
-				<div className="flex flex-col items-center gap-6 md:flex-row md:justify-center md:gap-0">
-					{STAT_ITEMS.map((stat, i) => (
-						<ScrollReveal
-							key={stat.label}
-							delay={i * 0.1}
-							className={`flex flex-col items-center${
-								i > 0 ? ' md:border-l md:border-cc-warm-border md:px-8' : ' md:px-8'
-							}`}
+					{/* Vertical hairline (desktop only, visual tie between anchor and marquee) */}
+					<div
+						className='hidden h-10 w-px bg-cc-warm-border md:block'
+						aria-hidden='true'
+					/>
+
+					{/* Logo marquee */}
+					<div
+						ref={trackContainerRef}
+						className='group relative w-full overflow-hidden'
+						role='marquee'
+						aria-label='Companies using CloserCoach'
+					>
+						{/* Fade edges */}
+						<div
+							className='pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-cc-warm to-transparent'
+							aria-hidden='true'
+						/>
+						<div
+							className='pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-cc-warm to-transparent'
+							aria-hidden='true'
+						/>
+						<div
+							data-marquee-track
+							className='flex w-max items-center md:group-hover:[animation-play-state:paused]'
+							style={{
+								animation: duration > 0
+									? `marquee-scroll ${duration}s linear infinite`
+									: 'none',
+							}}
 						>
-							<span className="mono-stat text-cc-amber">{stat.value}</span>
-							<span className="text-sm text-cc-text-secondary-warm">{stat.label}</span>
-						</ScrollReveal>
-					))}
+							<LogoPass />
+							<LogoPass ariaHidden />
+						</div>
+					</div>
 				</div>
 			</div>
 		</section>
