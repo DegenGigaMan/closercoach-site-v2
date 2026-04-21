@@ -1,0 +1,79 @@
+/** @fileoverview Sticky top announcement banner. Dismissable, persisted via localStorage.
+ *  Sits ABOVE the sticky Header. Sets --cc-banner-h on <html> so Header and main can offset. */
+
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
+import { X } from '@phosphor-icons/react'
+
+const STORAGE_KEY = 'cc-announcement-dismissed-2026-04-21'
+const BANNER_HEIGHT = 36
+
+type AnnouncementBannerProps = {
+	message?: string
+	href?: string
+	linkLabel?: string
+}
+
+export default function AnnouncementBanner({
+	message = 'CloserCoach raises $1M to build Duolingo for sales',
+	href = '#',
+	linkLabel = 'Read more',
+}: AnnouncementBannerProps) {
+	// SSR-safe initial: render nothing until client hydrates.
+	const [dismissed, setDismissed] = useState<boolean | null>(null)
+	const ranRef = useRef(false)
+
+	useEffect(() => {
+		if (ranRef.current) return
+		ranRef.current = true
+		const stored = localStorage.getItem(STORAGE_KEY) === '1'
+		setDismissed(stored)
+		document.documentElement.style.setProperty(
+			'--cc-banner-h',
+			stored ? '0px' : `${BANNER_HEIGHT}px`
+		)
+	}, [])
+
+	const dismiss = () => {
+		localStorage.setItem(STORAGE_KEY, '1')
+		setDismissed(true)
+		document.documentElement.style.setProperty('--cc-banner-h', '0px')
+	}
+
+	if (dismissed !== false) return null
+
+	return (
+		<div
+			className='fixed left-0 right-0 top-0 z-[60] border-b border-cc-accent/20 bg-cc-surface'
+			style={{ height: BANNER_HEIGHT }}
+		>
+			<div className='mx-auto flex h-full max-w-7xl items-center justify-center gap-3 px-6 text-xs text-cc-text-secondary md:text-sm'>
+				<span className='inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-cc-accent' aria-hidden='true' />
+				<p className='truncate text-center'>
+					<span className='text-white'>{message}</span>
+					{href && (
+						<>
+							{' '}
+							<Link
+								href={href}
+								className='text-cc-accent underline-offset-2 transition-colors hover:text-cc-accent-hover hover:underline'
+							>
+								{linkLabel}
+							</Link>
+						</>
+					)}
+				</p>
+				<button
+					type='button'
+					onClick={dismiss}
+					aria-label='Dismiss announcement'
+					className='ml-2 flex h-6 w-6 shrink-0 items-center justify-center rounded text-cc-text-muted transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-cc-accent'
+				>
+					<X size={14} weight='bold' />
+				</button>
+			</div>
+		</div>
+	)
+}

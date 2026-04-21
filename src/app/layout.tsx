@@ -6,6 +6,7 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import SmoothScroll from '@/components/layout/SmoothScroll'
 import CookieConsent from '@/components/layout/CookieConsent'
+import AnnouncementBanner from '@/components/layout/AnnouncementBanner'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -42,10 +43,13 @@ export default function RootLayout({
 			lang="en"
 			className={`${lora.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
 		>
-			<body className="flex min-h-full flex-col">
+			<body className='flex min-h-full flex-col'>
 				<SmoothScroll />
+				<AnnouncementBanner />
 				<Header />
-				<main className="flex-1 pt-14 md:pt-16">
+				<main
+					className='flex-1 [padding-top:calc(var(--cc-banner-h,0px)+3.5rem)] md:[padding-top:calc(var(--cc-banner-h,0px)+4rem)]'
+				>
 					{children}
 				</main>
 				<Footer />

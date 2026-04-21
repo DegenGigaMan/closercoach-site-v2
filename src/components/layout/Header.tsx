@@ -40,7 +40,8 @@ export default function Header() {
 	return (
 		<>
 			<header
-				className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ${
+				style={{ top: 'var(--cc-banner-h, 0px)' }}
+				className={`fixed left-0 right-0 z-50 transition-colors duration-300 ${
 					scrolled
 						? 'bg-cc-foundation/95 backdrop-blur-md border-b border-cc-surface-border'
 						: 'bg-transparent'
