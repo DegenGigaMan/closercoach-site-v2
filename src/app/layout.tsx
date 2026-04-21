@@ -21,11 +21,20 @@ export const metadata: Metadata = {
 		description: 'Practice before every meeting, record real calls, and get scored by AI. 20,000+ closers train with CloserCoach. Try free for 3 days.',
 		siteName: 'CloserCoach',
 		type: 'website',
+		images: [
+			{
+				url: '/og-image.png',
+				width: 1200,
+				height: 630,
+				alt: 'CloserCoach - The AI Sales Coach That Lives in Your Pocket',
+			},
+		],
 	},
 	twitter: {
 		card: 'summary_large_image',
 		title: 'CloserCoach - AI Sales Coach for Your Phone',
 		description: 'Practice before every meeting, record real calls, and get scored by AI. 20,000+ closers train with CloserCoach. Try free for 3 days.',
+		images: ['/og-image.png'],
 	},
 	robots: {
 		index: true,
