@@ -1,201 +1,258 @@
-/** @fileoverview Cookie Policy page with cookie types, third-party cookies, and preference management. */
+/** @fileoverview Cookie Policy page. Warm editorial surface, cookie types tables, third-party disclosures, preference management. */
 
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import LegalPageLayout from '@/components/layout/LegalPageLayout'
+import { Section, BulletList, Strong } from '@/components/layout/LegalContent'
+import { BRAND } from '@/lib/constants'
 
 export const metadata: Metadata = {
 	title: 'Cookie Policy',
+	description:
+		'How CloserCoach uses cookies, the types of cookies we use, and how to manage your preferences.',
 }
+
+const LAST_UPDATED = 'April 21, 2026'
+
+const TOC = [
+	{ id: 'what-are-cookies', label: '1. What Are Cookies' },
+	{ id: 'how-we-use', label: '2. How We Use Cookies' },
+	{ id: 'essential', label: '3. Essential Cookies' },
+	{ id: 'analytics', label: '4. Analytics Cookies' },
+	{ id: 'marketing', label: '5. Marketing Cookies' },
+	{ id: 'third-party', label: '6. Third-Party Cookies' },
+	{ id: 'preferences', label: '7. Managing Your Preferences' },
+	{ id: 'changes', label: '8. Changes to This Policy' },
+	{ id: 'contact', label: '9. Contact' },
+] as const
 
 export default function CookiePolicyPage() {
 	return (
-		<div className="bg-cc-foundation">
-			<div className="mx-auto max-w-3xl px-6 py-24 md:py-32">
-				<h1 className="display-lg text-white">Cookie Policy</h1>
-				<p className="mt-3 text-sm text-cc-text-muted">
-					Last updated: April 2026
-				</p>
-
-				{/* What are cookies */}
-				<section className="mt-12">
-					<h2 className="display-sm text-white">What Are Cookies</h2>
-					<p className="mt-3 text-sm leading-relaxed text-cc-text-secondary">
+		<LegalPageLayout
+			title="Cookie Policy"
+			lastUpdated={LAST_UPDATED}
+			summary={
+				<>
+					<p>
+						{BRAND.name} uses cookies and similar technologies to keep you
+						signed in, remember your preferences, and understand how the site
+						is used.
+					</p>
+					<p>
+						We do not use cookies to track you across other websites, and we do
+						not sell cookie data to third parties. You can decline non-essential
+						cookies from the banner on your first visit, and change your choice
+						any time through your browser settings.
+					</p>
+				</>
+			}
+			toc={TOC}
+			currentPath="/cookie-policy"
+		>
+			<div className="space-y-12">
+				<Section id="what-are-cookies" title="1. What Are Cookies">
+					<p>
 						Cookies are small text files stored on your device when you visit a
-						website. They help the site remember your preferences, understand how
-						you interact with it, and improve your experience on future visits.
+						website. They help the site remember your preferences, understand
+						how you interact with it, and improve your experience on future
+						visits.
 					</p>
-				</section>
+				</Section>
 
-				{/* How we use cookies */}
-				<section className="mt-10">
-					<h2 className="display-sm text-white">How CloserCoach Uses Cookies</h2>
-					<p className="mt-3 text-sm leading-relaxed text-cc-text-secondary">
-						CloserCoach uses cookies to:
-					</p>
-					<ul className="mt-3 space-y-2 text-sm text-cc-text-secondary">
-						<li className="flex gap-2">
-							<span className="text-cc-accent">-</span>
-							<span><strong className="text-white">Keep you logged in</strong> during your browsing session</span>
-						</li>
-						<li className="flex gap-2">
-							<span className="text-cc-accent">-</span>
-							<span><strong className="text-white">Remember your preferences</strong> (cookie consent choice, display settings)</span>
-						</li>
-						<li className="flex gap-2">
-							<span className="text-cc-accent">-</span>
-							<span><strong className="text-white">Understand how visitors use the site</strong> so we can improve it</span>
-						</li>
-						<li className="flex gap-2">
-							<span className="text-cc-accent">-</span>
-							<span><strong className="text-white">Measure the effectiveness of our marketing</strong> so we know what works</span>
-						</li>
-					</ul>
-					<p className="mt-4 text-sm leading-relaxed text-cc-text-secondary">
+				<Section id="how-we-use" title="2. How CloserCoach Uses Cookies">
+					<p>{BRAND.name} uses cookies to:</p>
+					<BulletList
+						items={[
+							<>
+								<Strong>Keep you signed in</Strong> during your browsing
+								session.
+							</>,
+							<>
+								<Strong>Remember your preferences</Strong> (cookie consent
+								choice, display settings).
+							</>,
+							<>
+								<Strong>Understand how visitors use the site</Strong> so we can
+								improve it.
+							</>,
+							<>
+								<Strong>Measure marketing effectiveness</Strong> so we know what
+								works.
+							</>,
+						]}
+					/>
+					<p>
 						We do not use cookies to track you across other websites. We do not
 						sell cookie data to third parties.
 					</p>
-				</section>
+				</Section>
 
-				{/* Essential cookies */}
-				<section className="mt-10">
-					<h2 className="display-sm text-white">Essential Cookies</h2>
-					<p className="mt-3 text-sm text-cc-text-secondary">
-						Required for the website to function. These cannot be disabled.
-					</p>
-					<div className="mt-4 overflow-x-auto">
-						<table className="w-full text-left text-sm">
-							<thead>
-								<tr className="border-b border-cc-surface-border">
-									<th className="pb-3 pr-6 font-semibold text-white">Cookie</th>
-									<th className="pb-3 pr-6 font-semibold text-white">Purpose</th>
-									<th className="pb-3 font-semibold text-white">Duration</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr className="border-b border-cc-surface-border/50">
-									<td className="py-3 pr-6 font-mono text-xs text-cc-accent">cookie-consent</td>
-									<td className="py-3 pr-6 text-cc-text-secondary">Stores your cookie preference</td>
-									<td className="py-3 text-cc-text-secondary">Persistent</td>
-								</tr>
-								<tr className="border-b border-cc-surface-border/50">
-									<td className="py-3 pr-6 font-mono text-xs text-cc-accent">Session cookies</td>
-									<td className="py-3 pr-6 text-cc-text-secondary">Maintain your browsing session</td>
-									<td className="py-3 text-cc-text-secondary">Session</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</section>
+				<Section id="essential" title="3. Essential Cookies">
+					<p>Required for the website to function. These cannot be disabled.</p>
+					<CookieTable
+						headers={['Cookie', 'Purpose', 'Duration']}
+						rows={[
+							[
+								<code
+									key="code"
+									className="rounded bg-black/5 px-1.5 py-0.5 font-mono text-xs text-cc-accent-hover"
+								>
+									cookie-consent
+								</code>,
+								'Stores your cookie preference',
+								'Persistent',
+							],
+							['Session cookies', 'Maintain your browsing session', 'Session'],
+						]}
+					/>
+				</Section>
 
-				{/* Analytics cookies */}
-				<section className="mt-10">
-					<h2 className="display-sm text-white">Analytics Cookies</h2>
-					<p className="mt-3 text-sm text-cc-text-secondary">
+				<Section id="analytics" title="4. Analytics Cookies">
+					<p>
 						Help us understand how visitors interact with the site. Can be
 						declined via the cookie banner.
 					</p>
-					<div className="mt-4 overflow-x-auto">
-						<table className="w-full text-left text-sm">
-							<thead>
-								<tr className="border-b border-cc-surface-border">
-									<th className="pb-3 pr-6 font-semibold text-white">Cookie</th>
-									<th className="pb-3 pr-6 font-semibold text-white">Purpose</th>
-									<th className="pb-3 pr-6 font-semibold text-white">Duration</th>
-									<th className="pb-3 font-semibold text-white">Provider</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr className="border-b border-cc-surface-border/50">
-									<td className="py-3 pr-6 font-mono text-xs text-cc-accent">Google Analytics</td>
-									<td className="py-3 pr-6 text-cc-text-secondary">Page views, traffic sources, user behavior</td>
-									<td className="py-3 pr-6 text-cc-text-secondary">2 years</td>
-									<td className="py-3 text-cc-text-secondary">Google</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</section>
+					<CookieTable
+						headers={['Cookie', 'Purpose', 'Duration', 'Provider']}
+						rows={[
+							[
+								'Google Analytics',
+								'Page views, traffic sources, user behavior',
+								'Up to 2 years',
+								'Google',
+							],
+						]}
+					/>
+				</Section>
 
-				{/* Third-party cookies */}
-				<section className="mt-10">
-					<h2 className="display-sm text-white">Third-Party Cookies</h2>
-					<p className="mt-3 text-sm leading-relaxed text-cc-text-secondary">
-						Some features on this site are provided by third parties that may set
-						their own cookies:
+				<Section id="marketing" title="5. Marketing Cookies">
+					<p>
+						Used to measure campaign effectiveness. Only set if you accept
+						cookies via the banner. Marketing cookies are only present when{' '}
+						{BRAND.name} runs paid acquisition campaigns with tracking pixels.
+						Specific ad-platform cookies are <em>(to be confirmed)</em>.
 					</p>
-					<ul className="mt-3 space-y-2 text-sm text-cc-text-secondary">
-						<li className="flex gap-2">
-							<span className="text-cc-accent">-</span>
-							<span>
-								<strong className="text-white">Intercom</strong> (live chat widget):
-								Sets cookies to maintain your chat session and remember your
-								identity across visits.
-							</span>
-						</li>
-						<li className="flex gap-2">
-							<span className="text-cc-accent">-</span>
-							<span>
-								<strong className="text-white">Google Analytics</strong> (if accepted):
-								Sets cookies to track anonymous usage patterns.
-							</span>
-						</li>
-					</ul>
-				</section>
+				</Section>
 
-				{/* Managing preferences */}
-				<section className="mt-10">
-					<h2 className="display-sm text-white">Managing Your Preferences</h2>
-					<p className="mt-3 text-sm leading-relaxed text-cc-text-secondary">
-						When you first visit the site, a banner at the bottom of the page
-						lets you accept or decline non-essential cookies. Your choice is
-						stored locally and remembered on future visits.
+				<Section id="third-party" title="6. Third-Party Cookies">
+					<p>
+						Some features on this site are provided by third parties that may
+						set their own cookies:
 					</p>
-					<p className="mt-3 text-sm leading-relaxed text-cc-text-secondary">
-						You can also manage cookies through your browser settings. Most
-						browsers let you block or delete cookies. Blocking essential cookies
-						may affect site functionality.
-					</p>
-					<p className="mt-3 text-sm leading-relaxed text-cc-text-secondary">
-						To change your cookie preference, clear your browser's localStorage
-						for this site. The cookie banner will reappear on your next visit.
-					</p>
-				</section>
+					<BulletList
+						items={[
+							<>
+								<Strong>Intercom</Strong> (live chat widget): sets cookies to
+								maintain your chat session and remember your identity across
+								visits. See{' '}
+								<a
+									href="https://www.intercom.com/legal/cookie-policy"
+									target="_blank"
+									rel="noopener noreferrer"
+									className="text-cc-accent-hover underline-offset-2 hover:underline"
+								>
+									Intercom&apos;s cookie policy
+								</a>
+								.
+							</>,
+							<>
+								<Strong>Google Analytics</Strong> (if accepted): sets cookies to
+								track anonymous usage patterns. See{' '}
+								<a
+									href="https://policies.google.com/privacy"
+									target="_blank"
+									rel="noopener noreferrer"
+									className="text-cc-accent-hover underline-offset-2 hover:underline"
+								>
+									Google&apos;s privacy policy
+								</a>
+								.
+							</>,
+						]}
+					/>
+				</Section>
 
-				{/* Changes */}
-				<section className="mt-10">
-					<h2 className="display-sm text-white">Changes to This Policy</h2>
-					<p className="mt-3 text-sm leading-relaxed text-cc-text-secondary">
+				<Section id="preferences" title="7. Managing Your Preferences">
+					<p>
+						<Strong>Cookie banner:</Strong> when you first visit the site, a
+						banner at the bottom of the page lets you accept or decline
+						non-essential cookies. Your choice is stored locally and remembered
+						on future visits.
+					</p>
+					<p>
+						<Strong>Browser settings:</Strong> you can also manage cookies
+						through your browser settings. Most browsers let you block or delete
+						cookies. Blocking essential cookies may affect site functionality.
+					</p>
+					<p>
+						<Strong>Clearing your choice:</Strong> to change your cookie
+						preference, clear your browser&apos;s localStorage for this site.
+						The cookie banner will reappear on your next visit.
+					</p>
+				</Section>
+
+				<Section id="changes" title="8. Changes to This Policy">
+					<p>
 						We may update this cookie policy to reflect changes in our practices
 						or for legal, regulatory, or operational reasons. Material changes
-						will be reflected in the "Last updated" date at the top of this
-						page.
+						will be reflected in the &quot;Last updated&quot; date at the top of
+						this page.
 					</p>
-				</section>
+				</Section>
 
-				{/* Contact */}
-				<section className="mt-10">
-					<h2 className="display-sm text-white">Contact</h2>
-					<p className="mt-3 text-sm leading-relaxed text-cc-text-secondary">
+				<Section id="contact" title="9. Contact">
+					<p>
 						Questions about our cookie practices can be directed to{' '}
 						<a
 							href="mailto:privacy@closercoach.ai"
-							className="text-cc-accent transition-colors hover:text-cc-accent-hover"
+							className="text-cc-accent-hover underline-offset-2 hover:underline"
 						>
 							privacy@closercoach.ai
 						</a>{' '}
 						or through the live chat widget on any page.
 					</p>
-				</section>
-
-				<div className="mt-16 text-center">
-					<Link
-						href="/"
-						className="text-sm text-cc-text-secondary transition-colors hover:text-white"
-					>
-						&larr; Back to homepage
-					</Link>
-				</div>
+				</Section>
 			</div>
+		</LegalPageLayout>
+	)
+}
+
+function CookieTable({
+	headers,
+	rows,
+}: {
+	headers: string[]
+	rows: React.ReactNode[][]
+}) {
+	return (
+		<div className="mt-2 overflow-x-auto rounded-xl border border-black/10 bg-white/60">
+			<table className="w-full text-left text-sm">
+				<thead>
+					<tr className="border-b border-black/10">
+						{headers.map((h) => (
+							<th
+								key={h}
+								className="px-4 py-3 font-semibold text-cc-text-primary-warm"
+							>
+								{h}
+							</th>
+						))}
+					</tr>
+				</thead>
+				<tbody>
+					{rows.map((row, i) => (
+						<tr key={i} className="border-b border-black/5 last:border-b-0">
+							{row.map((cell, j) => (
+								<td
+									key={j}
+									className="px-4 py-3 align-top text-cc-text-secondary-warm"
+								>
+									{cell}
+								</td>
+							))}
+						</tr>
+					))}
+				</tbody>
+			</table>
 		</div>
 	)
 }
