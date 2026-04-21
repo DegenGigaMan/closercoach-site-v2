@@ -15,7 +15,7 @@
 - Phosphor Icons (primary), simple-icons (brand logos)
 - GSAP + Lenis (smooth scroll)
 - Motion (component animations, layoutId morphing, AnimatePresence)
-- Young Serif (headings, --font-heading, single weight 400) + Inter (body, --font-sans) + Geist Mono (stats, --font-mono)
+- Lora Bold + Lora Bold Italic (headings, --font-heading, weight 700, italic for emphasized words) + Inter (body, --font-sans) + Geist Mono (stats, --font-mono). Locked 2026-04-21, supersedes prior Young Serif lock.
 
 ## Design System
 - Colors, typography, spacing from VIS (vis-visual-identity-system.md)
@@ -25,7 +25,7 @@
 - CTA text color: white on emerald background (19.2:1 contrast)
 - Emerald on warm surfaces: use accent-hover (#059669) for text (WCAG AA)
 - Phone allocation: 2 sections only (S1 Hero, S3 Step 2)
-- Heading emphasis: color variation (white/emerald), NOT weight variation (Young Serif single weight)
+- Heading emphasis: weight+italic primary (Lora Bold → Lora Bold Italic for emphasized words), color variation (white/emerald) as optional layer on italicized spans. Per VIS §2 lock 2026-04-21.
 - Custom Tailwind tokens: cc-foundation, cc-surface, cc-accent, cc-text-secondary, etc.
 
 ## Copy Sources
