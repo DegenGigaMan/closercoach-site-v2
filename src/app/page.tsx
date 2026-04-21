@@ -9,6 +9,7 @@ import SectionFeatures from '@/components/sections/SectionFeatures'
 import SectionProofConnectorB from '@/components/sections/SectionProofConnectorB'
 import SectionResults from '@/components/sections/SectionResults'
 import SectionFounderStrip from '@/components/sections/SectionFounderStrip'
+import SectionCaseStudies from '@/components/sections/SectionCaseStudies'
 import SectionTeams from '@/components/sections/SectionTeams'
 import SectionCTA from '@/components/sections/SectionCTA'
 
@@ -24,6 +25,7 @@ export default function HomePage() {
 			<SectionProofConnectorB />
 			<SectionResults />
 			<SectionFounderStrip />
+			<SectionCaseStudies />
 			<SectionTeams />
 			<SectionCTA />
 		</div>
