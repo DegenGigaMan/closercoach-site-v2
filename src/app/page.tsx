@@ -11,6 +11,7 @@ import SectionResults from '@/components/sections/SectionResults'
 import SectionFounderStrip from '@/components/sections/SectionFounderStrip'
 import SectionCaseStudies from '@/components/sections/SectionCaseStudies'
 import SectionTeams from '@/components/sections/SectionTeams'
+import SectionFAQ from '@/components/sections/SectionFAQ'
 import SectionCTA from '@/components/sections/SectionCTA'
 
 export default function HomePage() {
@@ -27,6 +28,7 @@ export default function HomePage() {
 			<SectionFounderStrip />
 			<SectionCaseStudies />
 			<SectionTeams />
+			<SectionFAQ />
 			<SectionCTA />
 		</div>
 	)
