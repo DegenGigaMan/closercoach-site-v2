@@ -91,7 +91,7 @@ export default function TermsPage() {
 					<BulletList
 						items={[
 							<>
-								<Strong>Sales Rep plan:</Strong> ${PRICING.individual.monthly}
+								<Strong>Closer plan:</Strong> ${PRICING.individual.monthly}
 								/month or ${PRICING.individual.yearly}/year.
 							</>,
 							<>
@@ -100,7 +100,7 @@ export default function TermsPage() {
 							</>,
 							<>
 								<Strong>Free trial:</Strong> a {STATS.trialDays}-day trial is
-								available for the Sales Rep plan with full access and no credit
+								available for the Closer plan with full access and no credit
 								card required.
 							</>,
 							<>
