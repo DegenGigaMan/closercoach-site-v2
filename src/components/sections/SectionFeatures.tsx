@@ -66,7 +66,6 @@ type PhosphorIcon = ComponentType<{
 type CardLayout = 'stack' | 'split-visual-left' | 'split-visual-right'
 
 type Feature = {
-	chapter: string
 	title: string
 	body: string
 	Icon: PhosphorIcon
@@ -82,35 +81,30 @@ type Feature = {
 
 const FEATURES: readonly Feature[] = [
 	{
-		chapter: '[01]',
 		title: 'Practice Against Realistic AI Customer Clones',
 		body: 'Three fresh sales scenarios every day so your skills never go cold.',
 		Icon: SealCheck,
 		layout: 'stack',
 	},
 	{
-		chapter: '[02]',
 		title: 'AI Dialer + Notetaker',
 		body: 'Call directly from the app or hit record in the room. Either way, AI captures the conversation, scores the call, and writes your notes.',
 		Icon: Phone,
 		layout: 'stack',
 	},
 	{
-		chapter: '[03]',
 		title: 'Skills Progression Tracking',
 		body: 'See exactly how your discovery, objection handling, close rate, and more improve over time. Call by call, rep by rep.',
 		Icon: ChartLineUp,
 		layout: 'stack',
 	},
 	{
-		chapter: '[04]',
 		title: 'Cash Cards',
 		body: 'Flashcards built around real objections so you always know exactly what to say when it counts.',
 		Icon: Lightning,
 		layout: 'split-visual-left',
 	},
 	{
-		chapter: '[05]',
 		title: '40+ Languages',
 		body: 'Practice Spanish cold calls, French closings, Portuguese discovery. All from the same app.',
 		Icon: GlobeHemisphereWest,
@@ -172,24 +166,14 @@ type CardShellProps = {
  * with the real motionSlot without restructuring layout.
  */
 function CardShell({ feature, motionSlot, className = '', slotWrapperClassName = '' }: CardShellProps): ReactElement {
-	const { chapter, title, body, Icon, layout } = feature
+	const { title, body, Icon, layout } = feature
 
 	const cardBase = `group relative flex h-full flex-col gap-5 rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 p-6 md:p-8 ${className}`
-
-	const chapterMarker = (
-		<span
-			className='absolute right-6 top-6 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.18em] text-cc-accent/60'
-			style={{ fontVariantNumeric: 'tabular-nums' }}
-			aria-hidden='true'
-		>
-			{chapter}
-		</span>
-	)
 
 	const textBlock = (
 		<>
 			<Icon className='text-cc-accent' size={28} weight='duotone' aria-hidden='true' />
-			<h3 className='pr-12 display-sm text-cc-text-primary'>{title}</h3>
+			<h3 className='display-sm text-cc-text-primary'>{title}</h3>
 			<p className='max-w-md text-base leading-relaxed text-cc-text-secondary'>{body}</p>
 		</>
 	)
@@ -199,7 +183,6 @@ function CardShell({ feature, motionSlot, className = '', slotWrapperClassName =
 	if (layout === 'stack') {
 		return (
 			<div className={cardBase}>
-				{chapterMarker}
 				{textBlock}
 				<div className={`mt-auto flex w-full flex-1 ${slotWrapperClassName}`}>
 					{visualBlock}
@@ -214,7 +197,6 @@ function CardShell({ feature, motionSlot, className = '', slotWrapperClassName =
 
 	return (
 		<div className={cardBase}>
-			{chapterMarker}
 			<div className={`flex flex-1 flex-col gap-6 ${mdDirection} md:items-stretch md:gap-8`}>
 				<div className='flex flex-col gap-5 md:basis-[45%] md:justify-center'>
 					{textBlock}
@@ -277,7 +259,7 @@ export default function SectionFeatures(): ReactElement {
 				    "Operating System" per VIS lock 2026-04-21. Fluid clamp so the
 				    headline owns the viewport on desktop and scales down cleanly. */}
 				<h2
-					className='mb-6 text-cc-text-primary text-balance text-center md:mb-8'
+					className='mb-6 text-cc-text-primary text-balance text-left md:mb-8'
 					style={{
 						fontFamily: 'var(--font-heading)',
 						fontSize: 'clamp(2.5rem, 10vw, 10rem)',
@@ -289,7 +271,7 @@ export default function SectionFeatures(): ReactElement {
 					An AI Sales{' '}
 					<span
 						className='text-cc-accent'
-						style={{ fontStyle: 'italic', fontWeight: 700 }}
+						style={{ fontWeight: 700 }}
 					>
 						Operating System
 					</span>

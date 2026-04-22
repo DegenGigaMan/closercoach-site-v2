@@ -104,12 +104,12 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 			<div
 				ref={splitRef}
 				style={{ position: 'relative' }}
-				className="relative mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 pb-32 md:px-12 lg:grid-cols-[35%_65%] lg:gap-16 lg:px-24 lg:pb-24"
+				className="relative mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 pb-32 md:px-12 lg:grid-cols-[40%_60%] lg:gap-6 lg:px-16 lg:pb-40"
 			>
 				<StepIndicator steps={STEPS} activeStep={activeStep} containerRef={splitRef} />
 
 				{/* Left column: scrolling step rooms */}
-				<div className="flex flex-col lg:pl-16">
+				<div className="flex flex-col lg:pl-8">
 					<StepRoom index={1} onEnter={advanceTo}>
 						<Step1Plan devPin={devPin} />
 					</StepRoom>
