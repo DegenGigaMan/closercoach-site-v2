@@ -63,11 +63,21 @@ type PhosphorIcon = ComponentType<{
 	'aria-hidden'?: boolean | 'true' | 'false'
 }>
 
+type CardLayout = 'stack' | 'split-visual-left' | 'split-visual-right'
+
 type Feature = {
 	chapter: string
 	title: string
 	body: string
 	Icon: PhosphorIcon
+	/** Internal composition of the card.
+	 *  - 'stack': icon + title + body top, visual below. All breakpoints.
+	 *  - 'split-visual-left': visual LEFT / text RIGHT on md+, collapses to
+	 *    vertical stack (text top, visual below) at <md.
+	 *  - 'split-visual-right': text LEFT / visual RIGHT on md+, collapses to
+	 *    vertical stack (text top, visual below) at <md.
+	 *  Per Image #24/#25/#26 reference confirmed by Andy 2026-04-21. */
+	layout: CardLayout
 }
 
 const FEATURES: readonly Feature[] = [
@@ -76,30 +86,35 @@ const FEATURES: readonly Feature[] = [
 		title: 'Practice Against Realistic AI Customer Clones',
 		body: 'Three fresh sales scenarios every day so your skills never go cold.',
 		Icon: SealCheck,
+		layout: 'stack',
 	},
 	{
 		chapter: '[02]',
 		title: 'AI Dialer + Notetaker',
 		body: 'Call directly from the app or hit record in the room. Either way, AI captures the conversation, scores the call, and writes your notes.',
 		Icon: Phone,
+		layout: 'stack',
 	},
 	{
 		chapter: '[03]',
 		title: 'Skills Progression Tracking',
 		body: 'See exactly how your discovery, objection handling, close rate, and more improve over time. Call by call, rep by rep.',
 		Icon: ChartLineUp,
+		layout: 'stack',
 	},
 	{
 		chapter: '[04]',
 		title: 'Cash Cards',
 		body: 'Flashcards built around real objections so you always know exactly what to say when it counts.',
 		Icon: Lightning,
+		layout: 'split-visual-left',
 	},
 	{
 		chapter: '[05]',
 		title: '40+ Languages',
 		body: 'Practice Spanish cold calls, French closings, Portuguese discovery. All from the same app.',
 		Icon: GlobeHemisphereWest,
+		layout: 'split-visual-right',
 	},
 ] as const
 
@@ -148,33 +163,65 @@ type CardShellProps = {
 }
 
 /**
- * @description S4 bento card shell. Renders chapter marker, icon, title, body,
- * and either a caller-provided motion slot or the default DashedSlot. Uses a
- * column flex so the slot grows to fill the remaining card height and the
- * outer grid's row assignment drives the visual footprint. A future wave can
- * bolt animation into `motionSlot` without shifting layout.
+ * @description S4 bento card shell. Branches on `feature.layout` to render
+ * either a vertical stack (icon + title + body above, visual below) or a
+ * horizontal split that collapses to a vertical stack under md. In the split
+ * variant, DOM order is always text-first so mobile stacks text-then-visual;
+ * on md+ we use `flex-row-reverse` for 'split-visual-left' to put the visual
+ * on the left without reordering the DOM. A future wave replaces DashedSlot
+ * with the real motionSlot without restructuring layout.
  */
 function CardShell({ feature, motionSlot, className = '', slotWrapperClassName = '' }: CardShellProps): ReactElement {
-	const { chapter, title, body, Icon } = feature
+	const { chapter, title, body, Icon, layout } = feature
 
-	return (
-		<div
-			className={`group relative flex h-full flex-col gap-5 rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 p-6 md:p-8 ${className}`}
+	const cardBase = `group relative flex h-full flex-col gap-5 rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 p-6 md:p-8 ${className}`
+
+	const chapterMarker = (
+		<span
+			className='absolute right-6 top-6 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.18em] text-cc-accent/60'
+			style={{ fontVariantNumeric: 'tabular-nums' }}
+			aria-hidden='true'
 		>
-			<span
-				className='absolute right-6 top-6 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.18em] text-cc-accent/60'
-				style={{ fontVariantNumeric: 'tabular-nums' }}
-				aria-hidden='true'
-			>
-				{chapter}
-			</span>
+			{chapter}
+		</span>
+	)
 
+	const textBlock = (
+		<>
 			<Icon className='text-cc-accent' size={28} weight='duotone' aria-hidden='true' />
 			<h3 className='pr-12 display-sm text-cc-text-primary'>{title}</h3>
 			<p className='max-w-md text-base leading-relaxed text-cc-text-secondary'>{body}</p>
+		</>
+	)
 
-			<div className={`mt-auto flex w-full flex-1 ${slotWrapperClassName}`}>
-				{motionSlot ?? <DashedSlot />}
+	const visualBlock = motionSlot ?? <DashedSlot />
+
+	if (layout === 'stack') {
+		return (
+			<div className={cardBase}>
+				{chapterMarker}
+				{textBlock}
+				<div className={`mt-auto flex w-full flex-1 ${slotWrapperClassName}`}>
+					{visualBlock}
+				</div>
+			</div>
+		)
+	}
+
+	// Horizontal split on md+. DOM-first text so mobile stacks text-over-visual.
+	// Use flex-row-reverse to place visual on the LEFT without DOM reordering.
+	const mdDirection = layout === 'split-visual-left' ? 'md:flex-row-reverse' : 'md:flex-row'
+
+	return (
+		<div className={cardBase}>
+			{chapterMarker}
+			<div className={`flex flex-1 flex-col gap-6 ${mdDirection} md:items-stretch md:gap-8`}>
+				<div className='flex flex-col gap-5 md:basis-[45%] md:justify-center'>
+					{textBlock}
+				</div>
+				<div className={`flex min-h-[200px] flex-1 md:basis-[55%] md:min-h-0 ${slotWrapperClassName}`}>
+					{visualBlock}
+				</div>
 			</div>
 		</div>
 	)
@@ -287,18 +334,20 @@ export default function SectionFeatures(): ReactElement {
 						className='md:col-span-1 lg:col-span-4 lg:row-span-2'
 					/>
 
-					{/* [04] Cash Cards -- compact row-2 right card
+					{/* [04] Cash Cards -- compact row-2 right card on desktop;
+					    full-width row on tablet; vertical stack on mobile
 					    TODO(motion): stacked flashcard hover fan */}
 					<CardShell
 						feature={FEATURES[3]}
-						className='md:col-span-1 lg:col-span-8 lg:min-h-[300px]'
+						className='md:col-span-2 lg:col-span-8 lg:min-h-[300px]'
 					/>
 
-					{/* [05] 40+ Languages -- wider row-3 right card, taller than [04]
+					{/* [05] 40+ Languages -- wider row-3 right card on desktop;
+					    full-width row on tablet; vertical stack on mobile
 					    TODO(motion): microphone pulse + flag orbit rotation */}
 					<CardShell
 						feature={FEATURES[4]}
-						className='md:col-span-1 lg:col-span-8 lg:min-h-[380px]'
+						className='md:col-span-2 lg:col-span-8 lg:min-h-[380px]'
 					/>
 				</div>
 
