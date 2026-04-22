@@ -1,14 +1,18 @@
-/** @fileoverview S4 Feature Deep Dives (W15 5-card bento port per Image #20).
+/** @fileoverview S4 Feature Deep Dives (W15 + W16 bento per Image #22).
  *
  * Composition:
  *   1. Billboard section headline (Lora Bold, clamp 2.5rem to 10rem at 10vw) with
  *      Lora Bold ITALIC emerald span on "Operating System".
  *   2. Scale callout beneath -- E4 "100+ scenarios across 16+ industries."
- *   3. 5-card asymmetric bento (12-col desktop grid):
+ *   3. 5-card asymmetric bento (12-col desktop grid, 3 implicit rows):
  *        Row 1: [01] cols 1-7 (wide hook card) | [02] cols 8-12
- *        Row 2: [03] cols 1-4 | [04] cols 5-8 | [05] cols 9-12
+ *        Row 2: [03] cols 1-4 row-span 2       | [04] cols 5-12 (compact)
+ *        Row 3: [03 continues]                 | [05] cols 5-12 (taller than 04)
+ *      Card heights vary: [03] is the tall left column; [04] is the compact
+ *      middle-right card; [05] is the wider bottom-right card. The grid's row
+ *      assignment drives each card's footprint, which matches the reference.
  *      Mobile: independent single-column stack (not a shrunk desktop), natural
- *      card heights, dashed-box aspect ratio 4:3.
+ *      card heights.
  *      Tablet: 2-col grid, card 1 spans both cols row 1.
  *   4. Each card renders chapter marker [01]-[05] top-right (Geist Mono, emerald),
  *      Phosphor icon (emerald, duotone where available), title, one-liner body,
@@ -64,15 +68,6 @@ type Feature = {
 	title: string
 	body: string
 	Icon: PhosphorIcon
-	/** Relative size of the dashed-box visual slot within the card interior.
-	 *  These match the proportions of the Image #20 reference so future visual
-	 *  assets land on a sized frame rather than an arbitrary fill. */
-	slotAspect: string
-	/** Minimum height for the dashed-box on desktop so card footprints read
-	 *  close to the reference layout regardless of copy length. */
-	slotMinHeight: string
-	/** Alignment of the dashed box inside the card body. */
-	slotAlign: 'bottom-center' | 'right-center' | 'bottom' | 'right'
 }
 
 const FEATURES: readonly Feature[] = [
@@ -81,45 +76,30 @@ const FEATURES: readonly Feature[] = [
 		title: 'Practice Against Realistic AI Customer Clones',
 		body: 'Three fresh sales scenarios every day so your skills never go cold.',
 		Icon: SealCheck,
-		slotAspect: 'aspect-[16/9]',
-		slotMinHeight: 'min-h-[260px]',
-		slotAlign: 'bottom-center',
 	},
 	{
 		chapter: '[02]',
 		title: 'AI Dialer + Notetaker',
 		body: 'Call directly from the app or hit record in the room. Either way, AI captures the conversation, scores the call, and writes your notes.',
 		Icon: Phone,
-		slotAspect: 'aspect-[4/3]',
-		slotMinHeight: 'min-h-[220px]',
-		slotAlign: 'right-center',
 	},
 	{
 		chapter: '[03]',
 		title: 'Skills Progression Tracking',
 		body: 'See exactly how your discovery, objection handling, close rate, and more improve over time. Call by call, rep by rep.',
 		Icon: ChartLineUp,
-		slotAspect: 'aspect-[4/3]',
-		slotMinHeight: 'min-h-[220px]',
-		slotAlign: 'bottom',
 	},
 	{
 		chapter: '[04]',
 		title: 'Cash Cards',
 		body: 'Flashcards built around real objections so you always know exactly what to say when it counts.',
 		Icon: Lightning,
-		slotAspect: 'aspect-[4/3]',
-		slotMinHeight: 'min-h-[220px]',
-		slotAlign: 'right',
 	},
 	{
 		chapter: '[05]',
 		title: '40+ Languages',
 		body: 'Practice Spanish cold calls, French closings, Portuguese discovery. All from the same app.',
 		Icon: GlobeHemisphereWest,
-		slotAspect: 'aspect-[4/3]',
-		slotMinHeight: 'min-h-[220px]',
-		slotAlign: 'bottom',
 	},
 ] as const
 
@@ -135,14 +115,16 @@ const EXPERTS: readonly string[] = [
 
 /**
  * @description Empty dashed frame reserving space for a future visual asset.
- * Renders a single centered "VISUAL ASSET" label in Geist Mono. Sized per the
- * relative footprint of the target visual element in the Image #20 reference.
- * No ambient content -- the frame only marks the drop zone.
+ * Renders a single centered "VISUAL ASSET" label in Geist Mono. Fills the
+ * remaining card height via flex-1 so the reserved footprint tracks the
+ * card's grid row assignment rather than a hard-coded aspect ratio. The real
+ * visual asset will replace this frame in a later wave and is responsible
+ * for its own internal composition.
  */
-function DashedSlot({ aspect, minHeight }: { aspect: string; minHeight: string }): ReactElement {
+function DashedSlot(): ReactElement {
 	return (
 		<div
-			className={`relative flex w-full items-center justify-center rounded-xl border-2 border-dashed border-cc-accent/25 ${aspect} ${minHeight}`}
+			className='relative flex w-full flex-1 min-h-[140px] items-center justify-center rounded-xl border-2 border-dashed border-cc-accent/25'
 			aria-hidden='true'
 		>
 			<span
@@ -167,22 +149,17 @@ type CardShellProps = {
 
 /**
  * @description S4 bento card shell. Renders chapter marker, icon, title, body,
- * and either a caller-provided motion slot or the default DashedSlot. Structured
- * so a future wave can bolt animation into `motionSlot` without shifting layout.
+ * and either a caller-provided motion slot or the default DashedSlot. Uses a
+ * column flex so the slot grows to fill the remaining card height and the
+ * outer grid's row assignment drives the visual footprint. A future wave can
+ * bolt animation into `motionSlot` without shifting layout.
  */
 function CardShell({ feature, motionSlot, className = '', slotWrapperClassName = '' }: CardShellProps): ReactElement {
 	const { chapter, title, body, Icon } = feature
 
-	const slotJustify =
-		feature.slotAlign === 'bottom-center' || feature.slotAlign === 'bottom'
-			? 'justify-center'
-			: feature.slotAlign === 'right-center' || feature.slotAlign === 'right'
-			? 'justify-end'
-			: 'justify-start'
-
 	return (
 		<div
-			className={`group relative flex flex-col gap-5 rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 p-6 md:p-8 ${className}`}
+			className={`group relative flex h-full flex-col gap-5 rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 p-6 md:p-8 ${className}`}
 		>
 			<span
 				className='absolute right-6 top-6 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.18em] text-cc-accent/60'
@@ -196,10 +173,8 @@ function CardShell({ feature, motionSlot, className = '', slotWrapperClassName =
 			<h3 className='pr-12 display-sm text-cc-text-primary'>{title}</h3>
 			<p className='max-w-md text-base leading-relaxed text-cc-text-secondary'>{body}</p>
 
-			<div className={`mt-auto flex w-full ${slotJustify} ${slotWrapperClassName}`}>
-				{motionSlot ?? (
-					<DashedSlot aspect={feature.slotAspect} minHeight={feature.slotMinHeight} />
-				)}
+			<div className={`mt-auto flex w-full flex-1 ${slotWrapperClassName}`}>
+				{motionSlot ?? <DashedSlot />}
 			</div>
 		</div>
 	)
@@ -282,9 +257,12 @@ export default function SectionFeatures(): ReactElement {
 				</p>
 
 				{/* Bento grid.
-				    Desktop (lg+): 12-col grid with 2 rows.
+				    Desktop (lg+): 12-col grid with a tall left column for card 03.
 				      Row 1: [01] col-span-7 | [02] col-span-5
-				      Row 2: [03] col-span-4 | [04] col-span-4 | [05] col-span-4
+				      Row 2: [03] col-span-4 row-span-2 | [04] col-span-8
+				      Row 3: [03 continues]               | [05] col-span-8
+				      Row 2 is shorter than row 3 so [04] reads as the compact card and
+				      [05] reads wider/taller, matching the reference composition.
 				    Tablet (md): 2-col. Row 1 [01] col-span-2. Rows 2-3 pair the rest.
 				    Mobile: 1-col stack in reading order. */}
 				<div className='grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-12'>
@@ -292,35 +270,35 @@ export default function SectionFeatures(): ReactElement {
 					    TODO(motion): fan-out 3-card persona stack on hover */}
 					<CardShell
 						feature={FEATURES[0]}
-						className='md:col-span-2 lg:col-span-7 lg:row-span-1'
+						className='md:col-span-2 lg:col-span-7 lg:min-h-[520px]'
 					/>
 
 					{/* [02] AI Dialer + Notetaker
 					    TODO(motion): live waveform animation + session complete reveal on scroll */}
 					<CardShell
 						feature={FEATURES[1]}
-						className='md:col-span-1 lg:col-span-5 lg:row-span-1'
+						className='md:col-span-1 lg:col-span-5 lg:min-h-[520px]'
 					/>
 
-					{/* [03] Skills Progression Tracking
+					{/* [03] Skills Progression Tracking -- tall column spanning rows 2-3
 					    TODO(motion): stat counter + chart draw-in on scroll */}
 					<CardShell
 						feature={FEATURES[2]}
-						className='md:col-span-1 lg:col-span-4'
+						className='md:col-span-1 lg:col-span-4 lg:row-span-2'
 					/>
 
-					{/* [04] Cash Cards
+					{/* [04] Cash Cards -- compact row-2 right card
 					    TODO(motion): stacked flashcard hover fan */}
 					<CardShell
 						feature={FEATURES[3]}
-						className='md:col-span-1 lg:col-span-4'
+						className='md:col-span-1 lg:col-span-8 lg:min-h-[300px]'
 					/>
 
-					{/* [05] 40+ Languages
+					{/* [05] 40+ Languages -- wider row-3 right card, taller than [04]
 					    TODO(motion): microphone pulse + flag orbit rotation */}
 					<CardShell
 						feature={FEATURES[4]}
-						className='md:col-span-1 lg:col-span-4'
+						className='md:col-span-1 lg:col-span-8 lg:min-h-[380px]'
 					/>
 				</div>
 
