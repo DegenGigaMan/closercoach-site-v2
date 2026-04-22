@@ -1,8 +1,8 @@
-/** @fileoverview S3 Step Indicator: vertical emerald thread + 4 numbered markers + scroll-linked traveling pulse.
- * - Spine = 1px vertical line. Color states: unvisited 20% / passed 80% / active 100%.
- * - Markers = 40x40 circles at [01] [02] [03] [04]. Inactive bordered / active filled with glow / passed filled solid.
- * - Pulse = small emerald dot that maps scroll progress to vertical position along the spine.
- * - Respects prefers-reduced-motion: pulse pins to active marker, no travel. */
+/** @fileoverview S3 Step Indicator: vertical emerald spine + scroll-linked traveling pulse.
+ * Spine is cropped to span from step 1's dot center to step 4's dot center so the
+ * line never extends above/below the kicker dots. Per-step numbered dots are
+ * rendered inside each StepKicker (not here) so they anchor to each step room's
+ * kicker position. Respects prefers-reduced-motion: pulse pins, no travel. */
 
 'use client'
 
@@ -24,17 +24,15 @@ export interface StepMeta {
 }
 
 interface StepIndicatorProps {
-	steps: readonly StepMeta[]
-	activeStep: number
 	containerRef: RefObject<HTMLElement | null>
 }
 
 /**
- * @description Emerald thread spine with numbered markers and scroll-linked pulse.
- * Renders absolutely inside the parent split container. The markers align vertically
- * with each step room's visual anchor via equal flex distribution.
+ * @description Emerald spine + scroll-linked pulse. Renders absolutely inside the
+ * split container, cropped vertically so it starts/ends at the first and last
+ * step kicker dot centers.
  */
-export default function StepIndicator({ steps, activeStep, containerRef }: StepIndicatorProps) {
+export default function StepIndicator({ containerRef }: StepIndicatorProps) {
 	/* Normalize to boolean: useReducedMotion returns null on SSR and true/false
 	 * on client. `?? false` picks the motion branch as the shared default. */
 	const prefersReducedMotion = useReducedMotion() ?? false
@@ -71,8 +69,12 @@ export default function StepIndicator({ steps, activeStep, containerRef }: StepI
 	const pulseY = useTransform(scrollYProgress, [0, 1], ['0%', '100%'])
 
 	return (
-		<div className="pointer-events-none absolute inset-y-0 left-5 z-10 hidden lg:block" aria-hidden="true">
-			<div className="relative flex h-full flex-col items-center">
+		<div
+			className="pointer-events-none absolute left-5 top-[var(--cc-rail-top)] z-10 hidden lg:block"
+			style={{ bottom: 'var(--cc-rail-bottom)' }}
+			aria-hidden="true"
+		>
+			<div className="relative h-full w-px">
 				<div className="absolute inset-y-0 w-px bg-cc-accent/20" />
 				<motion.div
 					className="absolute top-0 w-px bg-cc-accent/80"
@@ -87,50 +89,7 @@ export default function StepIndicator({ steps, activeStep, containerRef }: StepI
 						}}
 					/>
 				)}
-				<div className="relative flex h-full flex-col justify-around py-[10vh]">
-					{steps.map((step, i) => {
-						const stepNum = i + 1
-						const isActive = activeStep === stepNum
-						const isPassed = activeStep > stepNum
-						return (
-							<Marker
-								key={step.number}
-								number={step.number}
-								isActive={isActive}
-								isPassed={isPassed}
-							/>
-						)
-					})}
-				</div>
 			</div>
-		</div>
-	)
-}
-
-function Marker({
-	number,
-	isActive,
-	isPassed,
-}: {
-	number: string
-	isActive: boolean
-	isPassed: boolean
-}) {
-	const filled = isActive || isPassed
-	return (
-		<div
-			className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 font-[family-name:var(--font-mono)] text-[13px] font-medium"
-			style={{
-				backgroundColor: filled ? 'var(--color-cc-accent)' : 'var(--color-cc-foundation)',
-				borderColor: filled ? 'var(--color-cc-accent)' : 'rgba(16,185,129,0.5)',
-				color: filled ? 'var(--color-cc-foundation)' : 'rgba(16,185,129,0.85)',
-				boxShadow: isActive
-					? '0 0 16px rgba(16,185,129,0.45), 0 0 32px rgba(16,185,129,0.2)'
-					: undefined,
-				transition: 'background-color 0.4s ease-out, border-color 0.4s ease-out, color 0.4s ease-out, box-shadow 0.4s ease-out',
-			}}
-		>
-			{number}
 		</div>
 	)
 }

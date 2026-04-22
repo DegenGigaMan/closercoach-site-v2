@@ -18,12 +18,12 @@
 
 'use client'
 
-import { useRef, useState, useEffect, useCallback, useSyncExternalStore, type ReactNode } from 'react'
+import { createContext, useContext, useRef, useState, useEffect, useCallback, useSyncExternalStore, type CSSProperties, type ReactNode } from 'react'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'motion/react'
 import { Sparkle, Microphone, PhoneCall } from '@phosphor-icons/react'
 import MotionCTA from '@/components/shared/motion-cta'
 import { CTA } from '@/lib/constants'
-import StepIndicator, { type StepMeta } from './how-it-works/StepIndicator'
+import StepIndicator from './how-it-works/StepIndicator'
 import StepOneVisual from './how-it-works/StepOneVisual'
 import StepTwoVisual from './how-it-works/StepTwoVisual'
 import StepThreeVisual from './how-it-works/StepThreeVisual'
@@ -42,12 +42,25 @@ function useMounted(): boolean {
 	return useSyncExternalStore(subscribeNoop, () => true, () => false)
 }
 
-const STEPS: readonly StepMeta[] = [
-	{ number: '01', label: 'PLAN' },
-	{ number: '02', label: 'PRACTICE' },
-	{ number: '03', label: 'SELL' },
-	{ number: '04', label: 'REVIEW' },
-] as const
+const ActiveStepContext = createContext(1)
+
+/* Layout tokens shared between StepIndicator rail and StepKicker dots.
+ * - cc-kicker-x: horizontal offset (negative) so a 40px kicker dot's center
+ *   lands on the rail's x=20 position, given the left column starts at x=64
+ *   (split px-16, no left-col pl on desktop). Center at 20, left edge at 0,
+ *   relative to StepKicker origin (x=64) → offset -64px.
+ * - cc-rail-top / cc-rail-bottom: crop the rail vertically so its top sits at
+ *   step 1's dot center and its bottom sits at step 4's dot center. Each step
+ *   room is min-h-screen (100vh) with py-16 (4rem) top padding + a 40px (2.5rem)
+ *   dot centered on its first line. So dot center ≈ 4rem + 1.25rem = 5.25rem
+ *   from room top. Step 4 room starts at 300vh; its dot is at 300vh + 5.25rem.
+ *   Split container has pb-40 (10rem) below step 4, so bottom offset from
+ *   container bottom = (400vh + 10rem) - (300vh + 5.25rem) = 100vh + 4.75rem. */
+const SPLIT_VARS: CSSProperties = {
+	'--cc-kicker-x': '-64px',
+	'--cc-rail-top': '5.25rem',
+	'--cc-rail-bottom': 'calc(100vh + 4.75rem)',
+} as CSSProperties
 
 /**
  * @description S3 How It Works. Renders the opener, the split layout, and the
@@ -101,15 +114,17 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 			 * AI Coach summary + CTA. The banner is dismissible; once accepted/declined
 			 * the extra padding is harmless. The 32px delta > the 24px cookie-banner
 			 * backdrop compensation that sat above the banner's backdrop-blur. */}
+			<ActiveStepContext.Provider value={activeStep}>
 			<div
 				ref={splitRef}
-				style={{ position: 'relative' }}
+				style={{ position: 'relative', ...SPLIT_VARS }}
 				className="relative mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 pb-32 md:px-12 lg:grid-cols-[40%_60%] lg:gap-6 lg:px-16 lg:pb-40"
 			>
-				<StepIndicator steps={STEPS} activeStep={activeStep} containerRef={splitRef} />
+				<StepIndicator containerRef={splitRef} />
 
-				{/* Left column: scrolling step rooms */}
-				<div className="flex flex-col lg:pl-8">
+				{/* Left column: scrolling step rooms. No left padding on desktop so the
+				 * StepKicker's desktop dot can sit on the rail at x=20 via --cc-kicker-x. */}
+				<div className="flex flex-col">
 					<StepRoom index={1} onEnter={advanceTo}>
 						<Step1Plan devPin={devPin} />
 					</StepRoom>
@@ -131,6 +146,7 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 					</div>
 				</div>
 			</div>
+			</ActiveStepContext.Provider>
 		</section>
 	)
 }
@@ -169,7 +185,7 @@ function StepRoom({
 			initial={{ opacity: 0, y: 24 }}
 			animate={isInView ? { opacity: 1, y: 0 } : {}}
 			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-			className="flex min-h-screen flex-col justify-center py-16"
+			className="flex flex-col py-10 lg:min-h-screen lg:justify-start lg:py-16"
 		>
 			{children}
 		</motion.div>
@@ -231,11 +247,36 @@ function RightColumnVisual({ activeStep, devPin }: { activeStep: number; devPin:
 
 /* ---------- Shared copy primitives ---------- */
 
-function StepKicker({ number, children }: { number: string; children: ReactNode }) {
+function StepKicker({ number, stepIndex, children }: { number: string; stepIndex: number; children: ReactNode }) {
+	const activeStep = useContext(ActiveStepContext)
+	const isActive = activeStep === stepIndex
+	const isPassed = activeStep > stepIndex
+	const filled = isActive || isPassed
 	return (
-		<div className="flex items-center gap-3">
+		<div className="relative flex items-center gap-2">
+			{/* Mobile: inline outlined dot next to kicker. Desktop: hidden (the
+			 * absolutely-positioned desktop dot below takes over). */}
 			<span
-				className="flex h-8 w-8 items-center justify-center rounded-full border border-cc-accent/30 bg-cc-foundation font-[family-name:var(--font-mono)] text-[12px] text-cc-accent lg:hidden"
+				className={`flex h-8 w-8 items-center justify-center rounded-full border font-[family-name:var(--font-mono)] text-[12px] transition-colors duration-500 ease-out lg:hidden ${
+					filled
+						? 'border-cc-accent bg-cc-accent text-cc-foundation'
+						: 'border-cc-accent/30 bg-cc-foundation text-cc-accent'
+				}`}
+				aria-hidden="true"
+			>
+				{number}
+			</span>
+			{/* Desktop: dot positioned on the StepIndicator rail via --cc-kicker-x
+			 * (offsets the StepKicker origin back to the rail's x). Fill + glow
+			 * activate when the scroll pulse has reached this step, i.e.
+			 * activeStep >= stepIndex, so the dot lights up as the user arrives. */}
+			<span
+				className={`pointer-events-none absolute top-1/2 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border-2 font-[family-name:var(--font-mono)] text-[13px] font-medium transition-[background-color,border-color,color,box-shadow] duration-500 ease-out lg:flex ${
+					filled
+						? 'border-cc-accent bg-cc-accent text-cc-foundation'
+						: 'border-cc-accent/50 bg-cc-foundation text-cc-accent/85'
+				} ${isActive ? 'shadow-[0_0_16px_rgba(16,185,129,0.45),0_0_32px_rgba(16,185,129,0.2)]' : ''}`}
+				style={{ left: 'var(--cc-kicker-x)' }}
 				aria-hidden="true"
 			>
 				{number}
@@ -268,7 +309,7 @@ function StepBody({ children }: { children: ReactNode }) {
 function Step1Plan({ devPin }: { devPin: boolean }) {
 	return (
 		<>
-			<StepKicker number="01">PLAN</StepKicker>
+			<StepKicker number="01" stepIndex={1}>PLAN</StepKicker>
 			<StepHeadline>
 				<em className="not-italic text-cc-accent">Clone Your Clients</em> Before The Meeting Even Starts
 			</StepHeadline>
@@ -309,7 +350,7 @@ function Step1Plan({ devPin }: { devPin: boolean }) {
 function Step2Practice({ devPin }: { devPin: boolean }) {
 	return (
 		<>
-			<StepKicker number="02">PRACTICE</StepKicker>
+			<StepKicker number="02" stepIndex={2}>PRACTICE</StepKicker>
 			<StepHeadline>
 				Roleplay Until <em className="not-italic text-cc-accent">Every Objection</em> Feels Predictable
 			</StepHeadline>
@@ -340,7 +381,7 @@ function Step2Practice({ devPin }: { devPin: boolean }) {
 function Step3Sell({ devPin }: { devPin: boolean }) {
 	return (
 		<>
-			<StepKicker number="03">SELL</StepKicker>
+			<StepKicker number="03" stepIndex={3}>SELL</StepKicker>
 			<StepHeadline>
 				Take The Call. <em className="not-italic text-cc-accent">Close The Deal.</em>
 			</StepHeadline>
@@ -387,7 +428,7 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 function Step4Review({ devPin }: { devPin: boolean }) {
 	return (
 		<>
-			<StepKicker number="04">REVIEW</StepKicker>
+			<StepKicker number="04" stepIndex={4}>REVIEW</StepKicker>
 			<StepHeadline>
 				See <em className="not-italic text-cc-accent">Exactly</em> What&rsquo;s Losing You Deals
 			</StepHeadline>

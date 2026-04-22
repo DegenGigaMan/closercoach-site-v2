@@ -52,10 +52,11 @@ export default function DownloadContent() {
 				{/* Logo wordmark linking home */}
 				<Link
 					href='/'
-					className='mb-10 font-heading text-2xl tracking-tight text-white transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation md:mb-14'
+					className='mb-10 inline-flex items-center transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation md:mb-14'
 					aria-label='CloserCoach home'
 				>
-					{BRAND.name}
+					{/* eslint-disable-next-line @next/next/no-img-element */}
+					<img src='/cc-logo.svg' alt={BRAND.name} width={117} height={24} className='h-8 w-auto md:h-10' />
 				</Link>
 
 				{/* Headline */}

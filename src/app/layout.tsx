@@ -52,6 +52,9 @@ export default function RootLayout({
 			lang="en"
 			className={`${lora.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
 		>
+			<head>
+				<link rel='preload' href='/cc-logo.svg' as='image' type='image/svg+xml' />
+			</head>
 			<body className='flex min-h-full flex-col'>
 				<SmoothScroll />
 				<AnnouncementBanner />

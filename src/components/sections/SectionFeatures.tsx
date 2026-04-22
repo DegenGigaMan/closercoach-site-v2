@@ -53,6 +53,11 @@ import {
 } from '@phosphor-icons/react'
 import MotionCTA from '@/components/shared/motion-cta'
 import { CTA } from '@/lib/constants'
+import PracticeFanVisual from './features/PracticeFanVisual'
+import SessionCompleteVisual from './features/SessionCompleteVisual'
+import ProgressionVisual from './features/ProgressionVisual'
+import FlashcardStackVisual from './features/FlashcardStackVisual'
+import LanguageOrbitVisual from './features/LanguageOrbitVisual'
 
 /* ── Data ── */
 
@@ -120,38 +125,14 @@ const EXPERTS: readonly string[] = [
 	'Daniel G',
 ] as const
 
-/* ── Dashed-box placeholder ── */
-
-/**
- * @description Empty dashed frame reserving space for a future visual asset.
- * Renders a single centered "VISUAL ASSET" label in Geist Mono. Fills the
- * remaining card height via flex-1 so the reserved footprint tracks the
- * card's grid row assignment rather than a hard-coded aspect ratio. The real
- * visual asset will replace this frame in a later wave and is responsible
- * for its own internal composition.
- */
-function DashedSlot(): ReactElement {
-	return (
-		<div
-			className='relative flex w-full flex-1 min-h-[140px] items-center justify-center rounded-xl border-2 border-dashed border-cc-accent/25'
-			aria-hidden='true'
-		>
-			<span
-				className='font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.18em] text-cc-text-muted/40'
-			>
-				Visual Asset
-			</span>
-		</div>
-	)
-}
-
 /* ── Card shell ── */
 
 type CardShellProps = {
 	feature: Feature
-	/** Optional slot for a future motion-aware visual. When omitted, the card
-	 *  renders the DashedSlot placeholder sized per the reference layout. */
-	motionSlot?: ReactNode
+	/** Per-card visual slot. Each card in this section supplies its own visual
+	 *  sub-component (see `./features/*Visual.tsx`). The shell only handles
+	 *  layout, text, and motion-ready scaffolding. */
+	motionSlot: ReactNode
 	className?: string
 	slotWrapperClassName?: string
 }
@@ -178,7 +159,7 @@ function CardShell({ feature, motionSlot, className = '', slotWrapperClassName =
 		</>
 	)
 
-	const visualBlock = motionSlot ?? <DashedSlot />
+	const visualBlock = motionSlot
 
 	if (layout === 'stack') {
 		return (
@@ -299,6 +280,7 @@ export default function SectionFeatures(): ReactElement {
 					    TODO(motion): fan-out 3-card persona stack on hover */}
 					<CardShell
 						feature={FEATURES[0]}
+						motionSlot={<PracticeFanVisual />}
 						className='md:col-span-2 lg:col-span-7 lg:min-h-[520px]'
 					/>
 
@@ -306,6 +288,7 @@ export default function SectionFeatures(): ReactElement {
 					    TODO(motion): live waveform animation + session complete reveal on scroll */}
 					<CardShell
 						feature={FEATURES[1]}
+						motionSlot={<SessionCompleteVisual />}
 						className='md:col-span-1 lg:col-span-5 lg:min-h-[520px]'
 					/>
 
@@ -313,6 +296,7 @@ export default function SectionFeatures(): ReactElement {
 					    TODO(motion): stat counter + chart draw-in on scroll */}
 					<CardShell
 						feature={FEATURES[2]}
+						motionSlot={<ProgressionVisual />}
 						className='md:col-span-1 lg:col-span-4 lg:row-span-2'
 					/>
 
@@ -321,6 +305,7 @@ export default function SectionFeatures(): ReactElement {
 					    TODO(motion): stacked flashcard hover fan */}
 					<CardShell
 						feature={FEATURES[3]}
+						motionSlot={<FlashcardStackVisual />}
 						className='md:col-span-2 lg:col-span-8 lg:min-h-[300px]'
 					/>
 
@@ -329,6 +314,7 @@ export default function SectionFeatures(): ReactElement {
 					    TODO(motion): microphone pulse + flag orbit rotation */}
 					<CardShell
 						feature={FEATURES[4]}
+						motionSlot={<LanguageOrbitVisual />}
 						className='md:col-span-2 lg:col-span-8 lg:min-h-[380px]'
 					/>
 				</div>

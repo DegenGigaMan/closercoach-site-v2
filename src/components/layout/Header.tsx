@@ -49,8 +49,9 @@ export default function Header() {
 			>
 				<div className="mx-auto flex max-w-7xl items-center justify-between px-6 h-14 md:h-16">
 					{/* Wordmark */}
-					<Link href="/" className="font-heading text-xl text-white tracking-tight">
-						{BRAND.name}
+					<Link href="/" className="flex items-center" aria-label={BRAND.name}>
+						{/* eslint-disable-next-line @next/next/no-img-element */}
+						<img src="/cc-logo.svg" alt={BRAND.name} width={117} height={24} className="h-6 w-auto md:h-8" />
 					</Link>
 
 					{/* Desktop nav */}

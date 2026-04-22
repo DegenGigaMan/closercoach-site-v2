@@ -16,16 +16,15 @@ const AVATARS = [
 ] as const
 
 const LOGOS = [
-	{ name: 'Toyota', file: '/logos/toyota.svg', width: 100, height: 32 },
-	{ name: 'State Farm', file: '/logos/state-farm.svg', width: 100, height: 32 },
-	{ name: 'Mercedes-Benz', file: '/logos/mercedes-benz.svg', width: 32, height: 32 },
-	{ name: 'Morgan Stanley', file: '/logos/morgan-stanley.svg', width: 120, height: 32 },
-	{ name: 'Liberty Mutual', file: '/logos/liberty-mutual.svg', width: 100, height: 32 },
-	{ name: 'Vivint Solar', file: '/logos/vivint-solar.svg', width: 100, height: 32 },
-	{ name: 'Family First Life', file: '/logos/family-first-life.png', width: 100, height: 32 },
-	{ name: 'Aroma360', file: '/logos/aroma360.svg', width: 100, height: 32 },
-	{ name: 'Cardone Capital', file: '/logos/cardone-capital.webp', width: 100, height: 32 },
-	{ name: 'Sysco', file: '/logos/sysco.svg', width: 80, height: 32 },
+	{ name: 'Toyota', file: '/logos/toyota.svg', width: 196, height: 28 },
+	{ name: 'State Farm', file: '/logos/state-farm.svg', width: 171, height: 24 },
+	{ name: 'Mercedes-Benz', file: '/logos/mercedes-benz.svg', width: 196, height: 32 },
+	{ name: 'Morgan Stanley', file: '/logos/morgan-stanley.svg', width: 167, height: 24 },
+	{ name: 'Liberty Mutual', file: '/logos/liberty-mutual.svg', width: 158, height: 40 },
+	{ name: 'Sunrun', file: '/logos/sunrun.svg', width: 105, height: 20 },
+	{ name: 'Family First Life', file: '/logos/family-first-life.png', width: 160, height: 34 },
+	{ name: 'Coverd', file: '/logos/coverd.svg', width: 127, height: 28 },
+	{ name: 'Aroma360', file: '/logos/aroma360.svg', width: 253, height: 24 },
 ] as const
 
 /**
