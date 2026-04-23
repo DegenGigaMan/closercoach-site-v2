@@ -1,31 +1,22 @@
-/** @fileoverview S5 Results (W4 blueprint v2 port). Warm surface. Real-proof orbit
- * composition replaces the prior "Undisputed Leader" superlative headline + skill
- * dashboard variant.
+/** @fileoverview S5 Results. Billboard headline + floating proof-field pattern
+ * ported from the legacy lab (`/lab/s5/ca-billboard-proof-field`), adapted to
+ * v2 fonts + styling:
  *
- * Composition per section-blueprint v2 S5:
- *   1. Small Geist Mono overline: "Real numbers. Real closers."
- *   2. Billboard headline (AO once-per-page treatment): "The Numbers That Prove
- *      You're Getting Better." Lora Bold clamp(3rem, 10vw, 8rem). "Getting Better"
- *      italicized for emphasis (weight+italic per VIS S2 lock -- color variation
- *      avoided on warm surface for WCAG AA).
- *   3. Orbit proof cards (6 desktop, 3 mobile):
- *        A -- Profile anchor (duotone avatar, A- grade, 4/5 tier dots)
- *        B -- Scorecard (5 dimension bars, "Pitch: B+" chip)
- *        C -- Before/After (Week 1 C- to Week 8 A, +3 delta)
- *        D -- Coached vs Uncoached (76% vs 47%, Hyperbound attribution, P4)
- *        E -- Performance Gains (P1 7%, P2 50%, P3 30%)
- *        F -- Quota Hit Donut (76%, coached weekly)
- *      Mobile collapses to A + B + D only per blueprint "Mobile critical" note.
- *   4. Context callout: "Coached weekly: 76% quota hit. Coached quarterly: 47%.
- *      CloserCoach coaches you every day."
- *   5. App Store testimonial carousel (3 CS-1 badged cards: A3 DH8125, A6 anon,
- *      A7 pif taylor). Named customers T2/T3 reserved for S5.5, not duplicated.
- *   6. Review count anchor: "378+ reviews on the App Store." (A2)
- *   7. Ego appeal line: "After one roleplay you will know: B grade, Top 15%,
- *      211 WPM, 64/36 talk-listen ratio. Every number gets better." (PC5 + PC6)
+ *   - Massive Lora Bold headline as the absolute gravity center of the top
+ *     section. "Getting Better" uses Lora Bold Italic per VIS §2 lock (no
+ *     colour variation on warm surface for WCAG AA).
+ *   - 8 ambient proof cards orbit the headline in the surrounding whitespace
+ *     on desktop (absolute-positioned percentages). Each card enters with a
+ *     staggered opacity + translate animation, landing at 0.88 opacity so
+ *     the headline reads at 100%.
+ *   - Mobile collapses to a vertical stack below the centered headline.
+ *   - Cards: Profile anchor, 20,000+ closers, 4.7/5 App Store, 3,000+ calls
+ *     per day, 16+ industries, 7-dimension radar, 76% coached weekly, and
+ *     a 7/50/30 performance gains strip.
  *
- * Copy locked to lp-copy-deck-v5. Proof locked to proof-inventory (P1, P2, P3, P4,
- * A2, A3, A4, A6, A7, PC5, PC6, IB6 Hyperbound attribution).
+ * Everything below the billboard (context callout, App Store review
+ * carousel, review-count anchor, ego appeal line, CTA) is unchanged from
+ * prior S5 spec — we are only rebuilding the top of the section.
  *
  * WCAG AA on warm surface:
  *   - Emerald text uses #059669 (cc-accent-hover), not #10B981
@@ -33,20 +24,17 @@
  *   - Body text: #475569 (text-secondary-warm) on #F5F0EB = 6.7:1
  *   - Headlines: #1A1D26 (text-primary-warm) on #F5F0EB = 14.9:1
  *
- * Hydration safety: all initial props are stable. No client-branched state in
- * initial. Reduced-motion via useReducedMotion collapses transitions to duration 0.
- *
- * Zero fabricated data. Marcus Chen / Meridian Financial killed per blueprint.
- * Profile card uses anonymized "Insurance closer" label (names reserved for S5.5). */
+ * Profile card is anonymised ("Insurance closer") per the v2 truth-pack rule
+ * — named customers are reserved for S5.5 and are not duplicated here. */
 
 'use client'
 
-import { useRef, type ReactElement } from 'react'
+import { useRef, type ReactElement, type ReactNode } from 'react'
 import { motion, useInView, useReducedMotion } from 'motion/react'
 import Image from 'next/image'
 import MotionCTA from '@/components/shared/motion-cta'
 import { CTA } from '@/lib/constants'
-import { Star } from '@phosphor-icons/react'
+import { Star, AppleLogo } from '@phosphor-icons/react'
 
 /* ── Tokens used inline where Tailwind token lookup is insufficient for AA ── */
 
@@ -62,9 +50,9 @@ type RevealProps = {
 }
 
 /**
- * @description Local scroll-reveal wrapper. Stable initial props so server and client
- * first-render match. Reduced motion collapses the transition to 0s, preserving the
- * same initial opacity (visible due to animate=) without visual flicker.
+ * @description Local scroll-reveal wrapper for below-the-billboard blocks.
+ * Stable initial props so server and client first-render match. Reduced
+ * motion collapses the transition to 0s.
  */
 function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElement {
 	const prefersReducedMotion = useReducedMotion()
@@ -84,439 +72,519 @@ function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElem
 	)
 }
 
-/* ── Orbit Card A: Profile anchor ── */
+/* ── Radar chart: 7-dimension hand-drawn SVG, no Recharts dependency ── */
 
-/**
- * @description Profile anchor card. Anonymous sample closer with duotone avatar
- * (CSS filter emerald tint on the existing SVG placeholder), industry label,
- * A- grade, 4-of-5 tier dots. Copy note "Illustrative scorecard data" flags this
- * as representative, not a named customer (names reserved for S5.5).
- */
-function ProfileAnchorCard(): ReactElement {
+const RADAR_DIMENSIONS = ['Discovery', 'Pitch', 'Objection', 'Closing', 'Tonality', 'Empathy', 'Pace'] as const
+
+function radarPoint(cx: number, cy: number, r: number, index: number, total: number) {
+	const angle = (Math.PI * 2 * index) / total - Math.PI / 2
+	return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) }
+}
+
+function RadarChart(): ReactElement {
+	const cx = 80
+	const cy = 80
+	const outerR = 60
+	const dataR = [48, 52, 38, 55, 42, 50, 45]
+	const n = RADAR_DIMENSIONS.length
+
+	const outerPoints = Array.from({ length: n }, (_, i) => radarPoint(cx, cy, outerR, i, n))
+	const dataPoints = dataR.map((r, i) => radarPoint(cx, cy, r, i, n))
+
 	return (
-		<div className='rounded-lg border border-cc-warm-border bg-cc-warm-secondary p-6 md:p-7'>
-			<div className='flex items-center gap-4'>
-				<div className='relative h-16 w-16 shrink-0 overflow-hidden rounded-full border border-cc-warm-border'>
-					{/* Duotone treatment applied via CSS filter: sepia into emerald hue-rotate
-					    plus slight saturation trim. The placeholder SVG is intentionally generic
-					    and not a real customer portrait. */}
+		<svg viewBox='0 0 160 160' className='h-full w-full' aria-label='7-dimension radar chart'>
+			{[20, 40, 60].map((r) => (
+				<polygon
+					key={r}
+					points={Array.from({ length: n }, (_, i) => {
+						const p = radarPoint(cx, cy, r, i, n)
+						return `${p.x},${p.y}`
+					}).join(' ')}
+					fill='none'
+					stroke='rgba(0,0,0,0.08)'
+					strokeWidth={0.5}
+				/>
+			))}
+			{outerPoints.map((p, i) => (
+				<line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke='rgba(0,0,0,0.06)' strokeWidth={0.5} />
+			))}
+			<polygon
+				points={dataPoints.map((p) => `${p.x},${p.y}`).join(' ')}
+				fill='rgba(5,150,105,0.14)'
+				stroke={EMERALD_AA}
+				strokeWidth={1.5}
+			/>
+			{dataPoints.map((p, i) => (
+				<circle key={i} cx={p.x} cy={p.y} r={2.5} fill={EMERALD_AA} />
+			))}
+			{outerPoints.map((_, i) => {
+				const labelP = radarPoint(cx, cy, outerR + 14, i, n)
+				return (
+					<text
+						key={i}
+						x={labelP.x}
+						y={labelP.y}
+						textAnchor='middle'
+						dominantBaseline='middle'
+						fill='#475569'
+						fontSize={6}
+						fontFamily='var(--font-mono)'
+					>
+						{RADAR_DIMENSIONS[i]}
+					</text>
+				)
+			})}
+		</svg>
+	)
+}
+
+/* ── Proof card definitions for the floating field ──
+ *
+ * Positions are percentage-based against the 100vh billboard wrapper so the
+ * composition scales with viewport height. Second breakpoint (md:) shifts
+ * the cards slightly inward for wider laptops. */
+
+type ProofCard = {
+	id: string
+	content: ReactNode
+	className: string
+}
+
+const CARDS: readonly ProofCard[] = [
+	{
+		id: 'profile',
+		content: (
+			<div className='flex items-center gap-3'>
+				<div
+					className='relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-cc-warm-border'
+				>
+					{/* Duotone-tinted placeholder avatar; label remains anonymised
+					    (names reserved for S5.5 per v2 truth-pack rule). */}
 					<Image
 						src='/images/avatars/closer-1.svg'
 						alt=''
 						aria-hidden='true'
 						fill
-						sizes='64px'
+						sizes='40px'
 						style={{
 							filter: 'sepia(0.9) hue-rotate(90deg) saturate(1.4) brightness(0.85)',
 							objectFit: 'cover',
 						}}
 					/>
 				</div>
-				<div className='flex flex-col gap-1'>
-					<span className='text-sm font-semibold text-cc-text-primary-warm'>
-						Insurance closer
-					</span>
-					<span className='font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.16em] text-cc-text-secondary-warm'>
+				<div className='flex flex-col'>
+					<p className='text-sm font-semibold text-cc-text-primary-warm'>Insurance closer</p>
+					<p className='font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
 						8-week progression
-					</span>
-				</div>
-			</div>
-
-			<div className='mt-6 flex items-end justify-between'>
-				<div className='flex flex-col gap-1'>
-					<span
-						className='font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.18em] text-cc-text-secondary-warm'
-					>
-						Overall grade
-					</span>
-					<span
-						className='font-[family-name:var(--font-heading)]'
-						style={{
-							fontWeight: 700,
-							fontSize: '3rem',
-							lineHeight: 1,
-							color: EMERALD_AA,
-						}}
-					>
-						A-
-					</span>
-				</div>
-				{/* 4-of-5 tier dots */}
-				<div className='flex items-center gap-1.5' aria-label='Tier rating 4 of 5'>
-					{[0, 1, 2, 3, 4].map((i) => (
-						<span
-							key={i}
-							className='block h-2.5 w-2.5 rounded-full'
-							style={{
-								backgroundColor: i < 4 ? EMERALD_AA : 'rgba(0,0,0,0.12)',
-							}}
-						/>
-					))}
-				</div>
-			</div>
-
-			<p className='mt-5 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.16em] text-cc-text-secondary-warm'>
-				Illustrative scorecard data
-			</p>
-		</div>
-	)
-}
-
-/* ── Orbit Card B: Scorecard ── */
-
-const SCORECARD_DIMENSIONS: ReadonlyArray<{ label: string; pct: number; grade: string }> = [
-	{ label: 'Discovery', pct: 78, grade: 'B+' },
-	{ label: 'Pitch', pct: 84, grade: 'B+' },
-	{ label: 'Objection Handling', pct: 72, grade: 'B' },
-	{ label: 'Closing', pct: 80, grade: 'B+' },
-	{ label: 'Tonality', pct: 85, grade: 'A-' },
-] as const
-
-/**
- * @description Scorecard card. 5 dimension horizontal bars with emerald fill on a
- * neutral track, plus a "Pitch: B+" chip top-right as the signature moment.
- */
-function ScorecardCard(): ReactElement {
-	return (
-		<div className='rounded-lg border border-cc-warm-border bg-cc-warm-secondary p-6 md:p-7'>
-			<div className='flex items-start justify-between gap-3'>
-				<div className='flex flex-col gap-1'>
-					<span className='font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.16em] text-cc-text-secondary-warm'>
-						Your closer score
-					</span>
-					<span className='display-sm text-cc-text-primary-warm'>5 dimensions</span>
+					</p>
 				</div>
 				<span
-					className='shrink-0 rounded-full px-3 py-1 text-xs font-semibold'
-					style={{
-						backgroundColor: 'rgba(5,150,105,0.12)',
-						color: EMERALD_AA,
-					}}
+					className='ml-auto rounded-full px-2.5 py-1 font-[family-name:var(--font-mono)] text-[11px] font-semibold'
+					style={{ backgroundColor: 'rgba(5,150,105,0.1)', color: EMERALD_AA }}
 				>
-					Pitch: B+
+					A-
 				</span>
 			</div>
-
-			<div className='mt-5 flex flex-col gap-3'>
-				{SCORECARD_DIMENSIONS.map((d) => (
-					<div key={d.label} className='flex items-center gap-3'>
-						<span className='w-32 shrink-0 text-[12px] font-medium text-cc-text-primary-warm md:text-sm'>
-							{d.label}
-						</span>
-						<div className='h-1.5 flex-1 overflow-hidden rounded-full bg-black/[0.06]'>
-							<div
-								className='h-full rounded-full'
-								style={{ width: `${d.pct}%`, backgroundColor: EMERALD_AA }}
-							/>
-						</div>
-						<span
-							className='w-8 shrink-0 text-right font-[family-name:var(--font-mono)] text-[11px] font-medium'
-							style={{ color: EMERALD_AA }}
-						>
-							{d.grade}
-						</span>
-					</div>
-				))}
+		),
+		className: 'absolute top-[8%] left-[4%] w-[220px] md:top-[12%] md:left-[6%]',
+	},
+	{
+		id: 'stat-closers',
+		content: (
+			<div className='text-center'>
+				<p className='font-[family-name:var(--font-mono)] text-2xl font-bold text-cc-text-primary-warm'>
+					20,000+
+				</p>
+				<p className='mt-0.5 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
+					Closers
+				</p>
 			</div>
-		</div>
-	)
-}
-
-/* ── Orbit Card C: Before / After ── */
-
-/**
- * @description Before/After comparison card. Week 1 C- (muted/red) vs Week 8 A
- * (emerald), vertical bar graphic underneath each, +3 delta badge. Context copy
- * labels this as "Representative user journey" -- not a universal guarantee.
- */
-function BeforeAfterCard(): ReactElement {
-	return (
-		<div className='rounded-lg border border-cc-warm-border bg-cc-warm-secondary p-6 md:p-7'>
-			<div className='flex items-center justify-between'>
-				<span className='font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.16em] text-cc-text-secondary-warm'>
-					Progression
-				</span>
-				<span
-					className='rounded-full px-2.5 py-0.5 text-[11px] font-semibold'
-					style={{ backgroundColor: 'rgba(5,150,105,0.12)', color: EMERALD_AA }}
+		),
+		className: 'absolute top-[6%] right-[8%] w-[130px] md:top-[8%] md:right-[12%]',
+	},
+	{
+		id: 'stat-rating',
+		content: (
+			<div className='text-center'>
+				<p className='font-[family-name:var(--font-mono)] text-2xl font-bold text-cc-text-primary-warm'>
+					4.7/5
+				</p>
+				<p className='mt-0.5 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
+					App Store
+				</p>
+			</div>
+		),
+		className: 'absolute top-[38%] right-[3%] w-[120px] md:top-[35%] md:right-[5%]',
+	},
+	{
+		id: 'stat-calls',
+		content: (
+			<div className='text-center'>
+				<p className='font-[family-name:var(--font-mono)] text-2xl font-bold text-cc-text-primary-warm'>
+					3,000+
+				</p>
+				<p className='mt-0.5 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
+					Calls/Day
+				</p>
+			</div>
+		),
+		className: 'absolute bottom-[22%] left-[5%] w-[130px] md:bottom-[18%] md:left-[7%]',
+	},
+	{
+		id: 'stat-industries',
+		content: (
+			<div className='text-center'>
+				<p className='font-[family-name:var(--font-mono)] text-2xl font-bold text-cc-text-primary-warm'>
+					16+
+				</p>
+				<p className='mt-0.5 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
+					Industries
+				</p>
+			</div>
+		),
+		className: 'absolute bottom-[12%] right-[10%] w-[110px] md:bottom-[14%] md:right-[14%]',
+	},
+	{
+		id: 'radar',
+		content: (
+			<div>
+				<p className='mb-1 font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
+					7-Dimension Score
+				</p>
+				<div className='h-[140px] w-[140px]'>
+					<RadarChart />
+				</div>
+			</div>
+		),
+		className: 'absolute top-[18%] right-[18%] w-[170px] md:top-[16%] md:right-[22%]',
+	},
+	{
+		id: 'coached',
+		content: (
+			<div>
+				<p
+					className='font-[family-name:var(--font-mono)] text-3xl font-bold'
+					style={{ color: AMBER_AA }}
 				>
-					+3 grades
-				</span>
+					76%
+				</p>
+				<p className='mt-1 text-sm text-cc-text-secondary-warm'>Coached weekly: quota hit</p>
 			</div>
-
-			<div className='mt-5 grid grid-cols-2 gap-4'>
-				<div className='flex flex-col items-start gap-2'>
-					<span className='font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
-						Week 1
-					</span>
+		),
+		className: 'absolute bottom-[8%] left-[25%] w-[200px] md:bottom-[10%] md:left-[30%]',
+	},
+	{
+		id: 'gains',
+		content: (
+			<div className='flex items-center gap-3'>
+				<div className='flex flex-col items-center'>
 					<span
-						className='font-[family-name:var(--font-heading)]'
-						style={{ fontWeight: 700, fontSize: '2.5rem', lineHeight: 1, color: '#9CA3AF' }}
-					>
-						C-
-					</span>
-					<div className='mt-1 h-12 w-8 rounded-sm bg-black/[0.12]' aria-hidden='true' />
-				</div>
-				<div className='flex flex-col items-start gap-2'>
-					<span className='font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
-						Week 8
-					</span>
-					<span
-						className='font-[family-name:var(--font-heading)]'
-						style={{ fontWeight: 700, fontSize: '2.5rem', lineHeight: 1, color: EMERALD_AA }}
-					>
-						A
-					</span>
-					<div
-						className='mt-1 h-20 w-8 rounded-sm'
-						style={{ backgroundColor: EMERALD_AA }}
-						aria-hidden='true'
-					/>
-				</div>
-			</div>
-
-			<p className='mt-5 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
-				Representative user journey
-			</p>
-		</div>
-	)
-}
-
-/* ── Orbit Card D: Coached vs Uncoached ── */
-
-/**
- * @description Coached vs Uncoached 2-row horizontal bar comparison. Deploys P4
- * (Hyperbound industry benchmark, not a CC-specific claim). Proper attribution
- * in Geist Mono muted below the chart satisfies IB6.
- */
-function CoachingComparisonCard(): ReactElement {
-	return (
-		<div className='rounded-lg border border-cc-warm-border bg-cc-warm-secondary p-6 md:p-7'>
-			<div className='flex flex-col gap-1'>
-				<span className='font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.16em] text-cc-text-secondary-warm'>
-					Quota attainment
-				</span>
-				<span className='display-sm text-cc-text-primary-warm'>Coached vs uncoached</span>
-			</div>
-
-			<div className='mt-5 flex flex-col gap-4'>
-				{/* Uncoached row */}
-				<div className='flex items-center gap-3'>
-					<span className='w-20 shrink-0 text-[12px] font-medium text-cc-text-primary-warm'>
-						Uncoached
-					</span>
-					<div className='relative h-2 flex-1 overflow-hidden rounded-full bg-black/[0.06]'>
-						<div
-							className='h-full rounded-full bg-black/[0.25]'
-							style={{ width: '47%' }}
-						/>
-					</div>
-					<span
-						className='w-10 shrink-0 text-right font-[family-name:var(--font-mono)] text-[12px] font-semibold text-cc-text-secondary-warm'
-					>
-						47%
-					</span>
-				</div>
-				{/* Coached row */}
-				<div className='flex items-center gap-3'>
-					<span className='w-20 shrink-0 text-[12px] font-medium text-cc-text-primary-warm'>
-						Coached
-					</span>
-					<div className='relative h-3 flex-1 overflow-hidden rounded-full bg-black/[0.06]'>
-						<div
-							className='h-full rounded-full'
-							style={{ width: '76%', backgroundColor: EMERALD_AA }}
-						/>
-					</div>
-					<span
-						className='w-10 shrink-0 text-right font-[family-name:var(--font-mono)] text-[12px] font-semibold'
+						className='font-[family-name:var(--font-mono)] text-lg font-bold'
 						style={{ color: EMERALD_AA }}
 					>
-						76%
+						7%
+					</span>
+					<span className='font-[family-name:var(--font-mono)] text-[8px] uppercase tracking-[0.12em] text-cc-text-secondary-warm'>
+						Close Rate
+					</span>
+				</div>
+				<div className='h-6 w-px bg-cc-warm-border' aria-hidden='true' />
+				<div className='flex flex-col items-center'>
+					<span
+						className='font-[family-name:var(--font-mono)] text-lg font-bold'
+						style={{ color: EMERALD_AA }}
+					>
+						50%
+					</span>
+					<span className='font-[family-name:var(--font-mono)] text-[8px] uppercase tracking-[0.12em] text-cc-text-secondary-warm'>
+						Faster Ramp
+					</span>
+				</div>
+				<div className='h-6 w-px bg-cc-warm-border' aria-hidden='true' />
+				<div className='flex flex-col items-center'>
+					<span
+						className='font-[family-name:var(--font-mono)] text-lg font-bold'
+						style={{ color: EMERALD_AA }}
+					>
+						30%
+					</span>
+					<span className='font-[family-name:var(--font-mono)] text-[8px] uppercase tracking-[0.12em] text-cc-text-secondary-warm'>
+						More Deals
 					</span>
 				</div>
 			</div>
-
-			<p className='mt-5 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
-				Industry benchmark &middot; Hyperbound
-			</p>
-		</div>
-	)
-}
-
-/* ── Orbit Card E: Performance Gains ── */
-
-const PERFORMANCE_GAINS: ReadonlyArray<{ value: string; label: string }> = [
-	{ value: '7%', label: 'Close rate' },
-	{ value: '50%', label: 'Faster ramp' },
-	{ value: '30%', label: 'More deals' },
+		),
+		/* Centered above the headline. Horizontal centering via auto margins
+		 * (not transform) so the Motion `translate(y)` entrance doesn't
+		 * compose with an x-transform. */
+		className: 'absolute top-[18%] left-0 right-0 mx-auto w-[240px] md:top-[22%]',
+	},
 ] as const
 
-/**
- * @description Performance gains stack. 3 rows, each a big Geist Mono amber
- * (AA-safe #D97706) number + Inter label. Deploys P1, P2, P3 verbatim.
- */
-function PerformanceGainsCard(): ReactElement {
-	return (
-		<div className='rounded-lg border border-cc-warm-border bg-cc-warm-secondary p-6 md:p-7'>
-			<span className='font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.16em] text-cc-text-secondary-warm'>
-				Performance gains
-			</span>
-			<div className='mt-4 flex flex-col gap-3'>
-				{PERFORMANCE_GAINS.map((g) => (
-					<div
-						key={g.label}
-						className='flex items-baseline justify-between gap-4 border-b border-cc-warm-border pb-3 last:border-b-0 last:pb-0'
-					>
-						<span
-							className='font-[family-name:var(--font-mono)]'
-							style={{
-								fontWeight: 500,
-								fontSize: '2rem',
-								lineHeight: 1.1,
-								color: AMBER_AA,
-							}}
-						>
-							{g.value}
-						</span>
-						<span className='text-sm text-cc-text-secondary-warm'>{g.label}</span>
-					</div>
-				))}
-			</div>
-		</div>
-	)
+/* ── Entrance animation config for the floating cards ── */
+
+const cardVariant = {
+	hidden: { opacity: 0, y: 20 },
+	visible: (i: number) => ({
+		opacity: 0.88,
+		y: 0,
+		transition: { delay: 0.3 + i * 0.12, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const },
+	}),
 }
 
-/* ── Orbit Card F: Quota Hit Donut ── */
+/* ── Customer success tier cards (ported from SectionCaseStudies 2026-04-23) ──
+ *
+ * 3 named-customer tiers: CLOSER (Dimitriy, T2 verbatim), TEAMS (Chris, T3
+ * verbatim), ENTERPRISE (G9 reframe, placeholder until a real enterprise
+ * testimonial lands). Tier accents map: emerald #059669 / amber #B45309 /
+ * slate #334155 — all AA on warm surface. */
 
-/**
- * @description Quota hit donut. 76% emerald (AA) donut fill with big center
- * number. Deploys P4 in donut form (complements Card D's bar comparison).
- * Context line: "Coached weekly." SVG stroke-dasharray calculation for 76%.
- */
-function QuotaDonutCard(): ReactElement {
-	const RADIUS = 58
-	const CIRCUMFERENCE = 2 * Math.PI * RADIUS
-	const PCT = 76
-	const OFFSET = CIRCUMFERENCE * (1 - PCT / 100)
+const SLATE_WARM = '#334155'
+const AMBER_WARM = '#B45309'
+const WARM_BORDER = 'rgba(13,15,20,0.08)'
 
+type TierCardProps = {
+	tier: string
+	tierAccent: string
+	portraitSrc: string
+	metricHeadline?: string
+	industryTag: string
+	quote: string
+	name: string
+	role: string
+	badge: string
+	isPlaceholder?: boolean
+}
+
+function TierCard({
+	tier,
+	tierAccent,
+	portraitSrc,
+	metricHeadline,
+	industryTag,
+	quote,
+	name,
+	role,
+	badge,
+	isPlaceholder = false,
+}: TierCardProps): ReactElement {
 	return (
-		<div className='rounded-lg border border-cc-warm-border bg-cc-warm-secondary p-6 md:p-7'>
-			<span className='font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.16em] text-cc-text-secondary-warm'>
-				Quota hit
+		<article
+			className='relative flex h-full flex-col gap-6 rounded-2xl p-6 md:gap-7 md:p-8'
+			style={{
+				backgroundColor: '#FAFAF8',
+				border: `1px solid ${WARM_BORDER}`,
+				boxShadow: '0 1px 2px rgba(13,15,20,0.04), 0 24px 48px -32px rgba(13,15,20,0.18)',
+			}}
+		>
+			<header className='relative'>
+				<div className='relative h-28 w-28 overflow-hidden rounded-full md:h-32 md:w-32'>
+					<Image
+						src={portraitSrc}
+						alt=''
+						aria-hidden='true'
+						fill
+						sizes='(min-width: 768px) 128px, 112px'
+						style={{ objectFit: 'cover' }}
+					/>
+				</div>
+				<span
+					className='absolute -top-1 left-24 inline-flex items-center rounded-full px-3 py-1.5 md:left-28'
+					style={{
+						backgroundColor: '#F5F0EB',
+						border: `1px solid ${WARM_BORDER}`,
+						boxShadow: '0 4px 12px -6px rgba(13,15,20,0.12)',
+					}}
+				>
+					<span
+						className='font-[family-name:var(--font-mono)] text-[10px] font-semibold uppercase tracking-[0.18em] md:text-[11px]'
+						style={{ color: tierAccent }}
+					>
+						{tier}
+					</span>
+				</span>
+			</header>
+
+			{metricHeadline ? (
+				<h3
+					className='text-balance text-cc-text-primary-warm'
+					style={{
+						fontFamily: 'var(--font-heading)',
+						fontWeight: 700,
+						fontSize: 'clamp(1.375rem, 2.4vw, 1.75rem)',
+						lineHeight: 1.15,
+						letterSpacing: '-0.01em',
+					}}
+				>
+					{metricHeadline}
+				</h3>
+			) : null}
+
+			<span
+				className='inline-flex w-fit items-center rounded-full px-3 py-1'
+				style={{
+					backgroundColor: 'rgba(13,15,20,0.04)',
+					border: `1px solid ${WARM_BORDER}`,
+				}}
+			>
+				<span className='font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.14em] text-cc-text-secondary-warm md:text-[11px]'>
+					{industryTag}
+				</span>
 			</span>
 
-			<div className='mt-3 flex items-center justify-center py-2'>
-				<div className='relative h-36 w-36'>
-					<svg
-						viewBox='0 0 140 140'
-						width='100%'
-						height='100%'
-						aria-hidden='true'
+			<blockquote
+				className='text-cc-text-primary-warm'
+				style={{
+					fontFamily: 'var(--font-heading)',
+					fontWeight: 700,
+					fontStyle: 'italic',
+					fontSize: 'clamp(1rem, 1.4vw, 1.125rem)',
+					lineHeight: 1.5,
+					letterSpacing: '-0.005em',
+				}}
+			>
+				<span
+					aria-hidden='true'
+					className='mr-1.5 align-top'
+					style={{ color: EMERALD_AA, fontSize: '1.5em', lineHeight: 0.8 }}
+				>
+					&ldquo;
+				</span>
+				{quote}
+			</blockquote>
+
+			<footer
+				className='mt-auto flex flex-col gap-3 border-t pt-5'
+				style={{ borderColor: WARM_BORDER }}
+			>
+				<div className='flex flex-col gap-0.5'>
+					<p
+						className='text-cc-text-primary-warm'
+						style={{
+							fontFamily: 'var(--font-heading)',
+							fontWeight: 700,
+							fontSize: '1rem',
+							lineHeight: 1.25,
+						}}
 					>
-						{/* Track */}
-						<circle
-							cx='70'
-							cy='70'
-							r={RADIUS}
-							fill='none'
-							stroke='rgba(0,0,0,0.08)'
-							strokeWidth='12'
-						/>
-						{/* Arc */}
-						<circle
-							cx='70'
-							cy='70'
-							r={RADIUS}
+						{name}
+					</p>
+					<p className='font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.16em] text-cc-text-secondary-warm md:text-[11px]'>
+						{role}
+					</p>
+				</div>
+				<span
+					className='inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1'
+					style={{
+						backgroundColor: 'rgba(5,150,105,0.08)',
+						border: '1px solid rgba(5,150,105,0.2)',
+					}}
+				>
+					<svg viewBox='0 0 12 12' width='10' height='10' aria-hidden='true'>
+						<path
+							d='M2 6.5 L5 9 L10 3'
 							fill='none'
 							stroke={EMERALD_AA}
-							strokeWidth='12'
+							strokeWidth='2'
 							strokeLinecap='round'
-							strokeDasharray={CIRCUMFERENCE}
-							strokeDashoffset={OFFSET}
-							transform='rotate(-90 70 70)'
+							strokeLinejoin='round'
 						/>
 					</svg>
-					<div className='pointer-events-none absolute inset-0 flex items-center justify-center'>
-						<span
-							className='font-[family-name:var(--font-mono)]'
-							style={{
-								fontWeight: 500,
-								fontSize: '2.25rem',
-								lineHeight: 1,
-								color: EMERALD_AA,
-							}}
-						>
-							76%
-						</span>
-					</div>
-				</div>
-			</div>
-
-			<p className='mt-2 text-center font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
-				Coached weekly
-			</p>
-		</div>
+					<span
+						className='font-[family-name:var(--font-mono)] text-[9px] font-semibold uppercase tracking-[0.16em] md:text-[10px]'
+						style={{ color: EMERALD_AA }}
+					>
+						{badge}
+					</span>
+				</span>
+				{isPlaceholder ? (
+					<p className='font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase tracking-[0.14em] text-cc-text-secondary-warm/70'>
+						Feature pending · P0
+					</p>
+				) : null}
+			</footer>
+		</article>
 	)
 }
 
-/* ── App Store testimonial cards ── */
+/* ── App Store testimonial cards (Figma 1:8352) ──
+ *
+ * Card shell: rgba(250,250,248,0.92) bg, rgba(229,221,212,0.8) border,
+ * rounded-[24px], p-[21px], soft 2px/16px shadow. 5 amber stars at 16px,
+ * Inter Regular 14px / 22.75px body, and an emerald "APP STORE REVIEW"
+ * pill in the footer (Geist Mono 10px uppercase, tracking 0.25px). */
 
 type Review = {
 	quote: string
-	handle: string
 }
+
+const YELLOW_STAR = '#FBBC04' // Figma Buttercup — brighter than AMBER_AA for star fills.
 
 const APP_STORE_REVIEWS: ReadonlyArray<Review> = [
 	{
 		quote:
-			"This app has helped me streamline my process. I am able to get in 'reps' while I learn. Really good with specific scenarios, and helping you with pace, tonality, and goals completed.",
-		handle: 'DH8125',
+			"This app has helped me streamline my process. Really good with specific scenarios, and helping you with pace, tonality, and goals completed.",
 	},
 	{
 		quote:
-			"After coming back to this app after a couple of months I'm super impressed at the improvements that have been made. Highly recommend this app!!!",
-		handle: 'Anonymous',
+			"After coming back to this app after a couple of months I\u2019m super impressed at the improvements that have been made... Highly recommend!",
 	},
 	{
 		quote:
-			"I can already tell it's going to be the next wave of sales training and recruiting. I can see myself using this to help drill my closers.",
-		handle: 'pif taylor',
+			"I can already tell it\u2019s going to be the next wave of sales training and recruiting... I can see myself using this to help drill my closers.",
 	},
 ] as const
 
-/**
- * @description App Store review card. CS-1 badge (star cluster + source pill),
- * italic quote body, handle in Geist Mono muted.
- */
-function ReviewCard({ quote, handle }: Review): ReactElement {
+function ReviewCard({ quote }: Review): ReactElement {
 	return (
-		<div className='flex h-full flex-col rounded-lg border border-cc-warm-border bg-cc-warm-secondary p-6 md:p-7'>
-			{/* CS-1 badge: 5 stars + App Store source pill */}
-			<div className='flex items-center gap-3'>
-				<div className='flex gap-0.5' aria-label='Five stars'>
-					{Array.from({ length: 5 }, (_, i) => (
-						<Star key={i} size={14} weight='fill' style={{ color: AMBER_AA }} aria-hidden='true' />
-					))}
-				</div>
-				<span
-					className='rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em]'
-					style={{ backgroundColor: 'rgba(5,150,105,0.1)', color: EMERALD_AA }}
-				>
-					App Store Review
-				</span>
+		<div
+			className='flex h-full flex-col gap-3 rounded-[24px] p-[21px]'
+			style={{
+				backgroundColor: 'rgba(250,250,248,0.92)',
+				border: '1px solid rgba(229,221,212,0.8)',
+				boxShadow: '0 2px 16px rgba(0,0,0,0.03)',
+			}}
+		>
+			<div className='flex items-center gap-[2px]' aria-label='Five stars'>
+				{Array.from({ length: 5 }, (_, i) => (
+					<Star key={i} size={16} weight='fill' style={{ color: YELLOW_STAR }} aria-hidden='true' />
+				))}
 			</div>
 
 			<p
-				className='mt-5 flex-1 text-[15px] leading-relaxed text-cc-text-primary-warm md:text-base'
-				style={{ fontStyle: 'italic' }}
+				className='flex-1 text-cc-text-primary-warm'
+				style={{
+					fontFamily: 'var(--font-sans)',
+					fontSize: '14px',
+					lineHeight: '22.75px',
+				}}
 			>
 				&ldquo;{quote}&rdquo;
 			</p>
 
-			<p className='mt-5 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.16em] text-cc-text-secondary-warm'>
-				{handle}
-			</p>
+			<div className='pt-2'>
+				<span
+					className='inline-flex items-center gap-1.5 rounded-full px-[11px] py-[5px]'
+					style={{
+						backgroundColor: 'rgba(5,150,105,0.1)',
+						border: '1px solid rgba(5,150,105,0.25)',
+					}}
+				>
+					<AppleLogo size={12} weight='fill' style={{ color: EMERALD_AA }} aria-hidden='true' />
+					<span
+						className='uppercase'
+						style={{
+							fontFamily: 'var(--font-mono)',
+							fontSize: '10px',
+							lineHeight: '15px',
+							letterSpacing: '0.25px',
+							color: EMERALD_AA,
+						}}
+					>
+						App Store Review
+					</span>
+				</span>
+			</div>
 		</div>
 	)
 }
@@ -524,104 +592,201 @@ function ReviewCard({ quote, handle }: Review): ReactElement {
 /* ── Section ── */
 
 /**
- * @description S5 Results. Warm surface with billboard headline as gravity center,
- * 6 real orbit proof cards (3 on mobile), context callout, App Store testimonial
- * carousel, review count anchor, and ego appeal line. All data traces to proof-
- * inventory (P1, P2, P3, P4, A2, A3, A6, A7, PC5, PC6, IB6). Zero fabricated
- * metrics or named customers.
+ * @description S5 Results. Billboard floating-proof top + unchanged
+ * testimonial + ego-appeal tail. Lora Bold + italic emphasis on "Getting
+ * Better" per VIS lock. All colours AA-safe on warm surface.
  */
 export default function SectionResults(): ReactElement {
 	return (
-		<section
-			id='results'
-			data-surface='warm'
-			className='relative bg-cc-warm py-16 md:py-24'
-		>
-			<div className='mx-auto max-w-7xl px-6'>
-				{/* Overline + Billboard headline */}
-				<Reveal className='flex flex-col items-center text-center'>
-					<p className='mb-5 font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.22em] text-cc-text-secondary-warm md:text-xs'>
-						Real numbers. Real closers.
-					</p>
-					<h2
+		<section id='results' data-surface='warm' className='relative bg-cc-warm'>
+			{/* ── Billboard top: headline as gravity centre, 8 proof cards orbit ── */}
+			<div className='relative min-h-[92vh] overflow-hidden'>
+				{/* Desktop: ambient proof cards absolutely positioned around the headline.
+				    Hidden on mobile — cards stack vertically below the headline instead. */}
+				<div className='pointer-events-none absolute inset-0 hidden md:block'>
+					{CARDS.map((card, i) => (
+						<motion.div
+							key={card.id}
+							custom={i}
+							initial='hidden'
+							whileInView='visible'
+							viewport={{ once: true, amount: 0.3 }}
+							variants={cardVariant}
+							className={`${card.className} rounded-xl border border-cc-warm-border bg-cc-warm-secondary/90 p-4 shadow-[0_2px_16px_rgba(0,0,0,0.04)] backdrop-blur-sm`}
+						>
+							{card.content}
+						</motion.div>
+					))}
+				</div>
+
+				{/* Headline — absolute gravity centre. Overline sits directly above it.
+				 * Font sized to the original 10vw/8rem clamp for billboard impact;
+				 * forced `<br/>` between "Prove" and "You're" keeps it to two
+				 * lines at all viewports. Inner wrapper drops max-w so the lines
+				 * can breathe on wide displays without auto-wrapping. Section
+				 * overflow-hidden clips anything that squeaks past the edge. */}
+				<div className='relative z-10 flex min-h-[92vh] items-center justify-center px-6'>
+					<div className='flex flex-col items-center gap-5 text-center'>
+						<motion.p
+							initial={{ opacity: 0, y: 12 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+							transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }}
+							className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.22em] text-cc-text-secondary-warm md:text-xs'
+						>
+							Real numbers. Real closers.
+						</motion.p>
+						<motion.h2
+							initial={{ opacity: 0, y: 30 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true }}
+							transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const }}
+							className='text-cc-text-primary-warm'
+							style={{
+								fontFamily: 'var(--font-heading)',
+								fontWeight: 700,
+								fontSize: 'clamp(2.25rem, 10vw, 8rem)',
+								lineHeight: 0.96,
+								letterSpacing: '-0.015em',
+							}}
+						>
+							The Numbers That Prove
+							<br className='hidden sm:block' />
+							{' '}You&rsquo;re <span style={{ fontStyle: 'italic' }}>Getting Better</span>.
+						</motion.h2>
+					</div>
+				</div>
+
+				{/* Mobile fallback: stack the proof cards below the centred headline.
+				    Desktop hides this via md:hidden; cards then absolute-position above. */}
+				<div className='mx-auto flex max-w-md flex-col gap-4 px-6 pb-10 md:hidden'>
+					{CARDS.map((card, i) => (
+						<motion.div
+							key={card.id}
+							custom={i}
+							initial='hidden'
+							whileInView='visible'
+							viewport={{ once: true, amount: 0.3 }}
+							variants={cardVariant}
+							className='rounded-xl border border-cc-warm-border bg-cc-warm-secondary/90 p-4 shadow-[0_2px_16px_rgba(0,0,0,0.04)]'
+						>
+							{card.content}
+						</motion.div>
+					))}
+				</div>
+			</div>
+
+			{/* ── Below-billboard content ── */}
+			<div className='mx-auto max-w-7xl px-6 pb-16 md:pb-24'>
+				{/* Context pill + billboard title (Figma 1:8353). Pill carries the
+				 * quota stat with red/emerald accents; title below in Lora Bold
+				 * 48px anchors the App Store Review block. */}
+				<Reveal className='mt-4 flex flex-col items-center gap-6 text-center md:mt-8' delay={0.05}>
+					<span
+						className='inline-flex items-center justify-center rounded-full px-5 py-[10px]'
+						style={{
+							backgroundColor: 'rgba(255,255,255,0.51)',
+							border: '1px solid rgba(229,221,212,0.8)',
+							boxShadow: '0 2px 16px rgba(0,0,0,0.03)',
+						}}
+					>
+						<span
+							className='text-cc-text-primary-warm'
+							style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '14px', lineHeight: '22px' }}
+						>
+							Coached weekly:{' '}
+							<span style={{ color: EMERALD_AA }}>76% quota hit.</span>
+							{' '}Coached quarterly: <span style={{ color: '#FF5A5A' }}>47%.</span>
+						</span>
+					</span>
+					<h3
 						className='text-balance text-cc-text-primary-warm'
 						style={{
 							fontFamily: 'var(--font-heading)',
 							fontWeight: 700,
-							fontSize: 'clamp(2.25rem, 10vw, 8rem)',
-							lineHeight: 0.96,
+							fontSize: 'clamp(1.875rem, 4vw, 3rem)',
+							lineHeight: 1.08,
 							letterSpacing: '-0.015em',
 						}}
 					>
-						The Numbers That Prove You&rsquo;re{' '}
-						<span style={{ fontStyle: 'italic' }}>Getting Better</span>.
-					</h2>
+						CloserCoach coaches you every day
+					</h3>
 				</Reveal>
 
-				{/* Orbit cards -- desktop: 3 col x 2 row; mobile: A + B + D only */}
-				<div className='mt-12 md:mt-20'>
-					{/* Desktop grid (6 cards) */}
-					<div className='hidden gap-5 md:grid md:grid-cols-3 md:gap-6'>
-						<Reveal delay={0}>
-							<ProfileAnchorCard />
-						</Reveal>
-						<Reveal delay={0.05}>
-							<ScorecardCard />
-						</Reveal>
-						<Reveal delay={0.1}>
-							<BeforeAfterCard />
-						</Reveal>
-						<Reveal delay={0.15}>
-							<CoachingComparisonCard />
-						</Reveal>
-						<Reveal delay={0.2}>
-							<PerformanceGainsCard />
-						</Reveal>
-						<Reveal delay={0.25}>
-							<QuotaDonutCard />
-						</Reveal>
-					</div>
-
-					{/* Mobile stack (3 cards: A, B, D) -- per blueprint mobile-critical note */}
-					<div className='flex flex-col gap-5 md:hidden'>
-						<Reveal delay={0}>
-							<ProfileAnchorCard />
-						</Reveal>
-						<Reveal delay={0.05}>
-							<ScorecardCard />
-						</Reveal>
-						<Reveal delay={0.1}>
-							<CoachingComparisonCard />
-						</Reveal>
-					</div>
-				</div>
-
-				{/* Context callout */}
-				<Reveal className='mt-12 md:mt-16' delay={0.05}>
-					<p className='mx-auto max-w-3xl text-center text-base text-cc-text-primary-warm md:text-lg'>
-						Coached weekly:{' '}
-						<span className='font-semibold' style={{ color: EMERALD_AA }}>
-							76%
-						</span>{' '}
-						quota hit. Coached quarterly:{' '}
-						<span className='font-semibold text-cc-text-secondary-warm'>47%</span>.
-						CloserCoach coaches you every day.
-					</p>
-				</Reveal>
-
-				{/* App Store testimonial carousel */}
-				<div className='mt-16 grid grid-cols-1 gap-5 md:mt-20 md:grid-cols-3 md:gap-6'>
+				{/* App Store review cards (Figma 1:8359). 3 cards @ 400px each on
+				 * desktop, stack on mobile. */}
+				<div className='mt-12 grid grid-cols-1 gap-4 md:mt-16 md:grid-cols-3'>
 					{APP_STORE_REVIEWS.map((r, i) => (
-						<Reveal key={r.handle} delay={i * 0.08}>
-							<ReviewCard quote={r.quote} handle={r.handle} />
+						<Reveal key={i} delay={i * 0.08}>
+							<ReviewCard quote={r.quote} />
 						</Reveal>
 					))}
 				</div>
 
-				{/* Review count anchor (A2) */}
+				{/* Customer success tier cards — CLOSER / TEAMS / ENTERPRISE */}
+				<div className='mt-10 grid grid-cols-1 gap-5 md:mt-14 md:grid-cols-3 md:gap-6'>
+					<Reveal delay={0}>
+						<TierCard
+							tier='Closer'
+							tierAccent={EMERALD_AA}
+							portraitSrc='/images/case-studies/dimitriy.svg'
+							industryTag='Insurance Sales'
+							quote={'Honestly a great app and a surprisingly well thought out and detail-oriented use of AI. I\u2019ve been using CloserCoach to sharpen my skills and get back into sales after being out of the game, it\u2019s the most valuable resource I have.'}
+							name='Dimitriy'
+							role='Insurance Sales'
+							badge='Verified User'
+						/>
+					</Reveal>
+					<Reveal delay={0.08}>
+						<TierCard
+							tier='Teams'
+							tierAccent={AMBER_WARM}
+							portraitSrc='/images/case-studies/chris.svg'
+							metricHeadline='1 hour per week. 20 reps trained.'
+							industryTag='Sales Manager, Lake Washington'
+							quote={'Before CloserCoach, I was spending 1 hour per week per rep. Now, I spend 1 hour per week training 20 reps.'}
+							name='Chris'
+							role='Sales Manager, Lake Washington'
+							badge='Sales Manager'
+						/>
+					</Reveal>
+					<Reveal delay={0.16}>
+						<TierCard
+							tier='Enterprise'
+							tierAccent={SLATE_WARM}
+							portraitSrc='/images/case-studies/enterprise.svg'
+							metricHeadline='22-seat team onboarding.'
+							industryTag='Enterprise Sales Team'
+							quote={'Enterprise sales teams are onboarding CloserCoach at scale. One of the fastest-growing teams on the platform has 22 active seats.'}
+							name='Enterprise Sales Team'
+							role='Anonymized'
+							badge='Platform Deal'
+							isPlaceholder
+						/>
+					</Reveal>
+				</div>
+
+				{/* Review count anchor (Figma 1:8435). "378+" in Lora Bold Italic
+				 * emerald; the rest in Inter Medium uppercase slate. */}
 				<Reveal className='mt-8 md:mt-10' delay={0.05}>
-					<p className='text-center font-[family-name:var(--font-mono)] text-xs font-medium uppercase tracking-[0.2em] text-cc-text-secondary-warm'>
-						378+ reviews on the App Store.
+					<p
+						className='text-center uppercase'
+						style={{
+							fontSize: '16px',
+							lineHeight: '19.5px',
+							letterSpacing: '2.34px',
+							color: '#475569',
+						}}
+					>
+						<span
+							className='italic'
+							style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, color: EMERALD_AA }}
+						>
+							378+
+						</span>{' '}
+						<span style={{ fontFamily: 'var(--font-sans)', fontWeight: 500 }}>
+							reviews on the App Store.
+						</span>
 					</p>
 				</Reveal>
 

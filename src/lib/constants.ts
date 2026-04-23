@@ -115,6 +115,167 @@ export const CTA = {
 	download: { text: 'Download', href: '/download' },
 } as const
 
+/* S3 Step 4 Review -- industry/dimension scoring matrix.
+ * Ported from closercoach-site legacy (HOW_IT_WORKS.steps[2]). Drives the
+ * tab-structured scorecard composite: industry tabs across the top,
+ * dimension list on the left, "What you said / What you should have said"
+ * panel on the right. 4 industries x 5 dimensions = 20 examples.
+ * Copy is canvas-locked; ASCII hyphens preserved (no em dashes). */
+export const SCORING_DATA = {
+	industries: ['Insurance', 'Automotive', 'Financial', 'SaaS'],
+	dimensions: ['Discovery', 'Pitch', 'Objection Handling', 'Closing', 'Tonality'],
+	examples: {
+		Insurance: {
+			Discovery: {
+				title: 'Life Event Anchoring',
+				grade: 'C+',
+				said: 'So are you looking for life insurance today?',
+				shouldHaveSaid: 'Walk me through what changed recently. Is it a new baby, a mortgage, or something with your parents that put this on your radar?',
+				page: 'Page 1 of 20',
+			},
+			Pitch: {
+				title: 'Protection Narrative',
+				grade: 'D',
+				said: 'This is our Whole Life Plus plan. It has cash value, living benefits, and a guaranteed death benefit of 500k with no medical exam.',
+				shouldHaveSaid: 'You told me your biggest worry is your kids having to sell the house if something happens. This policy keeps that house in the family for 200 a month.',
+				page: 'Page 2 of 20',
+			},
+			'Objection Handling': {
+				title: 'Premium Reframe',
+				grade: 'C',
+				said: 'I can look into a cheaper plan if the premium is a concern.',
+				shouldHaveSaid: 'I hear you. One question. If something happened tomorrow and the family got nothing, would 150 a month have felt expensive?',
+				page: 'Page 3 of 20',
+			},
+			Closing: {
+				title: 'Urgency Anchor',
+				grade: 'B-',
+				said: 'Let me know when you want to get started.',
+				shouldHaveSaid: "Underwriting takes 48 hours and today is Tuesday. If we run the application now, you're covered by Thursday. Let's get you into the system.",
+				page: 'Page 4 of 20',
+			},
+			Tonality: {
+				title: 'Composed Pace',
+				grade: 'C-',
+				said: 'Umm so yeah this plan has a lot of things that I think you might want to look at.',
+				shouldHaveSaid: 'This is simple. Three pieces. Coverage amount, monthly cost, payout structure. Take as long as you need.',
+				page: 'Page 5 of 20',
+			},
+		},
+		Automotive: {
+			Discovery: {
+				title: 'Lifestyle Discovery',
+				grade: 'C',
+				said: 'What kind of car are you shopping for today?',
+				shouldHaveSaid: 'Tell me about your week. How far is your commute, who rides with you, and what does your current car get wrong?',
+				page: 'Page 6 of 20',
+			},
+			Pitch: {
+				title: 'Daily Life Connection',
+				grade: 'D+',
+				said: 'The package comes with heated seats, lane assist, a sunroof, Apple CarPlay, and the 2.5 liter engine.',
+				shouldHaveSaid: 'You said your knees ache after the morning commute. This model has memory seats for both drivers in your house, set to whatever position keeps your back happy.',
+				page: 'Page 7 of 20',
+			},
+			'Objection Handling': {
+				title: 'Total Cost Reframe',
+				grade: 'B',
+				said: 'I can try to knock another 500 off the sticker.',
+				shouldHaveSaid: 'Price is worth digging into. Your current car burns 40 a week in gas. This one runs 18. That is 1100 a year in your pocket before we touch sticker.',
+				page: 'Page 8 of 20',
+			},
+			Closing: {
+				title: 'Calendar Urgency',
+				grade: 'C+',
+				said: 'Alright so I just need you to sign here and here and then we are done.',
+				shouldHaveSaid: 'Your trade appraisal expires Friday. If we lock paperwork today, you drive home tonight in this car with the trade credit applied. That work?',
+				page: 'Page 9 of 20',
+			},
+			Tonality: {
+				title: 'Buyer Tempo Match',
+				grade: 'D',
+				said: 'Okay so do you want it do you want it lets do it lets get you in this car right now.',
+				shouldHaveSaid: 'Take your time. Walk around it. Sit in the back seat. Check the trunk with a stroller in your head. When you are ready, I am right here.',
+				page: 'Page 10 of 20',
+			},
+		},
+		Financial: {
+			Discovery: {
+				title: 'Vision Before Numbers',
+				grade: 'C',
+				said: 'Can I get your age, income, and risk tolerance for the paperwork?',
+				shouldHaveSaid: 'Before we touch any numbers, tell me what you want life to look like at 65. That shapes everything we build today.',
+				page: 'Page 11 of 20',
+			},
+			Pitch: {
+				title: 'Plan Over Products',
+				grade: 'D+',
+				said: 'We offer mutual funds, annuities, 401k rollovers, brokerage accounts, and managed portfolios with three risk profiles.',
+				shouldHaveSaid: 'You said you want to retire at 62 and never touch principal. Here is a two account setup that pays you 4000 a month forever without ever selling a share.',
+				page: 'Page 12 of 20',
+			},
+			'Objection Handling': {
+				title: 'Performance Math',
+				grade: 'B-',
+				said: 'Our fees are industry standard. One percent is very competitive.',
+				shouldHaveSaid: "Let me show you what that one percent bought last year. Your portfolio grew 11 percent net of fees. Your old broker charged 0.6 and delivered 4. You're 6000 ahead.",
+				page: 'Page 13 of 20',
+			},
+			Closing: {
+				title: 'Decision Maker Inclusion',
+				grade: 'B',
+				said: 'I will send over the new account paperwork tonight.',
+				shouldHaveSaid: 'Two things this week. I open the Roth and you bring your spouse to Thursday at 4 so we walk the full plan together. Does 4 work?',
+				page: 'Page 14 of 20',
+			},
+			Tonality: {
+				title: 'Plain English Translation',
+				grade: 'C-',
+				said: 'We rebalance quarterly using a modified Sharpe ratio optimization across your allocation sleeves within the glide path.',
+				shouldHaveSaid: 'Every three months we check if your mix is still on track. If stocks got too big, we trim them. Simple.',
+				page: 'Page 15 of 20',
+			},
+		},
+		SaaS: {
+			Discovery: {
+				title: 'Pain Before Demo',
+				grade: 'D+',
+				said: 'Great, I can get a demo booked for next week. What day works?',
+				shouldHaveSaid: 'Before the demo, help me understand the part of your revenue ops that is bleeding. Lead routing, forecast accuracy, or the handoff from sales to CS?',
+				page: 'Page 16 of 20',
+			},
+			Pitch: {
+				title: 'Outcome First Framing',
+				grade: 'C',
+				said: 'Let me share my screen. Here is the dashboard. Filters on the left, reporting module up here, forecasting in this tab.',
+				shouldHaveSaid: 'You told me you lose 3 deals a quarter to bad handoffs. Here is the one screen that eliminates that handoff. Nothing else matters until you see this.',
+				page: 'Page 17 of 20',
+			},
+			'Objection Handling': {
+				title: 'Value Re-anchor',
+				grade: 'D',
+				said: 'I can probably get you 15 percent off if that helps.',
+				shouldHaveSaid: "Price wasn't the question you asked last week. You asked if this hits ARR before Q3. Let's go back to that. If pilot starts Monday, you see pipeline impact by June.",
+				page: 'Page 18 of 20',
+			},
+			Closing: {
+				title: 'Buying Committee Map',
+				grade: 'C+',
+				said: 'Cool, I will send over the contract and loop back next week.',
+				shouldHaveSaid: "Before any contract, walk me through who else signs this. CFO, IT, security review? Let's get them on a 20 minute call Thursday so we don't end up in a redline loop for a month.",
+				page: 'Page 19 of 20',
+			},
+			Tonality: {
+				title: 'Peer Consultant Voice',
+				grade: 'B-',
+				said: 'Sure absolutely I can definitely help with that great question let me pull that up for you right now.',
+				shouldHaveSaid: 'Honest answer. We do that better than anyone in the market. Most tools bolt it on. We were built for it.',
+				page: 'Page 20 of 20',
+			},
+		},
+	},
+} as const
+
 /**
  * @description Returns the appropriate store URL based on user's platform.
  * iOS -> App Store, Android -> Google Play, Desktop -> /download fallback.

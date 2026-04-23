@@ -1,28 +1,27 @@
-/** @fileoverview S7 FAQ — proof-dense accordion. Built W8 (2026-04-20).
+/** @fileoverview S7 FAQ — restyled 2026-04-23 to Figma node 1:5217.
  *
- * Composition (per section-blueprint v2 § S7):
- *   1. Section label (overline, emerald mono)
- *   2. Display headline (Lora Bold, italic emphasis on "honest")
- *   3. AC billboard corner label — "FAQ" rotated -90deg in left margin,
- *      clamp(160px, 20vw, 300px) at 6% opacity. Desktop only.
- *   4. 12-question accordion with AA numbered markers [01]-[12].
- *      First question expanded by default.
- *      AB rim glow on the open item (emerald border highlight, subtle).
+ * Composition:
+ *   1. Centered header stack (gap-[15px]): emerald overline + Lora Bold title
+ *      at 48px / leading-[52.8px] + Inter subhead at 16px / leading-[24px].
+ *   2. 64px gap to accordion.
+ *   3. Accordion items rendered as rounded-[24px] pills with translucent card
+ *      fill rgba(30,34,48,0.15) and hairline border rgba(255,255,255,0.06).
+ *      12px gap between items. Max width 720px per Figma.
+ *   4. Open panel expands inline; a chevron rotates 180°.
  *
- * Surface: dark (cc-foundation). Minimal atmosphere — reading section.
- * Copy: 12 Q+A sourced from prior lab z-qa-architecture + ac-billboard-label,
- * cross-checked against blueprint proof map (PC1, PC3, PC4, P1, P2, P4,
- * TR1-6, SP1, $3, $4, $5-7, E4, IB3) and proof-inventory. Zero fabrication.
+ * Styling ports verbatim from Figma; copy block is Figma's ("Questions,
+ * answered" / "Frequently asked questions" / "Everything you need to know
+ * before you download"). The 12 Q+A entries are preserved from the prior
+ * proof-dense v2 source.
+ *
+ * Dropped from the v2 original: billboard "FAQ" rotated corner label, the
+ * [01]-[12] numbered mono markers, the italic-emerald "honest" emphasis,
+ * and the horizontal rule separator model. These were replaced by the
+ * individual pill treatment shown in the Figma.
  *
  * Accordion: native <button> + aria-expanded + aria-controls + hidden panel.
- * Single-open model. Keyboard a11y: Enter/Space toggles via button semantics.
- * Motion: height + opacity on panel, spring. Stable initial props (F42 safe).
- *
- * WCAG AA on dark: white questions (21:1), cc-text-secondary answers (6.4:1),
- * emerald #10B981 markers (5.2:1 on cc-foundation). Focus-visible rings.
- *
- * Responsive: billboard label hidden < 1024px, mono markers scale down to
- * 10px on mobile, chevron right-aligned. */
+ * Single-open model. Keyboard a11y via button semantics. Motion: height +
+ * opacity on panel, spring. Stable initial props (F42 safe). */
 
 'use client'
 
@@ -67,7 +66,7 @@ const FAQS: readonly FAQItem[] = [
 		id: 'enterprise-security',
 		question: 'What about enterprise security?',
 		answer:
-			'SOC2 Type II compliant, GDPR ready, with SSO, SAML, role-based access control, audit logging, and data residency options on Enterprise plans. Trusted by enterprise teams at State Farm, Land Rover, Vivint, RE/MAX, Toyota, and Fidelity. Calls are encrypted in transit and at rest. Your data is yours and is never used to train models for other customers.',
+			'SOC2 Type II compliant, GDPR ready, with SSO, SAML, role-based access control, audit logging, and data residency options on Enterprise plans. Trusted by enterprise teams at State Farm, Land Rover, Sunrun, RE/MAX, Toyota, and Fidelity. Calls are encrypted in transit and at rest. Your data is yours and is never used to train models for other customers.',
 	},
 	{
 		id: 'pricing-moat',
@@ -117,36 +116,25 @@ const FAQS: readonly FAQItem[] = [
 
 type AccordionItemProps = {
 	faq: FAQItem
-	index: number
 	isOpen: boolean
 	onToggle: () => void
 }
 
 /**
- * @description Single accordion row with numbered marker, question button,
- * and animated answer panel. Button handles aria-expanded + aria-controls.
- * Panel uses AnimatePresence so the height animates cleanly open/closed.
+ * @description Single accordion pill. Figma 1:5223 contract: bg
+ * rgba(30,34,48,0.15), border rgba(255,255,255,0.06), rounded-[24px].
+ * Trigger is 66-68px tall; open panel grows inline with a height +
+ * opacity spring.
  */
-function AccordionItem({ faq, index, isOpen, onToggle }: AccordionItemProps): ReactElement {
+function AccordionItem({ faq, isOpen, onToggle }: AccordionItemProps): ReactElement {
 	const prefersReducedMotion = useReducedMotion()
 	const panelId = useId()
 	const buttonId = useId()
-	const numberStr = String(index + 1).padStart(2, '0')
 
 	return (
 		<div
-			className={`relative border-t border-cc-surface-border transition-colors duration-300 ${
-				isOpen ? 'border-cc-accent/40' : ''
-			}`}
+			className='rounded-[24px] border border-white/[0.06] bg-[rgba(30,34,48,0.15)] transition-colors duration-300'
 		>
-			{/* AB rim glow on open — subtle emerald halo on top + bottom edges */}
-			{isOpen && (
-				<div
-					aria-hidden='true'
-					className='pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cc-accent/40 to-transparent'
-				/>
-			)}
-
 			<h3>
 				<button
 					id={buttonId}
@@ -154,18 +142,11 @@ function AccordionItem({ faq, index, isOpen, onToggle }: AccordionItemProps): Re
 					onClick={onToggle}
 					aria-expanded={isOpen}
 					aria-controls={panelId}
-					className='group flex w-full items-start gap-4 py-6 text-left outline-none transition-colors duration-200 hover:text-white focus-visible:text-white md:gap-6 md:py-7'
+					className='group flex w-full items-center gap-4 rounded-[24px] px-6 py-[21px] text-left outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-cc-accent/60'
 				>
 					<span
-						aria-hidden='true'
-						className='shrink-0 pt-1 font-[family-name:var(--font-mono)] text-[10px] font-medium tracking-[0.15em] text-cc-accent md:text-[11px]'
-					>
-						[{numberStr}]
-					</span>
-					<span
-						className={`flex-1 text-base font-medium leading-snug transition-colors duration-200 md:text-lg ${
-							isOpen ? 'text-white' : 'text-white/90 group-hover:text-white'
-						}`}
+						className='flex-1 text-[16px] leading-[24px] text-white transition-colors duration-200'
+						style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
 					>
 						{faq.question}
 					</span>
@@ -173,9 +154,9 @@ function AccordionItem({ faq, index, isOpen, onToggle }: AccordionItemProps): Re
 						aria-hidden='true'
 						animate={{ rotate: isOpen ? 180 : 0 }}
 						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.25, ease: 'easeOut' }}
-						className='shrink-0 pt-0.5 text-cc-text-muted transition-colors duration-200 group-hover:text-cc-accent'
+						className='shrink-0 text-white/60 transition-colors duration-200 group-hover:text-cc-accent'
 					>
-						<CaretDown size={18} weight='bold' />
+						<CaretDown size={16} weight='regular' />
 					</motion.span>
 				</button>
 			</h3>
@@ -196,12 +177,12 @@ function AccordionItem({ faq, index, isOpen, onToggle }: AccordionItemProps): Re
 						}
 						className='overflow-hidden'
 					>
-						<div className='flex gap-4 pb-7 md:gap-6 md:pb-8'>
-							<span aria-hidden='true' className='w-[26px] shrink-0 md:w-[34px]' />
-							<p className='flex-1 pr-6 text-sm leading-relaxed text-cc-text-secondary md:pr-10 md:text-base'>
-								{faq.answer}
-							</p>
-						</div>
+						<p
+							className='px-6 pb-6 pr-8 text-[14px] text-[#94A3B8]'
+							style={{ lineHeight: '22.75px' }}
+						>
+							{faq.answer}
+						</p>
 					</motion.div>
 				)}
 			</AnimatePresence>
@@ -212,10 +193,10 @@ function AccordionItem({ faq, index, isOpen, onToggle }: AccordionItemProps): Re
 /* ── Main section ── */
 
 /**
- * @description S7 FAQ section. Dark surface. 12-question accordion with
- * AA numbered markers and AC billboard corner label. First question open
- * by default. Single-open model (opening one closes the others), which
- * keeps the reading focus tight and the vertical rhythm honest.
+ * @description S7 FAQ. Figma-styled header (emerald overline + Lora Bold
+ * title + Inter subhead) over a column of translucent rounded-[24px]
+ * accordion pills. Single-open model. First question open by default to
+ * demonstrate answer depth.
  */
 export default function SectionFAQ(): ReactElement {
 	const [openId, setOpenId] = useState<string | null>(FAQS[0].id)
@@ -237,7 +218,7 @@ export default function SectionFAQ(): ReactElement {
 			data-surface='dark-faq'
 			className='relative overflow-hidden bg-cc-foundation py-24 md:py-32'
 		>
-			{/* Minimal atmosphere — very soft emerald haze at center */}
+			{/* Soft emerald haze per prior atmosphere spec — kept for dark-surface depth. */}
 			<div
 				aria-hidden='true'
 				className='pointer-events-none absolute inset-0'
@@ -247,29 +228,8 @@ export default function SectionFAQ(): ReactElement {
 				}}
 			/>
 
-			{/* AC billboard corner label — FAQ rotated -90deg in left margin. Desktop only. */}
-			<div
-				aria-hidden='true'
-				className='pointer-events-none absolute left-0 top-0 hidden h-full items-center lg:flex'
-				style={{ width: 'clamp(120px, 18vw, 260px)' }}
-			>
-				<span
-					className='block select-none whitespace-nowrap leading-none text-white'
-					style={{
-						fontFamily: 'var(--font-heading)',
-						fontSize: 'clamp(160px, 20vw, 300px)',
-						transform: 'rotate(-90deg)',
-						transformOrigin: 'center center',
-						opacity: 0.06,
-						letterSpacing: '-0.04em',
-					}}
-				>
-					FAQ
-				</span>
-			</div>
-
-			<div className='relative z-10 mx-auto max-w-3xl px-6'>
-				{/* ── Header ── */}
+			<div className='relative z-10 mx-auto flex w-full max-w-[720px] flex-col items-center gap-16 px-6'>
+				{/* ── Header (Figma 1:5218) ── */}
 				<motion.div
 					ref={headerRef}
 					initial={{ opacity: 0, y: 18 }}
@@ -279,24 +239,43 @@ export default function SectionFAQ(): ReactElement {
 							? { duration: 0 }
 							: { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }
 					}
-					className='mb-12 flex flex-col items-center gap-4 text-center md:mb-16'
+					className='flex flex-col items-center gap-[15px] text-center'
 				>
-					<span className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.18em] text-cc-accent'>
-						Questions closers ask before they start
-					</span>
-					<h2
-						className='display-lg max-w-2xl text-white'
-						style={{ fontFamily: 'var(--font-heading)', lineHeight: 1.08 }}
+					<p
+						className='font-semibold uppercase text-cc-accent'
+						style={{
+							fontFamily: 'var(--font-sans)',
+							fontSize: '12px',
+							lineHeight: '16px',
+							letterSpacing: '0.96px',
+						}}
 					>
-						The{' '}
-						<em className='not-italic'>
-							<span className='italic text-cc-accent'>honest</span>
-						</em>{' '}
-						answers.
+						Questions, answered
+					</p>
+					<h2
+						className='text-white'
+						style={{
+							fontFamily: 'var(--font-heading)',
+							fontWeight: 700,
+							fontSize: 'clamp(32px, 5vw, 48px)',
+							lineHeight: 1.1,
+						}}
+					>
+						Frequently asked questions
 					</h2>
+					<p
+						className='text-[#94A3B8]'
+						style={{
+							fontFamily: 'var(--font-sans)',
+							fontSize: '16px',
+							lineHeight: '24px',
+						}}
+					>
+						Everything you need to know before you download.
+					</p>
 				</motion.div>
 
-				{/* ── Accordion list ── */}
+				{/* ── Accordion list (Figma 1:5222) ── */}
 				<motion.div
 					ref={listRef}
 					initial={{ opacity: 0, y: 12 }}
@@ -306,13 +285,12 @@ export default function SectionFAQ(): ReactElement {
 							? { duration: 0 }
 							: { duration: 0.6, delay: 0.08, ease: [0.25, 0.46, 0.45, 0.94] }
 					}
-					className='border-b border-cc-surface-border'
+					className='flex w-full flex-col gap-3'
 				>
-					{FAQS.map((faq, i) => (
+					{FAQS.map((faq) => (
 						<AccordionItem
 							key={faq.id}
 							faq={faq}
-							index={i}
 							isOpen={openId === faq.id}
 							onToggle={() => handleToggle(faq.id)}
 						/>

@@ -12,7 +12,7 @@
 
 import { useSyncExternalStore } from 'react'
 import Image from 'next/image'
-import { Star } from '@phosphor-icons/react'
+import { Star, AppleLogo } from '@phosphor-icons/react'
 import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react'
 import { BRAND, CTA, STATS } from '@/lib/constants'
 import MotionCTA from '@/components/shared/motion-cta'
@@ -86,6 +86,42 @@ export default function SectionHero() {
 				/>
 			</motion.div>
 
+			{/* L1.5: Corner light rays — Figma 62:3294 / 62:3367. Bright diagonal
+			 * emerald beams streaming in from the top-left and top-right corners
+			 * and extending past the headline. Stack = bright radial core + two
+			 * linear beams at ~210° / ~225° so each side reads as a cluster of
+			 * layered ribbons, not a flat wedge. Container spans the full hero
+			 * so the beams can reach well past mid-section. */}
+			<div className='pointer-events-none absolute inset-0 z-[1] overflow-hidden' aria-hidden='true'>
+				{/* Right-side beam cluster. */}
+				<div
+					className='absolute right-[-260px] top-[-300px] h-[1600px] w-[1200px]'
+					style={{
+						background: [
+							'radial-gradient(ellipse 35% 45% at 82% 18%, rgba(52,225,142,0.42) 0%, rgba(16,185,129,0.18) 30%, transparent 55%)',
+							'linear-gradient(210deg, rgba(16,185,129,0.55) 0%, rgba(16,185,129,0.22) 14%, rgba(16,185,129,0.08) 28%, rgba(16,185,129,0.02) 42%, transparent 55%)',
+							'linear-gradient(225deg, rgba(16,185,129,0.28) 5%, rgba(16,185,129,0.1) 22%, transparent 42%)',
+						].join(', '),
+						filter: 'blur(28px)',
+						mixBlendMode: 'screen',
+					}}
+				/>
+				{/* Left-side beam cluster — mirror of the right (scaleX -1). */}
+				<div
+					className='absolute left-[-260px] top-[-300px] h-[1600px] w-[1200px]'
+					style={{
+						transform: 'scaleX(-1)',
+						background: [
+							'radial-gradient(ellipse 35% 45% at 82% 18%, rgba(52,225,142,0.42) 0%, rgba(16,185,129,0.18) 30%, transparent 55%)',
+							'linear-gradient(210deg, rgba(16,185,129,0.55) 0%, rgba(16,185,129,0.22) 14%, rgba(16,185,129,0.08) 28%, rgba(16,185,129,0.02) 42%, transparent 55%)',
+							'linear-gradient(225deg, rgba(16,185,129,0.28) 5%, rgba(16,185,129,0.1) 22%, transparent 42%)',
+						].join(', '),
+						filter: 'blur(28px)',
+						mixBlendMode: 'screen',
+					}}
+				/>
+			</div>
+
 			{/* L2: Noise texture. */}
 			<AtmosphereNoise opacity={0.035} />
 
@@ -112,9 +148,17 @@ export default function SectionHero() {
 					<AnimatedBadge text={`Join ${STATS.userCount} Sales Closers`} color='#10B981' />
 				</motion.div>
 
-				{/* H1 headline -- clipPath line reveal, white with emerald italic accent. */}
+				{/* H1 headline -- clipPath line reveal, white with emerald italic accent.
+				 * Desktop locked to 72px per Figma 62:3049; mobile collapses to
+				 * ~40px via the clamp ceiling. */}
 				<motion.h1
-					className='display-xl max-w-[920px] text-center text-white'
+					className='max-w-[920px] text-center text-white'
+					style={{
+						fontFamily: 'var(--font-heading)',
+						fontWeight: 700,
+						fontSize: 'clamp(2.5rem, 6vw, 72px)',
+						lineHeight: 0.933,
+					}}
 					initial={{ clipPath: 'inset(0 0 100% 0)' }}
 					animate={{ clipPath: 'inset(0 0 0% 0)' }}
 					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.8, delay: 0.15, ease: EASE }}
@@ -135,7 +179,7 @@ export default function SectionHero() {
 					className='mt-6 max-w-[600px] text-center font-sans text-lg leading-relaxed text-cc-text-secondary'
 					{...enter(0.35, 12, 0.45)}
 				>
-					Practice closing deals. Record your meetings. Know exactly why you suck. All from your phone.
+					Practice closing deals. Record your meetings. Know exactly where you lost the deal. All from your phone.
 				</motion.p>
 
 				{/* CTA cluster -- centered pair, stacked on mobile, row on sm+. */}
@@ -173,59 +217,46 @@ export default function SectionHero() {
 					No desktop. No annual contracts.
 				</motion.p>
 
-				{/* Stars row -- 4.7 + 5 amber stars + App Store mono label. */}
+				{/* Rating block — Figma 62:3128. Vertical stack: big 4.7 in Lora
+				 * Bold 38/-1.52, 5 amber stars at 16px, Apple wordmark + "App
+				 * Store" in Inter Regular 16. 8px gap between rows. */}
 				<motion.div
-					className='mt-8 flex flex-col items-center gap-1.5'
+					className='mt-8 flex flex-col items-center gap-2'
 					{...enter(0.6, 8, 0.5)}
 				>
-					<div className='flex items-center gap-2'>
-						<span className='font-heading text-2xl text-white'>
-							{STATS.appStoreRating}
-						</span>
-						<div className='flex items-center gap-0.5' aria-label={`${STATS.appStoreRating} out of 5 stars`}>
-							{[0, 1, 2, 3, 4].map(i => (
-								<Star key={i} size={14} weight='fill' className='text-cc-amber' />
-							))}
-						</div>
-					</div>
-					<span className='font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-cc-text-muted'>
-						App Store
+					<span
+						className='text-white'
+						style={{
+							fontFamily: 'var(--font-heading)',
+							fontWeight: 700,
+							fontSize: '38px',
+							lineHeight: '38px',
+							letterSpacing: '-1.52px',
+						}}
+					>
+						{STATS.appStoreRating}
 					</span>
-				</motion.div>
-
-				{/* App Store + Google Play badges. */}
-				<motion.div
-					className='mt-6 flex flex-col items-center gap-3 sm:flex-row sm:gap-4'
-					{...enter(0.7, 8, 0.4)}
-				>
-					<a
-						href={BRAND.appStore}
-						target='_blank'
-						rel='noopener noreferrer'
-						className='transition-transform hover:scale-105'
+					<div
+						className='flex items-center gap-[2px]'
+						aria-label={`${STATS.appStoreRating} out of 5 stars`}
 					>
-						<Image
-							src='/images/app-store-badge.svg'
-							alt='Download on the App Store'
-							width={140}
-							height={42}
-							className='h-[42px] w-auto'
-						/>
-					</a>
-					<a
-						href={BRAND.googlePlay}
-						target='_blank'
-						rel='noopener noreferrer'
-						className='transition-transform hover:scale-105'
-					>
-						<Image
-							src='/images/google-play-badge.svg'
-							alt='Get it on Google Play'
-							width={140}
-							height={42}
-							className='h-[42px] w-auto'
-						/>
-					</a>
+						{[0, 1, 2, 3, 4].map((i) => (
+							<Star key={i} size={16} weight='fill' className='text-cc-amber' />
+						))}
+					</div>
+					<div className='flex items-center justify-center gap-2'>
+						<AppleLogo size={24} weight='fill' className='text-[#C5C9CE]' aria-hidden='true' />
+						<span
+							style={{
+								fontFamily: 'var(--font-sans)',
+								fontSize: '16px',
+								lineHeight: '20px',
+								color: '#C5C9CE',
+							}}
+						>
+							App Store
+						</span>
+					</div>
 				</motion.div>
 
 				{/* Phone composite -- centered below the text block. */}
@@ -298,6 +329,41 @@ export default function SectionHero() {
 						</motion.div>
 					</div>
 				</div>
+
+				{/* App Store + Google Play badges — beneath the phone composite. */}
+				<motion.div
+					className='mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4 md:mt-12'
+					{...enter(0.95, 8, 0.4)}
+				>
+					<a
+						href={BRAND.appStore}
+						target='_blank'
+						rel='noopener noreferrer'
+						className='transition-transform hover:scale-105'
+					>
+						<Image
+							src='/images/app-store-badge.svg'
+							alt='Download on the App Store'
+							width={140}
+							height={42}
+							className='h-[42px] w-auto'
+						/>
+					</a>
+					<a
+						href={BRAND.googlePlay}
+						target='_blank'
+						rel='noopener noreferrer'
+						className='transition-transform hover:scale-105'
+					>
+						<Image
+							src='/images/google-play-badge.svg'
+							alt='Get it on Google Play'
+							width={140}
+							height={42}
+							className='h-[42px] w-auto'
+						/>
+					</a>
+				</motion.div>
 			</div>
 		</section>
 	)

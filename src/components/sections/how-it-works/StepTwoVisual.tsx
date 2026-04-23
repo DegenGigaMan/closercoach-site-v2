@@ -1,575 +1,579 @@
-/** @fileoverview S3 Step 2 Practice right-column visual composition.
- * 5-sub-state scroll-trigger-then-autoplay chain (Alim added this step; two new
- * product features sell here: interest meter + one-click suggested responses):
- *   2A (0 - 600ms):     Roleplay shell fades in. Sarah Chen avatar + VP Ops tag +
- *                        AI Clone pill visible. Conversation empty. Mic bar idle.
- *                        Interest meter at 50% neutral. Readiness gauge at 0%.
- *   2B (600 - 1800ms):  First AI clone objection bubble appears. Interest meter
- *                        drops to ~30% amber. "Weak objection pivot" negative
- *                        coaching chip fires beneath the AI bubble.
- *   2C (1800 - 3000ms): User response bubble appears. Interest meter rebounds to
- *                        ~55% emerald. "Great discovery question" positive chip
- *                        fires beneath the user bubble. Readiness gauge ticks to 40%.
- *   2D (3000 - 4200ms): Second AI clone objection. "Get Suggested Response"
- *                        affordance lights at mic corner + sparkle glyph. Popover
- *                        with 2-3 AI-generated rebuttal suggestions opens.
- *   2E (4200ms+):        Interest meter settles at 72% emerald. Readiness gauge
- *                        fills to 72% with "READY FOR THE REAL CALL" label. Stat
- *                        line "5 minutes a week = 2 practice rounds" renders.
- *                        Popover stays open; suggested-response button ambient pulse.
+/** @fileoverview S3 Step 2 Practice right-column visual.
  *
- * Authority:
- *   - Visual spec: vault/clients/closer-coach/design/section-blueprint.md §S3 Step 2 (lines 211-220)
- *   - Copy spec:   vault/clients/closer-coach/copy/lp-copy-deck-v5.md §Section 3 Step 2 (v5.3)
- *   - Motion:      vault/clients/closer-coach/design/motion-spec.md §Thread Emergence
- *   - Vocabulary:  src/components/hero/hero-phone-v2.tsx (CoachingPill recipe, spring physics)
- *   - Shared utils: ./_shared/use-sub-state-machine (chain) + ./_shared/step-visual-defaults (tokens)
+ * Composition mapped from Figma node 40:1211. Renders directly inside the
+ * shared StepCanvas (which provides the outer rounded container + radial
+ * gradient backdrop), so this file contributes only the two-column layout
+ * plus motion:
+ *   - Left (213px): "AI Clone" tab badge + clone card with Sarah Chen
+ *     portrait, "CLOSING A DEAL" chip, objection quote, Medium difficulty
+ *     meter.
+ *   - Right: vertical timeline (user icon + hairline) flanking a
+ *     "ROLEPLAY SESSION" chat column with 4 alternating bubbles
+ *     (AI grey / user blue), coaching chips ("Great Response" / "Missed
+ *     The Mark"), a "Get suggested responses" pill, and a bottom bar with
+ *     a tick-style 39% interest gauge + audio waveform + 02:34 timer.
  *
- * NO phone frame in Step 2: phone is reserved for Step 3 per R7 v3 D3.
+ * Prior revision wrapped the whole composition in a second rounded
+ * container, producing a visible double-frame against StepCanvas. That
+ * container is removed here so StepCanvas is the sole frame.
  *
- * Reduced-motion guard collapses the chain to state 2E instantly (suggested
- * popover renders open, meter at 72%, gauge full, chips visible, no ambient).
- *
- * Layout: the composition anchors inside the 36rem sticky slot. Roleplay card
- * sits centered (max-w-[420px]) with the vertical interest meter pinned to the
- * left edge (outside the card, anchored to the column) and the readiness gauge
- * + stat stacked beneath the card. */
+ * Motion: bubbles stagger in, coaching chips pop after their bubble
+ * settles, waveform bars breathe, the suggested responses pill pulses
+ * in settled, the interest gauge tick-segments light up in sequence, the
+ * indicator dot travels to the reading, and the center number counts
+ * from 0 to 39. Reduced-motion collapses to the settled frame. */
 
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence, useInView, useReducedMotion } from 'motion/react'
-import { CheckCircle, Warning, Microphone, Sparkle } from '@phosphor-icons/react'
-import { useSubStateMachine } from './_shared/use-sub-state-machine'
+import { useRef } from 'react'
+import Image from 'next/image'
+import { motion, useInView, useReducedMotion, useMotionValue, useTransform, animate } from 'motion/react'
+import { useEffect, useState } from 'react'
 import {
-	CARD_SHADOW,
-	CARD_ENTER_SPRING,
-	THREAD_EASE,
-	KICKER_MONO_MUTED,
-	KICKER_MONO_EMERALD,
-} from './_shared/step-visual-defaults'
+	PhoneCall,
+	User,
+	Microphone,
+	PencilSimple,
+	CheckCircle,
+	XCircle,
+} from '@phosphor-icons/react'
 
-/* Sub-state timings (ms). Each value is the moment the state begins. */
-const T_2A = 0
-const T_2B = 600
-const T_2C = 1800
-const T_2D = 3000
-const T_2E = 4200
+const SARAH_AVATAR = '/images/step2/avatar-sarah.png'
 
-type SubState = '2A' | '2B' | '2C' | '2D' | '2E'
-
-/* Sub-state chain definition. Pinned at module level per F27 (states-array
- * identity warning): inline arrays create new references every render and, with
- * once: false, would restart the chain. once: true makes this safe regardless,
- * but pinning keeps the hook contract clean and matches W2's STEP_ONE_STATES
- * convention. */
-const STEP_TWO_STATES: ReadonlyArray<{ id: SubState, enterAtMs: number }> = [
-	{ id: '2A', enterAtMs: T_2A },
-	{ id: '2B', enterAtMs: T_2B },
-	{ id: '2C', enterAtMs: T_2C },
-	{ id: '2D', enterAtMs: T_2D },
-	{ id: '2E', enterAtMs: T_2E },
+/* Audio waveform bar ladder. Heights and opacities mirror the Figma pattern
+ * at node 40:1211, visually approximating an active voice capture. */
+const WAVE_BARS: ReadonlyArray<readonly [number, number]> = [
+	[2, 0.3], [2, 0.3], [4, 0.5], [6.9, 0.6], [15.3, 0.8], [7.0, 0.6], [4.2, 0.5],
+	[9.8, 0.6], [13.9, 0.8], [6.9, 0.5], [13.7, 0.8], [9.5, 0.6], [4.0, 0.3],
+	[9.1, 0.6], [6.4, 0.5], [6.2, 0.5], [10.8, 0.8], [7.0, 0.5], [9.0, 0.6],
+	[11.9, 0.8], [6.2, 0.5], [6.2, 0.5], [7.9, 0.5], [10.4, 0.8], [8.1, 0.6],
+	[6.8, 0.5], [4.9, 0.3], [7.9, 0.5], [4.0, 0.3], [2, 0.3], [2, 0.3],
 ] as const
 
-/* Interest meter stops per sub-state. Values are 0-100 scale. Color shifts by
- * value: emerald >= 60, amber 40-59, score-red < 40. */
-const INTEREST_BY_STATE: Record<SubState, number> = {
-	'2A': 50,
-	'2B': 30,
-	'2C': 55,
-	'2D': 55,
-	'2E': 72,
-}
+/* Sequence delays (seconds) relative to inView. Coaching chips piggyback on
+ * user-message delays via +0.35s. Gauge fill begins at first AI message. */
+const DELAY = {
+	ai1: 0.25,
+	user1: 0.85,
+	ai2: 1.5,
+	user2: 2.1,
+	pill: 2.75,
+	gaugeStart: 0.25,
+} as const
 
-/* Readiness gauge stops per sub-state. Arc fills from 0 to 0.72 over the chain. */
-const READINESS_BY_STATE: Record<SubState, number> = {
-	'2A': 0,
-	'2B': 0,
-	'2C': 0.4,
-	'2D': 0.55,
-	'2E': 0.72,
-}
+const EASE: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94]
 
-/* Suggested-rebuttal copy for the popover. Natural, non-slop phrasing anchored
- * on the AI's "integration failed" objection (mirrors the W2 OBJECTION field).
- * Not drawn from copy deck; flagged as agent invention in DEV-021. */
-const SUGGESTED_REBUTTALS: readonly string[] = [
-	'Try: "Which integration failed exactly?"',
-	'Pivot: "What worked about the tool before it broke?"',
-	'Reset: "Can I show you how ours is different?"',
-] as const
+/* ─── AI Clone Card (left column) ─────────────────────────── */
 
-/* ─── Interest meter ───────────────────────────────────────── */
-
-/* Vertical bar anchored to the LEFT column edge, outside the card. Height
- * matches the card conversation area. Fill height + color animate per sub-state.
- *
- * Tooltip is WCAG-compliant: visible on hover AND focus (button wrapper), not
- * hover-only. title attribute provides native fallback for pointer devices. */
-function InterestMeter({ subState, prefersReducedMotion }: {
-	subState: SubState
-	prefersReducedMotion: boolean
-}) {
-	const value = INTEREST_BY_STATE[subState]
-	/* Color band: emerald (engaged) >= 60, amber (slipping) 40-59, score-red (near hang-up) < 40.
-	 * emerald #10B981 WCAG 4.96:1 on cc-foundation, amber #F59E0B 10.08:1, score-red #EF4444 4.51:1. */
-	const color = value >= 60 ? '#10B981' : value >= 40 ? '#F59E0B' : '#EF4444'
-	/* Shadow color matches fill for a coherent glow pulse. */
-	const glow = value >= 60 ? '16,185,129' : value >= 40 ? '245,158,11' : '239,68,68'
-
+function CloneCard() {
 	return (
-		<div className="flex h-full flex-col items-center gap-2 pr-1">
-			<span className={`${KICKER_MONO_MUTED} writing-mode-vertical origin-center -rotate-180 [writing-mode:vertical-rl]`}>
-				Buyer Interest
-			</span>
-			<button
-				type="button"
-				className="group relative flex h-[280px] w-[4px] cursor-help flex-col justify-end overflow-visible rounded-full bg-cc-surface-border outline-none focus-visible:ring-2 focus-visible:ring-cc-accent/60"
-				aria-label={`Buyer interest at ${value}%. Prospects hang up when you suck.`}
-				title="Prospects hang up when you suck."
+		<div className='relative w-[213px] shrink-0'>
+			{/* Clone tab badge — Figma 40:1482. 84 × 43 positioned at (0, -27.5)
+			 * relative to the card. Inner padding pl-[9px] pr-[9px] pt-[9px]
+			 * pb-[25px]; the 25px bottom padding tucks the badge's lower 25px
+			 * behind the card's top edge for the overlapping-tab silhouette. */}
+			<div
+				className='absolute -top-[27px] left-0 z-0 inline-flex items-center gap-1.5 rounded-t-[8px] border border-cc-accent/20 border-b-0 px-[9px] pt-[9px] pb-[25px]'
+				style={{ backgroundColor: '#0C2822' }}
+				aria-hidden='true'
 			>
-				{/* Fill bar. Grows from the bottom (justify-end). */}
-				<motion.span
-					aria-hidden="true"
-					className="block w-full rounded-full"
-					/* F39: stable initial. Reduced-motion: subState=2E (value=72,
-					 * color=emerald) at settled, snaps via transition.duration: 0. */
-					initial={{ height: '50%', backgroundColor: '#F59E0B' }}
-					animate={{
-						height: `${value}%`,
-						backgroundColor: color,
-						boxShadow: `0 0 8px rgba(${glow},0.45)`,
-					}}
-					transition={prefersReducedMotion
-						? { duration: 0 }
-						: { duration: 0.55, ease: THREAD_EASE }
-					}
-				/>
-				{/* Hover/focus tooltip. Pinned above the bar. */}
-				<span
-					role="tooltip"
-					className="pointer-events-none absolute -top-9 left-1/2 z-20 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-white/[0.08] bg-cc-surface-card/95 px-2 py-1 font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.15em] text-cc-text-secondary shadow-lg backdrop-blur-sm group-hover:block group-focus-visible:block"
-				>
-					Prospects hang up when you suck.
+				<span className='font-[family-name:var(--font-mono)] text-[12px] font-semibold uppercase leading-none tracking-[0.1em] text-cc-mint'>
+					AI Clone
 				</span>
-			</button>
-			<span className="font-[family-name:var(--font-mono)] text-[9px] font-semibold tabular-nums text-cc-text-secondary">
-				{value}%
-			</span>
+			</div>
+
+			<div
+				className='relative z-10 flex flex-col gap-4 rounded-[12px] border border-white/[0.10] bg-cc-surface-card p-[13px]'
+				style={{
+					boxShadow:
+						'-8px 8px 16px 0px rgba(0,0,0,0.6), 0px 0px 20px 0px rgba(16,185,129,0.05)',
+				}}
+			>
+				{/* Figma 40:1447 — avatar 40×40 + name block with gap-[12px] between
+				 * them. Name block per 40:1478 uses gap-[10px] between "Sarah Chen"
+				 * (14px Inter Regular, leading-[20px]) and "VP Operations" (12px
+				 * Inter Regular, white/50). */}
+				<div className='flex items-center gap-3'>
+					<div className='relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-white/[0.05]'>
+						<Image
+							src={SARAH_AVATAR}
+							alt=''
+							fill
+							sizes='40px'
+							className='object-cover'
+							aria-hidden='true'
+						/>
+					</div>
+					<div className='flex flex-col gap-[10px] whitespace-nowrap'>
+						<span className='text-[14px] leading-[20px] text-[#EBEBEB]'>
+							Sarah Chen
+						</span>
+						<span className='text-[12px] leading-none text-white/50'>VP Operations</span>
+					</div>
+				</div>
+
+				<div className='flex flex-col gap-6'>
+					<div
+						className='inline-flex items-center gap-1.5 self-start rounded-[8px] border border-white/[0.05] px-2 py-1.5'
+						style={{
+							backgroundColor: 'rgba(255,255,255,0.03)',
+							boxShadow: '0px 4px 8px 0px rgba(17,17,17,0.2)',
+						}}
+					>
+						<PhoneCall size={14} weight='regular' className='text-[#B3BECE]' aria-hidden='true' />
+						<span className='font-[family-name:var(--font-sans)] text-[10px] font-medium uppercase leading-none text-[#B3BECE]'>
+							Closing a deal
+						</span>
+					</div>
+
+					<p className='text-[18px] leading-[1.6] text-white'>
+						&ldquo;Why switch from our solution to yours?&rdquo;
+					</p>
+
+					{/* Figma 46:2444 — difficulty meter. 116px track width, 5 segments
+					 * each 20×6 with gap-[4px] between, all fixed 20px (no flex-1
+					 * growth). 3 filled amber + 2 unfilled white/15. */}
+					<div className='flex items-center gap-3'>
+						<span className='text-[10px] leading-[15px] text-cc-amber'>Medium</span>
+						<div className='flex h-[6px] w-[116px] items-start gap-1' aria-hidden='true'>
+							{[0, 1, 2, 3, 4].map((i) => {
+								const filled = i < 3
+								return (
+									<div
+										key={i}
+										className='h-[6px] w-[20px] shrink-0 rounded-full'
+										style={{ backgroundColor: filled ? '#F59E0B' : 'rgba(255,255,255,0.15)' }}
+									/>
+								)
+							})}
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	)
 }
 
-/* ─── Coaching chip (positive/negative inline) ──────────────── */
+/* ─── Chat primitives ─────────────────────────────────────── */
 
-/* Reuses HPV2 CoachingPill vocabulary: emerald + checkmark on positive,
- * score-red + warning on negative. 11px text with 12px glyph per the micro-lift
- * documented in hero-phone-v2.tsx §F2. */
-function CoachingChip({ type, label, visible, prefersReducedMotion, align }: {
-	type: 'positive' | 'negative'
-	label: string
-	visible: boolean
-	prefersReducedMotion: boolean
-	align: 'left' | 'right'
+function AiMessage({
+	lines,
+	delay,
+	inView,
+	reduced,
+}: {
+	lines: readonly string[]
+	delay: number
+	inView: boolean
+	reduced: boolean
 }) {
-	const isPositive = type === 'positive'
-	const pillClass = `inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium ${isPositive
-		? 'border-cc-accent/30 bg-cc-accent/10 text-cc-accent'
-		: 'border-cc-score-red/30 bg-cc-score-red/10 text-red-400'
-	}`
-	const offsetX = align === 'right' ? -8 : 8
-
-	return (
-		<AnimatePresence>
-			{visible && (
-				<motion.span
-					className={pillClass}
-					/* F39: stable initial. Inside AnimatePresence so SSR also renders
-					 * this when visible. Reduced-motion snaps via duration:0. */
-					initial={{ opacity: 0, scale: 0.9, x: offsetX }}
-					animate={{ opacity: 1, scale: 1, x: 0 }}
-					exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.9, x: offsetX }}
-					transition={prefersReducedMotion
-						? { duration: 0 }
-						: { type: 'spring', stiffness: 500, damping: 24 }
-					}
-				>
-					{isPositive
-						? <CheckCircle size={12} weight="fill" aria-hidden="true" />
-						: <Warning size={12} weight="fill" aria-hidden="true" />
-					}
-					{label}
-				</motion.span>
-			)}
-		</AnimatePresence>
-	)
-}
-
-/* ─── Chat bubble ──────────────────────────────────────────── */
-
-function ChatBubble({ who, text, visible, prefersReducedMotion }: {
-	who: 'ai' | 'user'
-	text: string
-	visible: boolean
-	prefersReducedMotion: boolean
-}) {
-	const isAi = who === 'ai'
-	const align = isAi ? 'self-start' : 'self-end'
-	/* AI bubbles use cc-surface-card, user bubbles use cc-accent/15 for the
-	 * "yours" visual. Both maintain AA on their text color. */
-	const bubbleClass = isAi
-		? 'bg-cc-surface/80 border-white/[0.06] text-white'
-		: 'bg-cc-accent/15 border-cc-accent/25 text-white'
-
-	return (
-		<AnimatePresence>
-			{visible && (
-				<motion.div
-					className={`${align} flex max-w-[82%] flex-col gap-1.5`}
-					/* F39: stable initial. Reduced-motion snaps via duration:0. */
-					initial={{ opacity: 0, y: 8 }}
-					animate={{ opacity: 1, y: 0 }}
-					exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
-					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4, ease: THREAD_EASE }}
-				>
-					<div
-						className={`rounded-2xl border px-3 py-2 text-[12px] leading-snug ${bubbleClass}`}
-					>
-						{text}
-					</div>
-				</motion.div>
-			)}
-		</AnimatePresence>
-	)
-}
-
-/* ─── Roleplay card (conversation shell) ───────────────────── */
-
-function RoleplayCard({ subState, prefersReducedMotion }: {
-	subState: SubState
-	prefersReducedMotion: boolean
-}) {
-	const aiBubble1Visible = subState === '2B' || subState === '2C' || subState === '2D' || subState === '2E'
-	const userBubbleVisible = subState === '2C' || subState === '2D' || subState === '2E'
-	const aiBubble2Visible = subState === '2D' || subState === '2E'
-	const negChipVisible = aiBubble1Visible
-	const posChipVisible = userBubbleVisible
-	const suggestedLit = subState === '2D' || subState === '2E'
-	const popoverOpen = subState === '2D' || subState === '2E'
-
 	return (
 		<motion.div
-			className={`relative flex w-full max-w-[420px] flex-col gap-3 rounded-3xl border border-white/[0.08] bg-cc-surface-card/80 p-5 backdrop-blur-sm ${CARD_SHADOW}`}
-			/* F39: stable initial. Reduced-motion snaps via duration:0. */
-			initial={{ opacity: 0, y: 12 }}
-			animate={{ opacity: 1, y: 0 }}
-			transition={prefersReducedMotion ? { duration: 0 } : CARD_ENTER_SPRING}
+			className='flex w-full items-end gap-2 pr-6'
+			initial={{ opacity: 0, x: -8 }}
+			animate={inView ? { opacity: 1, x: 0 } : undefined}
+			transition={reduced ? { duration: 0 } : { duration: 0.45, ease: EASE, delay }}
 		>
-			{/* Header: avatar + name + role + AI Clone pill */}
-			<div className="flex items-center gap-2.5 border-b border-white/[0.06] pb-3">
-				<div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-cc-accent/30 bg-cc-accent/10">
-					<span className="font-[family-name:var(--font-mono)] text-[11px] font-semibold text-cc-accent">SC</span>
-				</div>
-				<div className="flex min-w-0 flex-1 flex-col">
-					<div className="flex items-center gap-1.5">
-						<span className="text-[13px] font-semibold text-white">Sarah Chen</span>
-						<span className="inline-flex items-center rounded-full border border-cc-accent/30 bg-cc-accent/10 px-1.5 py-[1px] font-[family-name:var(--font-mono)] text-[8px] font-medium uppercase tracking-[0.15em] text-cc-accent">
-							AI Clone
-						</span>
-					</div>
-					<span className="text-[10px] text-cc-text-secondary">VP Ops, Apex Industries</span>
-				</div>
-				<span className="font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase tracking-[0.2em] text-cc-accent/85">
-					Live
-				</span>
+			<div className='relative h-5 w-5 shrink-0 overflow-hidden rounded-full border border-white/[0.05]'>
+				<Image src={SARAH_AVATAR} alt='' fill sizes='20px' className='object-cover' aria-hidden='true' />
 			</div>
-
-			{/* Conversation area. Edge fades mask incoming bubbles for visual polish. */}
-			<div className="relative min-h-[260px]">
-				{/* Top fade mask */}
-				<div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-6 z-10 bg-gradient-to-b from-cc-surface-card/85 to-transparent" />
-				{/* Bottom fade mask */}
-				<div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-6 z-10 bg-gradient-to-t from-cc-surface-card/85 to-transparent" />
-
-				<div className="flex flex-col gap-3">
-					{/* AI bubble 1 + negative chip beneath it (left-aligned) */}
-					<ChatBubble
-						who="ai"
-						text="We've tried tools before. They all failed integration."
-						visible={aiBubble1Visible}
-						prefersReducedMotion={prefersReducedMotion}
-					/>
-					<div className="self-start">
-						<CoachingChip
-							type="negative"
-							label="Weak objection pivot"
-							visible={negChipVisible}
-							prefersReducedMotion={prefersReducedMotion}
-							align="left"
-						/>
-					</div>
-
-					{/* User bubble + positive chip beneath it (right-aligned) */}
-					<ChatBubble
-						who="user"
-						text="What worked about the last tool before it broke?"
-						visible={userBubbleVisible}
-						prefersReducedMotion={prefersReducedMotion}
-					/>
-					<div className="self-end">
-						<CoachingChip
-							type="positive"
-							label="Great discovery question"
-							visible={posChipVisible}
-							prefersReducedMotion={prefersReducedMotion}
-							align="right"
-						/>
-					</div>
-
-					{/* AI bubble 2 (triggers the "user needs help" moment) */}
-					<ChatBubble
-						who="ai"
-						text="Honestly? Nothing. Sales promised the world, delivery flopped."
-						visible={aiBubble2Visible}
-						prefersReducedMotion={prefersReducedMotion}
-					/>
-				</div>
-			</div>
-
-			{/* Mic bar: mic icon (left) + "Get Suggested Response" affordance (right corner) */}
-			<div className="relative flex items-center justify-between gap-3 border-t border-white/[0.06] pt-3">
-				<div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/[0.08] bg-cc-surface/60">
-					<Microphone size={14} weight="regular" className="text-cc-text-secondary" aria-hidden="true" />
-				</div>
-
-				<SuggestedResponseAffordance
-					lit={suggestedLit}
-					popoverOpen={popoverOpen}
-					settled={subState === '2E'}
-					prefersReducedMotion={prefersReducedMotion}
-				/>
+			<div className='rounded-tl-[12px] rounded-tr-[12px] rounded-br-[12px] border border-white/[0.06] bg-cc-surface-card p-3'>
+				{lines.map((line, i) => (
+					<p
+						key={i}
+						className='whitespace-nowrap text-[14px] font-light leading-[1.4] text-white/80'
+					>
+						{line}
+					</p>
+				))}
 			</div>
 		</motion.div>
 	)
 }
 
-/* ─── "Get Suggested Response" affordance ──────────────────── */
-
-/* Button at the mic-bar corner. States:
- *   2A-2C: dim (opacity-40, no glow). Button is present but quiet.
- *   2D:    lit (emerald accent + sparkle + shadow glow). Popover opens above.
- *   2E:    ambient pulse on the button so it stays active-feeling in settled. */
-function SuggestedResponseAffordance({ lit, popoverOpen, settled, prefersReducedMotion }: {
-	lit: boolean
-	popoverOpen: boolean
-	settled: boolean
-	prefersReducedMotion: boolean
+function UserMessage({
+	lines,
+	chip,
+	delay,
+	inView,
+	reduced,
+}: {
+	lines: readonly string[]
+	chip: { tone: 'positive' | 'negative'; label: string }
+	delay: number
+	inView: boolean
+	reduced: boolean
 }) {
+	const isPositive = chip.tone === 'positive'
+	const chipColor = isPositive ? '#34E18E' : '#FF6467'
+	const ChipIcon = isPositive ? CheckCircle : XCircle
 	return (
-		<div className="relative">
-			{/* Popover: 2-3 rebuttal suggestions. Side-peels from the right edge of
-			 * the card (F31 fix: previously opened UP-right from the mic bar and
-			 * overlapped the user bubble "What worked about the last tool before
-			 * it broke?", truncating it to "What " and undercutting the positive
-			 * coaching chip's narrative. Open-down overflowed onto the readiness
-			 * gauge. Side-peel right anchors outside the card's right gutter,
-			 * keeping the button-to-popover affordance relationship via the small
-			 * horizontal offset while leaving both the conversation area and the
-			 * gauge unobstructed.) Reduced-motion renders open in 2E with no
-			 * toggle animation. */}
-			<AnimatePresence>
-				{popoverOpen && (
-					<motion.div
-						role="tooltip"
-						className="absolute left-[calc(100%+12px)] top-1/2 z-20 w-[252px] -translate-y-1/2 rounded-xl border border-white/[0.08] bg-cc-surface/95 p-3 shadow-[0_12px_28px_rgba(0,0,0,0.55)] backdrop-blur-md"
-						/* F39: stable initial. Reduced-motion users land at 2E
-						 * (popoverOpen=true) and snap via duration:0 below. */
-						initial={{ opacity: 0, x: -6, scale: 0.98 }}
-						animate={{ opacity: 1, x: 0, scale: 1 }}
-						exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -6, scale: 0.98 }}
-						transition={prefersReducedMotion
-							? { duration: 0 }
-							: { type: 'spring', stiffness: 320, damping: 26 }
-						}
-					>
-						<div className="mb-2 flex items-center gap-1.5">
-							<Sparkle size={11} weight="fill" className="text-cc-accent" aria-hidden="true" />
-							<span className={KICKER_MONO_EMERALD}>Suggested</span>
-						</div>
-						<ul className="flex flex-col gap-1.5">
-							{SUGGESTED_REBUTTALS.map((r) => (
-								<li
-									key={r}
-									className="rounded-md border border-white/[0.04] bg-cc-surface-card/60 px-2 py-1.5 text-[11px] leading-snug text-cc-text-secondary"
-								>
-									{r}
-								</li>
-							))}
-						</ul>
-					</motion.div>
-				)}
-			</AnimatePresence>
-
-			<motion.button
-				type="button"
-				className={[
-					'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.1em] transition-colors',
-					lit
-						? 'border-cc-accent/40 bg-cc-accent/10 text-cc-accent'
-						: 'border-white/[0.08] bg-cc-surface/40 text-cc-text-muted opacity-40',
-				].join(' ')}
-				aria-label="Get suggested response"
-				animate={lit && !prefersReducedMotion
-					? {
-						boxShadow: settled
-							? [
-								'0 0 0 rgba(16,185,129,0)',
-								'0 0 14px rgba(16,185,129,0.30)',
-								'0 0 0 rgba(16,185,129,0)',
-							]
-							: '0 0 12px rgba(16,185,129,0.25)',
-					}
-					: { boxShadow: '0 0 0 rgba(16,185,129,0)' }
-				}
-				transition={lit && settled && !prefersReducedMotion
-					? { duration: 3.2, repeat: Infinity, ease: 'easeInOut' }
-					: { duration: 0.5, ease: 'easeOut' }
-				}
+		<motion.div
+			className='flex w-full flex-col items-end pl-6 pt-5'
+			initial={{ opacity: 0, x: 8 }}
+			animate={inView ? { opacity: 1, x: 0 } : undefined}
+			transition={reduced ? { duration: 0 } : { duration: 0.45, ease: EASE, delay }}
+		>
+			<div
+				className='relative rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] border border-white/[0.06] p-3'
+				style={{ backgroundColor: '#0099FF' }}
 			>
-				<Sparkle size={11} weight="fill" aria-hidden="true" />
-				Get Suggested Response
-			</motion.button>
+				<motion.div
+					className='absolute -left-[9px] -top-[19px] inline-flex items-center gap-1 rounded-full border border-white/[0.06] bg-cc-surface-card pl-1.5 pr-3 py-1.5'
+					style={{ boxShadow: '0px 2px 4px 0px rgba(0,0,0,0.4)' }}
+					initial={{ opacity: 0, scale: 0.85 }}
+					animate={inView ? { opacity: 1, scale: 1 } : undefined}
+					transition={reduced
+						? { duration: 0 }
+						: { type: 'spring', stiffness: 460, damping: 22, delay: delay + 0.35 }
+					}
+				>
+					<ChipIcon size={10} weight='fill' style={{ color: chipColor }} aria-hidden='true' />
+					<span
+						className='font-[family-name:var(--font-sans)] text-[12px] font-medium leading-[15px]'
+						style={{ color: chipColor }}
+					>
+						{chip.label}
+					</span>
+				</motion.div>
+				{lines.map((line, i) => (
+					<p
+						key={i}
+						className='whitespace-nowrap text-[14px] leading-[1.4] text-white'
+					>
+						{line}
+					</p>
+				))}
+			</div>
+		</motion.div>
+	)
+}
+
+/* ─── Interest gauge (segmented arc per Figma 46:2533) ────────── */
+
+/* Container width matches Figma's 80px exactly so the bar row resolves to
+ * Figma's 288 total (80 gauge + 16 gap + 192 audio bar). Container height
+ * bumped from Figma's 43.077 to 58 so the "39" + INTEREST stack has
+ * breathing room below the arc baseline — the 43px version squeezed the
+ * text into the arc's interior. The arc itself keeps Figma's geometry:
+ * center at (40, 36), radius 32.55 (= (80 - 2×7.38)/2). */
+const GAUGE = {
+	w: 80,
+	h: 58,
+	cx: 40,
+	cy: 36,
+	r: 32.55,
+	stroke: 6,
+} as const
+
+/* Segments expressed in math-degrees (0° = east, 180° = west). The arc
+ * sweeps from 180° through 90° to 0°. Five 22.4°-wide segments separated
+ * by 17° gaps cover the full 180° exactly. Gaps are intentionally wide
+ * enough that the round stroke-linecaps (which each extend half a stroke-
+ * width past the path) don't visually merge adjacent segments — matches
+ * the Figma reference where each segment reads as a discrete pill. */
+const SEGMENTS: ReadonlyArray<{ a1: number; a2: number; color: string }> = [
+	{ a1: 180,   a2: 157.6, color: '#EF4444' }, // red
+	{ a1: 140.6, a2: 118.2, color: '#FB923C' }, // orange
+	{ a1: 101.2, a2: 78.8,  color: '#FACC15' }, // yellow
+	{ a1: 61.8,  a2: 39.4,  color: '#A3E635' }, // lime
+	{ a1: 22.4,  a2: 0,     color: '#10B981' }, // green
+]
+
+function polar(angleDeg: number, radius: number): [number, number] {
+	const a = (angleDeg * Math.PI) / 180
+	return [GAUGE.cx + radius * Math.cos(a), GAUGE.cy - radius * Math.sin(a)]
+}
+
+function arcPath(a1: number, a2: number): string {
+	const [x1, y1] = polar(a1, GAUGE.r)
+	const [x2, y2] = polar(a2, GAUGE.r)
+	return `M ${x1} ${y1} A ${GAUGE.r} ${GAUGE.r} 0 0 1 ${x2} ${y2}`
+}
+
+function InterestGauge({ value, inView, reduced }: { value: number; inView: boolean; reduced: boolean }) {
+	const pct = value / 100
+	const [displayValue, setDisplayValue] = useState(0)
+	const count = useMotionValue(0)
+	const rounded = useTransform(count, (v) => Math.round(v))
+
+	useEffect(() => {
+		if (!inView) return
+		if (reduced) {
+			setDisplayValue(value)
+			return
+		}
+		const controls = animate(count, value, {
+			duration: 1.3,
+			ease: [0.25, 0.46, 0.45, 0.94],
+			delay: DELAY.gaugeStart,
+		})
+		const unsub = rounded.on('change', (v) => setDisplayValue(v))
+		return () => {
+			controls.stop()
+			unsub()
+		}
+	}, [inView, reduced, value, count, rounded])
+
+	/* Indicator angle: 180° at value=0, 0° at value=100. */
+	const indicatorAngle = 180 - 180 * pct
+	const [indicatorX, indicatorY] = polar(indicatorAngle, GAUGE.r)
+	const [startX, startY] = polar(180, GAUGE.r)
+
+	return (
+		<div className='relative h-[58px] w-[80px] shrink-0'>
+			<svg
+				viewBox={`0 0 ${GAUGE.w} ${GAUGE.h}`}
+				className='absolute inset-0 h-full w-full overflow-visible'
+				aria-hidden='true'
+			>
+				{SEGMENTS.map((seg, i) => (
+					<motion.path
+						key={i}
+						d={arcPath(seg.a1, seg.a2)}
+						fill='none'
+						stroke={seg.color}
+						strokeWidth={GAUGE.stroke}
+						strokeLinecap='round'
+						initial={{ opacity: 0, pathLength: 0 }}
+						animate={inView ? { opacity: 1, pathLength: 1 } : undefined}
+						transition={reduced
+							? { duration: 0 }
+							: {
+								opacity: { duration: 0.25, delay: DELAY.gaugeStart + i * 0.11 },
+								pathLength: { duration: 0.45, ease: EASE, delay: DELAY.gaugeStart + i * 0.11 },
+							}
+						}
+					/>
+				))}
+
+				{/* Indicator per Figma 46:2543: 7.38 × 7.38 disc (r ≈ 3.69) with an
+				 * 8.33% outer ring. Rendered as a white-filled circle with a dark
+				 * stroke for definition against the arc. */}
+				<motion.circle
+					r={4}
+					fill='#FFFFFF'
+					stroke='#0D0F14'
+					strokeWidth={1.5}
+					initial={{ cx: startX, cy: startY, opacity: 0 }}
+					animate={inView ? { cx: indicatorX, cy: indicatorY, opacity: 1 } : undefined}
+					transition={reduced
+						? { duration: 0 }
+						: {
+							opacity: { duration: 0.3, delay: DELAY.gaugeStart + 0.55 },
+							cx: { duration: 1.2, ease: EASE, delay: DELAY.gaugeStart + 0.55 },
+							cy: { duration: 1.2, ease: EASE, delay: DELAY.gaugeStart + 0.55 },
+						}
+					}
+				/>
+			</svg>
+			{/* Value stack: Figma 46:2546 places "39" (Lora SemiBold 18px) with a
+			 * 4.923px gap above "interest" (Geist Mono Regular 8px, tracking-0.8px,
+			 * uppercase, white/50). Our Lora is locked Bold (CLAUDE.md) so the
+			 * number renders a touch heavier than Figma's SemiBold. Bottom-
+			 * anchored so the "39" sits just inside the arc baseline with the
+			 * label trailing below. */}
+			<div className='absolute inset-x-0 bottom-[4px] flex flex-col items-center gap-[4px]'>
+				<span className='font-[family-name:var(--font-heading)] text-[20px] font-semibold leading-none text-white tabular-nums'>
+					{displayValue}
+				</span>
+				<span
+					className='font-[family-name:var(--font-mono)] text-[8px] uppercase leading-none text-white/50'
+					style={{ letterSpacing: '0.8px' }}
+				>
+					Interest
+				</span>
+			</div>
 		</div>
 	)
 }
 
-/* ─── Readiness gauge + stat line ──────────────────────────── */
+/* ─── Audio bar (breathing waveform) ─────────────────────── */
 
-/* SVG arc gauge. 72% arc fill at 2E settled. pathLength animates 0 -> target
- * per sub-state. Center displays the percentage; label below reads
- * "READY FOR THE REAL CALL". Stat line "5 minutes a week = 2 practice rounds"
- * beneath the gauge sub-label. */
-function ReadinessGauge({ subState, prefersReducedMotion }: {
-	subState: SubState
-	prefersReducedMotion: boolean
-}) {
-	const target = READINESS_BY_STATE[subState]
-	const pct = Math.round(target * 100)
-	const ready = subState === '2E'
-
+function AudioBar({ inView, reduced }: { inView: boolean; reduced: boolean }) {
 	return (
-		<div className="flex flex-col items-center gap-2">
-			<div className="relative h-[96px] w-[180px]">
-				<svg
-					viewBox="0 0 180 100"
-					className="absolute inset-0 h-full w-full"
-					aria-hidden="true"
-				>
-					<defs>
-						<linearGradient id="cc-s3-w3-gauge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-							<stop offset="0%" stopColor="#10B981" stopOpacity="0.85" />
-							<stop offset="100%" stopColor="#34E18E" stopOpacity="1" />
-						</linearGradient>
-					</defs>
-					{/* Track */}
-					<path
-						d="M 14 90 A 76 76 0 0 1 166 90"
-						fill="none"
-						stroke="rgba(255,255,255,0.08)"
-						strokeWidth={8}
-						strokeLinecap="round"
-					/>
-					{/* Fill */}
-					<motion.path
-						d="M 14 90 A 76 76 0 0 1 166 90"
-						fill="none"
-						stroke="url(#cc-s3-w3-gauge-gradient)"
-						strokeWidth={8}
-						strokeLinecap="round"
-						/* F39: stable initial. Reduced-motion users land at 2E
-						 * (target=0.72) and snap via duration:0 below. */
-						initial={{ pathLength: 0 }}
-						animate={{ pathLength: target }}
-						transition={prefersReducedMotion
-							? { duration: 0 }
-							: { duration: 0.7, ease: THREAD_EASE }
-						}
-					/>
-				</svg>
-				{/* Center numeric display */}
-				<div className="absolute inset-x-0 bottom-0 flex flex-col items-center justify-end pb-1">
-					<span
-						className="font-[family-name:var(--font-heading)] text-[28px] leading-none text-cc-accent"
-						aria-label={`Readiness ${pct} percent`}
-					>
-						{pct}%
-					</span>
+		<div
+			className='flex flex-1 items-center justify-between rounded-full border border-white/[0.08] px-[5px] py-[5px]'
+			style={{
+				backgroundColor: 'rgba(30,34,48,0.1)',
+				boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.6), 0px 0px 20px 0px rgba(16,185,129,0.1)',
+			}}
+		>
+			<div className='flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-cc-accent/10'>
+				<Microphone size={16} weight='regular' className='text-cc-accent' aria-hidden='true' />
+			</div>
+
+			<div className='flex items-center gap-[1px] px-1' aria-hidden='true'>
+				{WAVE_BARS.map(([h, o], i) => {
+					const phase = (i * 137) % 360
+					return (
+						<motion.span
+							key={i}
+							className='shrink-0 rounded-full bg-cc-accent'
+							style={{ width: '2px', height: `${h}px` }}
+							initial={{ opacity: o }}
+							animate={inView && !reduced
+								? { opacity: [o * 0.6, o, o * 0.6] }
+								: { opacity: o }
+							}
+							transition={reduced
+								? { duration: 0 }
+								: {
+									duration: 1.6,
+									repeat: Infinity,
+									ease: 'easeInOut',
+									delay: (phase / 360) * 1.6,
+								}
+							}
+						/>
+					)
+				})}
+			</div>
+
+			<div className='flex shrink-0 items-center gap-1 pr-1'>
+				<motion.span
+					className='h-1 w-1 rounded-full bg-cc-score-red'
+					aria-hidden='true'
+					animate={inView && !reduced ? { opacity: [1, 0.4, 1] } : { opacity: 1 }}
+					transition={reduced
+						? { duration: 0 }
+						: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' }
+					}
+				/>
+				<span className='font-[family-name:var(--font-mono)] text-[10px] font-medium leading-[16.5px] text-white/80'>
+					02:34
+				</span>
+			</div>
+		</div>
+	)
+}
+
+/* ─── Suggested responses pill (ambient pulse) ─────────────── */
+
+function SuggestedPill({ inView, reduced, delay }: { inView: boolean; reduced: boolean; delay: number }) {
+	return (
+		<motion.div
+			className='inline-flex items-center gap-1 rounded-[24px] border border-white/[0.06] pl-2 pr-2.5 py-2'
+			style={{
+				background:
+					'linear-gradient(90deg, rgba(52,225,142,0) 10%, rgba(255,255,255,0.06) 38%, rgba(52,225,142,0) 62%), linear-gradient(90deg, rgba(52,225,142,0.25), rgba(52,225,142,0.25))',
+			}}
+			initial={{ opacity: 0, y: 6 }}
+			animate={inView
+				? {
+					opacity: 1,
+					y: 0,
+					boxShadow: reduced
+						? '0px 4px 12px 0px rgba(0,0,0,0.4)'
+						: [
+							'0px 4px 12px 0px rgba(0,0,0,0.4), 0 0 0 rgba(52,225,142,0)',
+							'0px 4px 12px 0px rgba(0,0,0,0.4), 0 0 16px rgba(52,225,142,0.35)',
+							'0px 4px 12px 0px rgba(0,0,0,0.4), 0 0 0 rgba(52,225,142,0)',
+						],
+				}
+				: undefined
+			}
+			transition={reduced
+				? { duration: 0 }
+				: {
+					opacity: { duration: 0.4, delay },
+					y: { duration: 0.4, delay },
+					boxShadow: { duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: delay + 0.4 },
+				}
+			}
+		>
+			<PencilSimple size={12} weight='regular' className='text-white/95' aria-hidden='true' />
+			<span className='font-[family-name:var(--font-sans)] text-[12px] leading-none text-white/95'>
+				Get suggested responses
+			</span>
+		</motion.div>
+	)
+}
+
+/* ─── Roleplay chat column ─────────────────────────────────── */
+
+function RoleplayChat({ inView, reduced }: { inView: boolean; reduced: boolean }) {
+	return (
+		<div className='flex items-stretch gap-3'>
+			{/* Timeline: user icon + a hairline that stretches down to the bottom of
+			 * the chat column. items-stretch on the parent lets flex-1 on the line
+			 * fill the full column height. */}
+			<div className='flex flex-col items-center gap-2 py-px' aria-hidden='true'>
+				<div className='flex items-center rounded bg-cc-accent/10 p-1'>
+					<User size={16} weight='regular' className='text-cc-accent' />
+				</div>
+				<div className='w-px flex-1 bg-cc-accent/50' />
+			</div>
+
+			<div className='flex w-[300px] flex-col gap-4 pt-2 pr-3'>
+				<p className='font-[family-name:var(--font-mono)] text-[12px] font-medium uppercase leading-none tracking-[0.06em] text-white/80'>
+					Roleplay session
+				</p>
+
+				<AiMessage
+					lines={['Thanks for reaching out.', 'We already have a solution in place.']}
+					delay={DELAY.ai1}
+					inView={inView}
+					reduced={reduced}
+				/>
+				<UserMessage
+					lines={['I hear you. Can I ask what\u2019s working', 'well with your current setup?']}
+					chip={{ tone: 'positive', label: 'Great Response' }}
+					delay={DELAY.user1}
+					inView={inView}
+					reduced={reduced}
+				/>
+				<AiMessage
+					lines={['Our current vendor handles', 'most of what you\u2019re describing.']}
+					delay={DELAY.ai2}
+					inView={inView}
+					reduced={reduced}
+				/>
+				<UserMessage
+					lines={['That makes sense. If I could show', 'you a 30-day ROI comparison...']}
+					chip={{ tone: 'negative', label: 'Missed The Mark' }}
+					delay={DELAY.user2}
+					inView={inView}
+					reduced={reduced}
+				/>
+
+				<div className='flex items-center justify-end px-2'>
+					<SuggestedPill inView={inView} reduced={reduced} delay={DELAY.pill} />
+				</div>
+
+				<div className='flex items-center gap-4'>
+					<InterestGauge value={39} inView={inView} reduced={reduced} />
+					<AudioBar inView={inView} reduced={reduced} />
 				</div>
 			</div>
-			<span className={ready ? KICKER_MONO_EMERALD : KICKER_MONO_MUTED}>
-				Ready For The Real Call
-			</span>
-			<span className="font-[family-name:var(--font-sans)] text-[12px] text-cc-text-secondary">
-				5 minutes a week = 2 practice rounds
-			</span>
 		</div>
 	)
 }
 
 /* ─── Main component ───────────────────────────────────────── */
 
-/* Dev-only sub-state pin. Gated behind `enabled` prop (W6). Production callers
- * never read URLSearchParams; only the `/lab/how-it-works` preview passes
- * devPin={true} to re-enable. Same signature as sibling step visuals. */
-function useSubStatePin(enabled: boolean): SubState | null {
-	const [pin, setPin] = useState<SubState | null>(null)
-	useEffect(() => {
-		if (!enabled) return
-		const t = setTimeout(() => {
-			if (typeof window === 'undefined') return
-			const raw = new URLSearchParams(window.location.search).get('pin')
-			if (raw === '2A' || raw === '2B' || raw === '2C' || raw === '2D' || raw === '2E') {
-				setPin(raw)
-			}
-		}, 0)
-		return () => clearTimeout(t)
-	}, [enabled])
-	return pin
-}
-
-export default function StepTwoVisual({ devPin = false }: { devPin?: boolean } = {}) {
-	const prefersReducedMotion = useReducedMotion() ?? false
+/* devPin kept for signature parity with sibling step visuals; no sub-states
+ * to pin in the new composition. */
+export default function StepTwoVisual({ devPin: _devPin = false }: { devPin?: boolean } = {}) {
+	const reduced = useReducedMotion() ?? false
 	const rootRef = useRef<HTMLDivElement>(null)
-	/* Auto-fire on sticky viewport entry. amount: 0.3 + once: true mirrors W1/W2. */
 	const inView = useInView(rootRef, { amount: 0.3, once: true })
-	const pin = useSubStatePin(devPin)
-	const machineState = useSubStateMachine<SubState>({
-		states: STEP_TWO_STATES,
-		trigger: inView,
-		reducedMotion: prefersReducedMotion,
-		initialState: '2A',
-		settledState: '2E',
-		once: true,
-	})
-	const subState: SubState = pin ?? machineState
 
 	return (
-		<div
+		<motion.div
 			ref={rootRef}
-			data-step="2"
-			data-sub-state={subState}
-			className="relative mx-auto flex h-full w-full max-w-[480px] items-stretch gap-4"
+			data-step='2'
+			className='relative flex h-full w-full items-center justify-center'
+			initial={{ opacity: 0, y: 12 }}
+			animate={inView ? { opacity: 1, y: 0 } : undefined}
+			transition={reduced ? { duration: 0 } : { duration: 0.55, ease: EASE }}
 		>
-			{/* Left edge: interest meter */}
-			<div className="flex shrink-0 items-center">
-				<InterestMeter subState={subState} prefersReducedMotion={prefersReducedMotion} />
+			<div className='scale-[0.75] sm:scale-90 md:scale-[0.95] lg:scale-100'>
+				<div className='flex items-start gap-6'>
+					<CloneCard />
+					<RoleplayChat inView={inView} reduced={reduced} />
+				</div>
 			</div>
-
-			{/* Main stack: roleplay card + readiness gauge */}
-			<div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-4">
-				<RoleplayCard subState={subState} prefersReducedMotion={prefersReducedMotion} />
-				<ReadinessGauge subState={subState} prefersReducedMotion={prefersReducedMotion} />
-			</div>
-		</div>
+		</motion.div>
 	)
 }

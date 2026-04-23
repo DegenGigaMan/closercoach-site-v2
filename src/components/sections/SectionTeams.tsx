@@ -85,13 +85,22 @@ function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElem
 
 /* ── Manager logo wall (SP2) ── */
 
+/* Figma-locked logo set + order per node 63:3441. Swapped Vivint → Sunrun
+ * to match the Figma spec. Assets themselves were overwritten from the Figma
+ * source so strokes and proportions match the design exactly.
+ *
+ * Dimensions are taken verbatim from the Figma frames so each brand keeps
+ * its own visual weight at a shared eye-level band (20-32px tall). Do not
+ * force-uniform the heights — Figma intentionally gives Land Rover +8px
+ * over Toyota so the oval badge reads at the same optical weight as the
+ * wordmarks. */
 const MANAGER_LOGOS = [
-	{ src: '/logos/state-farm.svg', alt: 'State Farm' },
-	{ src: '/logos/land-rover.svg', alt: 'Land Rover' },
-	{ src: '/logos/vivint.svg', alt: 'Vivint' },
-	{ src: '/logos/remax.svg', alt: 'RE/MAX' },
-	{ src: '/logos/toyota.svg', alt: 'Toyota' },
-	{ src: '/logos/fidelity.svg', alt: 'Fidelity' },
+	{ src: '/logos/toyota.svg', alt: 'Toyota', w: 168, h: 24, heightClass: 'h-6' },
+	{ src: '/logos/state-farm.svg', alt: 'State Farm', w: 171, h: 24, heightClass: 'h-6' },
+	{ src: '/logos/sunrun.svg', alt: 'Sunrun', w: 105, h: 20, heightClass: 'h-5' },
+	{ src: '/logos/land-rover.svg', alt: 'Land Rover', w: 61, h: 32, heightClass: 'h-8' },
+	{ src: '/logos/remax.svg', alt: 'RE/MAX', w: 152, h: 28, heightClass: 'h-7' },
+	{ src: '/logos/fidelity.svg', alt: 'Fidelity', w: 92, h: 28, heightClass: 'h-7' },
 ] as const
 
 /* ── Bento feature cards (6) ── */
@@ -275,9 +284,9 @@ export default function SectionTeams(): ReactElement {
 								key={logo.alt}
 								src={logo.src}
 								alt={logo.alt}
-								width={96}
-								height={32}
-								className='h-6 w-auto opacity-60 brightness-0 invert transition-opacity duration-300 hover:opacity-95 md:h-7'
+								width={logo.w}
+								height={logo.h}
+								className={`${logo.heightClass} w-auto opacity-60 brightness-0 invert transition-opacity duration-300 hover:opacity-95`}
 							/>
 						))}
 					</div>
@@ -290,8 +299,8 @@ export default function SectionTeams(): ReactElement {
 					))}
 				</div>
 
-				{/* ── Cost-of-Inaction block ── */}
-				<Reveal className='mt-20 rounded-2xl border border-cc-surface-border bg-cc-surface p-8 md:mt-24 md:p-12'>
+				{/* ── Cost-of-Inaction block (hidden 2026-04-23 per Andy) ── */}
+				{false && <Reveal className='mt-20 rounded-2xl border border-cc-surface-border bg-cc-surface p-8 md:mt-24 md:p-12'>
 					<div className='flex flex-col gap-8'>
 						<div className='flex flex-col gap-2'>
 							<span className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.18em] text-cc-amber'>
@@ -329,10 +338,10 @@ export default function SectionTeams(): ReactElement {
 							</p>
 						</div>
 					</div>
-				</Reveal>
+				</Reveal>}
 
-				{/* ── Competitive pricing row ── */}
-				<Reveal delay={0.05} className='mt-16 md:mt-20'>
+				{/* ── Competitive pricing row (hidden 2026-04-23 per Andy) ── */}
+				{false && <Reveal delay={0.05} className='mt-16 md:mt-20'>
 					<div className='mb-6 flex flex-col gap-1 md:mb-8'>
 						<span className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.18em] text-cc-accent'>
 							Priced for teams, not enterprises
@@ -375,7 +384,7 @@ export default function SectionTeams(): ReactElement {
 							</div>
 						))}
 					</div>
-				</Reveal>
+				</Reveal>}
 
 				{/* ── Compliance trust strip ── */}
 				<Reveal delay={0.08} className='mt-16 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 border-t border-cc-surface-border pt-10 md:mt-20 md:gap-x-10'>

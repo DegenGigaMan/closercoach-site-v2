@@ -117,14 +117,6 @@ const FEATURES: readonly Feature[] = [
 	},
 ] as const
 
-const EXPERTS: readonly string[] = [
-	'Grant Cardone',
-	'Cole Gordon',
-	'Andy Elliot',
-	'Dan Lok',
-	'Daniel G',
-] as const
-
 /* ── Card shell ── */
 
 type CardShellProps = {
@@ -191,34 +183,6 @@ function CardShell({ feature, motionSlot, className = '', slotWrapperClassName =
 }
 
 /* ── Methodology strip (DB-1) ── */
-
-/**
- * @description Expert Methodology Authority Strip (DB-1). Overline label + 5
- * expert names inline, separated by thin emerald hairlines. Names only, no
- * photos. PC7 deployed. Static -- no scroll-driven reveal at rest.
- */
-function MethodologyStrip(): ReactElement {
-	return (
-		<div className='mt-16 flex flex-col items-center gap-4 md:mt-20'>
-			<p className='font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.22em] text-cc-text-muted/70'>
-				Built on proven sales frameworks
-			</p>
-			<div className='flex flex-wrap items-center justify-center gap-x-3 gap-y-2'>
-				{EXPERTS.map((name, i) => (
-					<span
-						key={name}
-						className='flex items-center gap-3 text-base text-cc-text-secondary md:text-lg'
-					>
-						{name}
-						{i < EXPERTS.length - 1 && (
-							<span className='h-3 w-px bg-cc-accent/30' aria-hidden='true' />
-						)}
-					</span>
-				))}
-			</div>
-		</div>
-	)
-}
 
 /* ── Section ── */
 
@@ -318,9 +282,6 @@ export default function SectionFeatures(): ReactElement {
 						className='md:col-span-2 lg:col-span-8 lg:min-h-[380px]'
 					/>
 				</div>
-
-				{/* DB-1 Methodology Strip (PC7) */}
-				<MethodologyStrip />
 
 				{/* CTA */}
 				<div className='mt-12 text-center md:mt-16'>

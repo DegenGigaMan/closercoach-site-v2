@@ -192,3 +192,20 @@
 		scroll-behavior: auto !important;
 	}
 }
+
+/* text-trim — Figma's "Vertical trim: Cap height to baseline" equivalent.
+ * Trims the leading above caps + below baseline so the visual text box
+ * matches what Figma reports. Native support: Safari 18.2+, Chrome 133+.
+ * Firefox (no support) falls back to standard CSS line-box, visually
+ * identical to prior behavior — no breakage. Apply to mono captions,
+ * kickers, and any tight compositions where ascender/descender padding
+ * creates unwanted gaps. */
+@utility text-trim {
+	text-box: trim-both cap alphabetic;
+}
+
+/* text-trim-ex — "x-height to baseline" variant (use on lowercase-heavy
+ * labels where cap alignment feels too high). */
+@utility text-trim-ex {
+	text-box: trim-both ex alphabetic;
+}

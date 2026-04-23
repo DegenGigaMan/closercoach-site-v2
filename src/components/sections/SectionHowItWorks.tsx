@@ -20,18 +20,17 @@
 
 import { createContext, useContext, useRef, useState, useEffect, useCallback, useSyncExternalStore, type CSSProperties, type ReactNode } from 'react'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'motion/react'
-import { Sparkle, Microphone, PhoneCall } from '@phosphor-icons/react'
-import MotionCTA from '@/components/shared/motion-cta'
-import { CTA } from '@/lib/constants'
+import Image from 'next/image'
+import { Sparkle, Microphone, PhoneCall, Star } from '@phosphor-icons/react'
 import StepIndicator from './how-it-works/StepIndicator'
-import StepOneVisual from './how-it-works/StepOneVisual'
+import StepCanvas from './how-it-works/StepCanvas'
+import PlanVisual from './how-it-works/PlanVisual'
 import StepTwoVisual from './how-it-works/StepTwoVisual'
 import StepThreeVisual from './how-it-works/StepThreeVisual'
-import StepFourVisual from './how-it-works/StepFourVisual'
+import StepFourReview from './how-it-works/StepFourReview'
 import StepOneMobileVisual from './how-it-works/_mobile/StepOneMobileVisual'
 import StepTwoMobileVisual from './how-it-works/_mobile/StepTwoMobileVisual'
 import StepThreeMobileVisual from './how-it-works/_mobile/StepThreeMobileVisual'
-import StepFourMobileVisual from './how-it-works/_mobile/StepFourMobileVisual'
 
 /* SSR-safe mount flag. useSyncExternalStore returns the SSR snapshot (false) on
  * the server AND on the first client render, then switches to the client
@@ -50,12 +49,13 @@ const ActiveStepContext = createContext(1)
  *   (split px-16, no left-col pl on desktop). Center at 20, left edge at 0,
  *   relative to StepKicker origin (x=64) → offset -64px.
  * - cc-rail-top / cc-rail-bottom: crop the rail vertically so its top sits at
- *   step 1's dot center and its bottom sits at step 4's dot center. Each step
+ *   step 1's dot center and its bottom sits at the LAST step's dot center
+ *   (step 3 post-extraction; Step 4 moved below the pin-scroll). Each step
  *   room is min-h-screen (100vh) with py-16 (4rem) top padding + a 40px (2.5rem)
- *   dot centered on its first line. So dot center ≈ 4rem + 1.25rem = 5.25rem
- *   from room top. Step 4 room starts at 300vh; its dot is at 300vh + 5.25rem.
- *   Split container has pb-40 (10rem) below step 4, so bottom offset from
- *   container bottom = (400vh + 10rem) - (300vh + 5.25rem) = 100vh + 4.75rem. */
+ *   dot centered on its first line, so dot center ≈ 4rem + 1.25rem = 5.25rem
+ *   from room top. Step 3 room starts at 200vh; its dot is at 200vh + 5.25rem.
+ *   Split container has pb-40 (10rem) below step 3, so bottom offset from
+ *   container bottom = (300vh + 10rem) - (200vh + 5.25rem) = 100vh + 4.75rem. */
 const SPLIT_VARS: CSSProperties = {
 	'--cc-kicker-x': '-64px',
 	'--cc-rail-top': '5.25rem',
@@ -74,11 +74,14 @@ const SPLIT_VARS: CSSProperties = {
  *   preview route passes `devPin={true}`.
  */
 export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean } = {}) {
-	const splitRef = useRef<HTMLDivElement>(null)
 	const [activeStep, setActiveStep] = useState(1)
 
+	/* Bidirectional step sync. Each StepRoom fires onEnter(index) every time
+	 * its 40%-in-view threshold flips TRUE, which happens on scroll-down (entering
+	 * from below) AND on scroll-up (re-entering from above). Setting activeStep
+	 * unconditionally lets the right-column visual track the scroll direction. */
 	const advanceTo = useCallback((n: number) => {
-		setActiveStep((prev) => (n > prev ? n : prev))
+		setActiveStep(n)
 	}, [])
 
 	return (
@@ -116,14 +119,15 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 			 * backdrop compensation that sat above the banner's backdrop-blur. */}
 			<ActiveStepContext.Provider value={activeStep}>
 			<div
-				ref={splitRef}
 				style={{ position: 'relative', ...SPLIT_VARS }}
-				className="relative mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 pb-32 md:px-12 lg:grid-cols-[40%_60%] lg:gap-6 lg:px-16 lg:pb-40"
+				className="relative mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 pb-32 md:px-12 lg:grid-cols-[40%_60%] lg:gap-16 lg:px-16 lg:pb-40"
 			>
-				<StepIndicator containerRef={splitRef} />
+				<StepIndicator />
 
 				{/* Left column: scrolling step rooms. No left padding on desktop so the
-				 * StepKicker's desktop dot can sit on the rail at x=20 via --cc-kicker-x. */}
+				 * StepKicker's desktop dot can sit on the rail at x=20 via --cc-kicker-x.
+				 * Step 4 is no longer part of the pin-scroll -- it renders below this
+				 * grid as a standalone vertically-stacked section (StepFourReview). */}
 				<div className="flex flex-col">
 					<StepRoom index={1} onEnter={advanceTo}>
 						<Step1Plan devPin={devPin} />
@@ -134,19 +138,21 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 					<StepRoom index={3} onEnter={advanceTo}>
 						<Step3Sell devPin={devPin} />
 					</StepRoom>
-					<StepRoom index={4} onEnter={advanceTo}>
-						<Step4Review devPin={devPin} />
-					</StepRoom>
 				</div>
 
 				{/* Right column: sticky pinned visual (desktop only) */}
 				<div className="hidden lg:block">
-					<div className="sticky top-[calc(50vh-18rem)] h-[36rem]">
+					<div className="sticky top-[calc(50vh-300px)] h-[600px]">
 						<RightColumnVisual activeStep={activeStep} devPin={devPin} />
 					</div>
 				</div>
 			</div>
 			</ActiveStepContext.Provider>
+
+			{/* Step 4 Review: hidden 2026-04-23 per Andy. Kept behind `false`
+			 * rather than deleted so the redesigned scorecard composite (Figma
+			 * 61:3023) stays intact for re-enablement. */}
+			{false && <StepFourReview />}
 		</section>
 	)
 }
@@ -154,10 +160,11 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 /* ---------- Step room ---------- */
 
 /**
- * @description One ~100vh step room in the left column. useInView fires onEnter
- * once when the room crosses 40% into viewport. F33 hydration fix: advancement
- * is gated behind a post-mount flag so SSR and first client render always
- * produce activeStep=1 (the pinned initial).
+ * @description One ~100vh step room in the left column. useInView toggles
+ * whenever the room crosses 40% into viewport, firing in BOTH scroll directions:
+ * scrolling down triggers advance, scrolling up triggers revert. F33 hydration
+ * fix: advancement is gated behind a post-mount flag so SSR and first client
+ * render always produce activeStep=1 (the pinned initial).
  */
 function StepRoom({
 	index,
@@ -170,7 +177,7 @@ function StepRoom({
 }) {
 	const prefersReducedMotion = useReducedMotion()
 	const ref = useRef<HTMLDivElement>(null)
-	const isInView = useInView(ref, { amount: 0.4, once: true })
+	const isInView = useInView(ref, { amount: 0.4 })
 	const mounted = useMounted()
 
 	useEffect(() => {
@@ -197,51 +204,27 @@ function StepRoom({
 function RightColumnVisual({ activeStep, devPin }: { activeStep: number; devPin: boolean }) {
 	const prefersReducedMotion = useReducedMotion()
 
-	if (activeStep === 1) {
-		return (
-			<div className="flex h-full min-h-[36rem] items-center justify-center">
-				<StepOneVisual devPin={devPin} />
-			</div>
-		)
-	}
-
-	if (activeStep === 2) {
-		return (
-			<div className="flex h-full min-h-[36rem] items-center justify-center">
-				<StepTwoVisual devPin={devPin} />
-			</div>
-		)
-	}
-
-	if (activeStep === 3) {
-		return (
-			<div className="flex h-full min-h-[36rem] items-center justify-center">
-				<StepThreeVisual devPin={devPin} />
-			</div>
-		)
-	}
-
-	if (activeStep === 4) {
-		return (
-			<div className="flex h-full min-h-[36rem] items-center justify-center">
-				<StepFourVisual devPin={devPin} />
-			</div>
-		)
-	}
-
-	/* Fallback branch for unexpected activeStep (should never trigger since
-	 * activeStep is clamped to 1-4 via advanceTo + useState init). */
+	/* Single StepCanvas wraps all 4 step visuals. The canvas provides the
+	 * rounded-3xl surface + radial-gradient background + border. Inner content
+	 * swaps via AnimatePresence on activeStep. F39 hydration safety: stable
+	 * initials on motion.div; reduced-motion collapses duration to 0. */
 	return (
-		<AnimatePresence mode="popLayout" initial={false}>
-			<motion.div
-				key={activeStep}
-				initial={{ opacity: 0, y: 24 }}
-				animate={{ opacity: 1, y: 0 }}
-				exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -24 }}
-				transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
-				className="flex h-full min-h-[36rem] items-center justify-center rounded-3xl border border-white/[0.08] bg-cc-surface-card/60 p-8 lg:p-12"
-			/>
-		</AnimatePresence>
+		<StepCanvas>
+			<AnimatePresence mode="popLayout" initial={false}>
+				<motion.div
+					key={activeStep}
+					initial={{ opacity: 0, y: 16 }}
+					animate={{ opacity: 1, y: 0 }}
+					exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -16 }}
+					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+					className="flex h-full w-full items-center justify-center p-4"
+				>
+					{activeStep === 1 && <PlanVisual devPin={devPin} />}
+					{activeStep === 2 && <StepTwoVisual devPin={devPin} />}
+					{activeStep >= 3 && <StepThreeVisual devPin={devPin} />}
+				</motion.div>
+			</AnimatePresence>
+		</StepCanvas>
 	)
 }
 
@@ -311,7 +294,7 @@ function Step1Plan({ devPin }: { devPin: boolean }) {
 		<>
 			<StepKicker number="01" stepIndex={1}>PLAN</StepKicker>
 			<StepHeadline>
-				<em className="not-italic text-cc-accent">Clone Your Clients</em> Before The Meeting Even Starts
+				Clone Your <em className="not-italic text-cc-accent">Clients</em>
 			</StepHeadline>
 			<StepBody>
 				Sync your calendar and CRM. CloserCoach pulls the buyer&rsquo;s profile, clones them, and hands you a practice partner that looks, talks, and pushes back exactly like the real person on your calendar.
@@ -330,15 +313,36 @@ function Step1Plan({ devPin }: { devPin: boolean }) {
 			 * devPin from the Right Column. This wrapper here is mobile-scoped. */}
 			{devPin && null}
 
-			<figure className="mt-10 max-w-xl rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 p-6">
-				<blockquote className="text-base leading-relaxed text-white md:text-lg">
+			{/* Testimonial — Figma 1:1527. 5 filled yellow stars (#FBBC04, 16px,
+			 * gap-[2px]), italic Inter 16px quote leading-[1.4], and a user row
+			 * (40px circular avatar + name "Andy Bolton" 16px + role "Sales rep"
+			 * 14px in #8A9BA1). No card frame; container py-[12px] only. */}
+			<figure className="mt-10 flex max-w-xl flex-col gap-4 py-3">
+				<div className="flex items-start gap-[2px]" aria-label="5 out of 5 stars">
+					{[0, 1, 2, 3, 4].map((i) => (
+						<Star key={i} size={16} weight="fill" style={{ color: '#FBBC04' }} aria-hidden="true" />
+					))}
+				</div>
+				<blockquote className="text-trim text-[16px] italic leading-[1.4] text-white">
 					&ldquo;Helped me close a $10k+ deal last week. I used the app to rehearse my pitch to the CEO of a large company that was scheduled 3 weeks in advance.&rdquo;
 				</blockquote>
-				<figcaption className="mt-4 flex items-center gap-3">
-					<span className="inline-flex items-center gap-1.5 rounded-full border border-cc-accent/30 bg-cc-accent/10 px-2.5 py-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.15em] text-cc-accent">
-						Verified user
-					</span>
-					<span className="text-xs text-cc-text-secondary">Enterprise sales</span>
+				<figcaption className="flex items-center gap-4">
+					<div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
+						<Image
+							src="/images/testimonials/andy-bolton.png"
+							alt=""
+							fill
+							sizes="40px"
+							className="object-cover"
+							aria-hidden="true"
+						/>
+					</div>
+					<div className="flex min-w-0 flex-1 flex-col gap-3">
+						<span className="text-trim text-[16px] leading-[24px] text-white">Andy Bolton</span>
+						<span className="text-trim text-[14px] font-light leading-[24px]" style={{ color: '#8A9BA1' }}>
+							Sales rep
+						</span>
+					</div>
 				</figcaption>
 			</figure>
 		</>
@@ -423,43 +427,3 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 	)
 }
 
-/* ---------- Step 4: Review ---------- */
-
-function Step4Review({ devPin }: { devPin: boolean }) {
-	return (
-		<>
-			<StepKicker number="04" stepIndex={4}>REVIEW</StepKicker>
-			<StepHeadline>
-				See <em className="not-italic text-cc-accent">Exactly</em> What&rsquo;s Losing You Deals
-			</StepHeadline>
-			<StepBody>
-				Every call gets scored A through F, with industry-tailored scorecards and word-for-word talk-tracks showing you exactly what you should have said.
-			</StepBody>
-			<p className="mt-5 max-w-xl text-base leading-relaxed text-cc-text-secondary md:text-lg">
-				Track how your skills improve over time: discovery, pitch, objection handling, tone, talk time, and close rate. The more you sell, the more your AI knows exactly where you&rsquo;re winning and where you&rsquo;re bleeding deals.
-			</p>
-
-			{/* Mobile visual: horizontal metric pills + stacked Practice/Real
-			 * scorecards with vertical delta arrow + transcript pair + AI Coach
-			 * summary with wrapped stats. Hidden at lg+ where the sticky desktop
-			 * StepFourVisual takes over. */}
-			<div className="mt-8 lg:hidden">
-				<StepFourMobileVisual />
-			</div>
-
-			{devPin && null}
-
-			{/* Bottom CTA: dual affordance. MotionCTA matches the rest of the site's
-			 * primary-CTA treatment (Hero + SectionCTA), mono app-store caption
-			 * mirrors the copy deck's "App Store / Google Play" line. */}
-			<div className="mt-10 flex flex-wrap items-center gap-3">
-				<MotionCTA variant="primary" size="lg" href={CTA.tryFree.href}>
-					{CTA.tryFree.text}
-				</MotionCTA>
-				<span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.15em] text-cc-text-muted">
-					App Store / Google Play
-				</span>
-			</div>
-		</>
-	)
-}

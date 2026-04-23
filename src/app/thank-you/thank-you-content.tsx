@@ -154,7 +154,7 @@ export default function ThankYouContent() {
 								href={WHATSAPP_URL}
 								target='_blank'
 								rel='noopener noreferrer'
-								className='inline-flex w-full items-center justify-center gap-2 rounded-lg bg-cc-accent px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-cc-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
+								className='inline-flex w-full items-center justify-center gap-2 rounded-lg bg-cc-accent px-4 py-3 text-sm font-medium text-cc-foundation transition-colors hover:bg-cc-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
 							>
 								<ChatCircleDots weight='bold' className='h-4 w-4' aria-hidden='true' />
 								<span>Join WhatsApp group</span>

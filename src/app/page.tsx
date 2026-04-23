@@ -8,8 +8,6 @@ import SectionProofConnectorA from '@/components/sections/SectionProofConnectorA
 import SectionFeatures from '@/components/sections/SectionFeatures'
 import SectionProofConnectorB from '@/components/sections/SectionProofConnectorB'
 import SectionResults from '@/components/sections/SectionResults'
-import SectionFounderStrip from '@/components/sections/SectionFounderStrip'
-import SectionCaseStudies from '@/components/sections/SectionCaseStudies'
 import SectionTeams from '@/components/sections/SectionTeams'
 import SectionFAQ from '@/components/sections/SectionFAQ'
 import SectionCTA from '@/components/sections/SectionCTA'
@@ -25,8 +23,6 @@ export default function HomePage() {
 			<SectionFeatures />
 			<SectionProofConnectorB />
 			<SectionResults />
-			<SectionFounderStrip />
-			<SectionCaseStudies />
 			<SectionTeams />
 			<SectionFAQ />
 			<SectionCTA />
