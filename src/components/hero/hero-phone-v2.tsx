@@ -61,13 +61,27 @@ function DotIndicator({ activeIndex }: { activeIndex: number }) {
 
 /* ─── Waveform ───────────────────────────────────────────── */
 
+/* Deterministic PRNG so bar speeds stay stable across SSR/CSR and survive the
+ * React Compiler "no impure calls during render" rule. */
+function waveformRng(seed: number): () => number {
+	let t = seed
+	return () => {
+		t = (t + 0x6d2b79f5) | 0
+		let r = Math.imul(t ^ (t >>> 15), 1 | t)
+		r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r
+		return ((r ^ (r >>> 14)) >>> 0) / 4294967296
+	}
+}
+
 function Waveform({ bars = 48, height = 80, mini = false, pulse = true, ducked = false }: { bars?: number, height?: number, mini?: boolean, pulse?: boolean, ducked?: boolean }) {
 	const prefersReducedMotion = useReducedMotion()
-	const barData = useMemo(() =>
-		Array.from({ length: bars }).map((_, i) => {
+	const barData = useMemo(() => {
+		const rand = waveformRng(5717 + bars)
+		return Array.from({ length: bars }).map((_, i) => {
 			const base = Math.sin(i * 0.3) * 0.5 + 0.5
-			return { base, phase: i * 0.15, speed: 1 + Math.random() * 0.6 }
-		}), [bars])
+			return { base, phase: i * 0.15, speed: 1 + rand() * 0.6 }
+		})
+	}, [bars])
 
 	const shouldAnimate = pulse && !prefersReducedMotion
 	/* F3 (W5 §F3): amplitude duck on chip fire in S3 RECORD. When ducked=true,

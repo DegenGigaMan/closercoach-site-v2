@@ -29,6 +29,7 @@ export default function AnnouncementBanner({
 		if (ranRef.current) return
 		ranRef.current = true
 		const stored = localStorage.getItem(STORAGE_KEY) === '1'
+		// eslint-disable-next-line react-hooks/set-state-in-effect -- client-only localStorage hydration
 		setDismissed(stored)
 		document.documentElement.style.setProperty(
 			'--cc-banner-h',

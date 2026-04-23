@@ -300,6 +300,7 @@ function InterestGauge({ value, inView, reduced }: { value: number; inView: bool
 	useEffect(() => {
 		if (!inView) return
 		if (reduced) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect -- short-circuit to final value under reduced motion
 			setDisplayValue(value)
 			return
 		}

@@ -141,7 +141,7 @@ export function HeroStatePractice() {
 					transition={{ duration: 0.3, delay: 0.2 }}
 				>
 					<div className="text-[10px] leading-relaxed text-cc-text-secondary">
-						We already have a vendor we're comfortable with.
+						We already have a vendor we&rsquo;re comfortable with.
 					</div>
 				</motion.div>
 
@@ -221,6 +221,27 @@ export function HeroStatePractice() {
 
 /* ─── State 3: RECORD ─────────────────────────────────────── */
 
+/* Precomputed per-bar waveform heights + durations. Deterministic seed (mulberry32)
+ * replaces Math.random() at render time — avoids the "impure function during render"
+ * lint rule and keeps SSR/CSR output identical. */
+function mulberry32(seed: number): () => number {
+	let t = seed
+	return () => {
+		t = (t + 0x6d2b79f5) | 0
+		let r = Math.imul(t ^ (t >>> 15), 1 | t)
+		r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r
+		return ((r ^ (r >>> 14)) >>> 0) / 4294967296
+	}
+}
+
+const WAVEFORM_BARS: ReadonlyArray<{ height: number; duration: number }> = (() => {
+	const rand = mulberry32(4201)
+	return Array.from({ length: 32 }, (_, i) => ({
+		height: Math.sin(i * 0.4) * 12 + rand() * 8 + 4,
+		duration: 1.2 + rand() * 0.8,
+	}))
+})()
+
 export function HeroStateRecord() {
 	return (
 		<div className="flex flex-col items-center gap-3 px-4 pb-3 pt-2">
@@ -253,26 +274,23 @@ export function HeroStateRecord() {
 
 			{/* Waveform visualization */}
 			<div className="flex h-8 w-full items-center justify-center gap-[2px]">
-				{Array.from({ length: 32 }).map((_, i) => {
-					const height = Math.sin(i * 0.4) * 12 + Math.random() * 8 + 4
-					return (
-						<motion.div
-							key={i}
-							className="w-[3px] rounded-full bg-cc-accent"
-							style={{ height: `${height}px` }}
-							animate={{
-								height: [`${height}px`, `${height * 0.4}px`, `${height}px`],
-								opacity: [0.6, 1, 0.6],
-							}}
-							transition={{
-								duration: 1.2 + Math.random() * 0.8,
-								repeat: Infinity,
-								ease: 'easeInOut',
-								delay: i * 0.03,
-							}}
-						/>
-					)
-				})}
+				{WAVEFORM_BARS.map((bar, i) => (
+					<motion.div
+						key={i}
+						className="w-[3px] rounded-full bg-cc-accent"
+						style={{ height: `${bar.height}px` }}
+						animate={{
+							height: [`${bar.height}px`, `${bar.height * 0.4}px`, `${bar.height}px`],
+							opacity: [0.6, 1, 0.6],
+						}}
+						transition={{
+							duration: bar.duration,
+							repeat: Infinity,
+							ease: 'easeInOut',
+							delay: i * 0.03,
+						}}
+					/>
+				))}
 			</div>
 
 			{/* Annotation chips firing */}
@@ -363,7 +381,7 @@ export function HeroStateScore() {
 					<span className="text-[8px] font-medium text-cc-accent">AI Coach Says...</span>
 				</div>
 				<p className="text-[9px] leading-relaxed text-cc-text-secondary">
-					You addressed risks clearly but could probe more on their team's concerns.
+					You addressed risks clearly but could probe more on their team&rsquo;s concerns.
 				</p>
 			</motion.div>
 
