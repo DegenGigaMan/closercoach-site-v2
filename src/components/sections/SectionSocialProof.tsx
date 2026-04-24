@@ -2,7 +2,11 @@
  * Three elements: industries headline (SP3 inline text), avatar anchor (3 headshots + G4
  * humanized to "+19,997 closers"), and continuous logo marquee (SP1 enterprise logos).
  * V2 redundancy killed: no activity ticker, no industry pill counters, no extra stat counters.
- * Warm surface (#F5F0EB). Stacks on mobile, single editorial row on desktop. */
+ * Warm surface (#F5F0EB). Stacks on mobile, single editorial row on desktop.
+ *
+ * F3-C1 (2026-04-24): logos render at full brand-color + full opacity on cream.
+ * Prior grayscale+opacity treatment killed Sunrun (white fill = invisible) and
+ * ghosted AF/coverd. Each logo SVG now carries its native brand color as default fill. */
 
 'use client'
 
@@ -29,7 +33,7 @@ const LOGOS = [
 
 /**
  * @description Single pass of logos. Duplicated by the marquee track for a seamless
- * loop. Grayscale + muted opacity by default, color on hover.
+ * loop. Full brand color at full opacity on cream (F3-C1).
  */
 function LogoPass({ ariaHidden = false }: { ariaHidden?: boolean }) {
 	return (
@@ -37,7 +41,7 @@ function LogoPass({ ariaHidden = false }: { ariaHidden?: boolean }) {
 			{LOGOS.map((logo) => (
 				<div
 					key={`${ariaHidden ? 'b' : 'a'}-${logo.name}`}
-					className='mx-8 inline-flex shrink-0 select-none items-center transition-all duration-300 [filter:grayscale(1)_opacity(0.75)] hover:[filter:grayscale(0)_opacity(1)]'
+					className='mx-8 inline-flex shrink-0 select-none items-center'
 					aria-label={ariaHidden ? undefined : logo.name}
 				>
 					<Image
