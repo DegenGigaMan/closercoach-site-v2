@@ -12,7 +12,7 @@
 
 import { useSyncExternalStore } from 'react'
 import Image from 'next/image'
-import { Star, AppleLogo } from '@phosphor-icons/react'
+import { Star, AppleLogo, AndroidLogo, Globe } from '@phosphor-icons/react'
 import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react'
 import { BRAND, CTA, STATS } from '@/lib/constants'
 import MotionCTA from '@/components/shared/motion-cta'
@@ -207,15 +207,33 @@ export default function SectionHero() {
 					</MotionCTA>
 				</motion.div>
 
-				{/* Reassurance line. */}
-				<motion.p
-					className='mt-5 text-center font-sans text-sm text-cc-text-muted'
+				{/* Platform availability + reassurance row. Replaces "No desktop. No
+				 * annual contracts." with an iOS / Android / Web availability row plus
+				 * the "No annual contracts." value prop. "No desktop" killed 2026-04-24
+				 * (Wave F2 J2) — Web availability contradicts it. */}
+				<motion.div
+					className='mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center font-sans text-sm text-cc-text-muted'
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, delay: 0.55, ease: EASE }}
 				>
-					No desktop. No annual contracts.
-				</motion.p>
+					<span className='inline-flex items-center gap-1.5'>
+						<AppleLogo size={14} weight='fill' aria-hidden='true' />
+						<span>iOS</span>
+					</span>
+					<span className='text-cc-text-muted/40' aria-hidden='true'>·</span>
+					<span className='inline-flex items-center gap-1.5'>
+						<AndroidLogo size={14} weight='fill' aria-hidden='true' />
+						<span>Android</span>
+					</span>
+					<span className='text-cc-text-muted/40' aria-hidden='true'>·</span>
+					<span className='inline-flex items-center gap-1.5'>
+						<Globe size={14} weight='regular' aria-hidden='true' />
+						<span>Web</span>
+					</span>
+					<span className='text-cc-text-muted/40' aria-hidden='true'>·</span>
+					<span>No annual contracts.</span>
+				</motion.div>
 
 				{/* Rating block — Figma 62:3128. Vertical stack: big 4.7 in Lora
 				 * Bold 38/-1.52, 5 amber stars at 16px, Apple wordmark + "App
