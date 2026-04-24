@@ -709,7 +709,7 @@ export default function SectionResults(): ReactElement {
 							letterSpacing: '-0.015em',
 						}}
 					>
-						CloserCoach coaches you every day
+						Top sales producers are training on CloserCoach at least 2 hours/week.
 					</h3>
 				</Reveal>
 
