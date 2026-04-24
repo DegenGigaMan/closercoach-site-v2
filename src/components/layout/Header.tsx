@@ -60,10 +60,10 @@ export default function Header() {
 							<Link
 								key={link.href}
 								href={link.href}
-								className={`text-sm transition-opacity ${
+								className={`text-sm transition-colors ${
 									isActive(link.href)
-										? 'text-white opacity-100'
-										: 'text-cc-text-secondary opacity-70 hover:opacity-100'
+										? 'text-white'
+										: 'text-cc-text-secondary hover:text-white'
 								}`}
 							>
 								{link.label}

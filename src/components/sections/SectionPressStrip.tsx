@@ -79,7 +79,7 @@ export default function SectionPressStrip() {
 					>
 						{PRESS_OUTLETS.map((name, i) => (
 							<span key={name} className='inline-flex items-center gap-x-4 md:gap-x-6'>
-								<span className='font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.18em] text-cc-text-secondary/70 transition-colors duration-300 hover:text-cc-text-secondary'>
+								<span className='font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.18em] text-cc-text-secondary transition-colors duration-300 hover:text-white'>
 									{name}
 								</span>
 								{i < PRESS_OUTLETS.length - 1 && (

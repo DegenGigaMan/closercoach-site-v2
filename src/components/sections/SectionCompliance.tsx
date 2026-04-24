@@ -36,8 +36,9 @@ interface BadgeMarkProps {
 function BadgeMark({ label, children }: BadgeMarkProps) {
 	return (
 		<span
+			role='img'
 			aria-label={label}
-			className='inline-flex h-6 w-6 shrink-0 items-center justify-center text-cc-text-muted'
+			className='inline-flex h-6 w-6 shrink-0 items-center justify-center text-cc-text-secondary'
 		>
 			{children}
 		</span>
