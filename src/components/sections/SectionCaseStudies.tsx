@@ -366,9 +366,10 @@ function TierCard({
 					</span>
 				</span>
 				{isPlaceholder ? (
-					/* PLACEHOLDER — real enterprise customer testimonial pending (T6 P0 Taylor). */
+					/* PLACEHOLDER — real enterprise customer testimonial pending (T6 P0 Taylor).
+					 * Swap to "[INDUSTRY VERTICAL TBD]" tag pre-launch per F1-H3. Real attribution lands in Wave F4. */
 					<p className='font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase tracking-[0.14em] text-cc-text-secondary-warm/70'>
-						Feature pending · P0
+						[Industry Vertical TBD]
 					</p>
 				) : null}
 			</footer>
