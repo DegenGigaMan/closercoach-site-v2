@@ -200,9 +200,12 @@ export default function SectionFeatures(): ReactElement {
 			className='relative overflow-hidden bg-cc-foundation py-24 md:py-32'
 		>
 			<div className='relative z-10 mx-auto max-w-[1400px] px-6'>
-				{/* Billboard headline. Lora Bold with Lora Bold ITALIC emerald span on
-				    "Operating System" per VIS lock 2026-04-21. Fluid clamp so the
-				    headline owns the viewport on desktop and scales down cleanly. */}
+				{/* Billboard headline. 4-verb capability rhythm mirrors the Step 1-4
+				    flow (Plan / Practice / Sell / Review). Lora Bold with italic emerald
+				    emphasis on the closing verb per VIS lock 2026-04-21. Fluid clamp so
+				    the headline owns the viewport on desktop and scales down cleanly.
+				    Rewritten 2026-04-24 (Wave F2 K1) to de-repeat "in Your Pocket"
+				    framing against hero. */}
 				<h2
 					className='mb-6 text-cc-text-primary text-balance text-left md:mb-8'
 					style={{
@@ -213,16 +216,13 @@ export default function SectionFeatures(): ReactElement {
 						fontWeight: 700,
 					}}
 				>
-					An AI Sales{' '}
-					<span
-						className='text-cc-accent'
-						style={{ fontWeight: 700 }}
+					Practice. Record. Review.{' '}
+					<em
+						className='not-italic text-cc-accent'
+						style={{ fontWeight: 700, fontStyle: 'italic' }}
 					>
-						Operating System
-					</span>
-					<br className='hidden sm:block' />
-					<span className='sm:hidden'> </span>
-					in Your Pocket
+						Improve.
+					</em>
 				</h2>
 
 				{/* Scale callout (E4). Single line, muted, sits directly under billboard. */}
