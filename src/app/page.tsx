@@ -10,6 +10,7 @@ import SectionProofConnectorB from '@/components/sections/SectionProofConnectorB
 import SectionResults from '@/components/sections/SectionResults'
 import SectionTeams from '@/components/sections/SectionTeams'
 import SectionFAQ from '@/components/sections/SectionFAQ'
+import SectionCompliance from '@/components/sections/SectionCompliance'
 import SectionCTA from '@/components/sections/SectionCTA'
 
 export default function HomePage() {
@@ -25,6 +26,7 @@ export default function HomePage() {
 			<SectionResults />
 			<SectionTeams />
 			<SectionFAQ />
+			<SectionCompliance />
 			<SectionCTA />
 		</div>
 	)
