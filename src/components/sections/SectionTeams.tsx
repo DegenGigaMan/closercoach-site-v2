@@ -13,8 +13,8 @@
  *      Card 01 is HERO card (2-col span desktop).
  *   3. Cost-of-Inaction block (CR-4) — IB1/IB2/IB3/IB4 + $49 kill-shot.
  *   4. Competitive Pricing row (CR-2) — CC $49 vs Rilla / Siro / Hyperbound.
- *   5. Compliance strip — SOC2 · GDPR · SSO · SAML · Audit Log · Data Residency.
- *   6. Dual CTAs — "Book a Demo" (Calendly) + "Try for Free" (/download).
+ *   5. Dual CTAs — "Book a Demo" (Calendly) + "Try for Free" (/download).
+ *      (Compliance strip moved to standalone SectionCompliance per DD 2026-04-24.)
  *
  * Surface: dark (cc-foundation #0D0F14). Returns from S5.5 warm.
  * Copy locked to lp-copy-deck-v5 § Section 6 + blueprint § S6.
@@ -46,7 +46,6 @@ import {
 	FileText,
 	UserPlus,
 	Plugs,
-	ShieldCheck,
 } from '@phosphor-icons/react'
 
 /* ── Reveal wrapper (hydration-safe, reduced-motion aware) ── */
@@ -194,10 +193,6 @@ const PRICE_COLS: readonly PriceCol[] = [
 		note: '/year.',
 	},
 ] as const
-
-/* ── Compliance strip (TR1-TR6) ── */
-
-const COMPLIANCE = ['SOC2', 'GDPR', 'SSO', 'SAML', 'Audit Logging', 'Data Residency'] as const
 
 /* ── Bento card ── */
 
@@ -385,19 +380,6 @@ export default function SectionTeams(): ReactElement {
 						))}
 					</div>
 				</Reveal>}
-
-				{/* ── Compliance trust strip ── */}
-				<Reveal delay={0.08} className='mt-16 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 border-t border-cc-surface-border pt-10 md:mt-20 md:gap-x-10'>
-					<ShieldCheck size={18} weight='bold' className='text-cc-accent' aria-hidden='true' />
-					{COMPLIANCE.map((label) => (
-						<span
-							key={label}
-							className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.16em] text-cc-text-muted'
-						>
-							{label}
-						</span>
-					))}
-				</Reveal>
 
 				{/* ── CTAs ── */}
 				<Reveal delay={0.1} className='mt-12 flex flex-col items-center gap-5 sm:gap-6'>

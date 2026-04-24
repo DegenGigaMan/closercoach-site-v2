@@ -25,8 +25,8 @@ export default function HomePage() {
 			<SectionProofConnectorB />
 			<SectionResults />
 			<SectionTeams />
-			<SectionFAQ />
 			<SectionCompliance />
+			<SectionFAQ />
 			<SectionCTA />
 		</div>
 	)
