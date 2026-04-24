@@ -217,7 +217,6 @@ type TierCardProps = {
 	name: string
 	role: string
 	badge: string
-	isPlaceholder?: boolean
 }
 
 function TierCard({
@@ -230,7 +229,6 @@ function TierCard({
 	name,
 	role,
 	badge,
-	isPlaceholder = false,
 }: TierCardProps): ReactElement {
 	return (
 		<article
@@ -361,11 +359,6 @@ function TierCard({
 						{badge}
 					</span>
 				</span>
-				{isPlaceholder ? (
-					<p className='font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase tracking-[0.14em] text-cc-text-secondary-warm/70'>
-						Feature pending · P0
-					</p>
-				) : null}
 			</footer>
 		</article>
 	)
@@ -616,7 +609,6 @@ export default function SectionResults(): ReactElement {
 							name='Enterprise Sales Team'
 							role='Anonymized'
 							badge='Platform Deal'
-							isPlaceholder
 						/>
 					</Reveal>
 				</div>

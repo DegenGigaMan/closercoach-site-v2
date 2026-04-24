@@ -133,7 +133,7 @@ export default function SectionCompliance() {
 								<span key={label} className='inline-flex items-center gap-2 md:gap-3'>
 									<Link
 										href={TRUST_HREF}
-										className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.12em] text-cc-text-muted transition-colors hover:text-cc-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation md:text-[12px]'
+										className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.12em] text-cc-text-secondary transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation md:text-[12px]'
 									>
 										{label}
 									</Link>

@@ -387,7 +387,7 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 		<>
 			<StepKicker number="03" stepIndex={3}>SELL</StepKicker>
 			<StepHeadline>
-				<em className="not-italic text-cc-accent">Close The Deal.</em>
+				Work The Call. <em className="not-italic text-cc-accent">Close The Deal.</em>
 			</StepHeadline>
 			<StepBody>
 				Dial directly from CloserCoach for AI-powered phone calls, or record any in-person meeting. Every word captured, every missed moment flagged, every objection coached: whether you&rsquo;re at the door or on the phone.

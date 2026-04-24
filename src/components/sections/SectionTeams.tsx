@@ -94,12 +94,16 @@ function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElem
  * over Toyota so the oval badge reads at the same optical weight as the
  * wordmarks. */
 const MANAGER_LOGOS = [
-	{ src: '/logos/toyota.svg', alt: 'Toyota', w: 168, h: 24, heightClass: 'h-6' },
-	{ src: '/logos/state-farm.svg', alt: 'State Farm', w: 171, h: 24, heightClass: 'h-6' },
-	{ src: '/logos/sunrun.svg', alt: 'Sunrun', w: 105, h: 20, heightClass: 'h-5' },
-	{ src: '/logos/land-rover.svg', alt: 'Land Rover', w: 61, h: 32, heightClass: 'h-8' },
-	{ src: '/logos/remax.svg', alt: 'RE/MAX', w: 152, h: 28, heightClass: 'h-7' },
-	{ src: '/logos/fidelity.svg', alt: 'Fidelity', w: 92, h: 28, heightClass: 'h-7' },
+	{ src: '/logos/toyota.svg', alt: 'Toyota', w: 168, h: 24, heightClass: 'h-6', preWhite: false },
+	{ src: '/logos/state-farm.svg', alt: 'State Farm', w: 171, h: 24, heightClass: 'h-6', preWhite: false },
+	/* sunrun-white.svg is a white-fill variant. The stock sunrun.svg is #231F20
+	 * which, when passed through `brightness-0 invert`, lands at #DCE0DF — a
+	 * low-contrast blur on the dark wall. The pre-white variant is opted out
+	 * of the invert filter so it renders at full white on cc-foundation. */
+	{ src: '/logos/sunrun-white.svg', alt: 'Sunrun', w: 105, h: 20, heightClass: 'h-5', preWhite: true },
+	{ src: '/logos/land-rover.svg', alt: 'Land Rover', w: 61, h: 32, heightClass: 'h-8', preWhite: false },
+	{ src: '/logos/remax.svg', alt: 'RE/MAX', w: 152, h: 28, heightClass: 'h-7', preWhite: false },
+	{ src: '/logos/fidelity.svg', alt: 'Fidelity', w: 92, h: 28, heightClass: 'h-7', preWhite: false },
 ] as const
 
 /* ── Bento feature cards (6) ── */
@@ -281,7 +285,7 @@ export default function SectionTeams(): ReactElement {
 								alt={logo.alt}
 								width={logo.w}
 								height={logo.h}
-								className={`${logo.heightClass} w-auto opacity-60 brightness-0 invert transition-opacity duration-300 hover:opacity-95`}
+								className={`${logo.heightClass} w-auto opacity-60 transition-opacity duration-300 hover:opacity-95${logo.preWhite ? '' : ' brightness-0 invert'}`}
 							/>
 						))}
 					</div>

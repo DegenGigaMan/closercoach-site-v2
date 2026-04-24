@@ -179,7 +179,7 @@ export default function SectionHero() {
 					className='mt-6 max-w-[600px] text-center font-sans text-lg leading-relaxed text-cc-text-secondary'
 					{...enter(0.35, 12, 0.45)}
 				>
-					Practice closing deals. Record your meetings. Know exactly where you lost the deal. All from your phone.
+					Practice closing deals. Record your meetings. Know exactly where you&rsquo;re losing deals. All from your phone.
 				</motion.p>
 
 				{/* CTA cluster -- centered pair, stacked on mobile, row on sm+. */}
