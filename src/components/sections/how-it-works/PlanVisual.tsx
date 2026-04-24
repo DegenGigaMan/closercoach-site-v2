@@ -14,7 +14,7 @@
  *   │      │  └───────────────────────  ┘ │  │ │ COMPANY INDUSTRY    │ │
  *   │      │  ┌─Marcus 2:00pm  (dim) ───┐ │  │ │ ...                 │ │
  *   │      │  └─────────────────────────┘ │  │ │ [7 LAYERS OF PERSONALIZATION]
- *   │         ∧ Show 4 more events       │  │ └─────────────────────┘ │
+ *   │                                      │  │ └─────────────────────┘ │
  *   └──────────────────────────────────── ┘  └────────────────────────┘
  *
  * Key differences from `StepOneVisual.tsx` v1:
@@ -37,7 +37,7 @@
 
 import Image from 'next/image'
 import { useReducedMotion } from 'motion/react'
-import { Calendar, CaretUpDown, Checks, Sparkle, SpinnerGap } from '@phosphor-icons/react'
+import { Calendar, Checks, Sparkle, SpinnerGap } from '@phosphor-icons/react'
 
 const SARAH_AVATAR = '/images/step1/avatar-sarah-v2.png'
 const MARCUS_AVATAR = '/images/step1/avatar-marcus-face.png'
@@ -165,13 +165,6 @@ function LeftVisual() {
 						<MeetingCard name='Sarah Chen' time='10:30am' avatarSrc={SARAH_AVATAR} active />
 						<MeetingCard name='Marcus Rivera' time='2:00pm' avatarSrc={MARCUS_AVATAR} />
 					</div>
-					<button
-						type='button'
-						className='inline-flex items-center gap-1 self-start font-sans text-[10px] font-medium text-white/50 hover:text-white/70'
-					>
-						<CaretUpDown size={10} weight='bold' aria-hidden='true' />
-						<span>Show 4 more events</span>
-					</button>
 				</div>
 			</div>
 		</div>

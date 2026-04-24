@@ -8,7 +8,7 @@
  * Composition (anchored inside 714x600 canvas at desktop):
  *   - LEFT region: CONNECTED integrations pill -> emerald thread -> calendar
  *     icon + TODAY'S MEETINGS caption -> 2 stacked meeting cards (Sarah active
- *     with emerald stripe, Marcus dimmed) -> "Show 4 more events" caret toggle.
+ *     with emerald stripe, Marcus dimmed).
  *   - RIGHT region: Cloning... header + progress (3/7) -> 7-pip progress bar ->
  *     clone card with Sarah avatar + AI Clone pill + 2-col x 4-row field grid
  *     (blurred placeholder bars for still-loading fields) -> "7 Layers of
@@ -34,7 +34,7 @@
 
 import Image from 'next/image'
 import { useReducedMotion } from 'motion/react'
-import { Calendar, CaretUpDown, Sparkle, SpinnerGap } from '@phosphor-icons/react'
+import { Calendar, Sparkle, SpinnerGap } from '@phosphor-icons/react'
 
 const SARAH_AVATAR = '/images/step1/avatar-sarah-face1.png'
 const MARCUS_AVATAR = '/images/step1/avatar-marcus-face.png'
@@ -97,15 +97,6 @@ function CalendarRegion() {
 				<MeetingCard name="Sarah Chen" time="10:30am" avatarSrc={SARAH_AVATAR} active />
 				<MeetingCard name="Marcus Rivera" time="2:00pm" avatarSrc={MARCUS_AVATAR} />
 			</div>
-
-			{/* Show 4 more events */}
-			<button
-				type="button"
-				className="mt-3 inline-flex items-center gap-1 self-start font-sans text-[10px] text-white/50 hover:text-white/70"
-			>
-				<CaretUpDown size={10} weight="bold" aria-hidden="true" />
-				<span>Show 4 more events</span>
-			</button>
 		</div>
 	)
 }
