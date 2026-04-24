@@ -255,11 +255,12 @@ export default function SectionHero() {
 						{STATS.appStoreRating}
 					</span>
 					<div
+						role='img'
 						className='flex items-center gap-[2px]'
 						aria-label={`${STATS.appStoreRating} out of 5 stars`}
 					>
 						{[0, 1, 2, 3, 4].map((i) => (
-							<Star key={i} size={16} weight='fill' className='text-cc-amber' />
+							<Star key={i} size={16} weight='fill' className='text-cc-amber' aria-hidden='true' />
 						))}
 					</div>
 					<div className='flex items-center justify-center gap-2'>

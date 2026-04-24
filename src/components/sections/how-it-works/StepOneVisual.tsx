@@ -47,6 +47,7 @@ const LOGO_SALESFORCE = '/images/step1/logo-salesforce.svg'
 function IntegrationPill() {
 	return (
 		<div
+			role="img"
 			className="inline-flex items-center gap-2 rounded-xl border border-white/[0.06] bg-cc-surface-card/60 px-2 py-1 shadow-[0_4px_12px_rgba(0,0,0,0.35)] backdrop-blur-sm"
 			aria-label="Connected to Google Meet, Microsoft Teams, and Salesforce"
 		>
@@ -218,7 +219,7 @@ function FieldLabeled({ label, value }: { label: string, value: string }) {
 
 function FieldBlurred({ label, widthClass }: { label: string, widthClass: string }) {
 	return (
-		<div className="flex flex-col gap-1.5" aria-label={`${label} loading`}>
+		<div role="status" aria-live="polite" className="flex flex-col gap-1.5" aria-label={`${label} loading`}>
 			<span className="font-[family-name:var(--font-mono)] text-[12px] uppercase tracking-[0.15em] text-cc-text-secondary">
 				{label}
 			</span>

@@ -132,7 +132,7 @@ export default function SectionSocialProof() {
 							))}
 						</div>
 						<div className='flex flex-col leading-tight'>
-							<span className='font-[family-name:var(--font-mono)] text-sm text-cc-accent-hover'>
+							<span className='font-[family-name:var(--font-mono)] text-sm font-semibold' style={{ color: '#047857' }}>
 								+ 19,997
 							</span>
 							<span className='text-xs text-cc-text-secondary-warm'>

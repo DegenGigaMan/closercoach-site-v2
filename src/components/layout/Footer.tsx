@@ -102,11 +102,11 @@ export default function Footer() {
 				</div>
 
 				{/* Trust badges */}
-				<div className='mt-12 flex flex-wrap gap-3 opacity-60'>
+				<div className='mt-12 flex flex-wrap gap-3'>
 					{TRUST_BADGES.map((badge) => (
 						<span
 							key={badge}
-							className='rounded-full border border-cc-surface-border px-3 py-1 text-xs text-cc-text-muted'
+							className='rounded-full border border-cc-surface-border px-3 py-1 text-xs text-cc-text-secondary'
 						>
 							{badge}
 						</span>

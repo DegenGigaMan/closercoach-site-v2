@@ -26,7 +26,11 @@ export default function CookieConsent() {
 	if (!visible) return null
 
 	return (
-		<div className="fixed bottom-0 left-0 right-0 z-50 p-4">
+		<aside
+			role="complementary"
+			aria-label="Cookie notice"
+			className="fixed bottom-0 left-0 right-0 z-50 p-4"
+		>
 			<div className="mx-auto flex max-w-2xl items-center justify-between gap-4 rounded-xl border border-cc-surface-border bg-cc-surface/95 px-5 py-3.5 shadow-2xl backdrop-blur-md">
 				<p className="text-sm text-cc-text-secondary sm:whitespace-nowrap">
 					We use cookies to improve your experience.{' '}
@@ -54,6 +58,6 @@ export default function CookieConsent() {
 					</button>
 				</div>
 			</div>
-		</div>
+		</aside>
 	)
 }

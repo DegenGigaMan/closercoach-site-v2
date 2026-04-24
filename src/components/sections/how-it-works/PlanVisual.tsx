@@ -80,6 +80,7 @@ function RailLine() {
 function IntegrationsPill() {
 	return (
 		<div
+			role='img'
 			className='inline-flex items-center gap-2 rounded-[12px] border border-white/[0.06] bg-cc-surface-card/60 px-2 py-1 shadow-[0_4px_12px_rgba(0,0,0,0.4),0_0_20px_rgba(16,185,129,0.05)] backdrop-blur-sm'
 			aria-label='Connected to Google Meet, Microsoft Teams, and Salesforce'
 		>
@@ -218,7 +219,7 @@ function FieldLabeled({ label, value }: { label: string, value: string }) {
 
 function FieldBlurred({ label, widthClass }: { label: string, widthClass: string }) {
 	return (
-		<div className='flex flex-col items-start gap-[5px]' aria-label={`${label} loading`}>
+		<div role='status' aria-live='polite' className='flex flex-col items-start gap-[5px]' aria-label={`${label} loading`}>
 			<span className='text-trim font-[family-name:var(--font-mono)] text-[12px] uppercase leading-[13.5px] tracking-[0.0375em] text-cc-text-secondary'>
 				{label}
 			</span>

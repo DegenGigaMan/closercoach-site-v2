@@ -93,6 +93,7 @@ export default function ThankYouContent() {
 									fgColor='#0D0F14'
 									level='M'
 									className='rounded-sm'
+									title='QR code to install CloserCoach'
 								/>
 							</div>
 							<div className='flex flex-row items-center gap-2'>

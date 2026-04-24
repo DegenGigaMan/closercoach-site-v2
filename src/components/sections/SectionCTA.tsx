@@ -116,6 +116,7 @@ export default function SectionCTA() {
 								fgColor='#0D0F14'
 								level='M'
 								className='rounded-sm'
+								title='QR code to download CloserCoach on the App Store'
 							/>
 						</div>
 

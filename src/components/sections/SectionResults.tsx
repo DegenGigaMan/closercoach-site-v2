@@ -402,7 +402,7 @@ function ReviewCard({ quote }: Review): ReactElement {
 				boxShadow: '0 2px 16px rgba(0,0,0,0.03)',
 			}}
 		>
-			<div className='flex items-center gap-[2px]' aria-label='Five stars'>
+			<div role='img' className='flex items-center gap-[2px]' aria-label='Five stars'>
 				{Array.from({ length: 5 }, (_, i) => (
 					<Star key={i} size={16} weight='fill' style={{ color: YELLOW_STAR }} aria-hidden='true' />
 				))}

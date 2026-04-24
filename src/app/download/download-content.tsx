@@ -129,6 +129,7 @@ export default function DownloadContent() {
 							fgColor='#0D0F14'
 							level='M'
 							className='rounded-sm'
+							title='QR code to install CloserCoach'
 						/>
 					</div>
 
@@ -189,16 +190,16 @@ export default function DownloadContent() {
 				</ul>
 
 				{/* Trust strip (TR1/TR2 + press mention) */}
-				<div className='mt-12 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-cc-surface-border pt-8 opacity-60'>
-					<span className='inline-flex items-center gap-1.5 text-xs text-cc-text-muted'>
+				<div className='mt-12 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-cc-surface-border pt-8'>
+					<span className='inline-flex items-center gap-1.5 text-xs text-cc-text-secondary'>
 						<ShieldCheck weight='regular' className='h-3.5 w-3.5' aria-hidden='true' />
 						<span className='font-mono uppercase tracking-wider'>SOC2</span>
 					</span>
-					<span className='inline-flex items-center gap-1.5 text-xs text-cc-text-muted'>
+					<span className='inline-flex items-center gap-1.5 text-xs text-cc-text-secondary'>
 						<ShieldCheck weight='regular' className='h-3.5 w-3.5' aria-hidden='true' />
 						<span className='font-mono uppercase tracking-wider'>GDPR</span>
 					</span>
-					<span className='text-xs text-cc-text-muted'>
+					<span className='text-xs text-cc-text-secondary'>
 						Featured in Hypepotamus
 					</span>
 				</div>

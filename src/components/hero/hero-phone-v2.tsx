@@ -182,7 +182,7 @@ function TrainState() {
 						{subState === 'processing' && (
 							<motion.div
 								key="learning-text"
-								className="mb-3 text-center text-[10px] text-cc-accent/[0.51]"
+								className="mb-3 text-center text-[10px] text-cc-accent/[0.85]"
 								initial={{ opacity: 0, y: 3 }}
 								animate={{ opacity: 1, y: 0 }}
 								exit={{ opacity: 0, y: -3 }}

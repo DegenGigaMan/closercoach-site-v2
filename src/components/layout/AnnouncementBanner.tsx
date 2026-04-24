@@ -46,7 +46,9 @@ export default function AnnouncementBanner({
 	if (dismissed !== false) return null
 
 	return (
-		<div
+		<aside
+			role='complementary'
+			aria-label='Site announcement'
 			className='fixed left-0 right-0 top-0 z-[60] border-b border-cc-accent/20 bg-cc-surface'
 			style={{ height: BANNER_HEIGHT }}
 		>
@@ -75,6 +77,6 @@ export default function AnnouncementBanner({
 					<X size={14} weight='bold' />
 				</button>
 			</div>
-		</div>
+		</aside>
 	)
 }

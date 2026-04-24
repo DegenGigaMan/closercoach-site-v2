@@ -318,7 +318,7 @@ function Step1Plan({ devPin }: { devPin: boolean }) {
 			 * (40px circular avatar + name "Andy Bolton" 16px + role "Sales rep"
 			 * 14px in #8A9BA1). No card frame; container py-[12px] only. */}
 			<figure className="mt-10 flex max-w-xl flex-col gap-4 py-3">
-				<div className="flex items-start gap-[2px]" aria-label="5 out of 5 stars">
+				<div role="img" className="flex items-start gap-[2px]" aria-label="5 out of 5 stars">
 					{[0, 1, 2, 3, 4].map((i) => (
 						<Star key={i} size={16} weight="fill" style={{ color: '#FBBC04' }} aria-hidden="true" />
 					))}
