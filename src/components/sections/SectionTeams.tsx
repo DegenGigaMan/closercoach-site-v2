@@ -400,13 +400,18 @@ export default function SectionTeams(): ReactElement {
 				</Reveal>
 
 				{/* ── CTAs ── */}
-				<Reveal delay={0.1} className='mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center'>
-					<MotionCTA variant='primary' size='lg' href={BRAND.calendly}>
-						Book a Demo
-					</MotionCTA>
-					<MotionCTA variant='secondary' size='lg' href='/download'>
-						Try for Free
-					</MotionCTA>
+				<Reveal delay={0.1} className='mt-12 flex flex-col items-center gap-5 sm:gap-6'>
+					<p className='text-center text-base text-cc-text-secondary md:text-lg'>
+						Want to scale your sales team training?
+					</p>
+					<div className='flex flex-col items-center gap-4 sm:flex-row sm:justify-center'>
+						<MotionCTA variant='primary' size='lg' href={BRAND.calendly}>
+							Book a Demo
+						</MotionCTA>
+						<MotionCTA variant='secondary' size='lg' href='/download'>
+							Try for Free
+						</MotionCTA>
+					</div>
 				</Reveal>
 			</div>
 		</section>
