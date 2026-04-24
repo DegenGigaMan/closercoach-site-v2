@@ -48,7 +48,7 @@
 
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence, LayoutGroup, useInView, useReducedMotion } from 'motion/react'
 import Image from 'next/image'
 import NumberFlow from '@number-flow/react'
@@ -144,8 +144,36 @@ const ANCHOR_POSITIONS: Record<AnnotationSpec['anchor'], AnchorPos> = {
 
 /* ─── Dual-mode toggle row (above phone) ────────────────────── */
 
-function DualModeToggles({ subState, prefersReducedMotion }: { subState: SubState, prefersReducedMotion: boolean }) {
-	const modeBActive = subState === '3D' || subState === '3E' || subState === '3F'
+/* Interactive tablist per F2 (Alim feedback, 2026-04-23): tabs become
+ * user-clickable to switch modes. When the user clicks either tab, the state
+ * machine yields and the selected mode is shown as its settled/representative
+ * state (Mode A -> live-call 3C, Mode B -> record-settled 3F). The state
+ * machine continues to drive subState for any sub-mode interior that the
+ * selected mode exposes, but the OUTER mode A/B choice is owned by `userMode`
+ * once set. Keyboard: Tab focuses the active tab; Left/Right arrow rotates
+ * focus within the tablist; Enter/Space (native button) activates. */
+function DualModeToggles({
+	modeBActive,
+	onSelect,
+	prefersReducedMotion,
+}: {
+	modeBActive: boolean
+	onSelect: (mode: 'A' | 'B') => void
+	prefersReducedMotion: boolean
+}) {
+	const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
+
+	const handleKey = useCallback((e: React.KeyboardEvent<HTMLButtonElement>, idx: number) => {
+		if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
+		e.preventDefault()
+		const next = e.key === 'ArrowRight' ? (idx + 1) % 2 : (idx + 1) % 2 /* 2-tab: Left == Right */
+		const target = tabRefs.current[next]
+		if (target) {
+			target.focus()
+			onSelect(next === 0 ? 'A' : 'B')
+		}
+	}, [onSelect])
+
 	return (
 		<div
 			role="tablist"
@@ -153,34 +181,58 @@ function DualModeToggles({ subState, prefersReducedMotion }: { subState: SubStat
 			className="flex items-center justify-center gap-2"
 		>
 			<ModeToggle
+				ref={(el) => { tabRefs.current[0] = el }}
+				id="cc-s3-tab-mode-a"
 				icon={<PhoneIcon size={10} weight="fill" aria-hidden="true" />}
 				label="AI Phone Call"
 				active={!modeBActive}
 				prefersReducedMotion={prefersReducedMotion}
+				onClick={() => onSelect('A')}
+				onKeyDown={(e) => handleKey(e, 0)}
+				controlsPanelId="cc-s3-tabpanel-mode-a"
 			/>
 			<ModeToggle
+				ref={(el) => { tabRefs.current[1] = el }}
+				id="cc-s3-tab-mode-b"
 				icon={<Microphone size={10} weight="fill" aria-hidden="true" />}
 				label="Record In-Person"
 				active={modeBActive}
 				prefersReducedMotion={prefersReducedMotion}
+				onClick={() => onSelect('B')}
+				onKeyDown={(e) => handleKey(e, 1)}
+				controlsPanelId="cc-s3-tabpanel-mode-b"
 			/>
 		</div>
 	)
 }
 
-function ModeToggle({ icon, label, active, prefersReducedMotion }: {
+type ModeToggleProps = {
+	id: string
 	icon: React.ReactNode
 	label: string
 	active: boolean
 	prefersReducedMotion: boolean
-}) {
+	onClick: () => void
+	onKeyDown: (e: React.KeyboardEvent<HTMLButtonElement>) => void
+	controlsPanelId: string
+}
+
+const ModeToggle = forwardRef<HTMLButtonElement, ModeToggleProps>(function ModeToggle(
+	{ id, icon, label, active, prefersReducedMotion, onClick, onKeyDown, controlsPanelId },
+	ref,
+) {
 	return (
 		<motion.button
+			ref={ref}
+			id={id}
 			type="button"
 			role="tab"
 			aria-selected={active}
+			aria-controls={controlsPanelId}
 			tabIndex={active ? 0 : -1}
-			className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.15em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent/60"
+			onClick={onClick}
+			onKeyDown={onKeyDown}
+			className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.15em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent/60"
 			/* F39: stable initial. Reduced-motion snaps via duration: 0. */
 			initial={{ opacity: 1 }}
 			animate={{
@@ -195,7 +247,7 @@ function ModeToggle({ icon, label, active, prefersReducedMotion }: {
 			{label}
 		</motion.button>
 	)
-}
+})
 
 /* ─── Phone Frame (shared shell) ───────────────────────────── */
 
@@ -261,6 +313,9 @@ function ModeAInterior({ subState, prefersReducedMotion }: { subState: SubState,
 		<motion.div
 			layoutId="cc-s3-step-three-interior"
 			className="flex h-full w-full flex-col"
+			role="tabpanel"
+			id="cc-s3-tabpanel-mode-a"
+			aria-labelledby="cc-s3-tab-mode-a"
 		>
 			{isDialer && <DialerPanel prefersReducedMotion={prefersReducedMotion} />}
 			{isConnecting && <ConnectingPanel prefersReducedMotion={prefersReducedMotion} />}
@@ -441,6 +496,9 @@ function ModeBInterior({ subState, prefersReducedMotion }: { subState: SubState,
 		<motion.div
 			layoutId="cc-s3-step-three-interior"
 			className="flex h-full w-full flex-col justify-between px-3 pb-3 pt-2"
+			role="tabpanel"
+			id="cc-s3-tabpanel-mode-b"
+			aria-labelledby="cc-s3-tab-mode-b"
 		>
 			{/* REC header */}
 			<div className="flex items-center justify-between">
@@ -706,20 +764,49 @@ export default function StepThreeVisual({ devPin = false }: { devPin?: boolean }
 	})
 	const subState: SubState = pin ?? machineState
 
-	const modeBActive = subState === '3D' || subState === '3E' || subState === '3F'
-	const annotationsOut = subState === '3E' || subState === '3F'
-	const isSettled = subState === '3F'
-	const ripplesFiring = subState === '3E'
+	/* F2 (Alim feedback, 2026-04-23): user-selectable mode overrides the state
+	 * machine once the user clicks a tab. Until then, mode follows subState.
+	 * Mode A click -> settled at 3C (live call interior).
+	 * Mode B click -> settled at 3F (record mode with annotations visible). */
+	const [userMode, setUserMode] = useState<'A' | 'B' | null>(null)
+	const handleModeSelect = useCallback((mode: 'A' | 'B') => {
+		setUserMode(mode)
+	}, [])
+
+	const machineModeBActive = subState === '3D' || subState === '3E' || subState === '3F'
+	const modeBActive = userMode === null ? machineModeBActive : userMode === 'B'
+	/* When user forces Mode B, reveal annotations settled; when user forces
+	 * Mode A, hide them (they belong to the Mode B signature moment). */
+	const annotationsOut = userMode === 'B'
+		? true
+		: userMode === 'A'
+			? false
+			: subState === '3E' || subState === '3F'
+	const isSettled = userMode === 'B' ? true : userMode === 'A' ? false : subState === '3F'
+	/* Ripples only fire during the one-time 3E signature moment. User clicks
+	 * don't re-trigger them (would read as decorative noise on repeat toggle). */
+	const ripplesFiring = userMode === null && subState === '3E'
+
+	/* Effective substate for Mode A interior panel: pinned to 3C (live call) when
+	 * user forces Mode A; otherwise the state machine's value. For Mode B,
+	 * ModeBInterior reads subState directly (3D/3E/3F all render the record UI). */
+	const modeAEffectiveSubState: SubState = userMode === 'A' ? '3C' : subState
+	const modeBEffectiveSubState: SubState = userMode === 'B' ? '3F' : subState
 
 	return (
 		<div
 			ref={rootRef}
 			data-step="3"
 			data-sub-state={subState}
+			data-user-mode={userMode ?? 'auto'}
 			className="relative mx-auto flex h-full w-full max-w-[480px] flex-col items-center justify-center gap-5"
 		>
 			{/* Toggles above phone */}
-			<DualModeToggles subState={subState} prefersReducedMotion={prefersReducedMotion} />
+			<DualModeToggles
+				modeBActive={modeBActive}
+				onSelect={handleModeSelect}
+				prefersReducedMotion={prefersReducedMotion}
+			/>
 
 			{/* Phone + annotation surface. The relative wrapper below spans the full
 			 * outer column width (not just the phone width) so annotations can anchor
@@ -742,14 +829,14 @@ export default function StepThreeVisual({ devPin = false }: { devPin?: boolean }
 									? (
 										<ModeBInterior
 											key="mode-b"
-											subState={subState}
+											subState={modeBEffectiveSubState}
 											prefersReducedMotion={prefersReducedMotion}
 										/>
 									)
 									: (
 										<ModeAInterior
 											key="mode-a"
-											subState={subState}
+											subState={modeAEffectiveSubState}
 											prefersReducedMotion={prefersReducedMotion}
 										/>
 									)
