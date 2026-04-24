@@ -38,7 +38,6 @@ import { Star, AppleLogo } from '@phosphor-icons/react'
 
 /* ── Tokens used inline where Tailwind token lookup is insufficient for AA ── */
 
-const AMBER_AA = '#D97706' // amber-600: AA-safe stat text on warm surface
 const EMERALD_AA = '#059669' // cc-accent-hover: AA-safe emerald text on warm
 
 /* ── Shared reveal wrapper (hydration-safe, reduced-motion aware) ── */
@@ -72,252 +71,117 @@ function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElem
 	)
 }
 
-/* ── Radar chart: 7-dimension hand-drawn SVG, no Recharts dependency ── */
-
-const RADAR_DIMENSIONS = ['Discovery', 'Pitch', 'Objection', 'Closing', 'Tonality', 'Empathy', 'Pace'] as const
-
-function radarPoint(cx: number, cy: number, r: number, index: number, total: number) {
-	const angle = (Math.PI * 2 * index) / total - Math.PI / 2
-	return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) }
-}
-
-function RadarChart(): ReactElement {
-	const cx = 80
-	const cy = 80
-	const outerR = 60
-	const dataR = [48, 52, 38, 55, 42, 50, 45]
-	const n = RADAR_DIMENSIONS.length
-
-	const outerPoints = Array.from({ length: n }, (_, i) => radarPoint(cx, cy, outerR, i, n))
-	const dataPoints = dataR.map((r, i) => radarPoint(cx, cy, r, i, n))
-
-	return (
-		<svg viewBox='0 0 160 160' className='h-full w-full' aria-label='7-dimension radar chart'>
-			{[20, 40, 60].map((r) => (
-				<polygon
-					key={r}
-					points={Array.from({ length: n }, (_, i) => {
-						const p = radarPoint(cx, cy, r, i, n)
-						return `${p.x},${p.y}`
-					}).join(' ')}
-					fill='none'
-					stroke='rgba(0,0,0,0.08)'
-					strokeWidth={0.5}
-				/>
-			))}
-			{outerPoints.map((p, i) => (
-				<line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke='rgba(0,0,0,0.06)' strokeWidth={0.5} />
-			))}
-			<polygon
-				points={dataPoints.map((p) => `${p.x},${p.y}`).join(' ')}
-				fill='rgba(5,150,105,0.14)'
-				stroke={EMERALD_AA}
-				strokeWidth={1.5}
-			/>
-			{dataPoints.map((p, i) => (
-				<circle key={i} cx={p.x} cy={p.y} r={2.5} fill={EMERALD_AA} />
-			))}
-			{outerPoints.map((_, i) => {
-				const labelP = radarPoint(cx, cy, outerR + 14, i, n)
-				return (
-					<text
-						key={i}
-						x={labelP.x}
-						y={labelP.y}
-						textAnchor='middle'
-						dominantBaseline='middle'
-						fill='#475569'
-						fontSize={6}
-						fontFamily='var(--font-mono)'
-					>
-						{RADAR_DIMENSIONS[i]}
-					</text>
-				)
-			})}
-		</svg>
-	)
-}
-
-/* ── Proof card definitions for the floating field ──
+/* ── Proof card definitions for the anchor stats grid ──
  *
- * Positions are percentage-based against the 100vh billboard wrapper so the
- * composition scales with viewport height. Second breakpoint (md:) shifts
- * the cards slightly inward for wider laptops. */
+ * Reworked 2026-04-24 (Wave F2 G1/G2). Prior pinterest-float composition
+ * with 8 orbiting stats + a 7-dimension radar has been replaced by a 5-card
+ * responsive grid. The radar SVG is removed — not loss-bearing at this copy
+ * density. */
 
 type ProofCard = {
 	id: string
 	content: ReactNode
-	className: string
 }
 
+/* Anchor stats grid. Reworked 2026-04-24 (Wave F2 G1/G2) — killed the
+ * pinterest-float orbit layout and the 2 cards that duplicated copy shown
+ * elsewhere (profile "Insurance closer" overspecific; "Coached weekly 76%"
+ * already shipped in the G3 testimonial kicker). Remaining 5 cards render
+ * in a tight responsive grid below the headline instead of orbiting it. */
 const CARDS: readonly ProofCard[] = [
-	{
-		id: 'profile',
-		content: (
-			<div className='flex items-center gap-3'>
-				<div
-					className='relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-cc-warm-border'
-				>
-					{/* Duotone-tinted placeholder avatar; label remains anonymised
-					    (names reserved for S5.5 per v2 truth-pack rule). */}
-					<Image
-						src='/images/avatars/closer-1.svg'
-						alt=''
-						aria-hidden='true'
-						fill
-						sizes='40px'
-						style={{
-							filter: 'sepia(0.9) hue-rotate(90deg) saturate(1.4) brightness(0.85)',
-							objectFit: 'cover',
-						}}
-					/>
-				</div>
-				<div className='flex flex-col'>
-					<p className='text-sm font-semibold text-cc-text-primary-warm'>Insurance closer</p>
-					<p className='font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
-						8-week progression
-					</p>
-				</div>
-				<span
-					className='ml-auto rounded-full px-2.5 py-1 font-[family-name:var(--font-mono)] text-[11px] font-semibold'
-					style={{ backgroundColor: 'rgba(5,150,105,0.1)', color: EMERALD_AA }}
-				>
-					A-
-				</span>
-			</div>
-		),
-		className: 'absolute top-[8%] left-[4%] w-[220px] md:top-[12%] md:left-[6%]',
-	},
 	{
 		id: 'stat-closers',
 		content: (
 			<div className='text-center'>
-				<p className='font-[family-name:var(--font-mono)] text-2xl font-bold text-cc-text-primary-warm'>
+				<p className='font-[family-name:var(--font-mono)] text-2xl font-bold text-cc-text-primary-warm md:text-3xl'>
 					20,000+
 				</p>
-				<p className='mt-0.5 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
+				<p className='mt-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
 					Closers
 				</p>
 			</div>
 		),
-		className: 'absolute top-[6%] right-[8%] w-[130px] md:top-[8%] md:right-[12%]',
-	},
-	{
-		id: 'stat-rating',
-		content: (
-			<div className='text-center'>
-				<p className='font-[family-name:var(--font-mono)] text-2xl font-bold text-cc-text-primary-warm'>
-					4.7/5
-				</p>
-				<p className='mt-0.5 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
-					App Store
-				</p>
-			</div>
-		),
-		className: 'absolute top-[38%] right-[3%] w-[120px] md:top-[35%] md:right-[5%]',
 	},
 	{
 		id: 'stat-calls',
 		content: (
 			<div className='text-center'>
-				<p className='font-[family-name:var(--font-mono)] text-2xl font-bold text-cc-text-primary-warm'>
+				<p className='font-[family-name:var(--font-mono)] text-2xl font-bold text-cc-text-primary-warm md:text-3xl'>
 					3,000+
 				</p>
-				<p className='mt-0.5 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
+				<p className='mt-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
 					Calls/Day
 				</p>
 			</div>
 		),
-		className: 'absolute bottom-[22%] left-[5%] w-[130px] md:bottom-[18%] md:left-[7%]',
 	},
 	{
 		id: 'stat-industries',
 		content: (
 			<div className='text-center'>
-				<p className='font-[family-name:var(--font-mono)] text-2xl font-bold text-cc-text-primary-warm'>
+				<p className='font-[family-name:var(--font-mono)] text-2xl font-bold text-cc-text-primary-warm md:text-3xl'>
 					16+
 				</p>
-				<p className='mt-0.5 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
+				<p className='mt-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
 					Industries
 				</p>
 			</div>
 		),
-		className: 'absolute bottom-[12%] right-[10%] w-[110px] md:bottom-[14%] md:right-[14%]',
 	},
 	{
-		id: 'radar',
+		id: 'stat-rating',
 		content: (
-			<div>
-				<p className='mb-1 font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
-					7-Dimension Score
+			<div className='text-center'>
+				<p className='font-[family-name:var(--font-mono)] text-2xl font-bold text-cc-text-primary-warm md:text-3xl'>
+					4.7/5
 				</p>
-				<div className='h-[140px] w-[140px]'>
-					<RadarChart />
-				</div>
+				<p className='mt-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
+					App Store
+				</p>
 			</div>
 		),
-		className: 'absolute top-[18%] right-[18%] w-[170px] md:top-[16%] md:right-[22%]',
-	},
-	{
-		id: 'coached',
-		content: (
-			<div>
-				<p
-					className='font-[family-name:var(--font-mono)] text-3xl font-bold'
-					style={{ color: AMBER_AA }}
-				>
-					76%
-				</p>
-				<p className='mt-1 text-sm text-cc-text-secondary-warm'>Coached weekly: quota hit</p>
-			</div>
-		),
-		className: 'absolute bottom-[8%] left-[25%] w-[200px] md:bottom-[10%] md:left-[30%]',
 	},
 	{
 		id: 'gains',
 		content: (
-			<div className='flex items-center gap-3'>
+			<div className='flex items-center justify-center gap-4 md:gap-5'>
 				<div className='flex flex-col items-center'>
 					<span
-						className='font-[family-name:var(--font-mono)] text-lg font-bold'
+						className='font-[family-name:var(--font-mono)] text-2xl font-bold md:text-3xl'
 						style={{ color: EMERALD_AA }}
 					>
 						7%
 					</span>
-					<span className='font-[family-name:var(--font-mono)] text-[8px] uppercase tracking-[0.12em] text-cc-text-secondary-warm'>
+					<span className='mt-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
 						Close Rate
 					</span>
 				</div>
-				<div className='h-6 w-px bg-cc-warm-border' aria-hidden='true' />
+				<div className='h-8 w-px bg-cc-warm-border' aria-hidden='true' />
 				<div className='flex flex-col items-center'>
 					<span
-						className='font-[family-name:var(--font-mono)] text-lg font-bold'
+						className='font-[family-name:var(--font-mono)] text-2xl font-bold md:text-3xl'
 						style={{ color: EMERALD_AA }}
 					>
 						50%
 					</span>
-					<span className='font-[family-name:var(--font-mono)] text-[8px] uppercase tracking-[0.12em] text-cc-text-secondary-warm'>
+					<span className='mt-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
 						Faster Ramp
 					</span>
 				</div>
-				<div className='h-6 w-px bg-cc-warm-border' aria-hidden='true' />
+				<div className='h-8 w-px bg-cc-warm-border' aria-hidden='true' />
 				<div className='flex flex-col items-center'>
 					<span
-						className='font-[family-name:var(--font-mono)] text-lg font-bold'
+						className='font-[family-name:var(--font-mono)] text-2xl font-bold md:text-3xl'
 						style={{ color: EMERALD_AA }}
 					>
 						30%
 					</span>
-					<span className='font-[family-name:var(--font-mono)] text-[8px] uppercase tracking-[0.12em] text-cc-text-secondary-warm'>
+					<span className='mt-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
 						More Deals
 					</span>
 				</div>
 			</div>
 		),
-		/* Centered above the headline. Horizontal centering via auto margins
-		 * (not transform) so the Motion `translate(y)` entrance doesn't
-		 * compose with an x-transform. */
-		className: 'absolute top-[18%] left-0 right-0 mx-auto w-[240px] md:top-[22%]',
 	},
 ] as const
 
@@ -599,12 +463,48 @@ function ReviewCard({ quote }: Review): ReactElement {
 export default function SectionResults(): ReactElement {
 	return (
 		<section id='results' data-surface='warm' className='relative bg-cc-warm'>
-			{/* ── Billboard top: headline as gravity centre, 8 proof cards orbit ── */}
-			<div className='relative min-h-[92vh] overflow-hidden'>
-				{/* Desktop: ambient proof cards absolutely positioned around the headline.
-				    Hidden on mobile — cards stack vertically below the headline instead. */}
-				<div className='pointer-events-none absolute inset-0 hidden md:block'>
-					{CARDS.map((card, i) => (
+			{/* ── Billboard top: headline + anchor stats grid below ──
+			 * Reworked 2026-04-24 (Wave F2 G1/G2). Replaces the pinterest-float
+			 * orbit composition (8 stats scattered around the heading) with a
+			 * tight responsive grid (4 stat chips + 1 gains strip) below the new
+			 * heading. New heading de-repeats "getting better" copy thesis in
+			 * favour of an active verb rhythm tying practice → improvement. */}
+			<div className='relative overflow-hidden py-24 md:py-32'>
+				<div className='relative z-10 mx-auto flex max-w-5xl flex-col items-center gap-5 px-6 text-center'>
+					<motion.p
+						initial={{ opacity: 0, y: 12 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }}
+						className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.22em] text-cc-text-secondary-warm md:text-xs'
+					>
+						Real numbers. Real closers.
+					</motion.p>
+					<motion.h2
+						initial={{ opacity: 0, y: 30 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const }}
+						className='text-balance text-cc-text-primary-warm'
+						style={{
+							fontFamily: 'var(--font-heading)',
+							fontWeight: 700,
+							fontSize: 'clamp(2.25rem, 8vw, 6.5rem)',
+							lineHeight: 0.98,
+							letterSpacing: '-0.015em',
+						}}
+					>
+						Every call, scored.
+						<br className='hidden sm:block' />
+						{' '}Every rep, <span style={{ fontStyle: 'italic' }}>improving</span>.
+					</motion.h2>
+				</div>
+
+				{/* Anchor stats grid. 4 chips + gains strip — 4-col on desktop, 2-col
+				 * on tablet, 1-col stack on mobile. Gains strip spans full width on
+				 * all viewports (grid column 1 / -1). */}
+				<div className='mx-auto mt-14 grid max-w-5xl grid-cols-2 gap-4 px-6 md:mt-16 md:grid-cols-4 md:gap-5'>
+					{CARDS.slice(0, 4).map((card, i) => (
 						<motion.div
 							key={card.id}
 							custom={i}
@@ -612,67 +512,22 @@ export default function SectionResults(): ReactElement {
 							whileInView='visible'
 							viewport={{ once: true, amount: 0.3 }}
 							variants={cardVariant}
-							className={`${card.className} rounded-xl border border-cc-warm-border bg-cc-warm-secondary/90 p-4 shadow-[0_2px_16px_rgba(0,0,0,0.04)] backdrop-blur-sm`}
+							className='rounded-xl border border-cc-warm-border bg-cc-warm-secondary/90 p-5 shadow-[0_2px_16px_rgba(0,0,0,0.04)]'
 						>
 							{card.content}
 						</motion.div>
 					))}
-				</div>
-
-				{/* Headline — absolute gravity centre. Overline sits directly above it.
-				 * Font sized to the original 10vw/8rem clamp for billboard impact;
-				 * forced `<br/>` between "Prove" and "You're" keeps it to two
-				 * lines at all viewports. Inner wrapper drops max-w so the lines
-				 * can breathe on wide displays without auto-wrapping. Section
-				 * overflow-hidden clips anything that squeaks past the edge. */}
-				<div className='relative z-10 flex min-h-[92vh] items-center justify-center px-6'>
-					<div className='flex flex-col items-center gap-5 text-center'>
-						<motion.p
-							initial={{ opacity: 0, y: 12 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							viewport={{ once: true }}
-							transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }}
-							className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.22em] text-cc-text-secondary-warm md:text-xs'
-						>
-							Real numbers. Real closers.
-						</motion.p>
-						<motion.h2
-							initial={{ opacity: 0, y: 30 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							viewport={{ once: true }}
-							transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const }}
-							className='text-cc-text-primary-warm'
-							style={{
-								fontFamily: 'var(--font-heading)',
-								fontWeight: 700,
-								fontSize: 'clamp(2.25rem, 10vw, 8rem)',
-								lineHeight: 0.96,
-								letterSpacing: '-0.015em',
-							}}
-						>
-							The Numbers That Prove
-							<br className='hidden sm:block' />
-							{' '}You&rsquo;re <span style={{ fontStyle: 'italic' }}>Getting Better</span>.
-						</motion.h2>
-					</div>
-				</div>
-
-				{/* Mobile fallback: stack the proof cards below the centred headline.
-				    Desktop hides this via md:hidden; cards then absolute-position above. */}
-				<div className='mx-auto flex max-w-md flex-col gap-4 px-6 pb-10 md:hidden'>
-					{CARDS.map((card, i) => (
-						<motion.div
-							key={card.id}
-							custom={i}
-							initial='hidden'
-							whileInView='visible'
-							viewport={{ once: true, amount: 0.3 }}
-							variants={cardVariant}
-							className='rounded-xl border border-cc-warm-border bg-cc-warm-secondary/90 p-4 shadow-[0_2px_16px_rgba(0,0,0,0.04)]'
-						>
-							{card.content}
-						</motion.div>
-					))}
+					<motion.div
+						key={CARDS[4].id}
+						custom={4}
+						initial='hidden'
+						whileInView='visible'
+						viewport={{ once: true, amount: 0.3 }}
+						variants={cardVariant}
+						className='col-span-2 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/90 p-5 shadow-[0_2px_16px_rgba(0,0,0,0.04)] md:col-span-4'
+					>
+						{CARDS[4].content}
+					</motion.div>
 				</div>
 			</div>
 
