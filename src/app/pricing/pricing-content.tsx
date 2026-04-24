@@ -168,12 +168,17 @@ const FAQ_ITEMS = [
 
 /* ---------- Trust signal logos ---------- */
 
+/* F3-L1 (2026-04-24): width/height set to native SVG viewBox proportions so
+ * Next Image keeps intrinsic aspect ratio. CSS `h-6 w-auto` caps the row to
+ * uniform height; width scales from the native ratio. Prior 64-72 × 28
+ * dimensions forced 2.3-2.6:1 on logos whose native ratios range 1:1 to 7:1,
+ * visibly squishing Toyota, State Farm, and RE/MAX. */
 const TRUST_LOGOS = [
-	{ src: '/logos/toyota.svg', alt: 'Toyota', w: 64, h: 28 },
-	{ src: '/logos/state-farm.svg', alt: 'State Farm', w: 72, h: 28 },
-	{ src: '/logos/vivint.svg', alt: 'Vivint', w: 64, h: 28 },
-	{ src: '/logos/fidelity.svg', alt: 'Fidelity', w: 72, h: 28 },
-	{ src: '/logos/remax.svg', alt: 'RE/MAX', w: 64, h: 28 },
+	{ src: '/logos/toyota.svg', alt: 'Toyota', w: 168, h: 24 },
+	{ src: '/logos/state-farm.svg', alt: 'State Farm', w: 171, h: 24 },
+	{ src: '/logos/vivint.svg', alt: 'Vivint', w: 24, h: 24 },
+	{ src: '/logos/fidelity.svg', alt: 'Fidelity', w: 92, h: 28 },
+	{ src: '/logos/remax.svg', alt: 'RE/MAX', w: 152, h: 28 },
 ] as const
 
 /* ---------- Label tone map ---------- */
