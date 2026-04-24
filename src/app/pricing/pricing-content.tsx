@@ -297,8 +297,11 @@ export default function PricingContent() {
 										}`}
 									>
 										{/* Most Popular badge (top-right absolute, Closer only) */}
+										{/* F3-M4 (2026-04-24): text-cc-foundation (~11:1) replaces
+										 * text-white (2.85:1) on emerald bg. WCAG AA for small text
+										 * requires 4.5:1. */}
 										{tier.highlighted && (
-											<span className='absolute -top-3 right-6 rounded-full bg-cc-accent px-3 py-1 text-xs font-semibold text-white'>
+											<span className='absolute -top-3 right-6 rounded-full bg-cc-accent px-3 py-1 text-xs font-semibold text-cc-foundation'>
 												{tier.badge}
 											</span>
 										)}
