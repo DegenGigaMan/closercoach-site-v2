@@ -117,7 +117,7 @@ export default function Header() {
 							className="py-3 text-lg text-cc-text-secondary"
 							style={{ minHeight: 48 }}
 						>
-							Contact Sales
+							Book a Demo
 						</Link>
 					</div>
 				</div>

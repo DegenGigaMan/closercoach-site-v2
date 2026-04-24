@@ -106,7 +106,7 @@ const FAQS: readonly FAQItem[] = [
 	},
 	{
 		id: 'sales-contact',
-		question: 'How do I contact sales?',
+		question: 'How do I book a demo?',
 		answer:
 			'Book a 30-minute demo with Taylor, our Head of Growth, at calendly.com/taylor-closercoach/demo. For business propositions or custom integrations, use the Intercom widget at the bottom right of this page or email hello@closercoach.ai.',
 	},

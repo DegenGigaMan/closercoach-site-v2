@@ -14,7 +14,7 @@
  *   3. Cost-of-Inaction block (CR-4) — IB1/IB2/IB3/IB4 + $49 kill-shot.
  *   4. Competitive Pricing row (CR-2) — CC $49 vs Rilla / Siro / Hyperbound.
  *   5. Compliance strip — SOC2 · GDPR · SSO · SAML · Audit Log · Data Residency.
- *   6. Dual CTAs — "Contact Sales" (Calendly) + "Try for Free" (/download).
+ *   6. Dual CTAs — "Book a Demo" (Calendly) + "Try for Free" (/download).
  *
  * Surface: dark (cc-foundation #0D0F14). Returns from S5.5 warm.
  * Copy locked to lp-copy-deck-v5 § Section 6 + blueprint § S6.
@@ -402,7 +402,7 @@ export default function SectionTeams(): ReactElement {
 				{/* ── CTAs ── */}
 				<Reveal delay={0.1} className='mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center'>
 					<MotionCTA variant='primary' size='lg' href={BRAND.calendly}>
-						Contact Sales
+						Book a Demo
 					</MotionCTA>
 					<MotionCTA variant='secondary' size='lg' href='/download'>
 						Try for Free

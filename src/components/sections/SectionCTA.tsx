@@ -185,14 +185,14 @@ export default function SectionCTA() {
 						</span>
 					</div>
 
-					{/* Secondary CTA -- Contact Sales for Teams */}
+					{/* Secondary CTA -- Book a Demo for Teams */}
 					<Link
 						href={BRAND.calendly}
 						target='_blank'
 						rel='noopener noreferrer'
 						className='text-sm text-cc-accent underline-offset-4 transition-colors hover:text-cc-accent-hover hover:underline focus-visible:outline-none focus-visible:underline'
 					>
-						Contact Sales for Teams
+						Book a Demo for Teams
 					</Link>
 				</ScrollReveal>
 			</div>

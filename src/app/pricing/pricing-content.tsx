@@ -154,7 +154,7 @@ const FAQ_ITEMS = [
 	},
 	{
 		question: 'Does Enterprise include SSO and audit logs?',
-		answer: 'Yes. Enterprise adds single sign-on (SSO / SAML), role-based admin controls, compliance and audit logging, custom SLA, and enterprise-grade security on top of everything in Teams. Contact sales for volume pricing and a custom integration scope.',
+		answer: 'Yes. Enterprise adds single sign-on (SSO / SAML), role-based admin controls, compliance and audit logging, custom SLA, and enterprise-grade security on top of everything in Teams. Book a demo for volume pricing and a custom integration scope.',
 	},
 	{
 		question: 'How is the yearly discount calculated?',
