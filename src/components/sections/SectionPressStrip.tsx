@@ -1,48 +1,37 @@
-/** @fileoverview Press Strip ("As Seen In"). Dark thin strip between S2 warm and
- * S3 dark. CU-3 treatment per visual-asset-ideation-2026-04-08. Left 60%: "Featured
- * in" label + 6 press outlets as Geist Mono wordmarks (typographic, Attio-style
- * sparse execution). Right 40%: Lora Bold Italic pull quote "The Duolingo for
- * sales." + Hypepotamus attribution. Vertical emerald-tinted hairline between.
- * Top and bottom AK-system hairlines frame the strip. Mobile stacks vertically. */
+/** @fileoverview Press Strip ("As Seen In"). Dark section between S2 warm and
+ * S3 dark. Per Alim feedback D2 (2026-04-23): the dual-column layout read as
+ * two competing moments -- outlet list flat, pull-quote orphaned. Reworked to
+ * lead with the pull-quote as the centerpiece and demote the 6 outlets to a
+ * sub-layer beneath. Option (a) from synthesis §1.D2.
+ *
+ * Composition (top to bottom):
+ *   1. "FEATURED IN" kicker (mono emerald, small caps).
+ *   2. Pull-quote hero: "The Duolingo for sales." (Lora Bold Italic, large,
+ *      "Duolingo" in emerald).
+ *   3. Attribution line: HYPEPOTAMUS · MARCH 2026 (middle dot separator, no
+ *      em dashes).
+ *   4. Outlet sub-layer: 6 outlet names in Geist Mono, middle-dot separated on
+ *      desktop, wraps cleanly on mobile.
+ *
+ * AK hairlines frame top + bottom. No vertical divider (dual-column artifact). */
 
 'use client'
 
 const PRESS_OUTLETS = [
-	{ name: 'Hypepotamus', mobilePriority: true },
-	{ name: 'CompleteAITraining', mobilePriority: true },
-	{ name: 'IT-Boltwise', mobilePriority: false },
-	{ name: 'LinkedIn Daily AI Pulse', mobilePriority: true },
-	{ name: 'Rep Hub', mobilePriority: false },
-	{ name: 'H.I.G.H. Podcast', mobilePriority: true },
+	'Hypepotamus',
+	'CompleteAITraining',
+	'IT-Boltwise',
+	'LinkedIn Daily AI Pulse',
+	'Rep Hub',
+	'H.I.G.H. Podcast',
 ] as const
 
-/**
- * @description Single press-outlet wordmark. Geist Mono, muted uppercase. Subtle
- * outline on mobile (adds visual weight); pure type on desktop for editorial calm.
- */
-function PressWordmark({ name, hiddenOnMobile }: { name: string; hiddenOnMobile: boolean }) {
-	return (
-		<span
-			className={`font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.16em] text-cc-text-muted/70 transition-colors duration-300 hover:text-cc-text-secondary ${
-				hiddenOnMobile ? 'hidden md:inline-flex' : ''
-			}`}
-		>
-			{name}
-		</span>
-	)
-}
-
-/**
- * @description Press Strip. Dark surface, thin (~120px desktop). Horizontal split
- * 60/40 desktop; stacks vertically on mobile with horizontal hairline between
- * logos row and quote block.
- */
 export default function SectionPressStrip() {
 	return (
 		<section
 			id='press-strip'
 			data-surface='dark'
-			className='relative bg-cc-foundation py-10 md:py-8'
+			className='relative bg-cc-foundation py-20 md:py-28'
 		>
 			{/* Top AK hairline */}
 			<div
@@ -50,58 +39,57 @@ export default function SectionPressStrip() {
 				aria-hidden='true'
 			/>
 
-			<div className='mx-auto max-w-7xl px-6'>
-				<div className='flex flex-col items-stretch gap-6 md:flex-row md:items-center md:gap-0'>
-					{/* Left 60%: press logos */}
-					<div className='flex flex-col gap-3 md:w-[60%] md:pr-8'>
-						<span className='font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.22em] text-cc-text-muted/50'>
-							Featured in
+			<div className='mx-auto max-w-4xl px-6 text-center'>
+				{/* Kicker */}
+				<p className='font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.22em] text-cc-accent'>
+					Featured in
+				</p>
+
+				{/* Pull-quote hero */}
+				<blockquote className='mt-6 md:mt-8'>
+					<p
+						className='text-cc-text-primary text-[2.5rem] leading-[1.05] md:text-6xl lg:text-7xl'
+						style={{
+							fontFamily: 'var(--font-heading)',
+							fontStyle: 'italic',
+							fontWeight: 700,
+						}}
+					>
+						&ldquo;The{' '}
+						<span className='text-cc-accent'>Duolingo</span>
+						{' '}for sales.&rdquo;
+					</p>
+					<footer className='mt-5 md:mt-7'>
+						<span className='inline-flex items-center gap-2 font-[family-name:var(--font-mono)] text-[11px] uppercase tracking-[0.22em] text-cc-text-secondary'>
+							Hypepotamus
+							<span
+								aria-hidden='true'
+								className='inline-block h-[3px] w-[3px] rounded-full bg-cc-accent/60'
+							/>
+							March 2026
 						</span>
-						<div className='flex flex-wrap items-center gap-x-5 gap-y-3 md:gap-x-7'>
-							{PRESS_OUTLETS.map((outlet) => (
-								<PressWordmark
-									key={outlet.name}
-									name={outlet.name}
-									hiddenOnMobile={!outlet.mobilePriority}
-								/>
-							))}
-						</div>
-					</div>
+					</footer>
+				</blockquote>
 
-					{/* Mobile horizontal hairline */}
+				{/* Outlet sub-layer */}
+				<div className='mt-12 md:mt-16'>
 					<div
-						className='h-px w-full bg-gradient-to-r from-transparent via-cc-accent/15 to-transparent md:hidden'
-						aria-hidden='true'
-					/>
-
-					{/* Desktop vertical hairline (AK system) */}
-					<div
-						className='hidden w-px self-stretch bg-gradient-to-b from-transparent via-cc-accent/20 to-transparent md:block'
-						aria-hidden='true'
-					/>
-
-					{/* Right 40%: pull quote */}
-					<div className='md:w-[40%] md:pl-8'>
-						<blockquote>
-							<p
-								className='text-xl leading-snug text-cc-text-primary md:text-2xl'
-								style={{
-									fontFamily: 'var(--font-heading)',
-									fontStyle: 'italic',
-									fontWeight: 700,
-								}}
-							>
-								&ldquo;The{' '}
-								<span className='text-cc-accent'>Duolingo</span>
-								{' '}for sales.&rdquo;
-							</p>
-							<footer className='mt-3 flex items-center gap-2'>
-								<div className='h-3 w-px bg-cc-accent/40' aria-hidden='true' />
-								<span className='font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.18em] text-cc-text-muted'>
-									Hypepotamus, March 2026
+						className='flex flex-wrap items-center justify-center gap-x-4 gap-y-2 md:gap-x-6'
+						aria-label='Press outlets'
+					>
+						{PRESS_OUTLETS.map((name, i) => (
+							<span key={name} className='inline-flex items-center gap-x-4 md:gap-x-6'>
+								<span className='font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.18em] text-cc-text-muted/75 transition-colors duration-300 hover:text-cc-text-secondary'>
+									{name}
 								</span>
-							</footer>
-						</blockquote>
+								{i < PRESS_OUTLETS.length - 1 && (
+									<span
+										aria-hidden='true'
+										className='inline-block h-[2px] w-[2px] rounded-full bg-cc-accent/30'
+									/>
+								)}
+							</span>
+						))}
 					</div>
 				</div>
 			</div>
