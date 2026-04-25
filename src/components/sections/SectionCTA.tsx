@@ -19,7 +19,7 @@ import { BRAND } from '@/lib/constants'
 
 /* QR destination -- absolute URL so scans resolve from print/screenshots too.
  * Points at the /download page for platform detection and store routing. */
-const QR_DESTINATION = 'https://closercoach-site-v2.vercel.app/download'
+const QR_DESTINATION = 'https://closercoach-site-v2.vercel.app/download?source=qr-cta'
 const WHATSAPP_URL = 'https://chat.whatsapp.com/HkG7urngZAV4wV9Ufd02Z1'
 
 /**

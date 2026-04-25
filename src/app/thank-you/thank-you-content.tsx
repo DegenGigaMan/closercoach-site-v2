@@ -19,13 +19,17 @@ import {
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
 import { BRAND, STATS } from '@/lib/constants'
 
-const QR_DESTINATION = 'https://closercoach-site-v2.vercel.app/download'
+const QR_DESTINATION = 'https://closercoach-site-v2.vercel.app/download?source=qr-thankyou'
 const WHATSAPP_URL = 'https://chat.whatsapp.com/HkG7urngZAV4wV9Ufd02Z1'
 const INSTAGRAM_URL = 'https://instagram.com/closercoach'
 const TIKTOK_URL = 'https://tiktok.com/@closercoach'
 const LINKEDIN_URL = 'https://linkedin.com/company/closercoach'
 
-export default function ThankYouContent() {
+type Props = {
+	firstName?: string
+}
+
+export default function ThankYouContent({ firstName }: Props) {
 	return (
 		<div
 			data-surface='dark-cta'
@@ -52,7 +56,15 @@ export default function ThankYouContent() {
 					</span>
 
 					<h1 className='mt-6 display-lg text-white md:display-xl'>
-						You are <span className='italic text-cc-accent'>in</span>.
+						{firstName ? (
+							<>
+								You are <span className='italic text-cc-accent'>in</span>, {firstName}.
+							</>
+						) : (
+							<>
+								You are <span className='italic text-cc-accent'>in</span>.
+							</>
+						)}
 					</h1>
 					<p className='mt-5 text-lg text-cc-text-secondary md:text-xl'>
 						Your {STATS.trialDays}-day free trial just started.

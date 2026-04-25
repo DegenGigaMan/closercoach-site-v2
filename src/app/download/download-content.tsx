@@ -3,17 +3,18 @@
 
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { QRCodeSVG } from 'qrcode.react'
 import { motion, useReducedMotion } from 'motion/react'
-import { Star, Users, Clock, ShieldCheck } from '@phosphor-icons/react'
+import { Star, Users, Clock, ShieldCheck, CircleNotch } from '@phosphor-icons/react'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
 import { BRAND, STATS, getStoreUrl } from '@/lib/constants'
 
-/** QR points at the deployed /download URL so scans resolve from print/screenshots. */
-const QR_DESTINATION = 'https://closercoach-site-v2.vercel.app/download'
+/** QR points at the deployed /download URL so scans resolve from print/screenshots.
+ * source=qr-download lets PostHog split self-link QR scans from organic traffic. */
+const QR_DESTINATION = 'https://closercoach-site-v2.vercel.app/download?source=qr-download'
 
 type ProofPill = {
 	icon: typeof Star
@@ -29,12 +30,18 @@ const PROOF_PILLS: ProofPill[] = [
 
 export default function DownloadContent() {
 	const prefersReducedMotion = useReducedMotion() ?? false
+	const [redirectStore, setRedirectStore] = useState<string | null>(null)
 
+	/* On mobile, auto-redirect to the right store via getStoreUrl(). 250ms delay
+	 * gives the overlay time to paint so the user sees "going somewhere" instead
+	 * of a flash. Desktop stays on the page (helper returns '/download'). */
 	useEffect(() => {
 		const target = getStoreUrl()
-		if (target !== '/download') {
-			window.location.replace(target)
-		}
+		if (target === '/download') return
+		// eslint-disable-next-line react-hooks/set-state-in-effect
+		setRedirectStore(target.includes('apps.apple.com') ? 'App Store' : 'Play Store')
+		const t = setTimeout(() => window.location.replace(target), 250)
+		return () => clearTimeout(t)
 	}, [])
 
 	return (
@@ -42,6 +49,22 @@ export default function DownloadContent() {
 			data-surface='dark-cta'
 			className='relative overflow-hidden bg-cc-foundation'
 		>
+			{redirectStore && (
+				<div
+					role='status'
+					aria-live='polite'
+					className='fixed inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-cc-foundation/95 backdrop-blur-sm'
+				>
+					<CircleNotch
+						weight='regular'
+						className='h-10 w-10 animate-spin text-cc-accent'
+						aria-hidden='true'
+					/>
+					<p className='font-mono text-sm uppercase tracking-[0.2em] text-cc-accent'>
+						Opening {redirectStore}…
+					</p>
+				</div>
+			)}
 			{/* L1: Contracting radial gradient, emerald bias */}
 			<div
 				className='pointer-events-none absolute inset-0 z-0'
