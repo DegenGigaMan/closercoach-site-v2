@@ -18,6 +18,7 @@
 	/* Primary accent -- Emerald */
 	--color-cc-accent: #10B981;
 	--color-cc-accent-hover: #059669;
+	--color-cc-accent-on-warm: #047857;
 	--color-cc-accent-glow: oklch(from #10B981 l c h / 15%);
 	--color-cc-accent-muted: oklch(from #10B981 l c h / 40%);
 
