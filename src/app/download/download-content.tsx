@@ -3,13 +3,14 @@
 
 'use client'
 
+import { useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { QRCodeSVG } from 'qrcode.react'
 import { motion, useReducedMotion } from 'motion/react'
 import { Star, Users, Clock, ShieldCheck } from '@phosphor-icons/react'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
-import { BRAND, STATS } from '@/lib/constants'
+import { BRAND, STATS, getStoreUrl } from '@/lib/constants'
 
 /** QR points at the deployed /download URL so scans resolve from print/screenshots. */
 const QR_DESTINATION = 'https://closercoach-site-v2.vercel.app/download'
@@ -28,6 +29,13 @@ const PROOF_PILLS: ProofPill[] = [
 
 export default function DownloadContent() {
 	const prefersReducedMotion = useReducedMotion() ?? false
+
+	useEffect(() => {
+		const target = getStoreUrl()
+		if (target !== '/download') {
+			window.location.replace(target)
+		}
+	}, [])
 
 	return (
 		<div
