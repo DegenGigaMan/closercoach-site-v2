@@ -25,6 +25,7 @@
 	/* CloserCoach brand colors -- VIS Section 1 */
 	/* Dark surfaces */
 	--color-cc-foundation: #0D0F14;
+	--color-cc-foundation-deep: #0B1314;
 	--color-cc-surface: #1A1D26;
 	--color-cc-surface-card: #1E2230;
 	--color-cc-surface-border: oklch(1 0 0 / 6%);
@@ -39,6 +40,8 @@
 
 	/* Victory mint -- success/CTA moments only (Hero S1 ready, S4 grade reveal) */
 	--color-cc-mint: #34E18E;
+	/* Bright neon mint -- Header CTA only (brighter than cc-mint for chrome attention pull) */
+	--color-cc-mint-bright: #13FFB1;
 
 	/* Secondary accent -- Amber */
 	--color-cc-amber: #F59E0B;

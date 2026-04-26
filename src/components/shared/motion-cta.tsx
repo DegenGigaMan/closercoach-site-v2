@@ -1,10 +1,11 @@
 /** @fileoverview Shared MotionCTA component with spring physics for hover/tap.
  * Styling ported from Figma node 85:15957 (Wave F.1 sitewide CTA spec, 2026-04-26):
- *   - Primary: pill (rounded-full), bg #34E18E, black text, Plus Jakarta Sans
- *     Bold (700) 16px / leading-18, padding 16/24, always-on emerald glow
- *     `0 4px 12px rgba(29,184,104,0.4)`.
- *   - Secondary: pill, bg #0B1314 + border #10B981 + text #34E18E +
- *     backdrop-blur-12, Plus Jakarta Sans Medium (500) 16px / leading-28.
+ *   - Primary: pill (rounded-full), bg cc-mint (#34E18E), text cc-foundation,
+ *     Plus Jakarta Sans Bold (700) 16px / leading-18, padding 16/24,
+ *     always-on emerald glow `0 4px 12px rgba(29,184,104,0.4)`.
+ *   - Secondary: pill, bg cc-foundation-deep (#0B1314) + border cc-accent
+ *     (#10B981) + text cc-mint (#34E18E) + backdrop-blur-12, Plus Jakarta
+ *     Sans Medium (500) 16px / leading-28.
  *   - Ghost: inline emerald text link, no pill (unchanged from prior spec).
  * Header CTAs do NOT use this component (raw <Link> in Header.tsx) so they're
  * unaffected by this default. The `chrome` boolean opt-out is provided
@@ -56,9 +57,9 @@ const sitewidePadding = 'px-6 py-4 text-[16px]'
  * hover only. Ghost keeps the underline treatment. */
 const variantStyles: Record<Variant, string> = {
 	primary:
-		'rounded-full bg-[#34E18E] text-cc-foundation shadow-[0_4px_12px_rgba(29,184,104,0.4)] hover:bg-[#34E18E]',
+		'rounded-full bg-cc-mint text-cc-foundation shadow-[0_4px_12px_rgba(29,184,104,0.4)] hover:bg-cc-mint',
 	secondary:
-		'rounded-full border border-cc-accent bg-[#0B1314] text-[#34E18E] backdrop-blur-[12px] hover:border-cc-accent-hover hover:bg-[#0B1314]',
+		'rounded-full border border-cc-accent bg-cc-foundation-deep text-cc-mint backdrop-blur-[12px] hover:border-cc-accent-hover hover:bg-cc-foundation-deep',
 	ghost: 'rounded-lg text-cc-accent hover:text-cc-accent-hover hover:underline',
 }
 
