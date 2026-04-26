@@ -5,12 +5,16 @@
  *     "Suggestion" emerald mono label (right).
  *   ─ Top emphasized row (rank 1, ~floating off the stack): Sarah Chen +
  *     Strong Hire emerald pill, with elevated shadow.
- *   ─ Stacked candidate rows (4 more): Sarah Chen × 4 with descending hire
- *     suggestion pills: Strong Hire / Good Hire / Good Fit / Pass. Pass uses
- *     red border + red text on dark (the only "no" in the field).
+ *   ─ Stacked candidate rows (4 more): 4 distinct candidates with descending
+ *     hire suggestion pills: Strong Hire / Good Hire / Good Fit / Pass. Pass
+ *     uses red border + red text on dark (the only "no" in the field).
  *
- * The repeated "Sarah Chen" name is intentional — emphasizes that the AI
- * grades on roleplay performance, not name/resume signals. */
+ * Wave N (FIX-01): replaced 5x repeated Sarah Chen with 5 distinct
+ * candidates so the card no longer reads as placeholder data. Each row pairs
+ * a unique name with a unique portrait drawn from the real Pexels avatar
+ * pool already shipped with the repo (step1/ + avatars/). Card C2 keeps the
+ * emphasized rank-25 Sarah Chen as THE star rep — Card C5 shows the 5
+ * distinct candidates being evaluated. */
 
 'use client'
 
@@ -18,18 +22,16 @@ import Image from 'next/image'
 import type { ReactElement } from 'react'
 import { Sparkle } from '@phosphor-icons/react'
 
-const SARAH = '/images/step1/avatar-sarah-v2.png'
-
 type Verdict = 'strong-hire' | 'good-hire' | 'good-fit' | 'pass'
 
-type Row = { verdict: Verdict; emphasised?: boolean }
+type Row = { name: string; avatar: string; verdict: Verdict; emphasised?: boolean }
 
 const ROWS: readonly Row[] = [
-	{ verdict: 'strong-hire', emphasised: true },
-	{ verdict: 'strong-hire' },
-	{ verdict: 'good-hire' },
-	{ verdict: 'good-fit' },
-	{ verdict: 'pass' },
+	{ name: 'Sarah Chen', avatar: '/images/step1/avatar-sarah-v2.png', verdict: 'strong-hire', emphasised: true },
+	{ name: 'Marcus Rivera', avatar: '/images/step1/avatar-marcus-face.png', verdict: 'strong-hire' },
+	{ name: 'Priya Patel', avatar: '/images/avatars/closer-1.png', verdict: 'good-hire' },
+	{ name: 'Tom Walsh', avatar: '/images/avatars/closer-2.png', verdict: 'good-fit' },
+	{ name: 'Jordan Kim', avatar: '/images/avatars/closer-3.png', verdict: 'pass' },
 ] as const
 
 function VerdictPill({ verdict }: { verdict: Verdict }): ReactElement {
@@ -47,7 +49,7 @@ function VerdictPill({ verdict }: { verdict: Verdict }): ReactElement {
 	)
 }
 
-function CandidateRow({ verdict, emphasised = false }: Row): ReactElement {
+function CandidateRow({ name, avatar, verdict, emphasised = false }: Row): ReactElement {
 	return (
 		<div
 			className={`relative flex items-center gap-2.5 rounded-xl px-3 py-2 ${
@@ -57,9 +59,9 @@ function CandidateRow({ verdict, emphasised = false }: Row): ReactElement {
 			}`}
 		>
 			<div className='relative h-6 w-6 shrink-0 overflow-hidden rounded-full ring-1 ring-cc-surface-border'>
-				<Image src={SARAH} alt='Sarah Chen' fill sizes='24px' className='object-cover' unoptimized />
+				<Image src={avatar} alt={name} fill sizes='24px' className='object-cover' unoptimized />
 			</div>
-			<span className='text-trim flex-1 text-[12px] font-medium text-white/85'>Sarah Chen</span>
+			<span className='text-trim flex-1 text-[12px] font-medium text-white/85'>{name}</span>
 			<VerdictPill verdict={verdict} />
 		</div>
 	)
@@ -85,8 +87,8 @@ export default function HireBetterFasterVisual(): ReactElement {
 
 			{/* Stacked rows */}
 			<div className='mt-2.5 flex flex-col gap-1.5'>
-				{ROWS.map((row, i) => (
-					<CandidateRow key={i} {...row} />
+				{ROWS.map((row) => (
+					<CandidateRow key={row.name} {...row} />
 				))}
 			</div>
 		</div>
