@@ -347,7 +347,7 @@ function HubSpokeProof(): ReactElement {
 						gradientStartColor='#34d399'
 						gradientStopColor={EMERALD_AA}
 						pathColor='#94a3b8'
-						pathOpacity={0.18}
+						pathOpacity={0.28}
 						pathWidth={1.5}
 						curvature={i === 0 || i === 1 ? 30 : -30}
 						duration={3.4}
