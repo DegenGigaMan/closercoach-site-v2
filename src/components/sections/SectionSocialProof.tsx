@@ -19,16 +19,21 @@ const AVATARS = [
 	{ src: '/images/avatars/closer-3.svg', alt: 'Closer placeholder 3' },
 ] as const
 
+/* Per-logo heightClass per Figma 36:110. Each brand carries a different stroke
+ * weight + wordmark proportion, so a uniform height collapses visual balance
+ * (Sunrun looks oversized at h-8, Liberty Mutual looks compressed). Heights
+ * here match the Figma roster spec. Marquee container vertically centers
+ * mixed-height children. */
 const LOGOS = [
-	{ name: 'Toyota', file: '/logos/toyota.svg', width: 196, height: 28 },
-	{ name: 'State Farm', file: '/logos/state-farm.svg', width: 171, height: 24 },
-	{ name: 'Mercedes-Benz', file: '/logos/mercedes-benz.svg', width: 196, height: 32 },
-	{ name: 'Morgan Stanley', file: '/logos/morgan-stanley.svg', width: 167, height: 24 },
-	{ name: 'Liberty Mutual', file: '/logos/liberty-mutual.svg', width: 158, height: 40 },
-	{ name: 'Sunrun', file: '/logos/sunrun.svg', width: 105, height: 20 },
-	{ name: 'Family First Life', file: '/logos/family-first-life.png', width: 160, height: 34 },
-	{ name: 'Coverd', file: '/logos/coverd.svg', width: 127, height: 28 },
-	{ name: 'Aroma360', file: '/logos/aroma360.svg', width: 253, height: 24 },
+	{ name: 'Toyota', file: '/logos/toyota.svg', width: 196, height: 28, heightClass: 'h-[22px]' },
+	{ name: 'State Farm', file: '/logos/state-farm.svg', width: 171, height: 24, heightClass: 'h-[22px]' },
+	{ name: 'Mercedes-Benz', file: '/logos/mercedes-benz.svg', width: 196, height: 32, heightClass: 'h-8' },
+	{ name: 'Morgan Stanley', file: '/logos/morgan-stanley.svg', width: 167, height: 24, heightClass: 'h-[22px]' },
+	{ name: 'Liberty Mutual', file: '/logos/liberty-mutual.svg', width: 158, height: 40, heightClass: 'h-9' },
+	{ name: 'Sunrun', file: '/logos/sunrun.svg', width: 105, height: 20, heightClass: 'h-5' },
+	{ name: 'Family First Life', file: '/logos/family-first-life.png', width: 160, height: 34, heightClass: 'h-7' },
+	{ name: 'Coverd', file: '/logos/coverd.svg', width: 127, height: 28, heightClass: 'h-7' },
+	{ name: 'Aroma360', file: '/logos/aroma360.svg', width: 253, height: 24, heightClass: 'h-5' },
 ] as const
 
 /**
@@ -41,7 +46,7 @@ function LogoPass({ ariaHidden = false }: { ariaHidden?: boolean }) {
 			{LOGOS.map((logo) => (
 				<div
 					key={`${ariaHidden ? 'b' : 'a'}-${logo.name}`}
-					className='mx-8 inline-flex shrink-0 select-none items-center'
+					className='mx-9 inline-flex shrink-0 select-none items-center'
 					aria-label={ariaHidden ? undefined : logo.name}
 				>
 					<Image
@@ -49,7 +54,7 @@ function LogoPass({ ariaHidden = false }: { ariaHidden?: boolean }) {
 						alt={ariaHidden ? '' : logo.name}
 						width={logo.width}
 						height={logo.height}
-						className='h-8 w-auto object-contain'
+						className={`${logo.heightClass} w-auto object-contain`}
 						loading='lazy'
 					/>
 				</div>
@@ -131,12 +136,20 @@ export default function SectionSocialProof() {
 								</div>
 							))}
 						</div>
-						<div className='flex flex-col leading-tight'>
-							<span className='font-[family-name:var(--font-mono)] text-sm font-semibold text-cc-accent-on-warm'>
-								+ 19,997
+						<div className='flex flex-col gap-2'>
+							<span
+								className='text-trim text-cc-accent-on-warm'
+								style={{
+									fontFamily: 'var(--font-heading)',
+									fontWeight: 700,
+									fontSize: '20px',
+									lineHeight: 'normal',
+								}}
+							>
+								19,997+
 							</span>
-							<span className='text-xs text-cc-text-secondary-warm'>
-								closers
+							<span className='text-trim text-xs leading-[16px] text-cc-text-secondary-warm'>
+								sales closers
 							</span>
 						</div>
 					</div>

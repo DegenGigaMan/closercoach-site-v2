@@ -12,7 +12,7 @@
 
 import { useSyncExternalStore } from 'react'
 import Image from 'next/image'
-import { Star, AppleLogo, AndroidLogo, Globe } from '@phosphor-icons/react'
+import { AppleLogo, AndroidLogo, Globe } from '@phosphor-icons/react'
 import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react'
 import { BRAND, CTA, STATS } from '@/lib/constants'
 import MotionCTA from '@/components/shared/motion-cta'
@@ -244,7 +244,7 @@ export default function SectionHero() {
 				>
 					<div className='flex flex-col items-center gap-1'>
 						<span
-							className='text-white'
+							className='text-trim text-white'
 							style={{
 								fontFamily: 'var(--font-heading)',
 								fontWeight: 700,
@@ -256,7 +256,7 @@ export default function SectionHero() {
 							{STATS.appStoreRating}
 						</span>
 						<p
-							className='text-center text-white/50'
+							className='text-trim text-center text-white/50'
 							style={{
 								fontFamily: 'var(--font-sans)',
 								fontSize: '10px',
@@ -274,12 +274,26 @@ export default function SectionHero() {
 						aria-label={`${STATS.appStoreRating} out of 5 stars from ${STATS.appStoreReviews} reviews`}
 					>
 						{[0, 1, 2, 3, 4].map((i) => (
-							<Star key={i} size={16} weight='fill' className='text-cc-amber' aria-hidden='true' />
+							<Image
+								key={i}
+								src='/images/rating-star.svg'
+								alt=''
+								width={16}
+								height={16}
+								className='h-4 w-4'
+							/>
 						))}
 					</div>
 					<div className='flex items-center justify-center gap-2'>
-						<AppleLogo size={24} weight='fill' className='text-[#C5C9CE]' aria-hidden='true' />
+						<Image
+							src='/images/app-store-icon.svg'
+							alt=''
+							width={24}
+							height={24}
+							className='h-6 w-6'
+						/>
 						<span
+							className='text-trim'
 							style={{
 								fontFamily: 'var(--font-sans)',
 								fontSize: '16px',
@@ -401,7 +415,7 @@ export default function SectionHero() {
 							/>
 						</a>
 					</div>
-					<p className='text-center text-[12px] leading-[1.6] text-cc-text-secondary'>
+					<p className='text-trim text-center text-[12px] leading-[1.6] text-cc-text-secondary'>
 						60 seconds to start increasing your close rate.
 					</p>
 				</motion.div>
