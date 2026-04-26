@@ -228,7 +228,12 @@ export default function SectionFAQ(): ReactElement {
 				}}
 			/>
 
-			<div className='relative z-10 mx-auto flex w-full max-w-[720px] flex-col items-center gap-16 px-6'>
+			{/* Wave I FIX-08: bumped max-w-[720px] → max-w-4xl (~896px). The
+			    original Figma 720px spec assumed a sidebar of category filters
+			    that this FAQ doesn't carry. As an orphan single column at 1440,
+			    720px reads as a narrow strip. 896px keeps the editorial column
+			    rhythm without going wide enough to hurt accordion readability. */}
+			<div className='relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center gap-16 px-6'>
 				{/* ── Header (Figma 1:5218) ── */}
 				<motion.div
 					ref={headerRef}
