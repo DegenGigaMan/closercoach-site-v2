@@ -269,7 +269,7 @@ function TierCard({
 
 			{metricHeadline ? (
 				<h3
-					className='text-balance text-cc-text-primary-warm'
+					className='text-trim text-balance text-cc-text-primary-warm'
 					style={{
 						fontFamily: 'var(--font-heading)',
 						fontWeight: 700,
@@ -321,7 +321,7 @@ function TierCard({
 			>
 				<div className='flex flex-col gap-0.5'>
 					<p
-						className='text-cc-text-primary-warm'
+						className='text-trim text-cc-text-primary-warm'
 						style={{
 							fontFamily: 'var(--font-heading)',
 							fontWeight: 700,
@@ -478,7 +478,7 @@ export default function SectionResults(): ReactElement {
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
 						transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const }}
-						className='text-balance text-cc-text-primary-warm'
+						className='text-trim text-balance text-cc-text-primary-warm'
 						style={{
 							fontFamily: 'var(--font-heading)',
 							fontWeight: 700,
@@ -548,7 +548,7 @@ export default function SectionResults(): ReactElement {
 						</span>
 					</span>
 					<h3
-						className='text-balance text-cc-text-primary-warm'
+						className='text-trim text-balance text-cc-text-primary-warm'
 						style={{
 							fontFamily: 'var(--font-heading)',
 							fontWeight: 700,

@@ -145,7 +145,7 @@ function AccordionItem({ faq, isOpen, onToggle }: AccordionItemProps): ReactElem
 					className='group flex w-full items-center gap-4 rounded-[24px] px-6 py-[21px] text-left outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-cc-accent/60'
 				>
 					<span
-						className='flex-1 text-[16px] leading-[24px] text-white transition-colors duration-200'
+						className='text-trim flex-1 text-[16px] leading-[24px] text-white transition-colors duration-200'
 						style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}
 					>
 						{faq.question}
@@ -178,7 +178,7 @@ function AccordionItem({ faq, isOpen, onToggle }: AccordionItemProps): ReactElem
 						className='overflow-hidden'
 					>
 						<p
-							className='px-6 pb-6 pr-8 text-[14px] text-[#94A3B8]'
+							className='text-trim px-6 pb-6 pr-8 text-[14px] text-cc-text-secondary'
 							style={{ lineHeight: '22.75px' }}
 						>
 							{faq.answer}
@@ -242,7 +242,7 @@ export default function SectionFAQ(): ReactElement {
 					className='flex flex-col items-center gap-[15px] text-center'
 				>
 					<p
-						className='font-semibold uppercase text-cc-accent'
+						className='text-trim font-semibold uppercase text-cc-accent'
 						style={{
 							fontFamily: 'var(--font-sans)',
 							fontSize: '12px',
@@ -253,7 +253,7 @@ export default function SectionFAQ(): ReactElement {
 						Questions, answered
 					</p>
 					<h2
-						className='text-white'
+						className='text-trim text-white'
 						style={{
 							fontFamily: 'var(--font-heading)',
 							fontWeight: 700,
@@ -264,7 +264,7 @@ export default function SectionFAQ(): ReactElement {
 						Frequently asked questions
 					</h2>
 					<p
-						className='text-[#94A3B8]'
+						className='text-trim text-cc-text-secondary'
 						style={{
 							fontFamily: 'var(--font-sans)',
 							fontSize: '16px',

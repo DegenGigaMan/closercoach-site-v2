@@ -282,7 +282,7 @@ function TierCard({
 			{/* Metric headline (optional) */}
 			{metricHeadline ? (
 				<h3
-					className='text-balance text-cc-text-primary-warm'
+					className='text-trim text-balance text-cc-text-primary-warm'
 					style={{
 						fontFamily: 'var(--font-heading)',
 						fontWeight: 700,
@@ -334,7 +334,7 @@ function TierCard({
 			<footer className='mt-auto flex flex-col gap-3 border-t pt-5' style={{ borderColor: WARM_BORDER }}>
 				<div className='flex flex-col gap-0.5'>
 					<p
-						className='text-cc-text-primary-warm'
+						className='text-trim text-cc-text-primary-warm'
 						style={{
 							fontFamily: 'var(--font-heading)',
 							fontWeight: 700,
@@ -409,7 +409,7 @@ export default function SectionCaseStudies(): ReactElement {
 						Real closers. Real stories.
 					</p>
 					<h2
-						className='text-balance text-cc-text-primary-warm'
+						className='text-trim text-balance text-cc-text-primary-warm'
 						style={{
 							fontFamily: 'var(--font-heading)',
 							fontWeight: 700,

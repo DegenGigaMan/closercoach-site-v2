@@ -218,7 +218,7 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 				<div className={`flex gap-4 ${fullSpan ? 'flex-col md:flex-row md:items-center md:gap-8' : 'flex-col'}`}>
 					<Icon size={fullSpan ? 32 : 28} weight='bold' className='shrink-0 text-cc-accent' />
 					<div className={`flex flex-col gap-3 ${fullSpan ? 'md:gap-2' : ''}`}>
-						<h3 className={`text-white ${displayTitle ? 'display-sm' : 'text-xl font-semibold'}`} style={{ fontFamily: displayTitle ? 'var(--font-heading)' : undefined, lineHeight: 1.2 }}>
+						<h3 className={`text-trim text-white ${displayTitle ? 'display-sm' : 'text-xl font-semibold'}`} style={{ fontFamily: displayTitle ? 'var(--font-heading)' : undefined, lineHeight: 1.2 }}>
 							{feature.title}
 						</h3>
 						<p className={`text-cc-text-secondary ${displayTitle ? 'text-base md:text-lg' : 'text-sm md:text-base'}`}>
@@ -255,7 +255,7 @@ export default function SectionTeams(): ReactElement {
 						For Sales Managers
 					</span>
 					<h2
-						className='display-lg max-w-3xl text-white md:text-[3.5rem]'
+						className='text-trim display-lg max-w-3xl text-white md:text-[3.5rem]'
 						style={{ fontFamily: 'var(--font-heading)', lineHeight: 1.08 }}
 					>
 						CloserCoach for{' '}

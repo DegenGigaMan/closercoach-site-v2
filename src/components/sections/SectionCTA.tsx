@@ -68,7 +68,7 @@ export default function SectionCTA() {
 			<div className='relative z-10 mx-auto max-w-2xl px-6'>
 				<ScrollReveal className='flex flex-col items-center gap-7 text-center'>
 					{/* Headline -- Alim verbatim, Lora Bold, italic emphasis on "actually losing" */}
-					<h2 className='display-lg text-white md:display-xl'>
+					<h2 className='text-trim display-lg text-white md:display-xl'>
 						Find out what&apos;s{' '}
 						<span className='italic text-cc-accent'>actually losing</span> you deals.
 					</h2>

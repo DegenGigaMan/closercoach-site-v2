@@ -207,7 +207,7 @@ export default function SectionFeatures(): ReactElement {
 				    Rewritten 2026-04-24 (Wave F2 K1) to de-repeat "in Your Pocket"
 				    framing against hero. */}
 				<h2
-					className='mb-6 text-cc-text-primary text-balance text-left md:mb-8'
+					className='text-trim mb-6 text-cc-text-primary text-balance text-left md:mb-8'
 					style={{
 						fontFamily: 'var(--font-heading)',
 						fontSize: 'clamp(2.5rem, 10vw, 10rem)',

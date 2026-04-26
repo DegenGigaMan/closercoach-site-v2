@@ -264,7 +264,7 @@ function StepKicker({ number, stepIndex, children }: { number: string; stepIndex
 			>
 				{number}
 			</span>
-			<p className="font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.2em] text-cc-accent">
+			<p className="text-trim font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.2em] text-cc-accent">
 				{children}
 			</p>
 		</div>
@@ -273,7 +273,7 @@ function StepKicker({ number, stepIndex, children }: { number: string; stepIndex
 
 function StepHeadline({ children }: { children: ReactNode }) {
 	return (
-		<h3 className="mt-4 text-3xl leading-[1.15] text-white md:text-4xl lg:text-[2.75rem]">
+		<h3 className="text-trim mt-4 text-3xl leading-[1.15] text-white md:text-4xl lg:text-[2.75rem]">
 			{children}
 		</h3>
 	)

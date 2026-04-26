@@ -107,7 +107,7 @@ function StatPill({ value, label }: StatPillProps): ReactElement {
 			}}
 		>
 			<span
-				className='font-[family-name:var(--font-mono)]'
+				className='text-trim font-[family-name:var(--font-mono)]'
 				style={{
 					fontWeight: 500,
 					fontSize: '1.125rem',
@@ -297,7 +297,7 @@ function FounderCard({ name, role, initials, imageSrc, credentials }: FounderCar
 				</div>
 				<div className='flex flex-col gap-1.5'>
 					<h3
-						className='text-cc-text-primary'
+						className='text-trim text-cc-text-primary'
 						style={{
 							fontFamily: 'var(--font-heading)',
 							fontWeight: 700,
@@ -387,7 +387,7 @@ export default function SectionFounderStrip(): ReactElement {
 						Built by founders who&rsquo;ve done this before.
 					</p>
 					<h2
-						className='text-balance text-cc-text-primary'
+						className='text-trim text-balance text-cc-text-primary'
 						style={{
 							fontFamily: 'var(--font-heading)',
 							fontWeight: 700,
