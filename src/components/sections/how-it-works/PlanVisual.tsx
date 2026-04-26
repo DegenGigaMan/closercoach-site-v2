@@ -138,13 +138,13 @@ function IntegrationsPill({ inView, reduced }: { inView: boolean, reduced: boole
 			className='inline-flex items-center gap-2 rounded-[12px] border border-white/[0.06] bg-cc-surface-card/60 px-2 py-1 shadow-[0_4px_12px_rgba(0,0,0,0.4),0_0_20px_rgba(16,185,129,0.05)] backdrop-blur-sm'
 			aria-label='Connected to Google Meet, Microsoft Teams, and Salesforce'
 		>
-			<motion.div className='flex h-6 w-6 items-center justify-center' {...enter(0)}>
+			<motion.div className='flex h-6 w-6 shrink-0 items-center justify-center' {...enter(0)}>
 				<Image src={LOGO_GOOGLE_MEET} alt='' width={18} height={15} className='h-[15px] w-[18px]' unoptimized />
 			</motion.div>
-			<motion.div className='flex h-6 w-6 items-center justify-center' {...enter(0.1)}>
+			<motion.div className='flex h-6 w-6 shrink-0 items-center justify-center' {...enter(0.1)}>
 				<Image src={LOGO_TEAMS} alt='' width={24} height={24} className='h-6 w-6 object-contain' unoptimized />
 			</motion.div>
-			<motion.div className='flex h-8 w-8 items-center justify-center' {...enter(0.2)}>
+			<motion.div className='flex h-8 w-8 shrink-0 items-center justify-center' {...enter(0.2)}>
 				<Image src={LOGO_SALESFORCE} alt='' width={26} height={18} className='h-[18px] w-[26px] object-contain' unoptimized />
 			</motion.div>
 		</div>

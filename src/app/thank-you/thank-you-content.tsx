@@ -123,6 +123,7 @@ export default function ThankYouContent({ firstName }: Props) {
 										width={108}
 										height={36}
 										className='h-9 w-auto'
+										style={{ width: 'auto', height: 'auto' }}
 									/>
 								</Link>
 								<Link
@@ -139,6 +140,7 @@ export default function ThankYouContent({ firstName }: Props) {
 										width={121}
 										height={36}
 										className='h-9 w-auto'
+										style={{ width: 'auto', height: 'auto' }}
 									/>
 								</Link>
 							</div>

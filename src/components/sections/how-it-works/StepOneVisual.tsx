@@ -51,13 +51,13 @@ function IntegrationPill() {
 			className="inline-flex items-center gap-2 rounded-xl border border-white/[0.06] bg-cc-surface-card/60 px-2 py-1 shadow-[0_4px_12px_rgba(0,0,0,0.35)] backdrop-blur-sm"
 			aria-label="Connected to Google Meet, Microsoft Teams, and Salesforce"
 		>
-			<div className="flex h-5 w-5 items-center justify-center rounded-md bg-white/[0.04]">
+			<div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-white/[0.04]">
 				<Image src={LOGO_GOOGLE_MEET} alt="" width={14} height={14} className="h-3.5 w-3.5" unoptimized />
 			</div>
-			<div className="flex h-5 w-5 items-center justify-center rounded-md bg-white/[0.04]">
+			<div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-white/[0.04]">
 				<Image src={LOGO_TEAMS} alt="" width={14} height={14} className="h-3.5 w-3.5 object-contain" unoptimized />
 			</div>
-			<div className="flex h-5 w-5 items-center justify-center rounded-md bg-white/[0.04]">
+			<div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-white/[0.04]">
 				<Image src={LOGO_SALESFORCE} alt="" width={14} height={14} className="h-3.5 w-3.5" unoptimized />
 			</div>
 		</div>
