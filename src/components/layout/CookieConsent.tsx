@@ -29,10 +29,10 @@ export default function CookieConsent() {
 		<aside
 			role="complementary"
 			aria-label="Cookie notice"
-			className="fixed bottom-0 left-0 right-0 z-50 p-4"
+			className="fixed bottom-4 right-4 z-50 max-w-[calc(100vw-2rem)] sm:max-w-[360px]"
 		>
-			<div className="mx-auto flex max-w-2xl items-center justify-between gap-4 rounded-xl border border-cc-surface-border bg-cc-surface/95 px-5 py-3.5 shadow-2xl backdrop-blur-md">
-				<p className="text-sm text-cc-text-secondary sm:whitespace-nowrap">
+			<div className="flex flex-col gap-3 rounded-2xl border border-cc-surface-border bg-cc-surface/95 p-4 shadow-2xl backdrop-blur-md sm:p-5">
+				<p className="text-sm leading-relaxed text-cc-text-secondary">
 					We use cookies to improve your experience.{' '}
 					<Link
 						href="/cookie-policy"
@@ -41,18 +41,18 @@ export default function CookieConsent() {
 						Learn more
 					</Link>
 				</p>
-				<div className="flex shrink-0 items-center gap-2">
+				<div className="flex items-center justify-end gap-2">
 					<button
 						type="button"
 						onClick={() => handleChoice('declined')}
-						className="rounded-lg px-3 py-1.5 text-sm text-cc-text-secondary transition-colors hover:text-white"
+						className="inline-flex min-h-[44px] items-center justify-center rounded-lg px-3 py-2 text-sm text-cc-text-secondary transition-colors hover:text-white"
 					>
 						Decline
 					</button>
 					<button
 						type="button"
 						onClick={() => handleChoice('accepted')}
-						className="rounded-lg bg-cc-accent px-3 py-1.5 text-sm font-medium text-cc-foundation transition-colors hover:bg-cc-accent-hover"
+						className="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-cc-accent px-4 py-2 text-sm font-medium text-cc-foundation transition-colors hover:bg-cc-accent-hover"
 					>
 						Accept
 					</button>
