@@ -58,8 +58,8 @@ function MeetingCard({ name, time, avatarSrc, active = false, inView, reduced, d
 					<Image src={avatarSrc} alt='' fill sizes='28px' className='object-cover' aria-hidden='true' unoptimized />
 				</div>
 				<div className='flex min-w-0 flex-1 flex-col gap-1'>
-					<span className='truncate text-[13px] font-semibold leading-none text-[#EBEBEB]'>{name}</span>
-					<span className='truncate text-[11px] leading-none text-white/50'>{time}</span>
+					<span className='text-trim truncate text-[13px] font-semibold leading-none text-[#EBEBEB]'>{name}</span>
+					<span className='text-trim truncate text-[11px] leading-none text-white/50'>{time}</span>
 				</div>
 			</div>
 		</motion.div>
@@ -73,7 +73,7 @@ function CalendarBlock({ inView, reduced }: { inView: boolean; reduced: boolean 
 				<span className='flex h-6 w-6 items-center justify-center rounded-[4px] bg-cc-accent/10' aria-hidden='true'>
 					<Calendar size={14} weight='duotone' className='text-cc-accent' />
 				</span>
-				<span className='font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase leading-none tracking-[0.1em] text-white/80'>
+				<span className='text-trim font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase leading-none tracking-[0.1em] text-white/80'>
 					Today&rsquo;s Meetings
 				</span>
 			</div>
@@ -146,13 +146,13 @@ function CloneHeader({ inView, reduced }: { inView: boolean; reduced: boolean })
 						className='text-cc-accent'
 						aria-hidden='true'
 					/>
-					<span className='font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase leading-none tracking-[0.1em] text-cc-accent'>
+					<span className='text-trim font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase leading-none tracking-[0.1em] text-cc-accent'>
 						Cloned
 					</span>
 				</div>
 				<div className='flex items-baseline tabular-nums'>
-					<span className='text-[12px] font-semibold leading-none text-cc-accent'>{total}</span>
-					<span className='text-[11px] leading-none tracking-[0.06em] text-cc-text-secondary'>/{total}</span>
+					<span className='text-trim text-[12px] font-semibold leading-none text-cc-accent'>{total}</span>
+					<span className='text-trim text-[11px] leading-none tracking-[0.06em] text-cc-text-secondary'>/{total}</span>
 				</div>
 			</div>
 			<div className='flex h-[3px] w-full items-start gap-1' aria-hidden='true'>
@@ -192,7 +192,7 @@ function FieldLong({ label, value }: { label: string; value: string }) {
 			<span className='text-trim font-[family-name:var(--font-mono)] text-[9px] uppercase leading-[10px] tracking-[0.05em] text-cc-text-secondary'>
 				{label}
 			</span>
-			<span className='text-balance text-[11px] leading-[15px] text-white/95'>{value}</span>
+			<span className='text-trim text-balance text-[11px] leading-[15px] text-white/95'>{value}</span>
 		</div>
 	)
 }
@@ -201,7 +201,7 @@ function ProofBadge() {
 	return (
 		<div className='inline-flex items-center gap-1 rounded-full border border-cc-accent/40 bg-cc-foundation px-2.5 py-1 shadow-[0_0_12px_rgba(16,185,129,0.25)]'>
 			<Sparkle size={9} weight='fill' className='text-cc-accent' aria-hidden='true' />
-			<span className='whitespace-nowrap font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase leading-none tracking-[0.05em] text-cc-accent'>
+			<span className='text-trim whitespace-nowrap font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase leading-none tracking-[0.05em] text-cc-accent'>
 				7 Layers of Personalization
 			</span>
 		</div>
@@ -229,7 +229,7 @@ function CloneCard({ inView, reduced }: { inView: boolean; reduced: boolean }) {
 					<span className='text-trim flex-1 truncate font-[family-name:var(--font-heading)] text-[14px] font-bold leading-[16px] text-white'>
 						{CLONE_CARD.name}
 					</span>
-					<span className='inline-flex items-center rounded-md border border-cc-accent/30 bg-cc-accent/15 px-1.5 py-1 font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase leading-none tracking-[0.08em] text-cc-accent'>
+					<span className='text-trim inline-flex items-center rounded-md border border-cc-accent/30 bg-cc-accent/15 px-1.5 py-1 font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase leading-none tracking-[0.08em] text-cc-accent'>
 						AI Clone
 					</span>
 				</div>
