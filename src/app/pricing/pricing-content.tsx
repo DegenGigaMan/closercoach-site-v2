@@ -572,7 +572,7 @@ export default function PricingContent() {
 								<Image
 									src='/images/app-store-badge.svg'
 									alt='Download on the App Store'
-									width={135}
+									width={120}
 									height={40}
 								/>
 							</Link>

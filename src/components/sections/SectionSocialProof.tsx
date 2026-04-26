@@ -35,7 +35,7 @@ const AVATARS = [
 const LOGOS = [
 	{ name: 'Toyota', file: '/logos/toyota.svg', width: 196, height: 28, heightClass: 'h-[22px]' },
 	{ name: 'State Farm', file: '/logos/state-farm.svg', width: 171, height: 24, heightClass: 'h-[22px]' },
-	{ name: 'Mercedes-Benz', file: '/logos/mercedes-benz.svg', width: 196, height: 32, heightClass: 'h-8' },
+	{ name: 'Mercedes-Benz', file: '/logos/mercedes-benz.svg', width: 126, height: 32, heightClass: 'h-8' },
 	{ name: 'Morgan Stanley', file: '/logos/morgan-stanley.svg', width: 167, height: 24, heightClass: 'h-[22px]' },
 	{ name: 'Liberty Mutual', file: '/logos/liberty-mutual.svg', width: 158, height: 40, heightClass: 'h-9' },
 	{ name: 'Family First Life', file: '/logos/family-first-life.png', width: 160, height: 34, heightClass: 'h-7' },

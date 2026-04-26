@@ -137,7 +137,7 @@ export default function SectionCTA() {
 							<Image
 								src='/badges/app-store.svg'
 								alt='Download on the App Store'
-								width={148}
+								width={132}
 								height={44}
 								className='h-11 w-auto'
 							/>

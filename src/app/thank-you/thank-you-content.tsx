@@ -120,7 +120,7 @@ export default function ThankYouContent({ firstName }: Props) {
 									<Image
 										src='/badges/app-store.svg'
 										alt='Download on the App Store'
-										width={110}
+										width={108}
 										height={36}
 										className='h-9 w-auto'
 									/>
@@ -136,7 +136,7 @@ export default function ThankYouContent({ firstName }: Props) {
 									<Image
 										src='/badges/google-play.svg'
 										alt='Get it on Google Play'
-										width={110}
+										width={121}
 										height={36}
 										className='h-9 w-auto'
 									/>

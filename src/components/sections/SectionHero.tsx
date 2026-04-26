@@ -394,7 +394,7 @@ export default function SectionHero() {
 							<Image
 								src='/images/app-store-badge.svg'
 								alt='Download on the App Store'
-								width={140}
+								width={126}
 								height={42}
 								className='h-[42px] w-auto'
 							/>
@@ -409,7 +409,7 @@ export default function SectionHero() {
 							<Image
 								src='/images/google-play-badge.svg'
 								alt='Get it on Google Play'
-								width={140}
+								width={142}
 								height={42}
 								className='h-[42px] w-auto'
 							/>

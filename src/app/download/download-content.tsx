@@ -191,7 +191,7 @@ export default function DownloadContent() {
 						<Image
 							src='/badges/app-store.svg'
 							alt='Download on the App Store'
-							width={160}
+							width={144}
 							height={48}
 							className='h-12 w-auto'
 						/>
@@ -207,7 +207,7 @@ export default function DownloadContent() {
 						<Image
 							src='/badges/google-play.svg'
 							alt='Get it on Google Play'
-							width={160}
+							width={162}
 							height={48}
 							className='h-12 w-auto'
 						/>
