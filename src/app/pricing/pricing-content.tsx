@@ -281,8 +281,8 @@ export default function PricingContent() {
 
 			{/* ---- Section 2: Tier Cards ---- */}
 			<section className='pb-24 md:pb-32'>
-				<div className='mx-auto max-w-7xl px-6'>
-					<div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
+				<div className='mx-auto max-w-7xl px-6 2xl:max-w-[1440px]'>
+					<div className='grid grid-cols-1 gap-6 lg:grid-cols-3 2xl:gap-8'>
 						{TIERS.map((tier, i) => {
 							const price = tier.getPrice(yearly)
 							return (
@@ -370,7 +370,7 @@ export default function PricingContent() {
 
 			{/* ---- Section 3: Feature Comparison Table ---- */}
 			<section className='pb-24 md:pb-32'>
-				<div className='mx-auto max-w-7xl px-6'>
+				<div className='mx-auto max-w-7xl px-6 2xl:max-w-[1440px]'>
 					<ScrollReveal>
 						<h2 className='display-md mb-12 text-center text-white'>
 							Compare plans
