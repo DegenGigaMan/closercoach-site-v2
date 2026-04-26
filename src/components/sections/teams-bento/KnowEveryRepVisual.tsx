@@ -9,7 +9,11 @@
  *     mins" + "Close Rate" amber/red label as right-side metric.
  *   ─ Footer: bar-chart icon + "Your team rankings" mono label.
  *
- * Narrative: "see every rep, ranked, with the trend that matters". */
+ * Narrative: "see every rep, ranked, with the trend that matters".
+ *
+ * Wave N (DD #2): added pr-12 sm:pr-3 on the top STACK_TOP rows so the
+ * declining-% delta text on row 22 (top row, rightmost) clears the BentoCard
+ * chapter marker `[02]` floating at absolute right-5 top-5 at <sm widths. */
 
 'use client'
 
@@ -27,10 +31,10 @@ const STACK_TOP: readonly Row[] = [
 	{ rank: 24, delta: '↓ 18%', opacity: 0.75 },
 ] as const
 
-function StackRow({ rank, delta, opacity }: Row): ReactElement {
+function StackRow({ rank, delta, opacity, isTopRow }: Row & { isTopRow: boolean }): ReactElement {
 	return (
 		<div
-			className='relative flex items-center gap-3 rounded-xl border border-cc-surface-border bg-cc-surface-card/80 px-3 py-2.5 backdrop-blur-sm'
+			className={`relative flex items-center gap-3 rounded-xl border border-cc-surface-border bg-cc-surface-card/80 px-3 py-2.5 backdrop-blur-sm ${isTopRow ? 'pr-12 sm:pr-3' : ''}`}
 			style={{ opacity }}
 		>
 			<span className='text-trim w-5 shrink-0 font-[family-name:var(--font-mono)] text-[11px] font-medium text-cc-text-secondary'>{rank}</span>
@@ -47,8 +51,8 @@ export default function KnowEveryRepVisual(): ReactElement {
 	return (
 		<div className='relative flex h-full w-full flex-col justify-end overflow-hidden bg-cc-foundation px-5 pt-6 pb-5 md:px-6 md:pt-8 md:pb-6'>
 			<div className='relative flex flex-col gap-2'>
-				{STACK_TOP.map((row) => (
-					<StackRow key={row.rank} {...row} />
+				{STACK_TOP.map((row, i) => (
+					<StackRow key={row.rank} {...row} isTopRow={i === 0} />
 				))}
 
 				{/* Front card (rank 25): emphasized */}
