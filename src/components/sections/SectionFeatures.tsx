@@ -206,29 +206,36 @@ export default function SectionFeatures(): ReactElement {
 				    the headline owns the viewport on desktop and scales down cleanly.
 				    Rewritten 2026-04-24 (Wave F2 K1) to de-repeat "in Your Pocket"
 				    framing against hero. */}
-				<h2
-					className='text-trim mb-6 text-cc-text-primary text-balance text-left md:mb-8'
-					style={{
-						fontFamily: 'var(--font-heading)',
-						fontSize: 'clamp(2.5rem, 10vw, 10rem)',
-						lineHeight: 0.95,
-						letterSpacing: '-0.015em',
-						fontWeight: 700,
-					}}
-				>
-					Practice. Record. Review.{' '}
-					<em
-						className='not-italic text-cc-accent'
-						style={{ fontWeight: 700, fontStyle: 'italic' }}
+				{/* Wave I FIX-02: wrap billboard + callout in max-w-6xl mx-auto so the
+				    headline doesn't bleed to the viewport edges at 1440+. The parent
+				    max-w-[1400px] container is too wide for a centered editorial
+				    rhythm; Linear / Mercury both keep billboard text in a tighter
+				    centered column. */}
+				<div className='mx-auto max-w-6xl'>
+					<h2
+						className='text-trim mb-6 text-cc-text-primary text-balance text-left md:mb-8'
+						style={{
+							fontFamily: 'var(--font-heading)',
+							fontSize: 'clamp(2.5rem, 10vw, 10rem)',
+							lineHeight: 0.95,
+							letterSpacing: '-0.015em',
+							fontWeight: 700,
+						}}
 					>
-						Improve.
-					</em>
-				</h2>
+						Practice. Record. Review.{' '}
+						<em
+							className='not-italic text-cc-accent'
+							style={{ fontWeight: 700, fontStyle: 'italic' }}
+						>
+							Improve.
+						</em>
+					</h2>
 
-				{/* Scale callout (E4). Single line, muted, sits directly under billboard. */}
-				<p className='mb-16 text-center font-[family-name:var(--font-mono)] text-xs font-medium uppercase tracking-[0.22em] text-cc-text-muted md:mb-20 md:text-sm'>
-					100+ scenarios across 16+ industries
-				</p>
+					{/* Scale callout (E4). Single line, muted, sits directly under billboard. */}
+					<p className='mb-16 text-center font-[family-name:var(--font-mono)] text-xs font-medium uppercase tracking-[0.22em] text-cc-text-muted md:mb-20 md:text-sm'>
+						100+ scenarios across 16+ industries
+					</p>
+				</div>
 
 				{/* Bento grid.
 				    Desktop (lg+): 12-col grid with a tall left column for card 03.
