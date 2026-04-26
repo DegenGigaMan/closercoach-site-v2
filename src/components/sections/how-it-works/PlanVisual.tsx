@@ -38,6 +38,7 @@
 import Image from 'next/image'
 import { useReducedMotion } from 'motion/react'
 import { Calendar, Checks, Sparkle, SpinnerGap } from '@phosphor-icons/react'
+import { CLONE_CARD } from '@/lib/constants'
 
 const SARAH_AVATAR = '/images/step1/avatar-sarah-v2.png'
 const MARCUS_AVATAR = '/images/step1/avatar-marcus-face.png'
@@ -174,7 +175,11 @@ function LeftVisual() {
 
 /* ─── Right visual (clone) ─── */
 
-function CloneHeader({ prefersReducedMotion }: { prefersReducedMotion: boolean }) {
+/* Static "cloned" state — header shows 7/7 filled, all field values populated.
+ * Wave C (R-09) will swap this static fill for a motion sequence that walks
+ * the bar 0→7 with typewriter-fill on each field. For now: persistent end
+ * state demonstrates the value the clone delivers. */
+function CloneHeader({ prefersReducedMotion: _prefersReducedMotion }: { prefersReducedMotion: boolean }) {
 	return (
 		<div className='flex w-full flex-col gap-2 px-3'>
 			<div className='flex items-center justify-between'>
@@ -182,15 +187,15 @@ function CloneHeader({ prefersReducedMotion }: { prefersReducedMotion: boolean }
 					<SpinnerGap
 						size={16}
 						weight='bold'
-						className={`text-cc-accent ${prefersReducedMotion ? '' : 'animate-spin'}`}
+						className='text-cc-accent'
 						aria-hidden='true'
 					/>
 					<span className='text-trim font-[family-name:var(--font-mono)] text-[12px] font-semibold uppercase tracking-[0.1em] text-cc-accent'>
-						Cloning...
+						Cloned
 					</span>
 				</div>
 				<div className='flex items-baseline tabular-nums'>
-					<span className='text-[14px] font-semibold leading-[15px] text-cc-accent'>3</span>
+					<span className='text-[14px] font-semibold leading-[15px] text-cc-accent'>7</span>
 					<span className='text-[12px] leading-[15px] tracking-[0.06em] text-cc-text-secondary'>/7</span>
 				</div>
 			</div>
@@ -198,7 +203,7 @@ function CloneHeader({ prefersReducedMotion }: { prefersReducedMotion: boolean }
 				{Array.from({ length: 7 }).map((_, i) => (
 					<span
 						key={i}
-						className={`h-full min-w-px flex-1 rounded-full ${i < 3 ? 'bg-cc-accent' : 'bg-white/15'}`}
+						className='h-full min-w-px flex-1 rounded-full bg-cc-accent'
 					/>
 				))}
 			</div>
@@ -206,27 +211,28 @@ function CloneHeader({ prefersReducedMotion }: { prefersReducedMotion: boolean }
 	)
 }
 
-function FieldLabeled({ label, value }: { label: string, value: string }) {
+/* Short field — used in 2-col grid for label + brief value (Job, Credit Score,
+ * HHI, Decision Maker). */
+function FieldShort({ label, value }: { label: string, value: string }) {
 	return (
-		<div className='flex flex-col items-start gap-2'>
-			<span className='text-trim font-[family-name:var(--font-mono)] text-[12px] uppercase leading-[13.5px] tracking-[0.0375em] text-cc-text-secondary'>
+		<div className='flex flex-col items-start gap-1.5'>
+			<span className='text-trim font-[family-name:var(--font-mono)] text-[10px] uppercase leading-[12px] tracking-[0.04em] text-cc-text-secondary'>
 				{label}
 			</span>
-			<span className='font-sans text-[14px] leading-5 text-white'>{value}</span>
+			<span className='text-trim font-sans text-[13px] leading-[18px] text-white'>{value}</span>
 		</div>
 	)
 }
 
-function FieldBlurred({ label, widthClass }: { label: string, widthClass: string }) {
+/* Long field — full-width row for sentence-length values (Likely Objection,
+ * How to Handle, Buyer Signal). text-balance keeps line lengths even. */
+function FieldLong({ label, value }: { label: string, value: string }) {
 	return (
-		<div role='status' aria-live='polite' className='flex flex-col items-start gap-[5px]' aria-label={`${label} loading`}>
-			<span className='text-trim font-[family-name:var(--font-mono)] text-[12px] uppercase leading-[13.5px] tracking-[0.0375em] text-cc-text-secondary'>
+		<div className='flex flex-col items-start gap-1.5'>
+			<span className='text-trim font-[family-name:var(--font-mono)] text-[10px] uppercase leading-[12px] tracking-[0.04em] text-cc-text-secondary'>
 				{label}
 			</span>
-			<span
-				aria-hidden='true'
-				className={`h-4 rounded bg-gradient-to-r from-white/10 via-white/[0.15] to-white/10 ${widthClass}`}
-			/>
+			<span className='text-balance font-sans text-[12px] leading-[17px] text-white/95'>{value}</span>
 		</div>
 	)
 }
@@ -243,32 +249,36 @@ function ProofBadge() {
 }
 
 function CloneCard() {
+	const shortFields = CLONE_CARD.fields.filter((f) => f.span === 'short')
+	const longFields = CLONE_CARD.fields.filter((f) => f.span === 'long')
 	return (
 		<div className='relative w-full rounded-2xl border-[0.5px] border-cc-accent/60 bg-cc-surface-card px-[12.5px] pb-[32.5px] pt-[12.5px] shadow-[-8px_8px_16px_0_rgba(0,0,0,0.6),0_0_20px_0_rgba(16,185,129,0.05)]'>
-			<div className='flex flex-col gap-4'>
-				{/* Top row: Sarah avatar + AI Clone badge */}
-				<div className='flex items-center gap-3'>
+			<div className='flex flex-col gap-3.5'>
+				{/* Top row: Sarah avatar + name + AI Clone badge */}
+				<div className='flex items-center gap-2.5'>
 					<div className='relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-white/[0.05]'>
 						<Image src={SARAH_AVATAR} alt='Sarah Chen portrait' fill className='object-cover' sizes='40px' unoptimized />
 					</div>
-					<span className='inline-flex items-center rounded-md border border-cc-accent/20 bg-cc-accent/20 p-[9px] font-sans text-[16px] font-medium leading-5 text-cc-accent'>
+					<span className='text-trim flex-1 truncate font-[family-name:var(--font-heading)] text-[15px] font-bold leading-[18px] text-white'>
+						{CLONE_CARD.name}
+					</span>
+					<span className='inline-flex items-center rounded-md border border-cc-accent/30 bg-cc-accent/15 px-2 py-1 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase leading-none tracking-[0.08em] text-cc-accent'>
 						AI Clone
 					</span>
 				</div>
 
-				{/* 2-col × 4-row field grid */}
-				<div className='grid grid-cols-2 gap-x-3 gap-y-6'>
-					<FieldLabeled label='NAME' value='Sarah Chen' />
-					<FieldLabeled label='ROLE' value='VP Operations' />
+				{/* 2-col grid for 4 short fields */}
+				<div className='grid grid-cols-2 gap-x-3 gap-y-3.5'>
+					{shortFields.map((f) => (
+						<FieldShort key={f.label} label={f.label} value={f.value} />
+					))}
+				</div>
 
-					<FieldLabeled label='COMPANY' value='Greenleaf Inc.' />
-					<FieldBlurred label='INDUSTRY' widthClass='w-[93px]' />
-
-					<FieldBlurred label='OBJECTION' widthClass='w-[97px]' />
-					<FieldBlurred label='TALK TRACK' widthClass='w-[71px]' />
-
-					<FieldBlurred label='PAIN 1' widthClass='w-[70px]' />
-					<FieldBlurred label='PAIN 2' widthClass='w-[93px]' />
+				{/* Stack of 3 long full-width rows */}
+				<div className='flex flex-col gap-3'>
+					{longFields.map((f) => (
+						<FieldLong key={f.label} label={f.label} value={f.value} />
+					))}
 				</div>
 			</div>
 
@@ -308,7 +318,7 @@ function Connector() {
 
 function CloneVisual({ prefersReducedMotion }: { prefersReducedMotion: boolean }) {
 	return (
-		<div className='relative flex w-[250px] shrink-0 flex-col items-center gap-3'>
+		<div className='relative flex w-[280px] shrink-0 flex-col items-center gap-3'>
 			<CloneHeader prefersReducedMotion={prefersReducedMotion} />
 			<CloneCard />
 			<Connector />
