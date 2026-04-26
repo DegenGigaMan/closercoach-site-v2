@@ -235,13 +235,21 @@ function HubSpokeProof(): ReactElement {
 			ref={containerRef}
 			className='relative mx-auto mt-14 w-full max-w-5xl px-6 md:mt-16'
 		>
-			{/* Mobile stack: anchor on top, 4 satellites in 2-col grid. */}
+			{/* Mobile stack: anchor on top, 4 satellites in 2-col grid.
+			 *
+			 * Wave K.4 (FIX-CC-04 P2, 2026-04-26): viewport amount 0.3 → 0.15
+			 * across all HubSpoke motion.div instances (mobile + desktop). At
+			 * 0.3, taller satellite cards on small viewports never reached the
+			 * trigger threshold during a normal scroll dwell, so they "popped
+			 * in" instead of gracefully entering. 0.15 = animation starts as
+			 * the card edges into view. Reduced-motion fallback unchanged
+			 * (cardVariant transition collapses to 0s when reduced is true). */}
 			<div className='flex flex-col gap-4 md:hidden'>
 				<motion.div
 					custom={0}
 					initial='hidden'
 					whileInView='visible'
-					viewport={{ once: true, amount: 0.3 }}
+					viewport={{ once: true, amount: 0.15 }}
 					variants={cardVariant}
 					className='rounded-2xl border border-cc-warm-border bg-cc-warm-secondary p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]'
 				>
@@ -254,7 +262,7 @@ function HubSpokeProof(): ReactElement {
 							custom={i + 1}
 							initial='hidden'
 							whileInView='visible'
-							viewport={{ once: true, amount: 0.3 }}
+							viewport={{ once: true, amount: 0.15 }}
 							variants={cardVariant}
 							className={`rounded-xl border border-cc-warm-border bg-cc-warm-secondary/90 p-4 shadow-[0_8px_24px_rgba(13,15,20,0.06)] ${card.id === 'gains' ? 'col-span-2' : ''}`}
 						>
@@ -281,7 +289,7 @@ function HubSpokeProof(): ReactElement {
 						custom={1}
 						initial='hidden'
 						whileInView='visible'
-						viewport={{ once: true, amount: 0.3 }}
+						viewport={{ once: true, amount: 0.15 }}
 						variants={cardVariant}
 						className='col-start-1 col-end-2 row-start-1 row-end-2 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/95 p-5 shadow-[0_8px_24px_rgba(13,15,20,0.06)]'
 					>
@@ -292,7 +300,7 @@ function HubSpokeProof(): ReactElement {
 						custom={2}
 						initial='hidden'
 						whileInView='visible'
-						viewport={{ once: true, amount: 0.3 }}
+						viewport={{ once: true, amount: 0.15 }}
 						variants={cardVariant}
 						className='col-start-5 col-end-6 row-start-1 row-end-2 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/95 p-5 shadow-[0_8px_24px_rgba(13,15,20,0.06)]'
 					>
@@ -305,7 +313,7 @@ function HubSpokeProof(): ReactElement {
 						custom={0}
 						initial='hidden'
 						whileInView='visible'
-						viewport={{ once: true, amount: 0.3 }}
+						viewport={{ once: true, amount: 0.15 }}
 						variants={cardVariant}
 						className='col-start-2 col-end-5 row-start-2 row-end-3 rounded-3xl border border-cc-accent/30 bg-cc-warm-secondary p-8 shadow-[0_8px_40px_rgba(5,150,105,0.10),0_2px_16px_rgba(0,0,0,0.06)] lg:p-10'
 					>
@@ -318,7 +326,7 @@ function HubSpokeProof(): ReactElement {
 						custom={3}
 						initial='hidden'
 						whileInView='visible'
-						viewport={{ once: true, amount: 0.3 }}
+						viewport={{ once: true, amount: 0.15 }}
 						variants={cardVariant}
 						className='col-start-1 col-end-2 row-start-3 row-end-4 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/95 p-5 shadow-[0_8px_24px_rgba(13,15,20,0.06)]'
 					>
@@ -329,7 +337,7 @@ function HubSpokeProof(): ReactElement {
 						custom={4}
 						initial='hidden'
 						whileInView='visible'
-						viewport={{ once: true, amount: 0.3 }}
+						viewport={{ once: true, amount: 0.15 }}
 						variants={cardVariant}
 						className='col-start-5 col-end-6 row-start-3 row-end-4 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/95 p-5 shadow-[0_8px_24px_rgba(13,15,20,0.06)]'
 					>
