@@ -184,6 +184,24 @@
 	50% { background-position: 52% 48%; }
 }
 
+/* TextType cursor blink (R-09 / Wave C). Softer than 1Hz square; eased
+ * fade. Reduced-motion override at the bottom of this file flattens it. */
+@keyframes text-type-cursor-blink {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0; }
+}
+
+.text-type__cursor {
+	display: inline-block;
+	margin-left: 1px;
+	color: var(--color-cc-accent, #10B981);
+	animation: text-type-cursor-blink 0.9s ease-in-out infinite;
+}
+
+.text-type__content {
+	white-space: pre-wrap;
+}
+
 /* prefers-reduced-motion global reset (G15) */
 @media (prefers-reduced-motion: reduce) {
 	*, *::before, *::after {
