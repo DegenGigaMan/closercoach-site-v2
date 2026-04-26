@@ -69,7 +69,6 @@ const TIERS = [
 			'Priority support',
 			'1:1 white-glove setup call',
 		],
-		footerNote: 'No minimums. No annual contracts. Add or remove reps anytime.',
 	},
 	{
 		key: 'enterprise',
@@ -354,18 +353,19 @@ export default function PricingContent() {
 												</li>
 											))}
 										</ul>
-
-										{/* Footer note (Teams) */}
-										{'footerNote' in tier && tier.footerNote && (
-											<p className='mt-6 border-t border-cc-surface-border pt-4 text-xs text-cc-text-muted'>
-												{tier.footerNote}
-											</p>
-										)}
 									</div>
 								</ScrollReveal>
 							)
 						})}
 					</div>
+
+					{/* Wave I FIX-04: unified disclaimer below all 3 cards. The
+					    no-minimums copy applies to every tier semantically and was
+					    previously trapped in the Teams card, creating ~150px dead
+					    space and uneven card bottom edges at 1280-1440. */}
+					<p className='mt-8 text-center text-xs text-cc-text-muted'>
+						No minimums. No annual contracts. Add or remove reps anytime.
+					</p>
 				</div>
 			</section>
 
