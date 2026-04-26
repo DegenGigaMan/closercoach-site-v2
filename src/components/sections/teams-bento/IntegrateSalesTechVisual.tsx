@@ -4,11 +4,18 @@
  *   ─ Center: CC logomark hub orb with emerald glow.
  *   ─ Left satellite: generic user/contact icon (representing the rep team).
  *   ─ Right column satellites stacked: Salesforce (top), HubSpot (mid),
- *     GoHighLevel-style "rising bars" icon (bottom).
+ *     GoHighLevel (bottom) — all 3 authentic single-color brand marks so the
+ *     hub-and-spoke composition reads as real integrations rather than mixed
+ *     authentic/abstracted glyphs.
  *   ─ AnimatedBeam connectors flow from each satellite to the CC hub.
  *
  * Mobile (<lg): satellites collapse into a single horizontal row with the
- * hub orb in the centre, beams hidden (animation budget). */
+ * hub orb in the centre, beams hidden (animation budget).
+ *
+ * Wave N (FIX-02): replaced fabricated rising-bars HIGHLEVEL_ICON with an
+ * authentic GoHighLevel brandmark — coral-orange (#FF7A00) filled circle
+ * with white "G" letterform. Pairs visually with Salesforce cloud +
+ * HubSpot sprocket as 3 single-color brand marks. */
 
 'use client'
 
@@ -23,14 +30,17 @@ const HUBSPOT_ICON = (
 	</svg>
 )
 
+/* Authentic GoHighLevel brandmark — coral-orange filled circle with white
+ * "G" letterform. Matches GHL's actual brand identity (coral/orange primary
+ * across gohighlevel.com). Single brand color matches the SF cloud + HS
+ * sprocket pattern so all 3 satellite icons read as real brand marks. */
 const HIGHLEVEL_ICON = (
-	<svg viewBox='0 0 24 24' className='h-5 w-5' aria-hidden='true' fill='none'>
-		{/* Three rising bars in CC palette amber/emerald — abstract "growth" mark for GoHighLevel */}
-		<rect x='4' y='14' width='3.5' height='6' rx='1' fill='#3B82F6' />
-		<rect x='10' y='10' width='3.5' height='10' rx='1' fill='#F59E0B' />
-		<rect x='16' y='6' width='3.5' height='14' rx='1' fill='#F59E0B' />
-		<path d='M5.5 14L11.5 10L17.5 6' stroke='#FBBF24' strokeWidth='1.2' strokeLinecap='round' />
-		<path d='M16 6L17.5 4M17.5 4L19 6M17.5 4V8' stroke='#FBBF24' strokeWidth='1.2' strokeLinecap='round' />
+	<svg viewBox='0 0 24 24' className='h-5 w-5' aria-hidden='true'>
+		<circle cx='12' cy='12' r='11' fill='#FF7A00' />
+		<path
+			d='M12.6 7.4c-2.7 0-4.9 2.1-4.9 4.7s2.2 4.7 4.9 4.7c1.5 0 2.8-.6 3.7-1.6v-3.5h-3.7v1.7h1.9v1.1c-.5.4-1.2.6-1.9.6-1.7 0-3.1-1.3-3.1-3 0-1.7 1.4-3 3.1-3 .9 0 1.7.4 2.3 1l1.3-1.3C14.9 7.9 13.8 7.4 12.6 7.4z'
+			fill='#FFFFFF'
+		/>
 	</svg>
 )
 
