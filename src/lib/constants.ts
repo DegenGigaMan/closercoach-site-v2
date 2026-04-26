@@ -277,6 +277,30 @@ export const SCORING_DATA = {
 } as const
 
 /**
+ * @description Step 1 Clone Card B2C field schema (R-11). Replaces the prior
+ * B2B field set (Name/Role/Company/Industry/Objection/Talk Track/Pain 1/Pain 2)
+ * with 7 personalization layers tailored to CC's actual ICP (B2C closers in
+ * insurance, mortgage, real estate, solar). Persona: Sarah Chen, mortgage
+ * refinance lead. Locked Andy 2026-04-25 per
+ * `vault/clients/closer-coach/feedback/clone-card-b2c-schema-proposal-2026-04-25.md`.
+ *
+ * `span: 'short'` -> 2-col grid placement (4 short fields share 2 columns).
+ * `span: 'long'`  -> single-column full-width row (sentence-length values).
+ */
+export const CLONE_CARD = {
+	name: 'Sarah Chen',
+	fields: [
+		{ label: 'JOB', value: 'Marketing Director', span: 'short' as const },
+		{ label: 'CREDIT SCORE', value: '762', span: 'short' as const },
+		{ label: 'HHI', value: '$187K combined', span: 'short' as const },
+		{ label: 'DECISION MAKER', value: 'David (husband)', span: 'short' as const },
+		{ label: 'LIKELY OBJECTION', value: '“We just refinanced 2 years ago, rates aren’t low enough to make it worth it.”', span: 'long' as const },
+		{ label: 'HOW TO HANDLE', value: 'Lead with break-even math + cash-out angle for kids’ college (recent behavior shows campus tour visits).', span: 'long' as const },
+		{ label: 'BUYER SIGNAL', value: 'Visited 3 lender sites in last 7 days + ran refinance calculator twice.', span: 'long' as const },
+	],
+} as const
+
+/**
  * @description Returns the appropriate store URL based on user's platform.
  * iOS -> App Store, Android -> Google Play, Desktop -> /download fallback.
  * Must be called client-side only (uses navigator.userAgent).
