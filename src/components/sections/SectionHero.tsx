@@ -140,8 +140,10 @@ export default function SectionHero() {
 				aria-hidden='true'
 			/>
 
-			{/* Content layer -- centered vertical stack. */}
-			<div className='relative z-[5] mx-auto flex min-h-screen max-w-[1200px] flex-col items-center justify-center px-6 pb-16 pt-28 md:pt-32'>
+			{/* Content layer -- centered vertical stack. Wave H.4 (2026-04-26):
+			 * top padding reduced (pt-28 md:pt-32 -> pt-16 md:pt-20) so the
+			 * phone composite reaches above-fold at 1440x900. */}
+			<div className='relative z-[5] mx-auto flex min-h-screen max-w-[1200px] flex-col items-center justify-center px-6 pb-16 pt-16 md:pt-20'>
 
 				{/* Announcement badge (AnimatedBadge replaces v1's static trust pill). */}
 				<motion.div className='mb-8' {...enter(0, -8, 0.5)}>
@@ -240,6 +242,10 @@ export default function SectionHero() {
 					className='mt-8 flex flex-col items-center gap-2'
 					{...enter(0.6, 8, 0.5)}
 				>
+					{/* Wave H.4 (2026-04-26): "(378+ reviews)" subline dropped to
+					 * reclaim ~20px of vertical density so phone reaches above-fold
+					 * at 1440x900. The 5-star strip + AppleLogo + "App Store"
+					 * wordmark below already imply the review context. */}
 					<div className='flex flex-col items-center gap-1'>
 						<span
 							className='text-trim text-white'
@@ -253,18 +259,6 @@ export default function SectionHero() {
 						>
 							{STATS.appStoreRating}
 						</span>
-						<p
-							className='text-trim text-center text-white/50'
-							style={{
-								fontFamily: 'var(--font-sans)',
-								fontSize: '10px',
-								lineHeight: 'normal',
-								letterSpacing: '0.4px',
-							}}
-						>
-							<span className='uppercase'>({STATS.appStoreReviews} </span>
-							<span>reviews)</span>
-						</p>
 					</div>
 					<div
 						role='img'
