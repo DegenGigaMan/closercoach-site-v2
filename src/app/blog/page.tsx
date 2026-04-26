@@ -28,7 +28,11 @@ const PLACEHOLDER_POSTS = [
 export default function BlogPage() {
 	return (
 		<div className='bg-cc-warm-light text-cc-text-primary-warm'>
-			<div className='mx-auto max-w-4xl px-6 py-20 md:py-28'>
+			{/* Wave I FIX-05: bumped from max-w-4xl to max-w-7xl so the editorial
+			    content doesn't anchor left of a 600+px empty right canvas at
+			    1440/1920. The page reads as a centered editorial column at
+			    larger widths now while preserving the 3-up grid composition. */}
+			<div className='mx-auto max-w-7xl px-6 py-20 md:py-28'>
 				{/* Coming soon badge */}
 				<span className='inline-flex items-center gap-2 rounded-full border border-cc-warm-border bg-white/60 px-3 py-1.5 text-xs font-medium text-cc-text-secondary-warm'>
 					<span className='relative flex h-1.5 w-1.5' aria-hidden='true'>
