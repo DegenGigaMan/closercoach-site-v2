@@ -1,15 +1,26 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* CTA font slot (Wave F.1 + G.1 cascade fix 2026-04-26).
+ * Plus Jakarta Sans Bold (primary) / Medium (secondary) per Figma 85:15957.
+ * Defined in :root (NOT @theme inline) so the custom property cascades
+ * correctly to descendants. Tailwind v4's @theme inline emits font tokens
+ * as utility classes only -- it does NOT publish them as inheritable CSS
+ * custom properties on :root. Without this :root declaration the
+ * `[font-family:var(--font-cta)]` arbitrary-value class in motion-cta.tsx
+ * resolves to an empty string and falls through to the default sans stack
+ * (Inter), silently dropping the Plus Jakarta Sans treatment from every
+ * body CTA. Header CTAs opt out via the MotionCTA `chrome` variant to keep
+ * their existing Inter treatment. */
+:root {
+	--font-cta: var(--font-jakarta);
+}
+
 @theme inline {
 	/* Typography */
 	--font-sans: var(--font-inter);
 	--font-mono: var(--font-geist-mono);
 	--font-heading: var(--font-lora);
-	/* CTA font (Wave F.1) -- Plus Jakarta Sans Bold (primary) / Medium
-	 * (secondary) per Figma 85:15957. Header CTAs opt out via the
-	 * MotionCTA `chrome` variant to keep their existing Inter treatment. */
-	--font-cta: var(--font-jakarta);
 
 	/* CloserCoach brand colors -- VIS Section 1 */
 	/* Dark surfaces */
