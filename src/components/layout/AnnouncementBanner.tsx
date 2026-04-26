@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { X } from '@phosphor-icons/react'
 
-const STORAGE_KEY = 'cc-announcement-dismissed-2026-04-21'
+const STORAGE_KEY = 'cc-announcement-dismissed-2026-04-26'
 const BANNER_HEIGHT = 36
 
 type AnnouncementBannerProps = {
@@ -17,9 +17,13 @@ type AnnouncementBannerProps = {
 }
 
 export default function AnnouncementBanner({
-	message = 'CloserCoach raises $1M to build Duolingo for sales',
+	// Wave I FIX-06: shifted off the Duolingo hook to avoid redundancy with the
+	// on-page Press Strip section ("The Duolingo for sales."). The promo bar
+	// now leads with a live-scale anchor that doesn't duplicate the press
+	// positioning landing within the first 2000px scroll.
+	message = '20,000+ closers training on CloserCoach every day',
 	href = '#',
-	linkLabel = 'Read more',
+	linkLabel = 'See the numbers',
 }: AnnouncementBannerProps) {
 	// SSR-safe initial: render nothing until client hydrates.
 	const [dismissed, setDismissed] = useState<boolean | null>(null)
