@@ -8,7 +8,16 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { QRCodeSVG } from 'qrcode.react'
 import { motion, useReducedMotion } from 'motion/react'
-import { Star, Users, Clock, ShieldCheck, CircleNotch } from '@phosphor-icons/react'
+import {
+	Star,
+	Users,
+	Clock,
+	ShieldCheck,
+	CircleNotch,
+	SignIn,
+	Briefcase,
+	Microphone,
+} from '@phosphor-icons/react'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
 import { BRAND, STATS, getStoreUrl } from '@/lib/constants'
 
@@ -235,6 +244,56 @@ export default function DownloadContent() {
 					<span className='text-xs text-cc-text-secondary'>
 						Featured in Hypepotamus
 					</span>
+				</div>
+
+				{/* Wave K.2 (FIX-CC-02 P2, 2026-04-26): "60 second flow" mini-strip
+				 * supporting trust + clarity at md+ only. Mobile (<md) keeps the
+				 * dense single-column conversion path — auto-redirect to store
+				 * fires within 250ms there, so the strip would be invisible churn.
+				 * Desktop (md+) had ~700-1000px empty rails per S+ Visual Auditor;
+				 * this 3-card row carries the same UI vocabulary already approved
+				 * on /thank-you (Install / Community / Follow). */}
+				<div
+					className='mt-10 hidden w-full max-w-3xl grid-cols-3 gap-4 md:grid'
+					aria-label='Sixty second flow'
+				>
+					{[
+						{
+							Icon: SignIn,
+							label: 'Sign in',
+							sub: 'Apple ID, Google, or email',
+						},
+						{
+							Icon: Briefcase,
+							label: 'Pick your industry',
+							sub: 'Insurance, real estate, solar, more',
+						},
+						{
+							Icon: Microphone,
+							label: 'Run your first roleplay',
+							sub: 'Get scored A through F in 60 seconds',
+						},
+					].map(({ Icon, label, sub }) => (
+						<div
+							key={label}
+							className='flex flex-col items-start gap-3 rounded-2xl border border-cc-surface-border bg-cc-surface/40 p-6 text-left backdrop-blur-sm'
+						>
+							<Icon
+								weight='regular'
+								className='h-5 w-5 text-cc-accent'
+								aria-hidden='true'
+							/>
+							<p
+								className='text-trim text-base text-white'
+								style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, lineHeight: 1.25 }}
+							>
+								{label}
+							</p>
+							<p className='text-trim text-sm text-cc-text-secondary'>
+								{sub}
+							</p>
+						</div>
+					))}
 				</div>
 			</div>
 		</div>
