@@ -434,7 +434,7 @@ export default function SectionCaseStudies(): ReactElement {
 						<TierCard
 							tier='Closer'
 							tierAccent={EMERALD_ACCENT_WARM}
-							portraitSrc='/images/case-studies/dimitriy.svg'
+							portraitSrc='/images/placeholders/case-dimitriy.jpg'
 							portraitAlt=''
 							industryTag='Insurance Sales'
 							quote={'Honestly a great app and a surprisingly well thought out and detail-oriented use of AI. I\u2019ve been using CloserCoach to sharpen my skills and get back into sales after being out of the game, it\u2019s the most valuable resource I have.'}
@@ -447,7 +447,7 @@ export default function SectionCaseStudies(): ReactElement {
 						<TierCard
 							tier='Teams'
 							tierAccent={AMBER_WARM}
-							portraitSrc='/images/case-studies/chris.svg'
+							portraitSrc='/images/placeholders/case-chris.jpg'
 							portraitAlt=''
 							metricHeadline='1 hour per week. 20 reps trained.'
 							industryTag='Sales Manager, Lake Washington'
@@ -463,7 +463,7 @@ export default function SectionCaseStudies(): ReactElement {
 						<TierCard
 							tier='Enterprise'
 							tierAccent={SLATE_WARM}
-							portraitSrc='/images/case-studies/enterprise.svg'
+							portraitSrc='/images/placeholders/case-enterprise.jpg'
 							portraitAlt=''
 							metricHeadline='22-seat team onboarding.'
 							industryTag='Enterprise Sales Team'

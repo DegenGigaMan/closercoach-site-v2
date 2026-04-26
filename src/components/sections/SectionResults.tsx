@@ -577,7 +577,7 @@ export default function SectionResults(): ReactElement {
 						<TierCard
 							tier='Closer'
 							tierAccent={EMERALD_AA}
-							portraitSrc='/images/case-studies/dimitriy.svg'
+							portraitSrc='/images/placeholders/case-dimitriy.jpg'
 							industryTag='Insurance Sales'
 							quote={'Honestly a great app and a surprisingly well thought out and detail-oriented use of AI. I\u2019ve been using CloserCoach to sharpen my skills and get back into sales after being out of the game, it\u2019s the most valuable resource I have.'}
 							name='Dimitriy'
@@ -589,7 +589,7 @@ export default function SectionResults(): ReactElement {
 						<TierCard
 							tier='Teams'
 							tierAccent={AMBER_WARM}
-							portraitSrc='/images/case-studies/chris.svg'
+							portraitSrc='/images/placeholders/case-chris.jpg'
 							metricHeadline='1 hour per week. 20 reps trained.'
 							industryTag='Sales Manager, Lake Washington'
 							quote={'Before CloserCoach, I was spending 1 hour per week per rep. Now, I spend 1 hour per week training 20 reps.'}
@@ -602,7 +602,7 @@ export default function SectionResults(): ReactElement {
 						<TierCard
 							tier='Enterprise'
 							tierAccent={SLATE_WARM}
-							portraitSrc='/images/case-studies/enterprise.svg'
+							portraitSrc='/images/placeholders/case-enterprise.jpg'
 							metricHeadline='22-seat team onboarding.'
 							industryTag='Enterprise Sales Team'
 							quote={'Enterprise sales teams are onboarding CloserCoach at scale. One of the fastest-growing teams on the platform has 22 active seats.'}

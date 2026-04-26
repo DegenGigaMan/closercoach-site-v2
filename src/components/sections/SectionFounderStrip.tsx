@@ -423,12 +423,14 @@ export default function SectionFounderStrip(): ReactElement {
 
 				{/* Founder bio cards */}
 				<div className='mt-16 grid grid-cols-1 gap-5 md:mt-20 md:grid-cols-2 md:gap-6'>
+					{/* Pexels placeholder portraits — swap to real Alim + Taylor headshots
+					 * at launch (assets owed by Alim per F1-H2 + proof-inventory). */}
 					<Reveal delay={0}>
 						<FounderCard
 							name='Alim Charaniya'
 							role='Co-founder & CEO'
 							initials='AC'
-							imageSrc='/images/founders/alim.svg'
+							imageSrc='/images/placeholders/founder-alim.jpg'
 							credentials={ALIM_CREDENTIALS}
 						/>
 					</Reveal>
@@ -437,7 +439,7 @@ export default function SectionFounderStrip(): ReactElement {
 							name='Taylor Martinez'
 							role='Co-founder & COO'
 							initials='TM'
-							imageSrc='/images/founders/taylor.svg'
+							imageSrc='/images/placeholders/founder-taylor.jpg'
 							credentials={TAYLOR_CREDENTIALS}
 						/>
 					</Reveal>
