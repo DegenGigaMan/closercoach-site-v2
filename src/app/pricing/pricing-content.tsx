@@ -282,7 +282,7 @@ export default function PricingContent() {
 			{/* ---- Section 2: Tier Cards ---- */}
 			<section className='pb-24 md:pb-32'>
 				<div className='mx-auto max-w-7xl px-6'>
-					<div className='grid grid-cols-1 gap-6 md:grid-cols-3'>
+					<div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
 						{TIERS.map((tier, i) => {
 							const price = tier.getPrice(yearly)
 							return (
@@ -379,7 +379,7 @@ export default function PricingContent() {
 
 					{/* Desktop table */}
 					<ScrollReveal>
-						<div className='hidden overflow-x-auto md:block'>
+						<div className='hidden overflow-x-auto lg:block'>
 							<table className='w-full text-left'>
 								<thead>
 									<tr className='border-b border-cc-surface-border'>
@@ -408,8 +408,8 @@ export default function PricingContent() {
 						</div>
 					</ScrollReveal>
 
-					{/* Mobile: accordion per tier */}
-					<div className='flex flex-col gap-4 md:hidden'>
+					{/* Mobile + tablet: accordion per tier */}
+					<div className='flex flex-col gap-4 lg:hidden'>
 						{['Closer', 'Teams', 'Enterprise'].map((tierName, tierIdx) => (
 							<ScrollReveal key={tierName} delay={tierIdx * 0.1}>
 								<details className='group rounded-xl border border-cc-surface-border bg-cc-surface-card'>
