@@ -39,7 +39,7 @@ function VerdictPill({ verdict }: { verdict: Verdict }): ReactElement {
 		'strong-hire': { label: 'Strong Hire', className: 'border-cc-accent/40 bg-cc-accent/10 text-cc-mint' },
 		'good-hire': { label: 'Good Hire', className: 'border-cc-accent/30 bg-cc-accent/5 text-cc-mint/80' },
 		'good-fit': { label: 'Good Fit', className: 'border-cc-text-secondary/30 bg-cc-surface-card text-cc-text-secondary' },
-		pass: { label: 'Pass', className: 'border-[#EF4444]/50 bg-transparent text-[#EF4444]' },
+		pass: { label: 'Pass', className: 'border-cc-error/50 bg-transparent text-cc-error' },
 	}
 	const m = map[verdict]
 	return (

@@ -38,7 +38,7 @@ function StackRow({ rank, delta, opacity }: Row): ReactElement {
 				<Image src={SARAH} alt='' fill sizes='24px' className='object-cover' unoptimized />
 			</div>
 			<span className='text-trim flex-1 text-[12px] font-medium text-white/85'>Sarah Chen</span>
-			<span className='text-trim shrink-0 text-[11px] font-semibold text-[#EF4444]'>{delta}</span>
+			<span className='text-trim shrink-0 text-[11px] font-semibold text-cc-error'>{delta}</span>
 		</div>
 	)
 }
@@ -62,7 +62,7 @@ export default function KnowEveryRepVisual(): ReactElement {
 						<span className='text-trim mt-1 text-[11px] text-cc-text-secondary'>39 calls · 180 mins</span>
 					</div>
 					<div className='flex shrink-0 flex-col items-end leading-none'>
-						<span className='text-trim text-[12px] font-bold text-[#EF4444]'>↓ 22%</span>
+						<span className='text-trim text-[12px] font-bold text-cc-error'>↓ 22%</span>
 						<span className='text-trim mt-1 font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-wider text-cc-text-secondary/80'>Close Rate</span>
 					</div>
 				</div>

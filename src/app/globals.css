@@ -82,6 +82,12 @@
 	--color-cc-score-red: #EF4444;
 	--color-cc-score-amber: #F59E0B;
 
+	/* Semantic error -- broader than scoring (used for "Pass" verdict pills,
+	 * declining performance deltas, error states). Same hex as score-red so
+	 * a future palette tweak only edits one source. Promoted Wave N (DD #1,
+	 * 2026-04-26) -- was inlined as raw hex in S6 Card 2 + Card 5. */
+	--color-cc-error: #EF4444;
+
 	/* shadcn semantic tokens mapped to CC dark palette */
 	--color-background: var(--color-cc-foundation);
 	--color-foreground: var(--color-cc-text-primary);
