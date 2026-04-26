@@ -35,6 +35,7 @@ import Image from 'next/image'
 import MotionCTA from '@/components/shared/motion-cta'
 import { CTA } from '@/lib/constants'
 import { Star, AppleLogo } from '@phosphor-icons/react'
+import { AnimatedBeam } from '@/components/ui/animated-beam'
 
 /* ── Tokens used inline where Tailwind token lookup is insufficient for AA ── */
 
@@ -71,37 +72,52 @@ function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElem
 	)
 }
 
-/* ── Proof card definitions for the anchor stats grid ──
+/* ── Hub-spoke proof composition (Wave D / R-10 2026-04-25) ──
  *
- * Reworked 2026-04-24 (Wave F2 G1/G2). Prior pinterest-float composition
- * with 8 orbiting stats + a 7-dimension radar has been replaced by a 5-card
- * responsive grid. The radar SVG is removed — not loss-bearing at this copy
- * density. */
+ * Andy's R-10 ask: "Bring back floating concept" with organized positioning
+ * (the OLD orbit was scattered, the NEW one needs visual hierarchy). After
+ * 3-option deliberation (hub-spoke / diagonal cascade / asymmetric grid),
+ * picked hub-spoke with Magic UI Animated Beam connecting lines:
+ *   - One anchor card center (largest stat, "20,000+ Closers" — the headline
+ *     proof number)
+ *   - 4 satellite cards equidistant around it (3,000 calls/day, 16+ industries,
+ *     4.7/5 App Store rating, 7%/50%/30% gains strip)
+ *   - Animated emerald beams flow from satellites to the anchor (each beam
+ *     plays once at staggered delays, then settles)
+ *
+ * Mobile (sm and below) gracefully collapses to a vertical stack:
+ *   - Anchor card on top (full-width)
+ *   - 4 satellites in 2-col grid below
+ *   - Beams hidden (animation budget + visual coherence at narrow widths)
+ *
+ * Radar chart stays removed — Wave F2 already killed it as not load-bearing.
+ *
+ * All colours AA-safe on warm surface (emerald uses #059669 cc-accent-hover,
+ * not #10B981; amber uses #B45309). */
 
 type ProofCard = {
 	id: string
 	content: ReactNode
 }
 
-/* Anchor stats grid. Reworked 2026-04-24 (Wave F2 G1/G2) — killed the
- * pinterest-float orbit layout and the 2 cards that duplicated copy shown
- * elsewhere (profile "Insurance closer" overspecific; "Coached weekly 76%"
- * already shipped in the G3 testimonial kicker). Remaining 5 cards render
- * in a tight responsive grid below the headline instead of orbiting it. */
-const CARDS: readonly ProofCard[] = [
-	{
-		id: 'stat-closers',
-		content: (
-			<div className='text-center'>
-				<p className='font-[family-name:var(--font-mono)] text-2xl font-bold text-cc-text-primary-warm md:text-3xl'>
-					20,000+
-				</p>
-				<p className='mt-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
-					Closers
-				</p>
-			</div>
-		),
-	},
+/* Anchor card content — the gravity center of the hub-spoke composition.
+ * Larger type, emerald accent on the number, prominent. */
+const ANCHOR_CARD = (
+	<div className='flex flex-col items-center text-center'>
+		<p
+			className='font-[family-name:var(--font-mono)] font-bold text-cc-text-primary-warm'
+			style={{ fontSize: 'clamp(2.5rem, 5vw, 3.75rem)', lineHeight: 1 }}
+		>
+			20,000+
+		</p>
+		<p className='mt-2 font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.18em] text-cc-text-secondary-warm md:text-xs'>
+			Closers Trained
+		</p>
+	</div>
+)
+
+/* Satellite card definitions. 4 supporting stats orbit the anchor. */
+const SATELLITES: readonly ProofCard[] = [
 	{
 		id: 'stat-calls',
 		content: (
@@ -144,39 +160,39 @@ const CARDS: readonly ProofCard[] = [
 	{
 		id: 'gains',
 		content: (
-			<div className='flex items-center justify-center gap-4 md:gap-5'>
+			<div className='flex items-center justify-center gap-3 md:gap-4'>
 				<div className='flex flex-col items-center'>
 					<span
-						className='font-[family-name:var(--font-mono)] text-2xl font-bold md:text-3xl'
+						className='font-[family-name:var(--font-mono)] text-xl font-bold md:text-2xl'
 						style={{ color: EMERALD_AA }}
 					>
 						7%
 					</span>
-					<span className='mt-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
+					<span className='mt-1 font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-cc-text-secondary-warm'>
 						Close Rate
 					</span>
 				</div>
-				<div className='h-8 w-px bg-cc-warm-border' aria-hidden='true' />
+				<div className='h-7 w-px bg-cc-warm-border' aria-hidden='true' />
 				<div className='flex flex-col items-center'>
 					<span
-						className='font-[family-name:var(--font-mono)] text-2xl font-bold md:text-3xl'
+						className='font-[family-name:var(--font-mono)] text-xl font-bold md:text-2xl'
 						style={{ color: EMERALD_AA }}
 					>
 						50%
 					</span>
-					<span className='mt-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
+					<span className='mt-1 font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-cc-text-secondary-warm'>
 						Faster Ramp
 					</span>
 				</div>
-				<div className='h-8 w-px bg-cc-warm-border' aria-hidden='true' />
+				<div className='h-7 w-px bg-cc-warm-border' aria-hidden='true' />
 				<div className='flex flex-col items-center'>
 					<span
-						className='font-[family-name:var(--font-mono)] text-2xl font-bold md:text-3xl'
+						className='font-[family-name:var(--font-mono)] text-xl font-bold md:text-2xl'
 						style={{ color: EMERALD_AA }}
 					>
 						30%
 					</span>
-					<span className='mt-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
+					<span className='mt-1 font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-cc-text-secondary-warm'>
 						More Deals
 					</span>
 				</div>
@@ -185,15 +201,162 @@ const CARDS: readonly ProofCard[] = [
 	},
 ] as const
 
-/* ── Entrance animation config for the floating cards ── */
+/* ── Hub-spoke composition (desktop) + stack (mobile) ──
+ *
+ * Desktop: 5-row grid with anchor centered, 4 satellites at corners. Beams
+ * flow from each satellite to the anchor, staggered delays so the
+ * "evidence converges to the headline number" narrative reads in sequence.
+ *
+ * Mobile: anchor full-width on top, 4 satellites in 2-col grid below,
+ * beams hidden. */
+function HubSpokeProof(): ReactElement {
+	const reduced = useReducedMotion() ?? false
+	const containerRef = useRef<HTMLDivElement>(null)
+	const anchorRef = useRef<HTMLDivElement>(null)
+	const sat0Ref = useRef<HTMLDivElement>(null)
+	const sat1Ref = useRef<HTMLDivElement>(null)
+	const sat2Ref = useRef<HTMLDivElement>(null)
+	const sat3Ref = useRef<HTMLDivElement>(null)
+	const satRefs = [sat0Ref, sat1Ref, sat2Ref, sat3Ref]
 
-const cardVariant = {
-	hidden: { opacity: 0, y: 20 },
-	visible: (i: number) => ({
-		opacity: 0.88,
-		y: 0,
-		transition: { delay: 0.3 + i * 0.12, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const },
-	}),
+	const cardVariant = {
+		hidden: { opacity: 0, y: 20 },
+		visible: (i: number) => ({
+			opacity: 1,
+			y: 0,
+			transition: reduced
+				? { duration: 0 }
+				: { delay: 0.2 + i * 0.1, duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] as const },
+		}),
+	}
+
+	return (
+		<div
+			ref={containerRef}
+			className='relative mx-auto mt-14 w-full max-w-5xl px-6 md:mt-16'
+		>
+			{/* Mobile stack: anchor on top, 4 satellites in 2-col grid. */}
+			<div className='flex flex-col gap-4 md:hidden'>
+				<motion.div
+					custom={0}
+					initial='hidden'
+					whileInView='visible'
+					viewport={{ once: true, amount: 0.3 }}
+					variants={cardVariant}
+					className='rounded-2xl border border-cc-warm-border bg-cc-warm-secondary p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)]'
+				>
+					{ANCHOR_CARD}
+				</motion.div>
+				<div className='grid grid-cols-2 gap-3'>
+					{SATELLITES.map((card, i) => (
+						<motion.div
+							key={card.id}
+							custom={i + 1}
+							initial='hidden'
+							whileInView='visible'
+							viewport={{ once: true, amount: 0.3 }}
+							variants={cardVariant}
+							className={`rounded-xl border border-cc-warm-border bg-cc-warm-secondary/90 p-4 shadow-[0_2px_16px_rgba(0,0,0,0.04)] ${card.id === 'gains' ? 'col-span-2' : ''}`}
+						>
+							{card.content}
+						</motion.div>
+					))}
+				</div>
+			</div>
+
+			{/* Desktop hub-spoke. 3-row × 5-col CSS grid:
+			 *   Row 1: sat0 (top-left)         _              sat1 (top-right)
+			 *   Row 2: _              ANCHOR (col 2-4)         _
+			 *   Row 3: sat2 (bot-left)         _              sat3 (bot-right)
+			 *
+			 * Animated beams flow from each satellite to the anchor center. */}
+			<div className='relative hidden md:block'>
+				<div
+					className='grid grid-cols-5 gap-x-6 gap-y-10 lg:gap-x-10 lg:gap-y-12'
+					style={{ gridTemplateRows: 'auto auto auto' }}
+				>
+					{/* Row 1: sat0, _, _, _, sat1 */}
+					<motion.div
+						ref={sat0Ref}
+						custom={1}
+						initial='hidden'
+						whileInView='visible'
+						viewport={{ once: true, amount: 0.3 }}
+						variants={cardVariant}
+						className='col-start-1 col-end-2 row-start-1 row-end-2 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/95 p-5 shadow-[0_2px_16px_rgba(0,0,0,0.04)]'
+					>
+						{SATELLITES[0].content}
+					</motion.div>
+					<motion.div
+						ref={sat1Ref}
+						custom={2}
+						initial='hidden'
+						whileInView='visible'
+						viewport={{ once: true, amount: 0.3 }}
+						variants={cardVariant}
+						className='col-start-5 col-end-6 row-start-1 row-end-2 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/95 p-5 shadow-[0_2px_16px_rgba(0,0,0,0.04)]'
+					>
+						{SATELLITES[1].content}
+					</motion.div>
+
+					{/* Row 2: anchor centered (col 2-4) */}
+					<motion.div
+						ref={anchorRef}
+						custom={0}
+						initial='hidden'
+						whileInView='visible'
+						viewport={{ once: true, amount: 0.3 }}
+						variants={cardVariant}
+						className='col-start-2 col-end-5 row-start-2 row-end-3 rounded-3xl border border-cc-accent/30 bg-cc-warm-secondary p-8 shadow-[0_8px_40px_rgba(5,150,105,0.10),0_2px_16px_rgba(0,0,0,0.06)] lg:p-10'
+					>
+						{ANCHOR_CARD}
+					</motion.div>
+
+					{/* Row 3: sat2, _, _, _, sat3 */}
+					<motion.div
+						ref={sat2Ref}
+						custom={3}
+						initial='hidden'
+						whileInView='visible'
+						viewport={{ once: true, amount: 0.3 }}
+						variants={cardVariant}
+						className='col-start-1 col-end-2 row-start-3 row-end-4 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/95 p-5 shadow-[0_2px_16px_rgba(0,0,0,0.04)]'
+					>
+						{SATELLITES[2].content}
+					</motion.div>
+					<motion.div
+						ref={sat3Ref}
+						custom={4}
+						initial='hidden'
+						whileInView='visible'
+						viewport={{ once: true, amount: 0.3 }}
+						variants={cardVariant}
+						className='col-start-5 col-end-6 row-start-3 row-end-4 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/95 p-5 shadow-[0_2px_16px_rgba(0,0,0,0.04)]'
+					>
+						{SATELLITES[3].content}
+					</motion.div>
+				</div>
+
+				{/* Beams from satellites to anchor — only render when motion is enabled. */}
+				{!reduced && satRefs.map((satRef, i) => (
+					<AnimatedBeam
+						key={i}
+						containerRef={containerRef}
+						fromRef={satRef}
+						toRef={anchorRef}
+						gradientStartColor='#34d399'
+						gradientStopColor={EMERALD_AA}
+						pathColor='#94a3b8'
+						pathOpacity={0.18}
+						pathWidth={1.5}
+						curvature={i === 0 || i === 1 ? 30 : -30}
+						duration={3.4}
+						delay={0.6 + i * 0.25}
+					/>
+				))}
+			</div>
+		</div>
+	)
 }
 
 /* ── Customer success tier cards (ported from SectionCaseStudies 2026-04-23) ──
@@ -491,35 +654,11 @@ export default function SectionResults(): ReactElement {
 					</motion.h2>
 				</div>
 
-				{/* Anchor stats grid. 4 chips + gains strip — 4-col on desktop, 2-col
-				 * on tablet, 1-col stack on mobile. Gains strip spans full width on
-				 * all viewports (grid column 1 / -1). */}
-				<div className='mx-auto mt-14 grid max-w-5xl grid-cols-2 gap-4 px-6 md:mt-16 md:grid-cols-4 md:gap-5'>
-					{CARDS.slice(0, 4).map((card, i) => (
-						<motion.div
-							key={card.id}
-							custom={i}
-							initial='hidden'
-							whileInView='visible'
-							viewport={{ once: true, amount: 0.3 }}
-							variants={cardVariant}
-							className='rounded-xl border border-cc-warm-border bg-cc-warm-secondary/90 p-5 shadow-[0_2px_16px_rgba(0,0,0,0.04)]'
-						>
-							{card.content}
-						</motion.div>
-					))}
-					<motion.div
-						key={CARDS[4].id}
-						custom={4}
-						initial='hidden'
-						whileInView='visible'
-						viewport={{ once: true, amount: 0.3 }}
-						variants={cardVariant}
-						className='col-span-2 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/90 p-5 shadow-[0_2px_16px_rgba(0,0,0,0.04)] md:col-span-4'
-					>
-						{CARDS[4].content}
-					</motion.div>
-				</div>
+				{/* Hub-spoke proof composition (Wave D / R-10) — anchor stat in
+				 * center with 4 satellites at corners, animated emerald beams
+				 * flow inward. Mobile collapses to vertical stack with anchor
+				 * full-width on top + 4 satellites in 2-col grid below. */}
+				<HubSpokeProof />
 			</div>
 
 			{/* ── Below-billboard content ── */}
