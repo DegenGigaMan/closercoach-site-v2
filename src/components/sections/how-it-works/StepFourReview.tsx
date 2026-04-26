@@ -162,7 +162,7 @@ export default function StepFourReview() {
 					</span>
 				</div>
 				<h3 className='mt-6 text-3xl leading-[1.15] text-white md:text-4xl lg:text-[2.75rem]'>
-					See <em className='not-italic text-cc-accent'>Exactly</em> What&rsquo;s Losing You Deals
+					See <em className='text-cc-accent'>Exactly</em> What&rsquo;s Losing You Deals
 				</h3>
 				<p className='mt-6 text-base leading-relaxed text-cc-text-secondary md:text-lg'>
 					Every call gets scored A through F, with industry-tailored scorecards and word-for-word talk-tracks showing you exactly what you should have said.

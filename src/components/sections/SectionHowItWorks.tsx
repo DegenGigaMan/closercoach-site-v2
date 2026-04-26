@@ -149,10 +149,10 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 			</div>
 			</ActiveStepContext.Provider>
 
-			{/* Step 4 Review: hidden 2026-04-23 per Andy. Kept behind `false`
-			 * rather than deleted so the redesigned scorecard composite (Figma
-			 * 61:3023) stays intact for re-enablement. */}
-			{false && <StepFourReview />}
+			{/* Step 4 Review: brought back 2026-04-25 per Andy R-08 (was hidden
+			 * 2026-04-23, now restored). Renders the scorecard composite below
+			 * the 3-step scroll-pinned narrative as a vertically-stacked section. */}
+			<StepFourReview />
 		</section>
 	)
 }
@@ -294,7 +294,7 @@ function Step1Plan({ devPin }: { devPin: boolean }) {
 		<>
 			<StepKicker number="01" stepIndex={1}>PLAN</StepKicker>
 			<StepHeadline>
-				Clone Your <em className="not-italic text-cc-accent">Clients</em>
+				Clone Your <em className="text-cc-accent">Clients</em>
 			</StepHeadline>
 			<StepBody>
 				Sync your calendar and CRM. CloserCoach pulls the buyer&rsquo;s profile, clones them, and hands you a practice partner that looks, talks, and pushes back exactly like the real person on your calendar.
@@ -356,7 +356,7 @@ function Step2Practice({ devPin }: { devPin: boolean }) {
 		<>
 			<StepKicker number="02" stepIndex={2}>PRACTICE</StepKicker>
 			<StepHeadline>
-				Roleplay Until <em className="not-italic text-cc-accent">Every Objection</em> Feels Predictable
+				Roleplay Until <em className="text-cc-accent">Every Objection</em> Feels Predictable
 			</StepHeadline>
 			<StepBody>
 				The AI clone is realistic enough that prospects hang up when you fumble. Track your interest meter in real time, pull one-click suggested responses when you&rsquo;re stuck, and drill until your pitch is sharp.
@@ -387,7 +387,7 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 		<>
 			<StepKicker number="03" stepIndex={3}>SELL</StepKicker>
 			<StepHeadline>
-				Work The Call. <em className="not-italic text-cc-accent">Close The Deal.</em>
+				Close The <em className="text-cc-accent">Deal</em>
 			</StepHeadline>
 			<StepBody>
 				Dial directly from CloserCoach for AI-powered phone calls, or record any in-person meeting. Every word captured, every missed moment flagged, every objection coached: whether you&rsquo;re at the door or on the phone.
