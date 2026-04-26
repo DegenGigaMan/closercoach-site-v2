@@ -28,44 +28,49 @@ const PLACEHOLDER_POSTS = [
 export default function BlogPage() {
 	return (
 		<div className='bg-cc-warm-light text-cc-text-primary-warm'>
-			{/* Wave I FIX-05: bumped from max-w-4xl to max-w-7xl so the editorial
-			    content doesn't anchor left of a 600+px empty right canvas at
-			    1440/1920. The page reads as a centered editorial column at
-			    larger widths now while preserving the 3-up grid composition. */}
+			{/* Wave I FIX-05: outer container max-w-7xl so the post grid + footer
+			    distribute evenly at 1440/1920 (was max-w-4xl, leaving 600+px
+			    empty right canvas). Editorial header block (badge / H1 / intro /
+			    LinkedIn row) stays in a max-w-4xl inner container so the
+			    reading line length stays editorial-tight and centered, not
+			    stretched across the wide canvas. */}
 			<div className='mx-auto max-w-7xl px-6 py-20 md:py-28'>
-				{/* Coming soon badge */}
-				<span className='inline-flex items-center gap-2 rounded-full border border-cc-warm-border bg-white/60 px-3 py-1.5 text-xs font-medium text-cc-text-secondary-warm'>
-					<span className='relative flex h-1.5 w-1.5' aria-hidden='true'>
-						<span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-cc-accent-hover opacity-75' />
-						<span className='relative inline-flex h-1.5 w-1.5 rounded-full bg-cc-accent-hover' />
+				{/* Editorial header — narrower reading column inside the wide canvas. */}
+				<div className='mx-auto max-w-4xl'>
+					{/* Coming soon badge */}
+					<span className='inline-flex items-center gap-2 rounded-full border border-cc-warm-border bg-white/60 px-3 py-1.5 text-xs font-medium text-cc-text-secondary-warm'>
+						<span className='relative flex h-1.5 w-1.5' aria-hidden='true'>
+							<span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-cc-accent-hover opacity-75' />
+							<span className='relative inline-flex h-1.5 w-1.5 rounded-full bg-cc-accent-hover' />
+						</span>
+						<span className='font-mono uppercase tracking-[0.18em]'>Coming Soon</span>
 					</span>
-					<span className='font-mono uppercase tracking-[0.18em]'>Coming Soon</span>
-				</span>
 
-				{/* Hero */}
-				<h1 className='mt-6 display-md text-cc-text-primary-warm md:display-lg'>
-					Sales insights and playbooks from the{' '}
-					<span className='italic text-cc-accent-hover'>CloserCoach</span> team.
-				</h1>
-				<p className='mt-5 max-w-2xl text-base text-cc-text-secondary-warm md:text-lg'>
-					Short reads for people who close for a living. Frameworks you can use on your next call, teardowns of real roleplays, and lessons from the 20,000+ closers training inside the app.
-				</p>
-
-				{/* Placeholder state */}
-				<div className='mt-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
-					<p className='text-sm text-cc-text-secondary-warm'>
-						First posts drop soon. Follow on LinkedIn for updates.
+					{/* Hero */}
+					<h1 className='mt-6 display-md text-cc-text-primary-warm md:display-lg'>
+						Sales insights and playbooks from the{' '}
+						<span className='italic text-cc-accent-hover'>CloserCoach</span> team.
+					</h1>
+					<p className='mt-5 max-w-2xl text-base text-cc-text-secondary-warm md:text-lg'>
+						Short reads for people who close for a living. Frameworks you can use on your next call, teardowns of real roleplays, and lessons from the 20,000+ closers training inside the app.
 					</p>
-					<Link
-						href={LINKEDIN_URL}
-						target='_blank'
-						rel='noopener noreferrer'
-						className='inline-flex items-center gap-2 self-start rounded-full border border-cc-text-primary-warm/20 bg-white/60 px-4 py-2 text-sm font-medium text-cc-text-primary-warm transition-colors hover:border-cc-accent-hover hover:bg-white hover:text-cc-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent-hover focus-visible:ring-offset-2 focus-visible:ring-offset-cc-warm-light'
-					>
-						<LinkedinLogo weight='regular' className='h-4 w-4' aria-hidden='true' />
-						<span>Follow on LinkedIn</span>
-						<ArrowRight weight='bold' className='h-3.5 w-3.5' aria-hidden='true' />
-					</Link>
+
+					{/* Placeholder state */}
+					<div className='mt-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
+						<p className='text-sm text-cc-text-secondary-warm'>
+							First posts drop soon. Follow on LinkedIn for updates.
+						</p>
+						<Link
+							href={LINKEDIN_URL}
+							target='_blank'
+							rel='noopener noreferrer'
+							className='inline-flex items-center gap-2 self-start rounded-full border border-cc-text-primary-warm/20 bg-white/60 px-4 py-2 text-sm font-medium text-cc-text-primary-warm transition-colors hover:border-cc-accent-hover hover:bg-white hover:text-cc-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent-hover focus-visible:ring-offset-2 focus-visible:ring-offset-cc-warm-light'
+						>
+							<LinkedinLogo weight='regular' className='h-4 w-4' aria-hidden='true' />
+							<span>Follow on LinkedIn</span>
+							<ArrowRight weight='bold' className='h-3.5 w-3.5' aria-hidden='true' />
+						</Link>
+					</div>
 				</div>
 
 				{/* Placeholder post-card skeletons */}
@@ -103,8 +108,8 @@ export default function BlogPage() {
 					))}
 				</div>
 
-				{/* Back link */}
-				<div className='mt-16'>
+				{/* Back link — back inside the editorial column. */}
+				<div className='mx-auto mt-16 max-w-4xl'>
 					<Link
 						href='/'
 						className='text-sm text-cc-text-secondary-warm transition-colors hover:text-cc-text-primary-warm'
