@@ -68,10 +68,16 @@ const variantStyles: Record<Variant, string> = {
 }
 
 /* Per-variant typography for the sitewide spec. Primary = Bold (700),
- * Secondary = Medium (500), Ghost keeps Semibold for inline legibility. */
+ * Secondary = Medium (500), Ghost keeps Semibold for inline legibility.
+ * Wave M-0 (Andy 2026-04-26): unified leading on primary + secondary at 18px
+ * so text-trim collapses both pills to identical visible glyph height. The
+ * prior secondary leading-[28px] left visible top/bottom whitespace inside
+ * the pill that text-trim alone could not consolidate -- the line-box was
+ * trimmed but rendered taller than primary, breaking the matched-pair
+ * visual rhythm in Hero / Teams / Final CTA dual-CTA rows. */
 const sitewideTypography: Record<Variant, string> = {
 	primary: 'font-bold leading-[18px] [font-family:var(--font-cta)] text-trim',
-	secondary: 'font-medium leading-[28px] [font-family:var(--font-cta)] text-trim',
+	secondary: 'font-medium leading-[18px] [font-family:var(--font-cta)] text-trim',
 	ghost: 'font-semibold leading-[20px] text-trim',
 }
 
