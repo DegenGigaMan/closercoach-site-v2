@@ -240,7 +240,7 @@ export default function PricingContent() {
 			<section className='relative overflow-hidden py-24 md:py-32'>
 				<AtmosphereNoise opacity={0.02} />
 
-				<div className='relative z-10 mx-auto max-w-7xl px-6'>
+				<div className='relative z-10 mx-auto max-w-7xl px-6 2xl:max-w-[1440px]'>
 					<ScrollReveal className='mx-auto flex max-w-2xl flex-col items-center gap-4 text-center'>
 						<span className='font-[family-name:var(--font-mono)] text-xs font-medium uppercase tracking-[0.2em] text-cc-accent/70'>
 							Pricing
@@ -483,7 +483,7 @@ export default function PricingContent() {
 
 			{/* ---- Section 4: Competitor Context Anchor ---- */}
 			<section className='pb-24 md:pb-32'>
-				<div className='mx-auto max-w-7xl px-6'>
+				<div className='mx-auto max-w-7xl px-6 2xl:max-w-[1440px]'>
 					<ScrollReveal>
 						<div className='rounded-xl border border-cc-surface-border bg-cc-surface-card p-8 md:p-12'>
 							<div className='flex flex-col items-center gap-4 text-center'>
@@ -506,7 +506,7 @@ export default function PricingContent() {
 
 			{/* ---- Section 5: Trust Signals ---- */}
 			<section className='pb-24 md:pb-32'>
-				<div className='mx-auto max-w-7xl px-6'>
+				<div className='mx-auto max-w-7xl px-6 2xl:max-w-[1440px]'>
 					<ScrollReveal className='flex flex-col items-center gap-6'>
 						<p className='text-center text-sm text-cc-text-secondary'>
 							<span className='font-[family-name:var(--font-mono)] font-medium text-white'>{STATS.userCount}</span>{' '}
@@ -560,7 +560,7 @@ export default function PricingContent() {
 			<section className='relative overflow-hidden py-24 md:py-32'>
 				<AtmosphereNoise opacity={0.02} />
 
-				<div className='relative z-10 mx-auto max-w-7xl px-6'>
+				<div className='relative z-10 mx-auto max-w-7xl px-6 2xl:max-w-[1440px]'>
 					<ScrollReveal className='mx-auto flex max-w-2xl flex-col items-center gap-6 text-center'>
 						<h2 className='display-lg text-white'>
 							Your first AI coaching session takes 60 seconds.
