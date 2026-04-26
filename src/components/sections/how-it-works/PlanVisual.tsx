@@ -51,6 +51,12 @@ const LOGO_SALESFORCE = '/images/step1/logo-salesforce.svg'
 
 const EASE: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94]
 
+/* Emerald accent in the form SVG attrs + motion JS literals can consume.
+ * Mirrors `--cc-accent` (#10B981) but the Tailwind token can't be applied to
+ * `fill` / `stroke` / `stopColor` attrs or `animate={{ backgroundColor }}`
+ * literals — so we promote the hex to a single source of truth here. */
+const EMERALD = '#10B981'
+
 /* Motion-sequence phase timings (seconds). Phase = milestone in the cloning
  * narrative. Field typewriter timings derived per field length. */
 const PHASE = {
@@ -397,13 +403,13 @@ function Connector() {
 		>
 			<defs>
 				<linearGradient id='cc-plan-link' x1='0%' y1='50%' x2='100%' y2='50%'>
-					<stop offset='0%' stopColor='#10B981' stopOpacity='0.9' />
-					<stop offset='100%' stopColor='#10B981' stopOpacity='0.9' />
+					<stop offset='0%' stopColor={EMERALD} stopOpacity='0.9' />
+					<stop offset='100%' stopColor={EMERALD} stopOpacity='0.9' />
 				</linearGradient>
 			</defs>
-			<circle cx='3' cy='3' r='3' fill='#10B981' />
+			<circle cx='3' cy='3' r='3' fill={EMERALD} />
 			<rect x='3' y='2' width='76' height='2' rx='1' fill='url(#cc-plan-link)' />
-			<circle cx='79' cy='3' r='3' fill='#10B981' />
+			<circle cx='79' cy='3' r='3' fill={EMERALD} />
 		</svg>
 	)
 }

@@ -32,6 +32,12 @@ const MARCUS_AVATAR = '/images/step1/avatar-marcus-face.png'
 
 const EASE: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94]
 
+/* Emerald accent in the form SVG attrs + motion JS literals can consume.
+ * Mirrors `--cc-accent` (#10B981) but the Tailwind token can't be applied to
+ * `fill` / `stroke` SVG attrs or `animate={{ backgroundColor }}` literals — so
+ * we promote the hex to a single source of truth here. */
+const EMERALD = '#10B981'
+
 function MeetingCard({ name, time, avatarSrc, active = false, inView, reduced, delay }: {
 	name: string
 	time: string
@@ -104,13 +110,13 @@ function Connector({ inView, reduced }: { inView: boolean; reduced: boolean }) {
 	return (
 		<div className='flex h-8 w-full items-center justify-center' aria-hidden='true'>
 			<svg width='6' height='32' viewBox='0 0 6 32' className='overflow-visible'>
-				<circle cx='3' cy='3' r='3' fill='#10B981' />
+				<circle cx='3' cy='3' r='3' fill={EMERALD} />
 				<motion.line
 					x1='3'
 					y1='4'
 					x2='3'
 					y2='28'
-					stroke='#10B981'
+					stroke={EMERALD}
 					strokeOpacity='0.85'
 					strokeWidth='2'
 					strokeLinecap='round'
@@ -122,7 +128,7 @@ function Connector({ inView, reduced }: { inView: boolean; reduced: boolean }) {
 					cx='3'
 					cy='29'
 					r='3'
-					fill='#10B981'
+					fill={EMERALD}
 					initial={{ opacity: 0, scale: 0.6 }}
 					animate={inView ? { opacity: 1, scale: 1 } : undefined}
 					transition={reduced ? { duration: 0 } : { type: 'spring', stiffness: 500, damping: 22, delay: 1.05 }}
@@ -161,7 +167,7 @@ function CloneHeader({ inView, reduced }: { inView: boolean; reduced: boolean })
 						key={i}
 						className='h-full min-w-px flex-1 rounded-full'
 						initial={{ backgroundColor: 'rgba(255,255,255,0.15)' }}
-						animate={inView ? { backgroundColor: '#10B981' } : undefined}
+						animate={inView ? { backgroundColor: EMERALD } : undefined}
 						transition={reduced
 							? { duration: 0 }
 							: { duration: 0.3, ease: EASE, delay: 1.1 + i * 0.1 }
