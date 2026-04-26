@@ -196,6 +196,7 @@ export default function SectionHero() {
 						variant='primary'
 						size='lg'
 						className='w-full sm:w-auto'
+						dataPrimaryCta
 					>
 						{CTA.tryFree.text}
 					</MotionCTA>
@@ -204,6 +205,7 @@ export default function SectionHero() {
 						variant='secondary'
 						size='lg'
 						className='w-full sm:w-auto'
+						dataPrimaryCta
 					>
 						{CTA.contactSales.text}
 					</MotionCTA>
@@ -382,6 +384,7 @@ export default function SectionHero() {
 							href={BRAND.appStore}
 							target='_blank'
 							rel='noopener noreferrer'
+							data-primary-cta=''
 							className='transition-transform hover:scale-105'
 						>
 							<Image
@@ -396,6 +399,7 @@ export default function SectionHero() {
 							href={BRAND.googlePlay}
 							target='_blank'
 							rel='noopener noreferrer'
+							data-primary-cta=''
 							className='transition-transform hover:scale-105'
 						>
 							<Image

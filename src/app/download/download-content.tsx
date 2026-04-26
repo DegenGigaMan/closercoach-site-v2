@@ -135,7 +135,7 @@ export default function DownloadContent() {
 					</div>
 
 					{/* QR white panel with emerald frame + corner registration marks */}
-					<div className='relative rounded-xl border border-cc-accent/40 bg-white p-4'>
+					<div data-primary-cta='' className='relative rounded-xl border border-cc-accent/40 bg-white p-4'>
 						<span
 							className='pointer-events-none absolute left-0 top-0 h-3 w-3 -translate-x-[6px] -translate-y-[6px] border-l-2 border-t-2 border-cc-accent'
 							aria-hidden='true'
@@ -176,6 +176,7 @@ export default function DownloadContent() {
 						target='_blank'
 						rel='noopener noreferrer'
 						aria-label='Download on the App Store'
+						data-primary-cta=''
 						className='inline-flex rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
 					>
 						<Image
@@ -191,6 +192,7 @@ export default function DownloadContent() {
 						target='_blank'
 						rel='noopener noreferrer'
 						aria-label='Get it on Google Play'
+						data-primary-cta=''
 						className='inline-flex rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
 					>
 						<Image

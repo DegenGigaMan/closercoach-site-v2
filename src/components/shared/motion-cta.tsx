@@ -36,6 +36,10 @@ interface MotionCTAProps {
 	 * Teams, Final, Pricing, Download, Thank You) leave this off so they pick
 	 * up the Wave F.1 Plus Jakarta Sans + 16/24 / bold-medium spec. */
 	chrome?: boolean
+	/** Marks this CTA as a primary purchase/conversion CTA. Used by the cookie
+	 *  banner to suppress its own visibility while a primary CTA is in viewport
+	 *  (Wave I FIX-01 — keep purchase CTAs unoccluded on first visit). */
+	dataPrimaryCta?: boolean
 }
 
 /* Legacy size scale (preserved when chrome=true). */
@@ -82,6 +86,7 @@ export default function MotionCTA({
 	children,
 	className = '',
 	chrome = false,
+	dataPrimaryCta = false,
 }: MotionCTAProps) {
 	const base =
 		'inline-flex items-center justify-center focus-visible:ring-2 focus-visible:ring-cc-accent-glow focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
@@ -104,6 +109,7 @@ export default function MotionCTA({
 		<MotionLink
 			href={href}
 			className={`${base} ${sizing} ${variantStyles[variant]} ${className}`}
+			{...(dataPrimaryCta ? { 'data-primary-cta': '' } : {})}
 			whileHover={{
 				scale: 1.02,
 				boxShadow: hoverShadow,

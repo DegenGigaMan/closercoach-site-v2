@@ -288,6 +288,7 @@ export default function PricingContent() {
 							return (
 								<ScrollReveal key={tier.key} delay={i * 0.1}>
 									<div
+										{...(tier.highlighted ? { 'data-primary-cta': '' } : {})}
 										className={`relative flex h-full flex-col rounded-xl border p-8 ${
 											tier.highlighted
 												? 'border-cc-accent bg-cc-surface-card shadow-[0_0_64px_-24px_rgba(16,185,129,0.35)] ring-1 ring-cc-accent/25'

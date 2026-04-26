@@ -102,7 +102,7 @@ export default function SectionCTA() {
 						</div>
 
 						{/* QR frame -- thin emerald border with 4 corner registration marks */}
-						<div className='relative rounded-xl border border-cc-accent/40 bg-white p-3'>
+						<div data-primary-cta='' className='relative rounded-xl border border-cc-accent/40 bg-white p-3'>
 							{/* Corner registration marks (L-brackets) */}
 							<span className='pointer-events-none absolute left-0 top-0 h-3 w-3 -translate-x-[6px] -translate-y-[6px] border-l-2 border-t-2 border-cc-accent' aria-hidden='true' />
 							<span className='pointer-events-none absolute right-0 top-0 h-3 w-3 translate-x-[6px] -translate-y-[6px] border-r-2 border-t-2 border-cc-accent' aria-hidden='true' />
@@ -131,6 +131,7 @@ export default function SectionCTA() {
 						<Link
 							href={BRAND.appStore}
 							aria-label='Download on the App Store'
+							data-primary-cta=''
 							className='inline-flex rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
 						>
 							<Image
@@ -144,6 +145,7 @@ export default function SectionCTA() {
 						<Link
 							href={BRAND.googlePlay}
 							aria-label='Get it on Google Play'
+							data-primary-cta=''
 							className='inline-flex rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
 						>
 							<Image

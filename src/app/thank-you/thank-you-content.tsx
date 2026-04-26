@@ -97,7 +97,7 @@ export default function ThankYouContent({ firstName }: Props) {
 
 						{/* QR + badges */}
 						<div className='mt-5 flex flex-col items-start gap-4'>
-							<div className='relative rounded-lg border border-cc-accent/30 bg-white p-2.5'>
+							<div data-primary-cta='' className='relative rounded-lg border border-cc-accent/30 bg-white p-2.5'>
 								<QRCodeSVG
 									value={QR_DESTINATION}
 									size={96}
@@ -114,6 +114,7 @@ export default function ThankYouContent({ firstName }: Props) {
 									target='_blank'
 									rel='noopener noreferrer'
 									aria-label='Download on the App Store'
+									data-primary-cta=''
 									className='inline-flex rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
 								>
 									<Image
@@ -129,6 +130,7 @@ export default function ThankYouContent({ firstName }: Props) {
 									target='_blank'
 									rel='noopener noreferrer'
 									aria-label='Get it on Google Play'
+									data-primary-cta=''
 									className='inline-flex rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
 								>
 									<Image
