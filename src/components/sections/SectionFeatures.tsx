@@ -199,7 +199,10 @@ export default function SectionFeatures(): ReactElement {
 			data-surface='dark-features'
 			className='relative overflow-hidden bg-cc-foundation py-24 md:py-32'
 		>
-			<div className='relative z-10 mx-auto max-w-[1400px] px-6'>
+			{/* Wave J.3 (FIX-04 P1, 2026-04-26): 2xl bump 1400 -> 1440 reclaims
+			 * the 320px-per-side rails at 1920 viewport. Mercury / Linear push
+			 * to 1440-1536 at 2xl. */}
+			<div className='relative z-10 mx-auto max-w-[1400px] px-6 2xl:max-w-[1440px]'>
 				{/* Billboard headline. 4-verb capability rhythm mirrors the Step 1-4
 				    flow (Plan / Practice / Sell / Review). Lora Bold with italic emerald
 				    emphasis on the closing verb per VIS lock 2026-04-21. Fluid clamp so

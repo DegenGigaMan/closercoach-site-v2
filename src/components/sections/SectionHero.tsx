@@ -142,8 +142,12 @@ export default function SectionHero() {
 
 			{/* Content layer -- centered vertical stack. Wave H.4 (2026-04-26):
 			 * top padding reduced (pt-28 md:pt-32 -> pt-16 md:pt-20) so the
-			 * phone composite reaches above-fold at 1440x900. */}
-			<div className='relative z-[5] mx-auto flex min-h-screen max-w-[1200px] flex-col items-center justify-center px-6 pb-16 pt-16 md:pt-20'>
+			 * phone composite reaches above-fold at 1440x900.
+			 * Wave J.3 (FIX-04 P1, 2026-04-26): 2xl bump from 1200 -> 1440
+			 * reclaims the 320px-per-side rails at 1920 viewport. Mercury /
+			 * Linear push to 1440-1536 at 2xl; prior ceiling read narrow on
+			 * wide canvas. */}
+			<div className='relative z-[5] mx-auto flex min-h-screen max-w-[1200px] flex-col items-center justify-center px-6 pb-16 pt-16 md:pt-20 2xl:max-w-[1440px]'>
 
 				{/* Announcement badge (AnimatedBadge replaces v1's static trust pill). */}
 				<motion.div className='mb-8' {...enter(0, -8, 0.5)}>

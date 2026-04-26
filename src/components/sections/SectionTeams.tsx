@@ -280,7 +280,11 @@ export default function SectionTeams(): ReactElement {
 		>
 			<AtmosphereNoise opacity={0.02} />
 
-			<div className='relative z-10 mx-auto max-w-7xl px-6'>
+			{/* Wave J.3 (FIX-04 P1, 2026-04-26): 2xl bump 7xl(1280) -> 1440
+			 * reclaims the 320px-per-side rails at 1920 viewport. Bento layout
+			 * benefits from extra horizontal room — hero card (lg:col-span-2)
+			 * gets 80-160px more width to seat the visual. */}
+			<div className='relative z-10 mx-auto max-w-7xl px-6 2xl:max-w-[1440px]'>
 				{/* ── Top block (center-aligned) ── */}
 				<Reveal className='flex flex-col items-center gap-5 text-center'>
 					<span className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.18em] text-cc-accent'>
