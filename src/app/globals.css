@@ -59,6 +59,13 @@
 	--color-cc-accent-atmospheric: oklch(from #00D4AA l c h / 10%);
 	--color-cc-shadow-glow: oklch(from #10B981 l c h / 15%);
 
+	/* Connector hairline -- slate-500 (#64748b) for animated beam pathColor
+	 * and any other low-emphasis neutral connector lines on dark surfaces.
+	 * Promoted to a token in Wave J.5 (DD polish #3, 2026-04-26) — was
+	 * inlined as a raw hex on AnimatedBeam pathColor in SectionResults from
+	 * Wave I FIX-07. */
+	--color-cc-connector: #64748b;
+
 	/* Text -- dark surfaces */
 	--color-cc-text-primary: #FFFFFF;
 	--color-cc-text-secondary: #94A3B8;

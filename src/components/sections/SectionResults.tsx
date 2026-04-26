@@ -341,7 +341,9 @@ function HubSpokeProof(): ReactElement {
 				    Wave I FIX-07: bumped pathOpacity 0.28 → 0.55 and pathWidth 1.5 → 2
 				    so the connector hairlines read clearly at 1440. Mercury Insights
 				    uses bolder connectors; the previous values were too faint to carry
-				    the "evidence converges to the headline number" narrative. */}
+				    the "evidence converges to the headline number" narrative.
+				    Wave J.5: pathColor promoted from raw #64748b to var(--color-cc-connector)
+				    — same hex, now a CC token (DD polish #3 anti-pattern fix). */}
 				{!reduced && satRefs.map((satRef, i) => (
 					<AnimatedBeam
 						key={i}
@@ -350,7 +352,7 @@ function HubSpokeProof(): ReactElement {
 						toRef={anchorRef}
 						gradientStartColor='#34d399'
 						gradientStopColor={EMERALD_AA}
-						pathColor='#64748b'
+						pathColor='var(--color-cc-connector)'
 						pathOpacity={0.55}
 						pathWidth={2}
 						curvature={i === 0 || i === 1 ? 30 : -30}
