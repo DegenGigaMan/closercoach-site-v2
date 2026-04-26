@@ -70,8 +70,8 @@ function CandidateRow({ name, avatar, verdict, emphasised = false }: Row): React
 export default function HireBetterFasterVisual(): ReactElement {
 	return (
 		<div className='relative h-full w-full overflow-hidden bg-cc-foundation px-4 py-5 md:px-5 md:py-6'>
-			{/* Header row — pr-10 clears the absolute [05] chapter marker rendered by BentoCard */}
-			<div className='flex items-center justify-between border-b border-cc-surface-border pb-2.5 pr-10'>
+			{/* Header row — pr-12 sm:pr-10 clears the absolute [05] chapter marker rendered by BentoCard at all breakpoints */}
+			<div className='flex items-center justify-between border-b border-cc-surface-border pb-2.5 pr-12 sm:pr-10'>
 				<span className='text-trim font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-wider text-cc-text-secondary'>
 					Candidate
 				</span>
