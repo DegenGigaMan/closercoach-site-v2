@@ -25,14 +25,19 @@ const AVATARS = [
  * weight + wordmark proportion, so a uniform height collapses visual balance
  * (Sunrun looks oversized at h-8, Liberty Mutual looks compressed). Heights
  * here match the Figma roster spec. Marquee container vertically centers
- * mixed-height children. */
+ * mixed-height children.
+ *
+ * Wave K.1 (FIX-CC-01 P2, 2026-04-26): SUNRUN removed from this strip to
+ * dedupe against S6 Teams logo wall — Mercury / Stripe never repeat the same
+ * brand twice on a single page. SUNRUN preserved in S6 (solar industry
+ * signal in the manager roster). Marquee compresses to 8 brands, gaps
+ * remain even per `mx-9` per-logo spacing. */
 const LOGOS = [
 	{ name: 'Toyota', file: '/logos/toyota.svg', width: 196, height: 28, heightClass: 'h-[22px]' },
 	{ name: 'State Farm', file: '/logos/state-farm.svg', width: 171, height: 24, heightClass: 'h-[22px]' },
 	{ name: 'Mercedes-Benz', file: '/logos/mercedes-benz.svg', width: 196, height: 32, heightClass: 'h-8' },
 	{ name: 'Morgan Stanley', file: '/logos/morgan-stanley.svg', width: 167, height: 24, heightClass: 'h-[22px]' },
 	{ name: 'Liberty Mutual', file: '/logos/liberty-mutual.svg', width: 158, height: 40, heightClass: 'h-9' },
-	{ name: 'Sunrun', file: '/logos/sunrun.svg', width: 105, height: 20, heightClass: 'h-5' },
 	{ name: 'Family First Life', file: '/logos/family-first-life.png', width: 160, height: 34, heightClass: 'h-7' },
 	{ name: 'Coverd', file: '/logos/coverd.svg', width: 127, height: 28, heightClass: 'h-7' },
 	{ name: 'Aroma360', file: '/logos/aroma360.svg', width: 253, height: 24, heightClass: 'h-5' },
