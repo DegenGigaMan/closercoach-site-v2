@@ -397,6 +397,7 @@ export default function SectionHero() {
 								width={126}
 								height={42}
 								className='h-[42px] w-auto'
+								priority
 							/>
 						</a>
 						<a
@@ -412,6 +413,7 @@ export default function SectionHero() {
 								width={142}
 								height={42}
 								className='h-[42px] w-auto'
+								priority
 							/>
 						</a>
 					</div>
