@@ -229,6 +229,10 @@ function FAQItem({ item, isOpen, onToggle }: { item: typeof FAQ_ITEMS[number]; i
 export default function PricingContent() {
 	const [yearly, setYearly] = useState(false)
 	const [openFaq, setOpenFaq] = useState(0)
+	/* Wave J.2 (FIX-02 P1): mobile compare tier switcher. Defaults to 'teams'
+	 * (the highlighted tier in the cards above) so the most relevant tier loads
+	 * first. Index maps to TIERS order: 0=closer, 1=teams, 2=enterprise. */
+	const [compareTier, setCompareTier] = useState<0 | 1 | 2>(1)
 
 	return (
 		<div className='bg-cc-foundation'>
@@ -409,37 +413,70 @@ export default function PricingContent() {
 						</div>
 					</ScrollReveal>
 
-					{/* Mobile + tablet: accordion per tier */}
-					<div className='flex flex-col gap-4 lg:hidden'>
-						{['Closer', 'Teams', 'Enterprise'].map((tierName, tierIdx) => (
-							<ScrollReveal key={tierName} delay={tierIdx * 0.1}>
-								<details className='group rounded-xl border border-cc-surface-border bg-cc-surface-card'>
-									<summary className={`flex cursor-pointer items-center justify-between p-5 text-base font-medium ${
-										tierIdx === 0 ? 'text-cc-accent' : 'text-white'
-									}`}>
-										{tierName}
-										<CaretDown
-											size={18}
-											weight='bold'
-											className='text-cc-text-secondary transition-transform duration-200 group-open:rotate-180'
-										/>
-									</summary>
-									<ul className='flex flex-col gap-2.5 px-5 pb-5'>
-										{COMPARISON_ROWS.map((row) => (
+					{/* Wave J.2 (FIX-02 P1) — Mobile + tablet: tier-tab switcher.
+					    Replaces the prior 3x details-accordion pattern that produced
+					    ~800-1000px of mostly-empty space at <md (em-dash placeholders
+					    for unavailable features looked like broken layout).
+					    Linear / Resend pricing mobile uses this segmented-control
+					    pattern: 3 tier pills at top + vertical feature checklist for
+					    the selected tier only. */}
+					<div className='flex flex-col gap-6 lg:hidden'>
+						<ScrollReveal>
+							<div
+								role='tablist'
+								aria-label='Compare plan features by tier'
+								className='grid grid-cols-3 gap-1.5 rounded-full border border-cc-surface-border bg-cc-surface-card p-1.5'
+							>
+								{(['Closer', 'Teams', 'Enterprise'] as const).map((tierName, tierIdx) => {
+									const idx = tierIdx as 0 | 1 | 2
+									const active = compareTier === idx
+									return (
+										<button
+											key={tierName}
+											type='button'
+											role='tab'
+											aria-selected={active}
+											aria-controls={`compare-panel-${idx}`}
+											id={`compare-tab-${idx}`}
+											onClick={() => setCompareTier(idx)}
+											className={`inline-flex h-10 items-center justify-center rounded-full text-sm font-medium transition-colors ${
+												active
+													? 'bg-cc-accent text-cc-foundation'
+													: 'text-cc-text-secondary hover:text-white'
+											}`}
+										>
+											{tierName}
+										</button>
+									)
+								})}
+							</div>
+						</ScrollReveal>
+						<ScrollReveal>
+							<div
+								role='tabpanel'
+								id={`compare-panel-${compareTier}`}
+								aria-labelledby={`compare-tab-${compareTier}`}
+								className='rounded-xl border border-cc-surface-border bg-cc-surface-card p-5'
+							>
+								<ul className='flex flex-col gap-3'>
+									{COMPARISON_ROWS.map((row) => {
+										const included = row.tiers[compareTier]
+										return (
 											<li key={row.feature} className='flex items-center gap-2.5 text-sm'>
-												{row.tiers[tierIdx]
-													? <Check size={16} weight='bold' className='shrink-0 text-cc-accent' />
-													: <Minus size={16} className='shrink-0 text-cc-text-muted' />
-												}
-												<span className={row.tiers[tierIdx] ? 'text-cc-text-secondary' : 'text-cc-text-muted'}>
+												{included ? (
+													<Check size={16} weight='bold' className='shrink-0 text-cc-accent' />
+												) : (
+													<Minus size={16} className='shrink-0 text-cc-text-muted' />
+												)}
+												<span className={included ? 'text-cc-text-secondary' : 'text-cc-text-muted line-through decoration-cc-text-muted/40'}>
 													{row.feature}
 												</span>
 											</li>
-										))}
-									</ul>
-								</details>
-							</ScrollReveal>
-						))}
+										)
+									})}
+								</ul>
+							</div>
+						</ScrollReveal>
 					</div>
 				</div>
 			</section>
