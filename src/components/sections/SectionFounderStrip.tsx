@@ -99,9 +99,8 @@ type StatPillProps = {
 function StatPill({ value, label }: StatPillProps): ReactElement {
 	return (
 		<div
-			className='flex items-center gap-3 rounded-full px-5 py-3 md:gap-4 md:px-6 md:py-3.5'
+			className='flex items-center gap-3 rounded-full bg-cc-surface-card px-5 py-3 md:gap-4 md:px-6 md:py-3.5'
 			style={{
-				backgroundColor: '#1E2230',
 				border: `1px solid ${EMERALD_BORDER}`,
 				boxShadow: '0 0 0 1px rgba(16,185,129,0.06), 0 8px 24px -8px rgba(16,185,129,0.22)',
 			}}
@@ -276,9 +275,8 @@ type FounderCardProps = {
 function FounderCard({ name, role, initials, imageSrc, credentials }: FounderCardProps): ReactElement {
 	return (
 		<article
-			className='flex h-full flex-col gap-6 rounded-xl p-6 md:p-8'
+			className='flex h-full flex-col gap-6 rounded-xl bg-cc-surface-card p-6 md:p-8'
 			style={{
-				backgroundColor: '#1E2230',
 				border: '1px solid rgba(255,255,255,0.06)',
 				boxShadow: '0 0 0 1px rgba(16,185,129,0.04), 0 16px 40px -16px rgba(0,0,0,0.6)',
 			}}

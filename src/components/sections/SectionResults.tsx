@@ -232,9 +232,8 @@ function TierCard({
 }: TierCardProps): ReactElement {
 	return (
 		<article
-			className='relative flex h-full flex-col gap-6 rounded-2xl p-6 md:gap-7 md:p-8'
+			className='relative flex h-full flex-col gap-6 rounded-2xl bg-cc-warm-secondary p-6 md:gap-7 md:p-8'
 			style={{
-				backgroundColor: '#FAFAF8',
 				border: `1px solid ${WARM_BORDER}`,
 				boxShadow: '0 1px 2px rgba(13,15,20,0.04), 0 24px 48px -32px rgba(13,15,20,0.18)',
 			}}
@@ -251,9 +250,8 @@ function TierCard({
 					/>
 				</div>
 				<span
-					className='absolute -top-1 left-24 inline-flex items-center rounded-full px-3 py-1.5 md:left-28'
+					className='absolute -top-1 left-24 inline-flex items-center rounded-full bg-cc-warm px-3 py-1.5 md:left-28'
 					style={{
-						backgroundColor: '#F5F0EB',
 						border: `1px solid ${WARM_BORDER}`,
 						boxShadow: '0 4px 12px -6px rgba(13,15,20,0.12)',
 					}}
@@ -617,12 +615,11 @@ export default function SectionResults(): ReactElement {
 				 * emerald; the rest in Inter Medium uppercase slate. */}
 				<Reveal className='mt-8 md:mt-10' delay={0.05}>
 					<p
-						className='text-center uppercase'
+						className='text-trim text-center uppercase text-cc-text-secondary-warm'
 						style={{
 							fontSize: '16px',
 							lineHeight: '19.5px',
 							letterSpacing: '2.34px',
-							color: '#475569',
 						}}
 					>
 						<span
