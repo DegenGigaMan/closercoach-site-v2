@@ -226,10 +226,11 @@ export default function SectionFeatures(): ReactElement {
 						}}
 					>
 						Practice. Record. Review.{' '}
-						<em
-							className='not-italic text-cc-accent'
-							style={{ fontWeight: 700, fontStyle: 'italic' }}
-						>
+						{/* Wave J.4 (DD polish #1): drop fragile not-italic+inline-style
+						 * override pattern. <em> already inherits italic; explicit
+						 * `italic` className removes the className/style fight. Same
+						 * visual result (Lora Bold Italic emerald), cleaner code. */}
+						<em className='italic font-bold text-cc-accent'>
 							Improve.
 						</em>
 					</h2>
