@@ -168,7 +168,7 @@ const SATELLITES: readonly ProofCard[] = [
 					>
 						7%
 					</span>
-					<span className='mt-1 font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-cc-text-secondary-warm'>
+					<span className='mt-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.10em] text-cc-text-secondary-warm'>
 						Close Rate
 					</span>
 				</div>
@@ -180,7 +180,7 @@ const SATELLITES: readonly ProofCard[] = [
 					>
 						50%
 					</span>
-					<span className='mt-1 font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-cc-text-secondary-warm'>
+					<span className='mt-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.10em] text-cc-text-secondary-warm'>
 						Faster Ramp
 					</span>
 				</div>
@@ -192,7 +192,7 @@ const SATELLITES: readonly ProofCard[] = [
 					>
 						30%
 					</span>
-					<span className='mt-1 font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.12em] text-cc-text-secondary-warm'>
+					<span className='mt-1 font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.10em] text-cc-text-secondary-warm'>
 						More Deals
 					</span>
 				</div>
