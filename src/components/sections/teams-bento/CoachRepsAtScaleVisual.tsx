@@ -71,22 +71,27 @@ function MeetingCard({ faded = false }: { faded?: boolean }): ReactElement {
 export default function CoachRepsAtScaleVisual(): ReactElement {
 	return (
 		<div className='relative h-full w-full overflow-hidden bg-cc-foundation px-5 pt-5 pb-3 md:px-8 md:pt-7 md:pb-4'>
-			{/* Top row: kicker + connector + play orb + cleared pill. The middle
-			 * connectors flex-1 and shrink to nothing on narrow widths so the
-			 * 4 anchor elements (kicker, orb, cleared pill) always sit on one
-			 * line without overflow. */}
-			<div className='flex items-center gap-2 md:gap-3'>
-				<span
-					className='text-trim shrink-0 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.18em] text-cc-text-secondary'
-				>
-					Your calendar before
-				</span>
-				<span aria-hidden='true' className='hidden h-px flex-1 bg-gradient-to-r from-cc-accent/60 via-cc-accent/30 to-transparent sm:block' />
-				<div className='relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-cc-foundation-deep ring-2 ring-cc-accent shadow-[0_0_16px_rgba(16,185,129,0.45)]'>
-					<Sparkle size={14} weight='fill' className='text-cc-accent' />
+			{/* Top row: kicker + connector + play orb + cleared pill. At <sm the
+			 * row stacks: eyebrow + sparkle on row 1, "6h cleared up!" pill on
+			 * row 2 — prevents the 3 anchor elements from crowding/touching at
+			 * 390/430 viewports (Wave N FIX-04). At sm+ the connectors fill in
+			 * and all 4 elements sit on one line.
+			 *
+			 * Implementation: outer wrapper is flex-col at <sm so the pill row
+			 * wraps below the eyebrow row; sm+ flips to flex-row so the
+			 * connectors flex-1 and the layout reads as one line. */}
+			<div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2 md:gap-3'>
+				<div className='flex items-center gap-2'>
+					<span className='text-trim shrink-0 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.18em] text-cc-text-secondary'>
+						Your calendar before
+					</span>
+					<span aria-hidden='true' className='hidden h-px flex-1 bg-gradient-to-r from-cc-accent/60 via-cc-accent/30 to-transparent sm:block' />
+					<div className='relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-cc-foundation-deep ring-2 ring-cc-accent shadow-[0_0_16px_rgba(16,185,129,0.45)]'>
+						<Sparkle size={14} weight='fill' className='text-cc-accent' />
+					</div>
 				</div>
 				<span aria-hidden='true' className='hidden h-px shrink-0 bg-gradient-to-r from-cc-accent/30 to-cc-accent/60 sm:block sm:w-12 md:w-16' />
-				<div className='ml-auto shrink-0 rounded-full border border-cc-accent/40 bg-cc-accent/10 px-2.5 py-1.5 sm:ml-0'>
+				<div className='self-start shrink-0 rounded-full border border-cc-accent/40 bg-cc-accent/10 px-2.5 py-1.5 sm:ml-auto sm:self-auto'>
 					<span className='text-trim flex items-center gap-1.5 text-[10px] font-medium text-cc-mint md:text-[11px]'>
 						<Sparkle size={11} weight='fill' aria-hidden='true' />
 						6h cleared up!
