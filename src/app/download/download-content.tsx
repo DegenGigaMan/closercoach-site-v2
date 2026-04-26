@@ -194,7 +194,6 @@ export default function DownloadContent() {
 							width={144}
 							height={48}
 							className='h-12 w-auto'
-							style={{ width: 'auto', height: 'auto' }}
 						/>
 					</Link>
 					<Link
@@ -211,7 +210,6 @@ export default function DownloadContent() {
 							width={162}
 							height={48}
 							className='h-12 w-auto'
-							style={{ width: 'auto', height: 'auto' }}
 						/>
 					</Link>
 				</div>

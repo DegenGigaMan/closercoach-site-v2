@@ -108,14 +108,14 @@ export default function ThankYouContent({ firstName }: Props) {
 									title='QR code to install CloserCoach'
 								/>
 							</div>
-							<div className='flex flex-row items-center gap-2'>
+							<div className='flex flex-row flex-wrap items-center gap-2'>
 								<Link
 									href={BRAND.appStore}
 									target='_blank'
 									rel='noopener noreferrer'
 									aria-label='Download on the App Store'
 									data-primary-cta=''
-									className='inline-flex rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
+									className='inline-flex shrink-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
 								>
 									<Image
 										src='/badges/app-store.svg'
@@ -123,7 +123,6 @@ export default function ThankYouContent({ firstName }: Props) {
 										width={108}
 										height={36}
 										className='h-9 w-auto'
-										style={{ width: 'auto', height: 'auto' }}
 									/>
 								</Link>
 								<Link
@@ -132,7 +131,7 @@ export default function ThankYouContent({ firstName }: Props) {
 									rel='noopener noreferrer'
 									aria-label='Get it on Google Play'
 									data-primary-cta=''
-									className='inline-flex rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
+									className='inline-flex shrink-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
 								>
 									<Image
 										src='/badges/google-play.svg'
@@ -140,7 +139,6 @@ export default function ThankYouContent({ firstName }: Props) {
 										width={121}
 										height={36}
 										className='h-9 w-auto'
-										style={{ width: 'auto', height: 'auto' }}
 									/>
 								</Link>
 							</div>
