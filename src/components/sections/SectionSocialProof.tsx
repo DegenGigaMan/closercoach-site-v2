@@ -167,10 +167,13 @@ export default function SectionSocialProof() {
 						aria-hidden='true'
 					/>
 
-					{/* Logo marquee */}
+					{/* Logo marquee — sm+ (≥640px). Wave K.3 (FIX-CC-03 P2,
+					 * 2026-04-26): below sm we swap to a horizontal snap-scroll so
+					 * logos render at proper recognition size instead of the
+					 * marquee compressing them to ~30-40px wide. */}
 					<div
 						ref={trackContainerRef}
-						className='group relative w-full overflow-hidden'
+						className='group relative hidden w-full overflow-hidden sm:block'
 						role='marquee'
 						aria-label='Companies using CloserCoach'
 					>
@@ -195,6 +198,38 @@ export default function SectionSocialProof() {
 							<LogoPass />
 							<LogoPass ariaHidden />
 						</div>
+					</div>
+
+					{/* Mobile snap-scroll (<sm). Each logo is its own snap-start
+					 * container at proper heightClass so brand recognition holds.
+					 * Right-edge gradient fade signals "more →" without arrows.
+					 * Touch-scroll is native; no JS animation budget. */}
+					<div
+						className='relative w-full sm:hidden'
+						aria-label='Companies using CloserCoach'
+					>
+						<div className='flex snap-x snap-mandatory items-center gap-9 overflow-x-auto px-2 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'>
+							{LOGOS.map((logo) => (
+								<div
+									key={`mob-${logo.name}`}
+									className='inline-flex shrink-0 snap-start select-none items-center'
+									aria-label={logo.name}
+								>
+									<Image
+										src={logo.file}
+										alt={logo.name}
+										width={logo.width}
+										height={logo.height}
+										className={`${logo.heightClass} w-auto object-contain`}
+										loading='lazy'
+									/>
+								</div>
+							))}
+						</div>
+						<div
+							className='pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-cc-warm to-transparent'
+							aria-hidden='true'
+						/>
 					</div>
 				</div>
 			</div>
