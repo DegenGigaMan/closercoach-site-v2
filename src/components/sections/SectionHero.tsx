@@ -207,10 +207,10 @@ export default function SectionHero() {
 					</MotionCTA>
 				</motion.div>
 
-				{/* Platform availability + reassurance row. Replaces "No desktop. No
-				 * annual contracts." with an iOS / Android / Web availability row plus
-				 * the "No annual contracts." value prop. "No desktop" killed 2026-04-24
-				 * (Wave F2 J2) — Web availability contradicts it. */}
+				{/* Platform availability row. iOS / Android / Web tags only. The
+				 * trailing "No annual contracts." value prop was killed 2026-04-26
+				 * per Andy (Wave F.1b) so the row reads as a clean three-tag
+				 * platform list per Figma 85:15957. */}
 				<motion.div
 					className='mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center font-sans text-sm text-cc-text-muted'
 					initial={{ opacity: 0 }}
@@ -231,8 +231,6 @@ export default function SectionHero() {
 						<Globe size={14} weight='regular' aria-hidden='true' />
 						<span>Web</span>
 					</span>
-					<span className='text-cc-text-muted/40' aria-hidden='true'>·</span>
-					<span>No annual contracts.</span>
 				</motion.div>
 
 				{/* Rating block — Figma 62:3128. Vertical stack: big 4.7 in Lora
