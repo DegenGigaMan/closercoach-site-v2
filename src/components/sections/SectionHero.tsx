@@ -242,22 +242,36 @@ export default function SectionHero() {
 					className='mt-8 flex flex-col items-center gap-2'
 					{...enter(0.6, 8, 0.5)}
 				>
-					<span
-						className='text-white'
-						style={{
-							fontFamily: 'var(--font-heading)',
-							fontWeight: 700,
-							fontSize: '38px',
-							lineHeight: '38px',
-							letterSpacing: '-1.52px',
-						}}
-					>
-						{STATS.appStoreRating}
-					</span>
+					<div className='flex flex-col items-center gap-1'>
+						<span
+							className='text-white'
+							style={{
+								fontFamily: 'var(--font-heading)',
+								fontWeight: 700,
+								fontSize: '38px',
+								lineHeight: '38px',
+								letterSpacing: '-1.52px',
+							}}
+						>
+							{STATS.appStoreRating}
+						</span>
+						<p
+							className='text-center text-white/50'
+							style={{
+								fontFamily: 'var(--font-sans)',
+								fontSize: '10px',
+								lineHeight: 'normal',
+								letterSpacing: '0.4px',
+							}}
+						>
+							<span className='uppercase'>({STATS.appStoreReviews} </span>
+							<span>reviews)</span>
+						</p>
+					</div>
 					<div
 						role='img'
 						className='flex items-center gap-[2px]'
-						aria-label={`${STATS.appStoreRating} out of 5 stars`}
+						aria-label={`${STATS.appStoreRating} out of 5 stars from ${STATS.appStoreReviews} reviews`}
 					>
 						{[0, 1, 2, 3, 4].map((i) => (
 							<Star key={i} size={16} weight='fill' className='text-cc-amber' aria-hidden='true' />
@@ -349,39 +363,47 @@ export default function SectionHero() {
 					</div>
 				</div>
 
-				{/* App Store + Google Play badges — beneath the phone composite. */}
+				{/* App Store + Google Play badges — beneath the phone composite. R-02:
+				 * 0px top margin (sits flush below phone), 16px gap between badges
+				 * (Figma 85:5887), tagline "60 seconds…" Inter 12 cc-text-secondary
+				 * below the badges (Figma 85:5940). */}
 				<motion.div
-					className='mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4 md:mt-12'
+					className='mt-0 flex flex-col items-center gap-4'
 					{...enter(0.95, 8, 0.4)}
 				>
-					<a
-						href={BRAND.appStore}
-						target='_blank'
-						rel='noopener noreferrer'
-						className='transition-transform hover:scale-105'
-					>
-						<Image
-							src='/images/app-store-badge.svg'
-							alt='Download on the App Store'
-							width={140}
-							height={42}
-							className='h-[42px] w-auto'
-						/>
-					</a>
-					<a
-						href={BRAND.googlePlay}
-						target='_blank'
-						rel='noopener noreferrer'
-						className='transition-transform hover:scale-105'
-					>
-						<Image
-							src='/images/google-play-badge.svg'
-							alt='Get it on Google Play'
-							width={140}
-							height={42}
-							className='h-[42px] w-auto'
-						/>
-					</a>
+					<div className='flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4'>
+						<a
+							href={BRAND.appStore}
+							target='_blank'
+							rel='noopener noreferrer'
+							className='transition-transform hover:scale-105'
+						>
+							<Image
+								src='/images/app-store-badge.svg'
+								alt='Download on the App Store'
+								width={140}
+								height={42}
+								className='h-[42px] w-auto'
+							/>
+						</a>
+						<a
+							href={BRAND.googlePlay}
+							target='_blank'
+							rel='noopener noreferrer'
+							className='transition-transform hover:scale-105'
+						>
+							<Image
+								src='/images/google-play-badge.svg'
+								alt='Get it on Google Play'
+								width={140}
+								height={42}
+								className='h-[42px] w-auto'
+							/>
+						</a>
+					</div>
+					<p className='text-center text-[12px] leading-[1.6] text-cc-text-secondary'>
+						60 seconds to start increasing your close rate.
+					</p>
 				</motion.div>
 			</div>
 		</section>
