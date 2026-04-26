@@ -152,6 +152,13 @@
 		font-family: var(--font-heading);
 		font-weight: 700;
 	}
+
+	/* Wave I FIX-03: anchor offset for sticky chrome (32px promo bar + 68px
+	 * header = 100px). Without this, anchor links and #hash navigation land
+	 * with the section H2 hidden behind the sticky header. */
+	section[id] {
+		scroll-margin-top: 100px;
+	}
 }
 
 /* Typography scale -- VIS Section 2 (Lora Bold 700) */
