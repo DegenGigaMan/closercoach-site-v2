@@ -1,18 +1,29 @@
-/** @fileoverview S6 Teams — Wave F.4 bento rebuild 2026-04-26.
+/** @fileoverview S6 Teams — Wave G bento layout refactor 2026-04-26.
  *
- * Six-card bento with Figma-derived card visuals:
- *   01 Coach reps at scale (93:16849) -- col-span-2 hero, calendar/before
- *   02 Know where every rep stands (93:16986) -- single col, leaderboard
- *   03 Onboard reps 1-x faster (81:5018) -- single col, progress bars
- *   04 Enforce New Scripting Efficiently (81:5069) -- single col, vertical timeline
- *   05 Hire Better, Faster (81:4739) -- single col, candidate pill list
- *   06 Integrate Your Existing Sales Technology (81:4702) -- col-span-3 full, hub-and-spoke
+ * Six-card bento, 3-row asymmetric composition per Andy reference
+ * 2026-04-26 (spec at vault/clients/closer-coach/design/teams-section-bento-layout-spec-2026-04-26.md):
  *
- * Visuals are 1:1 Figma exports rendered at the top of each card
+ *   ROW 1 (2/1 split)
+ *     01 Coach Reps At Scale (93:16849) -- col-span-2, hero, calendar/before
+ *     02 Know Where Every Rep Stands (93:16986) -- col-span-1, leaderboard
+ *
+ *   ROW 2 (1/1/1 equal)
+ *     03 Onboard New Reps 10x Faster (81:5018) -- col-span-1, progress bars
+ *     04 Enforce New Scripting Efficiently (81:5069) -- col-span-1, vertical timeline
+ *     05 Hire Better, Faster (81:4739) -- col-span-1, candidate pill list
+ *
+ *   ROW 3 (full)
+ *     06 Integrate Your Existing Sales Technology (81:4702) -- col-span-3, hub-and-spoke
+ *
+ * Per-card visuals are 1:1 Figma exports rendered at the top of each card
  * (rounded, with a soft inner gradient to seat the visual against the
  * cc-surface-card background). Title + body sit beneath the visual on a
  * darker plate. Hover state lifts the card and intensifies the emerald
  * surround (shared treatment with prior bento for continuity).
+ *
+ * Tablet (md, 768-1024px): falls back to single column stack -- the 6
+ * cards are content-dense and 2-col makes them cramped. Bento spans only
+ * activate at lg+ (1024px+).
  *
  * PRIOR constellation hero (stat pills + growth chart + 3 inline features)
  * KILLED 2026-04-20. Center-aligned heading + 6-logo manager wall (SP2)
@@ -87,7 +98,14 @@ const MANAGER_LOGOS = [
 
 /* ── Bento feature cards (6) ── */
 
-type FeatureSpan = 'hero' | 'full' | 'default'
+/* Layout role drives both the lg+ column span and the visual area height.
+ *  - 'hero'    : Card 1 (col-span-2, row 1). Tallest visual area.
+ *  - 'narrow'  : Card 2 (col-span-1, row 1). Matches hero card height so
+ *                row 1 reads as a balanced 2/1 split.
+ *  - 'equal'   : Cards 3-5 (col-span-1, row 2). Equal mid-height.
+ *  - 'full'    : Card 6 (col-span-3, row 3). Wide horizontal composition.
+ */
+type FeatureRole = 'hero' | 'narrow' | 'equal' | 'full'
 
 type Feature = {
 	chapter: string
@@ -96,7 +114,7 @@ type Feature = {
 	visualSrc: string
 	visualWidth: number
 	visualHeight: number
-	span?: FeatureSpan
+	role: FeatureRole
 }
 
 const FEATURES: readonly Feature[] = [
@@ -107,7 +125,7 @@ const FEATURES: readonly Feature[] = [
 		visualSrc: '/images/teams-bento/coach-reps-at-scale.png',
 		visualWidth: 744,
 		visualHeight: 424,
-		span: 'hero',
+		role: 'hero',
 	},
 	{
 		chapter: '[02]',
@@ -116,6 +134,7 @@ const FEATURES: readonly Feature[] = [
 		visualSrc: '/images/teams-bento/know-where-every-rep-stands.png',
 		visualWidth: 332,
 		visualHeight: 194,
+		role: 'narrow',
 	},
 	{
 		chapter: '[03]',
@@ -124,6 +143,7 @@ const FEATURES: readonly Feature[] = [
 		visualSrc: '/images/teams-bento/onboard-reps-faster.png',
 		visualWidth: 470,
 		visualHeight: 201,
+		role: 'equal',
 	},
 	{
 		chapter: '[04]',
@@ -132,6 +152,7 @@ const FEATURES: readonly Feature[] = [
 		visualSrc: '/images/teams-bento/enforce-new-scripting.png',
 		visualWidth: 181,
 		visualHeight: 219,
+		role: 'equal',
 	},
 	{
 		chapter: '[05]',
@@ -140,38 +161,58 @@ const FEATURES: readonly Feature[] = [
 		visualSrc: '/images/teams-bento/hire-better-faster.png',
 		visualWidth: 355,
 		visualHeight: 381,
+		role: 'equal',
 	},
 	{
 		chapter: '[06]',
-		title: 'Integrate Your Sales Stack',
+		title: 'Integrate Your Existing Sales Technology',
 		body: 'Salesforce. HubSpot. GoHighLevel. Request a connection to the tools your team already uses.',
 		visualSrc: '/images/teams-bento/integrate-sales-tech.png',
 		visualWidth: 460,
 		visualHeight: 228,
-		span: 'full',
+		role: 'full',
 	},
 ] as const
 
 /* ── Bento card ── */
 
-function BentoCard({ feature, index }: { feature: Feature; index: number }): ReactElement {
-	const heroSpan = feature.span === 'hero'
-	const fullSpan = feature.span === 'full'
-	const displayTitle = heroSpan || fullSpan
-	const spanClass = heroSpan ? 'md:col-span-2' : fullSpan ? 'md:col-span-3' : ''
+/* Per-role span class on lg+ (matches the 3-row asymmetric composition).
+ * Below lg the grid is single-col so spans are inert. */
+const roleSpanClass: Record<FeatureRole, string> = {
+	hero: 'lg:col-span-2',
+	narrow: 'lg:col-span-1',
+	equal: 'lg:col-span-1',
+	full: 'lg:col-span-3',
+}
 
-	/* Visual container height. Hero card gets the most room (260px), full
-	 * span lands shorter (200px) since its composition is wider, and the
-	 * default cards get a fixed 200px so the leaderboard / progress / list
-	 * compositions read cleanly without forcing the card too tall. */
-	const visualHeightClass = heroSpan
-		? 'h-[260px] md:h-[300px]'
-		: fullSpan
-			? 'h-[200px] md:h-[220px]'
-			: 'h-[200px]'
+/* Per-role visual area height. Hero + narrow share the same height to keep
+ * row 1 visually balanced. Equal cards (row 2) drop a touch shorter so the
+ * three-up reads as its own beat. Full-width Card 6 carries the shortest
+ * fixed visual so the hub-and-spoke composition sits centered without the
+ * card stretching too tall horizontally. */
+const roleVisualHeight: Record<FeatureRole, string> = {
+	hero: 'h-[280px] md:h-[340px]',
+	narrow: 'h-[280px] md:h-[340px]',
+	equal: 'h-[220px]',
+	full: 'h-[200px] md:h-[220px]',
+}
+
+/* Title display class. Hero + full carry the larger Lora display-sm
+ * treatment; narrow + equal stay on the body-scale title. */
+const roleUsesDisplayTitle: Record<FeatureRole, boolean> = {
+	hero: true,
+	narrow: false,
+	equal: false,
+	full: true,
+}
+
+function BentoCard({ feature, index }: { feature: Feature; index: number }): ReactElement {
+	const { role } = feature
+	const isFull = role === 'full'
+	const displayTitle = roleUsesDisplayTitle[role]
 
 	return (
-		<Reveal delay={index * 0.05} className={spanClass}>
+		<Reveal delay={index * 0.05} className={roleSpanClass[role]}>
 			<article className='group relative flex h-full flex-col overflow-hidden rounded-2xl border border-cc-surface-border bg-cc-surface-card transition-all duration-300 hover:-translate-y-0.5 hover:border-cc-surface-border-hover hover:shadow-[0_0_32px_rgba(16,185,129,0.12)]'>
 				<span
 					aria-hidden='true'
@@ -182,17 +223,17 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 				{/* Visual plate -- darker than the card body to seat the rendered
 				 * mini-illustration. Inner emerald glow on hover lifts the
 				 * composition without pulling focus from the title beneath. */}
-				<div className={`relative w-full overflow-hidden bg-cc-foundation ${visualHeightClass}`}>
+				<div className={`relative w-full overflow-hidden bg-cc-foundation ${roleVisualHeight[role]}`}>
 					<Image
 						src={feature.visualSrc}
 						alt={`${feature.title} visual`}
 						fill
 						sizes={
-							heroSpan
-								? '(min-width: 768px) 66vw, 100vw'
-								: fullSpan
+							role === 'hero'
+								? '(min-width: 1024px) 66vw, 100vw'
+								: isFull
 									? '100vw'
-									: '(min-width: 768px) 33vw, 100vw'
+									: '(min-width: 1024px) 33vw, 100vw'
 						}
 						className='object-contain object-center transition-transform duration-500 group-hover:scale-[1.02]'
 						priority={index < 2}
@@ -204,8 +245,10 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 						className='pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-b from-transparent to-cc-surface-card/80'
 					/>
 				</div>
-				{/* Body -- title + supporting copy. */}
-				<div className={`flex flex-1 flex-col gap-3 p-6 md:p-8 ${fullSpan ? 'md:flex-row md:items-center md:gap-8' : ''}`}>
+				{/* Body -- title + supporting copy. Full-width Card 6 uses an
+				 * Option-A inner layout: title + body left-aligned in a left
+				 * column on lg+ so the hub-and-spoke visual above breathes. */}
+				<div className={`flex flex-1 flex-col gap-3 p-6 md:p-8 ${isFull ? 'lg:max-w-2xl' : ''}`}>
 					<h3
 						className={`text-trim text-white ${displayTitle ? 'display-sm' : 'text-xl font-semibold'}`}
 						style={{ fontFamily: displayTitle ? 'var(--font-heading)' : undefined, lineHeight: 1.2 }}
@@ -248,9 +291,7 @@ export default function SectionTeams(): ReactElement {
 						style={{ fontFamily: 'var(--font-heading)', lineHeight: 1.08 }}
 					>
 						CloserCoach for{' '}
-						<em className='not-italic'>
-							<span className='italic text-cc-accent'>Teams.</span>
-						</em>
+						<em className='text-cc-accent'>Teams.</em>
 					</h2>
 					<p className='max-w-2xl text-lg text-cc-text-secondary md:text-xl'>
 						Over 20,000 closers already use CloserCoach individually. Now give your
@@ -280,8 +321,12 @@ export default function SectionTeams(): ReactElement {
 					</div>
 				</Reveal>
 
-				{/* ── Bento feature grid (6 cards, Figma-derived visuals) ── */}
-				<div className='mt-20 grid grid-cols-1 gap-4 md:mt-24 md:grid-cols-3 md:gap-5'>
+				{/* ── Bento feature grid (3-row asymmetric per Andy reference 2026-04-26) ── */}
+				{/* Mobile / tablet (<lg, ≤1023px): single-column stack, all 6 cards
+				 * stack 1-up in source order (Coach → Know Where → Onboard →
+				 * Enforce → Hire → Integrate). Desktop (lg+, 1024px+): 3-col grid
+				 * where per-card lg:col-span-* drives the asymmetric layout. */}
+				<div className='mt-20 grid grid-cols-1 gap-4 md:mt-24 md:gap-5 lg:grid-cols-3 lg:gap-6'>
 					{FEATURES.map((feature, i) => (
 						<BentoCard key={feature.title} feature={feature} index={i} />
 					))}
