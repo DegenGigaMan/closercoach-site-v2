@@ -254,7 +254,7 @@ export default function DownloadContent() {
 				 * this 3-card row carries the same UI vocabulary already approved
 				 * on /thank-you (Install / Community / Follow). */}
 				<div
-					className='mt-10 hidden w-full max-w-3xl grid-cols-3 gap-4 md:grid'
+					className='mt-10 hidden w-full max-w-3xl grid-cols-3 gap-4 md:grid lg:relative lg:left-1/2 lg:max-w-none lg:-translate-x-1/2 lg:[width:min(calc(100vw-3rem),900px)] 2xl:[width:min(calc(100vw-3rem),1100px)]'
 					aria-label='Sixty second flow'
 				>
 					{[
