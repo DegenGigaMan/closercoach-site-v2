@@ -1,7 +1,7 @@
 /** @fileoverview Root layout with fonts, metadata, and body wrapper. */
 
 import type { Metadata } from 'next'
-import { lora, geistMono, inter } from '@/lib/fonts'
+import { lora, geistMono, inter, plusJakarta } from '@/lib/fonts'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import SmoothScroll from '@/components/layout/SmoothScroll'
@@ -50,7 +50,7 @@ export default function RootLayout({
 	return (
 		<html
 			lang="en"
-			className={`${lora.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
+			className={`${lora.variable} ${geistMono.variable} ${inter.variable} ${plusJakarta.variable} h-full antialiased`}
 		>
 			<head>
 				<link rel='preload' href='/cc-logo.svg' as='image' type='image/svg+xml' />

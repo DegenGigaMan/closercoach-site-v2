@@ -6,6 +6,10 @@
 	--font-sans: var(--font-inter);
 	--font-mono: var(--font-geist-mono);
 	--font-heading: var(--font-lora);
+	/* CTA font (Wave F.1) -- Plus Jakarta Sans Bold (primary) / Medium
+	 * (secondary) per Figma 85:15957. Header CTAs opt out via the
+	 * MotionCTA `chrome` variant to keep their existing Inter treatment. */
+	--font-cta: var(--font-jakarta);
 
 	/* CloserCoach brand colors -- VIS Section 1 */
 	/* Dark surfaces */
