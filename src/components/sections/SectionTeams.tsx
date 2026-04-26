@@ -1,29 +1,28 @@
-/** @fileoverview S6 Teams — Wave G bento layout refactor 2026-04-26.
+/** @fileoverview S6 Teams — Wave M bento rebuild per Figma 93-16838 (2026-04-26).
  *
- * Six-card bento, 3-row asymmetric composition per Andy reference
- * 2026-04-26 (spec at vault/clients/closer-coach/design/teams-section-bento-layout-spec-2026-04-26.md):
+ * Six-card bento, 3-row asymmetric composition per Andy's 2026-04-26 master
+ * frame. Wave M replaces Wave F.4's PNG visuals with React-rendered
+ * compositions (each card hand-designed per its Figma sub-node).
  *
- *   ROW 1 (2/1 split)
- *     01 Coach Reps At Scale (93:16849) -- col-span-2, hero, calendar/before
- *     02 Know Where Every Rep Stands (93:16986) -- col-span-1, leaderboard
+ * Parent container: 1232x1159 desktop frame -> max-w-[1232px] at lg+.
  *
- *   ROW 2 (1/1/1 equal)
- *     03 Onboard New Reps 10x Faster (81:5018) -- col-span-1, progress bars
- *     04 Enforce New Scripting Efficiently (81:5069) -- col-span-1, vertical timeline
- *     05 Hire Better, Faster (81:4739) -- col-span-1, candidate pill list
+ *   ROW 1 (2/1 split, ~503px tall)
+ *     01 Coach Reps At Scale (93:16849) -- col-span-2, calendar mockup
+ *     02 Know Where Every Rep Stands (93:16986) -- col-span-1, rep score stack
  *
- *   ROW 3 (full)
- *     06 Integrate Your Existing Sales Technology (81:4702) -- col-span-3, hub-and-spoke
+ *   ROW 2 (1/1/1 equal, ~340px tall)
+ *     03 Onboard New Reps 10x Faster (81:5018) -- progress bar viz
+ *     04 Enforce New Scripting Efficiently (81:5069) -- vertical timeline
+ *     05 Hire Better, Faster (81:4739) -- candidate ranking list
  *
- * Per-card visuals are 1:1 Figma exports rendered at the top of each card
- * (rounded, with a soft inner gradient to seat the visual against the
- * cc-surface-card background). Title + body sit beneath the visual on a
- * darker plate. Hover state lifts the card and intensifies the emerald
- * surround (shared treatment with prior bento for continuity).
+ *   ROW 3 (full, ~316px tall)
+ *     06 Integrate Your Existing Sales Technology (81:4702) -- hub-and-spoke
  *
- * Tablet (md, 768-1024px): falls back to single column stack -- the 6
- * cards are content-dense and 2-col makes them cramped. Bento spans only
- * activate at lg+ (1024px+).
+ * Card body (title + supporting copy) sits beneath each visual on the same
+ * surface. Hover lifts the card and intensifies the emerald surround.
+ *
+ * Tablet (md, 768-1024px): single-column stack -- the cards are content-dense
+ * and 2-col makes them cramped. Bento spans only activate at lg+ (1024px+).
  *
  * PRIOR constellation hero (stat pills + growth chart + 3 inline features)
  * KILLED 2026-04-20. Center-aligned heading + 6-logo manager wall (SP2)
@@ -36,8 +35,7 @@
  * handled by the shared wrapper. F42 safe.
  *
  * WCAG AA on dark: white headings (21:1), cc-text-secondary #94A3B8 body
- * (6.4:1), emerald #10B981 chapter (4.83:1). Card visuals carry alt text
- * tied to the card title for screen-reader context. */
+ * (6.4:1), emerald #10B981 chapter (4.83:1). */
 
 'use client'
 
@@ -47,6 +45,12 @@ import { motion, useInView, useReducedMotion } from 'motion/react'
 import MotionCTA from '@/components/shared/motion-cta'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
 import { BRAND } from '@/lib/constants'
+import CoachRepsAtScaleVisual from './teams-bento/CoachRepsAtScaleVisual'
+import KnowEveryRepVisual from './teams-bento/KnowEveryRepVisual'
+import OnboardFasterVisual from './teams-bento/OnboardFasterVisual'
+import EnforceScriptingVisual from './teams-bento/EnforceScriptingVisual'
+import HireBetterFasterVisual from './teams-bento/HireBetterFasterVisual'
+import IntegrateSalesTechVisual from './teams-bento/IntegrateSalesTechVisual'
 
 /* ── Reveal wrapper (hydration-safe, reduced-motion aware) ── */
 
@@ -98,7 +102,10 @@ const MANAGER_LOGOS = [
 
 /* ── Bento feature cards (6) ── */
 
-/* Layout role drives both the lg+ column span and the visual area height.
+/* Layout role drives both the lg+ column span and the visual area height per
+ * Figma 93-16838 master frame. Each card's visual is a hand-coded React
+ * composition imported from ./teams-bento/*Visual.
+ *
  *  - 'hero'    : Card 1 (col-span-2, row 1). Tallest visual area.
  *  - 'narrow'  : Card 2 (col-span-1, row 1). Matches hero card height so
  *                row 1 reads as a balanced 2/1 split.
@@ -111,9 +118,7 @@ type Feature = {
 	chapter: string
 	title: string
 	body: string
-	visualSrc: string
-	visualWidth: number
-	visualHeight: number
+	Visual: () => ReactElement
 	role: FeatureRole
 }
 
@@ -122,54 +127,42 @@ const FEATURES: readonly Feature[] = [
 		chapter: '[01]',
 		title: 'Coach Reps At Scale',
 		body: 'AI handles the repetitions so your coaching time goes to the moments that actually need you.',
-		visualSrc: '/images/teams-bento/coach-reps-at-scale.png',
-		visualWidth: 744,
-		visualHeight: 424,
+		Visual: CoachRepsAtScaleVisual,
 		role: 'hero',
 	},
 	{
 		chapter: '[02]',
 		title: 'Know Where Every Rep Stands',
 		body: 'See every rep’s performance from one dashboard.',
-		visualSrc: '/images/teams-bento/know-where-every-rep-stands.png',
-		visualWidth: 332,
-		visualHeight: 194,
+		Visual: KnowEveryRepVisual,
 		role: 'narrow',
 	},
 	{
 		chapter: '[03]',
 		title: 'Onboard New Reps 10x Faster',
 		body: 'New reps practice before they ever talk to a customer.',
-		visualSrc: '/images/teams-bento/onboard-reps-faster.png',
-		visualWidth: 470,
-		visualHeight: 201,
+		Visual: OnboardFasterVisual,
 		role: 'equal',
 	},
 	{
 		chapter: '[04]',
 		title: 'Enforce New Scripting Efficiently',
 		body: 'Roll out a new talk track and push it as a structured practice.',
-		visualSrc: '/images/teams-bento/enforce-new-scripting.png',
-		visualWidth: 181,
-		visualHeight: 219,
+		Visual: EnforceScriptingVisual,
 		role: 'equal',
 	},
 	{
 		chapter: '[05]',
 		title: 'Hire Better, Faster',
 		body: 'Send candidates a roleplay challenge before they interview.',
-		visualSrc: '/images/teams-bento/hire-better-faster.png',
-		visualWidth: 355,
-		visualHeight: 381,
+		Visual: HireBetterFasterVisual,
 		role: 'equal',
 	},
 	{
 		chapter: '[06]',
 		title: 'Integrate Your Existing Sales Technology',
 		body: 'Salesforce. HubSpot. GoHighLevel. Request a connection to the tools your team already uses.',
-		visualSrc: '/images/teams-bento/integrate-sales-tech.png',
-		visualWidth: 460,
-		visualHeight: 228,
+		Visual: IntegrateSalesTechVisual,
 		role: 'full',
 	},
 ] as const
@@ -191,10 +184,10 @@ const roleSpanClass: Record<FeatureRole, string> = {
  * fixed visual so the hub-and-spoke composition sits centered without the
  * card stretching too tall horizontally. */
 const roleVisualHeight: Record<FeatureRole, string> = {
-	hero: 'h-[280px] md:h-[340px]',
-	narrow: 'h-[280px] md:h-[340px]',
-	equal: 'h-[220px]',
-	full: 'h-[200px] md:h-[220px]',
+	hero: 'h-[300px] md:h-[360px]',
+	narrow: 'h-[280px] md:h-[360px]',
+	equal: 'h-[300px]',
+	full: 'h-[200px] md:h-[240px]',
 }
 
 /* Title display class. Hero + full carry the larger Lora display-sm
@@ -207,7 +200,7 @@ const roleUsesDisplayTitle: Record<FeatureRole, boolean> = {
 }
 
 function BentoCard({ feature, index }: { feature: Feature; index: number }): ReactElement {
-	const { role } = feature
+	const { role, Visual } = feature
 	const isFull = role === 'full'
 	const displayTitle = roleUsesDisplayTitle[role]
 
@@ -220,24 +213,11 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 				>
 					{feature.chapter}
 				</span>
-				{/* Visual plate -- darker than the card body to seat the rendered
-				 * mini-illustration. Inner emerald glow on hover lifts the
-				 * composition without pulling focus from the title beneath. */}
-				<div className={`relative w-full overflow-hidden bg-cc-foundation ${roleVisualHeight[role]}`}>
-					<Image
-						src={feature.visualSrc}
-						alt={`${feature.title} visual`}
-						fill
-						sizes={
-							role === 'hero'
-								? '(min-width: 1024px) 66vw, 100vw'
-								: isFull
-									? '100vw'
-									: '(min-width: 1024px) 33vw, 100vw'
-						}
-						className='object-contain object-center transition-transform duration-500 group-hover:scale-[1.02]'
-						priority={index < 2}
-					/>
+				{/* Visual plate -- React composition rendered into a foundation
+				 * surface seat. Each card's visual is its own component file in
+				 * ./teams-bento/. */}
+				<div className={`relative w-full overflow-hidden ${roleVisualHeight[role]}`}>
+					<Visual />
 					{/* Soft top-down vignette to keep the visual seated against
 					 * the card body below. */}
 					<div
@@ -280,11 +260,12 @@ export default function SectionTeams(): ReactElement {
 		>
 			<AtmosphereNoise opacity={0.02} />
 
-			{/* Wave J.3 (FIX-04 P1, 2026-04-26): 2xl bump 7xl(1280) -> 1440
-			 * reclaims the 320px-per-side rails at 1920 viewport. Bento layout
-			 * benefits from extra horizontal room — hero card (lg:col-span-2)
-			 * gets 80-160px more width to seat the visual. */}
-			<div className='relative z-10 mx-auto max-w-7xl px-6 2xl:max-w-[1440px]'>
+			{/* Wave M (2026-04-26): cap at Figma master-frame 1232px. Wave J.3's
+			 * 2xl:max-w-[1440px] kept the rest of the page wide but the bento
+			 * needs to land at the spec'd 1232 so the hand-coded card visuals
+			 * read at their intended density. Heading + logo wall + CTAs sit
+			 * inside the same 1232 rail for vertical alignment. */}
+			<div className='relative z-10 mx-auto max-w-[1232px] px-6'>
 				{/* ── Top block (center-aligned) ── */}
 				<Reveal className='flex flex-col items-center gap-5 text-center'>
 					<span className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.18em] text-cc-accent'>
