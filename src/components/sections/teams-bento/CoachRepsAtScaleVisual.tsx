@@ -5,17 +5,23 @@
  *     ─ Emerald play-orb center marker
  *     ─ "6h cleared up!" emerald pill right
  *
- *   ─ Calendar lane (left ~70%): 8AM / 9AM / 10AM / 11AM time markers with
- *     a horizontal divider per hour. Each hour seats one "Sarah Chen 10:30am"
- *     meeting card (4 cards stacked vertically, the 4th fading to indicate
- *     more below the fold). Each card has a left emerald accent rail + small
- *     portrait + name + time.
+ *   ─ Calendar lane: 8AM / 9AM / 10AM / 11AM time markers with a horizontal
+ *     divider per hour. Each hour seats a "Sarah Chen 10:30am" meeting card.
+ *     Top 2 rows (8/9 AM) render at full opacity ("you're handling these").
+ *     Bottom 2 rows (10/11 AM) render at opacity 0.15 ("AI handled these").
+ *     A dashed hairline + "AI HANDLED FROM HERE" mono caption sits between
+ *     9 AM and 10 AM as the explicit narrative pivot.
  *
- *   ─ AI sessions panel (right ~30%): 5 stacked closer avatars with
- *     `-space-x-N` overlap, "● 10 AI sessions active" emerald label below.
+ *   ─ Footer band: 5-avatar -space-x cluster + "● 10 AI sessions active"
+ *     emerald label, seated below the calendar lane so the AI-coverage
+ *     proof point doesn't compete with the calendar reading order.
  *
- * The composition narrates: "your calendar is already FULL of repetitive
- * coaching slots — AI takes the repetition, you get 6 hours back." */
+ * Wave N (FIX-03): three sub-actions tighten the narrative read.
+ *   A. Opacity 0.15 on 10/11 AM rows (was: ambiguous 50/30/30/vignette).
+ *   B. Dashed "AI handled from here" divider between 9 AM and 10 AM.
+ *   C. Avatar cluster + "10 AI sessions active" label moved from a floating
+ *      mid-right rail (which competed with the calendar) into a footer
+ *      band below the calendar lane. */
 
 'use client'
 
@@ -23,7 +29,12 @@ import Image from 'next/image'
 import type { ReactElement } from 'react'
 import { Sparkle } from '@phosphor-icons/react'
 
-const HOURS = ['8 AM', '9 AM', '10 AM', '11 AM'] as const
+const HOURS = [
+	{ label: '8 AM', faded: false },
+	{ label: '9 AM', faded: false },
+	{ label: '10 AM', faded: true },
+	{ label: '11 AM', faded: true },
+] as const
 
 const STACKED_AVATARS = [
 	{ src: '/images/step1/avatar-sarah-v2.png', alt: 'Closer 1' },
@@ -33,10 +44,10 @@ const STACKED_AVATARS = [
 	{ src: '/images/step1/avatar-marcus-face.png', alt: 'Closer 5' },
 ] as const
 
-function MeetingCard({ fading = false }: { fading?: boolean }): ReactElement {
+function MeetingCard({ faded = false }: { faded?: boolean }): ReactElement {
 	return (
 		<div
-			className={`relative flex items-center gap-3 rounded-xl border border-cc-surface-border bg-cc-surface-card/80 px-3 py-2.5 backdrop-blur-sm transition-opacity duration-300 ${fading ? 'opacity-30' : 'opacity-100'}`}
+			className={`relative flex items-center gap-3 rounded-xl border border-cc-surface-border bg-cc-surface-card/80 px-3 py-2.5 backdrop-blur-sm transition-opacity duration-300 ${faded ? 'opacity-15' : 'opacity-100'}`}
 		>
 			<span aria-hidden='true' className='absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-full bg-cc-accent' />
 			<div className='relative ml-1 h-7 w-7 shrink-0 overflow-hidden rounded-full ring-1 ring-cc-surface-border'>
@@ -83,40 +94,52 @@ export default function CoachRepsAtScaleVisual(): ReactElement {
 				</div>
 			</div>
 
-			{/* Body: calendar lane (left) + sessions panel (right). On <md the
-			 * sessions panel collapses inline below the avatar group so the
-			 * calendar lane gets full width and the AI-sessions label doesn't
-			 * clip off the card edge. */}
-			<div className='mt-5 grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto] md:gap-6'>
-				{/* Calendar lane */}
-				<div className='relative flex flex-col gap-2'>
-					{HOURS.map((hour, i) => (
-						<div key={hour} className='flex items-start gap-3'>
-							<span className='text-trim mt-2 w-10 shrink-0 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-wider text-cc-text-secondary/70'>
-								{hour}
-							</span>
-							<div className='relative flex-1'>
-								<span aria-hidden='true' className='absolute -top-1 left-0 right-0 h-px bg-cc-surface-border' />
-								<MeetingCard fading={i === HOURS.length - 1} />
+			{/* Calendar lane */}
+			<div className='mt-5 flex flex-col gap-2'>
+				{HOURS.map((hour, i) => {
+					const showAiDivider = i === 2 // Between 9 AM (i=1) and 10 AM (i=2)
+					return (
+						<div key={hour.label}>
+							{showAiDivider && (
+								<div className='mb-2 flex items-center gap-2'>
+									<span aria-hidden='true' className='h-px flex-1 border-t border-dashed border-cc-accent/50' />
+									<span className='text-trim shrink-0 font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase tracking-[0.18em] text-cc-mint'>
+										AI handled from here
+									</span>
+									<span aria-hidden='true' className='h-px flex-1 border-t border-dashed border-cc-accent/50' />
+								</div>
+							)}
+							<div className='flex items-start gap-3'>
+								<span
+									className={`text-trim mt-2 w-10 shrink-0 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-wider ${hour.faded ? 'text-cc-text-secondary/30' : 'text-cc-text-secondary/70'}`}
+								>
+									{hour.label}
+								</span>
+								<div className='relative flex-1'>
+									<span aria-hidden='true' className='absolute -top-1 left-0 right-0 h-px bg-cc-surface-border' />
+									<MeetingCard faded={hour.faded} />
+								</div>
 							</div>
+						</div>
+					)
+				})}
+			</div>
+
+			{/* Footer band: avatar cluster + AI sessions label seated below the
+			 * calendar so the proof point doesn't compete with the calendar's
+			 * reading order. Spans the full visual width. */}
+			<div className='mt-4 flex items-center gap-3'>
+				<div className='flex -space-x-2'>
+					{STACKED_AVATARS.map((a) => (
+						<div key={a.alt} className='relative h-7 w-7 overflow-hidden rounded-full ring-2 ring-cc-foundation'>
+							<Image src={a.src} alt={a.alt} fill sizes='28px' className='object-cover' unoptimized />
 						</div>
 					))}
 				</div>
-
-				{/* Sessions panel — desktop right-rail / mobile inline below */}
-				<div className='flex flex-row items-center gap-3 md:w-[180px] md:flex-col md:items-start md:justify-start md:gap-2.5 md:pt-12'>
-					<div className='flex -space-x-2'>
-						{STACKED_AVATARS.map((a) => (
-							<div key={a.alt} className='relative h-7 w-7 overflow-hidden rounded-full ring-2 ring-cc-foundation'>
-								<Image src={a.src} alt={a.alt} fill sizes='28px' className='object-cover' unoptimized />
-							</div>
-						))}
-					</div>
-					<p className='text-trim flex items-center gap-1.5 text-[11px] font-medium text-cc-mint'>
-						<span aria-hidden='true' className='h-1.5 w-1.5 rounded-full bg-cc-accent shadow-[0_0_6px_rgba(16,185,129,0.8)]' />
-						10 AI sessions active
-					</p>
-				</div>
+				<p className='text-trim flex items-center gap-1.5 text-[11px] font-medium text-cc-mint'>
+					<span aria-hidden='true' className='h-1.5 w-1.5 rounded-full bg-cc-accent shadow-[0_0_6px_rgba(16,185,129,0.8)]' />
+					10 AI sessions active
+				</p>
 			</div>
 
 			{/* Bottom fade so the 4th card seats naturally against card body */}
