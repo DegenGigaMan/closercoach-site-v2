@@ -119,6 +119,7 @@ export default function IntegrateSalesTechVisual(): ReactElement {
 					fromRef={userRef}
 					toRef={hubRef}
 					pathColor='rgba(16,185,129,0.30)'
+					pathOpacity={0.6}
 					pathWidth={1.5}
 					gradientStartColor='#10B981'
 					gradientStopColor='#34E18E'
@@ -129,6 +130,7 @@ export default function IntegrateSalesTechVisual(): ReactElement {
 					fromRef={sfRef}
 					toRef={hubRef}
 					pathColor='rgba(16,185,129,0.30)'
+					pathOpacity={0.6}
 					pathWidth={1.5}
 					gradientStartColor='#10B981'
 					gradientStopColor='#34E18E'
@@ -141,6 +143,7 @@ export default function IntegrateSalesTechVisual(): ReactElement {
 					fromRef={hsRef}
 					toRef={hubRef}
 					pathColor='rgba(16,185,129,0.30)'
+					pathOpacity={0.6}
 					pathWidth={1.5}
 					gradientStartColor='#10B981'
 					gradientStopColor='#34E18E'
@@ -153,6 +156,7 @@ export default function IntegrateSalesTechVisual(): ReactElement {
 					fromRef={ghlRef}
 					toRef={hubRef}
 					pathColor='rgba(16,185,129,0.30)'
+					pathOpacity={0.6}
 					pathWidth={1.5}
 					gradientStartColor='#10B981'
 					gradientStopColor='#34E18E'
