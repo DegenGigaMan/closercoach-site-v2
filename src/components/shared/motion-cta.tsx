@@ -58,10 +58,15 @@ const legacySizeStyles: Record<Size, string> = {
 const sitewidePadding = 'px-6 py-4 text-[16px]'
 
 /* Always-on glow for primary (Figma spec). Secondary gets a softer halo on
- * hover only. Ghost keeps the underline treatment. */
+ * hover only. Ghost keeps the underline treatment.
+ *
+ * Wave N (FIX-07): primary gets `border border-transparent` so its box-model
+ * height matches secondary's `border border-cc-accent` outline contribution.
+ * Without this the secondary's 1px border adds 2px total height vs primary,
+ * breaking the dual-CTA pair height parity in Hero / Teams / Final rows. */
 const variantStyles: Record<Variant, string> = {
 	primary:
-		'rounded-full bg-cc-mint text-cc-foundation shadow-[0_4px_12px_rgba(29,184,104,0.4)] hover:bg-cc-mint',
+		'rounded-full border border-transparent bg-cc-mint text-cc-foundation shadow-[0_4px_12px_rgba(29,184,104,0.4)] hover:bg-cc-mint',
 	secondary:
 		'rounded-full border border-cc-accent bg-cc-foundation-deep text-cc-mint backdrop-blur-[12px] hover:border-cc-accent-hover hover:bg-cc-foundation-deep',
 	ghost: 'rounded-lg text-cc-accent hover:text-cc-accent-hover hover:underline',
