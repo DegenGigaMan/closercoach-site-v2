@@ -256,7 +256,7 @@ function HubSpokeProof(): ReactElement {
 							whileInView='visible'
 							viewport={{ once: true, amount: 0.3 }}
 							variants={cardVariant}
-							className={`rounded-xl border border-cc-warm-border bg-cc-warm-secondary/90 p-4 shadow-[0_2px_16px_rgba(0,0,0,0.04)] ${card.id === 'gains' ? 'col-span-2' : ''}`}
+							className={`rounded-xl border border-cc-warm-border bg-cc-warm-secondary/90 p-4 shadow-[0_8px_24px_rgba(13,15,20,0.06)] ${card.id === 'gains' ? 'col-span-2' : ''}`}
 						>
 							{card.content}
 						</motion.div>
@@ -283,7 +283,7 @@ function HubSpokeProof(): ReactElement {
 						whileInView='visible'
 						viewport={{ once: true, amount: 0.3 }}
 						variants={cardVariant}
-						className='col-start-1 col-end-2 row-start-1 row-end-2 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/95 p-5 shadow-[0_2px_16px_rgba(0,0,0,0.04)]'
+						className='col-start-1 col-end-2 row-start-1 row-end-2 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/95 p-5 shadow-[0_8px_24px_rgba(13,15,20,0.06)]'
 					>
 						{SATELLITES[0].content}
 					</motion.div>
@@ -294,7 +294,7 @@ function HubSpokeProof(): ReactElement {
 						whileInView='visible'
 						viewport={{ once: true, amount: 0.3 }}
 						variants={cardVariant}
-						className='col-start-5 col-end-6 row-start-1 row-end-2 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/95 p-5 shadow-[0_2px_16px_rgba(0,0,0,0.04)]'
+						className='col-start-5 col-end-6 row-start-1 row-end-2 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/95 p-5 shadow-[0_8px_24px_rgba(13,15,20,0.06)]'
 					>
 						{SATELLITES[1].content}
 					</motion.div>
@@ -320,7 +320,7 @@ function HubSpokeProof(): ReactElement {
 						whileInView='visible'
 						viewport={{ once: true, amount: 0.3 }}
 						variants={cardVariant}
-						className='col-start-1 col-end-2 row-start-3 row-end-4 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/95 p-5 shadow-[0_2px_16px_rgba(0,0,0,0.04)]'
+						className='col-start-1 col-end-2 row-start-3 row-end-4 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/95 p-5 shadow-[0_8px_24px_rgba(13,15,20,0.06)]'
 					>
 						{SATELLITES[2].content}
 					</motion.div>
@@ -331,13 +331,17 @@ function HubSpokeProof(): ReactElement {
 						whileInView='visible'
 						viewport={{ once: true, amount: 0.3 }}
 						variants={cardVariant}
-						className='col-start-5 col-end-6 row-start-3 row-end-4 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/95 p-5 shadow-[0_2px_16px_rgba(0,0,0,0.04)]'
+						className='col-start-5 col-end-6 row-start-3 row-end-4 rounded-xl border border-cc-warm-border bg-cc-warm-secondary/95 p-5 shadow-[0_8px_24px_rgba(13,15,20,0.06)]'
 					>
 						{SATELLITES[3].content}
 					</motion.div>
 				</div>
 
-				{/* Beams from satellites to anchor — only render when motion is enabled. */}
+				{/* Beams from satellites to anchor — only render when motion is enabled.
+				    Wave I FIX-07: bumped pathOpacity 0.28 → 0.55 and pathWidth 1.5 → 2
+				    so the connector hairlines read clearly at 1440. Mercury Insights
+				    uses bolder connectors; the previous values were too faint to carry
+				    the "evidence converges to the headline number" narrative. */}
 				{!reduced && satRefs.map((satRef, i) => (
 					<AnimatedBeam
 						key={i}
@@ -346,9 +350,9 @@ function HubSpokeProof(): ReactElement {
 						toRef={anchorRef}
 						gradientStartColor='#34d399'
 						gradientStopColor={EMERALD_AA}
-						pathColor='#94a3b8'
-						pathOpacity={0.28}
-						pathWidth={1.5}
+						pathColor='#64748b'
+						pathOpacity={0.55}
+						pathWidth={2}
 						curvature={i === 0 || i === 1 ? 30 : -30}
 						duration={3.4}
 						delay={0.6 + i * 0.25}
