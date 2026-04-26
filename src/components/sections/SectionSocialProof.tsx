@@ -30,11 +30,13 @@ const AVATARS = [
  * Wave K.1 (FIX-CC-01 P2, 2026-04-26): SUNRUN removed from this strip to
  * dedupe against S6 Teams logo wall — Mercury / Stripe never repeat the same
  * brand twice on a single page. SUNRUN preserved in S6 (solar industry
- * signal in the manager roster). Marquee compresses to 8 brands, gaps
- * remain even per `mx-9` per-logo spacing. */
+ * signal in the manager roster).
+ *
+ * Wave L.3 (FIX-03 P2, 2026-04-26): Toyota + State Farm also removed to
+ * achieve zero overlap between S2 marquee and S6 Teams strip. Both kept
+ * in S6 Teams roster (auto + insurance industry signals). Marquee
+ * compresses to 6 brands. */
 const LOGOS = [
-	{ name: 'Toyota', file: '/logos/toyota.svg', width: 196, height: 28, heightClass: 'h-[22px]' },
-	{ name: 'State Farm', file: '/logos/state-farm.svg', width: 171, height: 24, heightClass: 'h-[22px]' },
 	{ name: 'Mercedes-Benz', file: '/logos/mercedes-benz.svg', width: 126, height: 32, heightClass: 'h-8' },
 	{ name: 'Morgan Stanley', file: '/logos/morgan-stanley.svg', width: 167, height: 24, heightClass: 'h-[22px]' },
 	{ name: 'Liberty Mutual', file: '/logos/liberty-mutual.svg', width: 158, height: 40, heightClass: 'h-9' },
