@@ -714,7 +714,15 @@ export default function FloatingProofComposition(): ReactElement {
 				 * preserves its vertical rhythm. 760 × 0.58 ≈ 441, × 0.82 ≈ 624.
 				 * Wave R FIX-05: scale chosen so the 1232 frame's edge-aligned
 				 * cards (left:-1%, right:0%) clear the md viewport (768) without
-				 * clipping. */}
+				 * clipping.
+				 *
+				 * Wave R.2 FIX-01 (2026-04-27): outer-card positions tightened at
+				 * md so every card sits ≥24px from viewport edges. At md scale
+				 * 0.58 with translate-x(-50%) centering, edge-percentage offsets
+				 * inside the 1232 frame project to actual viewport gutters that
+				 * are too close to the edge. Per-card md overrides (Tailwind
+				 * arbitrary-value left-/right- prefixes) pull outer cards inward;
+				 * lg+ snaps back to the original Figma values. */}
 				<div className='relative h-[460px] overflow-visible lg:h-[640px] xl:h-[760px]'>
 					<div
 						className='absolute left-1/2 top-0 h-[760px] w-[1232px] origin-top -translate-x-1/2 scale-[0.58] lg:scale-[0.82] xl:scale-100'
@@ -725,25 +733,24 @@ export default function FloatingProofComposition(): ReactElement {
 						</div>
 
 						{/* Top row */}
-						<Float delay={0} className='absolute' style={{ left: '8%', top: '0px' }}>
+						<Float delay={0} className='absolute left-[12%] top-0 lg:left-[8%]'>
 							<CamilReeseProfileCard />
 						</Float>
 						<Float
 							delay={0.06}
-							className='absolute -translate-x-1/2'
-							style={{ left: '50%', top: '110px' }}
+							className='absolute left-1/2 top-[110px] -translate-x-1/2'
 						>
 							<PerformanceGainsCard />
 						</Float>
-						<Float delay={0.12} className='absolute' style={{ right: '5%', top: '20px' }}>
+						<Float delay={0.12} className='absolute right-[8%] top-[20px] lg:right-[5%]'>
 							<GradeUpCard />
 						</Float>
 
 						{/* Mid row */}
-						<Float delay={0.18} className='absolute' style={{ right: '0%', top: '230px' }}>
+						<Float delay={0.18} className='absolute right-[3%] top-[230px] lg:right-0'>
 							<IndustriesPill />
 						</Float>
-						<Float delay={0.22} className='absolute' style={{ left: '-1%', top: '320px' }}>
+						<Float delay={0.22} className='absolute left-[3%] top-[320px] lg:left-[-1%]'>
 							<div className='flex flex-col items-start gap-4'>
 								<StatCard value='20,000+' label='Sales closers' />
 								<div className='pl-12'>
@@ -755,12 +762,11 @@ export default function FloatingProofComposition(): ReactElement {
 						{/* Bottom row */}
 						<Float
 							delay={0.3}
-							className='absolute -translate-x-1/2'
-							style={{ left: '50%', top: '430px' }}
+							className='absolute left-1/2 top-[430px] -translate-x-1/2'
 						>
 							<SevenDimensionsRadar />
 						</Float>
-						<Float delay={0.36} className='absolute' style={{ right: '0%', top: '420px' }}>
+						<Float delay={0.36} className='absolute right-[3%] top-[420px] lg:right-0'>
 							<CoachedVsUncoachedChart />
 						</Float>
 					</div>
