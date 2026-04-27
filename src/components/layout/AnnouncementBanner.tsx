@@ -52,34 +52,52 @@ export default function AnnouncementBanner({
 			className='fixed left-0 right-0 top-0 z-[60] border-b border-cc-accent/20 bg-cc-surface'
 			style={{ height: BANNER_HEIGHT }}
 		>
-			<div className='mx-auto flex h-full max-w-7xl items-center justify-center gap-3 px-6 text-xs text-cc-text-secondary md:text-sm'>
-				<span className='relative flex h-2 w-2 shrink-0' aria-hidden='true'>
-					<span className='absolute inline-flex h-full w-full rounded-full bg-cc-accent opacity-60 motion-safe:animate-ping' />
-					<span className='relative inline-flex h-2 w-2 rounded-full bg-cc-accent' />
-				</span>
-				<p className='truncate text-center'>
-					<span className='text-white'>{message}</span>
-					{href && (
-						<>
-							{' '}
-							<Link
-								href={href}
-								className='text-cc-accent underline-offset-2 transition-colors hover:text-cc-accent-hover hover:underline'
-							>
-								{linkLabel}
-							</Link>
-						</>
-					)}
-				</p>
-				<button
-					type='button'
-					onClick={dismiss}
-					aria-label='Dismiss announcement'
-					className='ml-2 flex h-6 w-6 shrink-0 items-center justify-center rounded text-cc-text-muted transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-cc-accent'
+			{/* Wave R FIX-02: whole banner is a single Link so the entire horizontal
+			 * area is the tap target on mobile (was: small inline "Read more" link
+			 * that clipped past the 390 viewport edge via `truncate`). The dismiss
+			 * button sits OUTSIDE the Link so tapping the X dismisses without
+			 * navigating to the post. */}
+			{href ? (
+				<Link
+					href={href}
+					aria-label={`${message} — ${linkLabel}`}
+					className='absolute inset-0 flex h-full items-center justify-center gap-3 px-6 text-xs text-cc-text-secondary md:text-sm'
 				>
-					<X size={14} weight='bold' />
-				</button>
-			</div>
+					<span className='relative flex h-2 w-2 shrink-0' aria-hidden='true'>
+						<span className='absolute inline-flex h-full w-full rounded-full bg-cc-accent opacity-60 motion-safe:animate-ping' />
+						<span className='relative inline-flex h-2 w-2 rounded-full bg-cc-accent' />
+					</span>
+					<p className='mx-auto max-w-[calc(100%-72px)] truncate text-center'>
+						<span className='text-white'>{message}</span>
+						{' '}
+						<span className='text-cc-accent underline-offset-2 group-hover:underline'>
+							{linkLabel}
+						</span>
+					</p>
+				</Link>
+			) : (
+				<div className='mx-auto flex h-full max-w-7xl items-center justify-center gap-3 px-6 text-xs text-cc-text-secondary md:text-sm'>
+					<span className='relative flex h-2 w-2 shrink-0' aria-hidden='true'>
+						<span className='absolute inline-flex h-full w-full rounded-full bg-cc-accent opacity-60 motion-safe:animate-ping' />
+						<span className='relative inline-flex h-2 w-2 rounded-full bg-cc-accent' />
+					</span>
+					<p className='truncate text-center'>
+						<span className='text-white'>{message}</span>
+					</p>
+				</div>
+			)}
+			<button
+				type='button'
+				onClick={(e) => {
+					e.stopPropagation()
+					e.preventDefault()
+					dismiss()
+				}}
+				aria-label='Dismiss announcement'
+				className='absolute right-3 top-1/2 z-[1] flex h-6 w-6 shrink-0 -translate-y-1/2 items-center justify-center rounded text-cc-text-muted transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-cc-accent'
+			>
+				<X size={14} weight='bold' />
+			</button>
 		</aside>
 	)
 }
