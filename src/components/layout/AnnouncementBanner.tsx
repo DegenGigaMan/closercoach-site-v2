@@ -5,7 +5,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { X } from '@phosphor-icons/react'
+import { ArrowRight, X } from '@phosphor-icons/react'
 
 const STORAGE_KEY = 'cc-announcement-dismissed-2026-04-27'
 const BANNER_HEIGHT = 36
@@ -56,7 +56,13 @@ export default function AnnouncementBanner({
 			 * area is the tap target on mobile (was: small inline "Read more" link
 			 * that clipped past the 390 viewport edge via `truncate`). The dismiss
 			 * button sits OUTSIDE the Link so tapping the X dismisses without
-			 * navigating to the post. */}
+			 * navigating to the post.
+			 *
+			 * Wave R.2 FIX-03 (2026-04-27): ArrowRight caret sits OUTSIDE the
+			 * truncated <p> as a navigation affordance for narrow viewports
+			 * (390) where the inline "Read more" cue gets clipped by the
+			 * ellipsis. Caret is small (12px), emerald, and aria-hidden so
+			 * the existing aria-label on the Link still carries the semantics. */}
 			{href ? (
 				<Link
 					href={href}
@@ -67,13 +73,19 @@ export default function AnnouncementBanner({
 						<span className='absolute inline-flex h-full w-full rounded-full bg-cc-accent opacity-60 motion-safe:animate-ping' />
 						<span className='relative inline-flex h-2 w-2 rounded-full bg-cc-accent' />
 					</span>
-					<p className='mx-auto max-w-[calc(100%-72px)] truncate text-center'>
+					<p className='mx-auto max-w-[calc(100%-100px)] truncate text-center'>
 						<span className='text-white'>{message}</span>
 						{' '}
 						<span className='text-cc-accent underline-offset-2 group-hover:underline'>
 							{linkLabel}
 						</span>
 					</p>
+					<ArrowRight
+						size={12}
+						weight='bold'
+						className='mr-6 shrink-0 text-cc-accent'
+						aria-hidden='true'
+					/>
 				</Link>
 			) : (
 				<div className='mx-auto flex h-full max-w-7xl items-center justify-center gap-3 px-6 text-xs text-cc-text-secondary md:text-sm'>
