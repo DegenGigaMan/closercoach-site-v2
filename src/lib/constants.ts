@@ -294,9 +294,9 @@ export const CLONE_CARD = {
 		{ label: 'CREDIT SCORE', value: '762', span: 'short' as const },
 		{ label: 'HHI', value: '$187K combined', span: 'short' as const },
 		{ label: 'DECISION MAKER', value: 'David (husband)', span: 'short' as const },
-		{ label: 'LIKELY OBJECTION', value: '“We just refinanced 2 years ago, rates aren’t low enough to make it worth it.”', span: 'long' as const },
-		{ label: 'HOW TO HANDLE', value: 'Lead with break-even math + cash-out angle for kids’ college (recent behavior shows campus tour visits).', span: 'long' as const },
-		{ label: 'BUYER SIGNAL', value: 'Visited 3 lender sites in last 7 days + ran refinance calculator twice.', span: 'long' as const },
+		{ label: 'LIKELY OBJECTION', value: '“We refinanced 2 years ago.”', span: 'long' as const },
+		{ label: 'HOW TO HANDLE', value: 'Break-even math + cash-out angle.', span: 'long' as const },
+		{ label: 'BUYER SIGNAL', value: 'Visited 3 lender sites this week.', span: 'long' as const },
 	],
 } as const
 

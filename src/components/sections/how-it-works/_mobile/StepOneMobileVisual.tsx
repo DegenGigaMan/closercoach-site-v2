@@ -53,7 +53,7 @@ function MeetingCard({ name, time, avatarSrc, active = false, inView, reduced, d
 				active ? 'border-white/10' : 'border-white/[0.08] opacity-45'
 			}`}
 			initial={{ opacity: 0, y: 10 }}
-			animate={inView ? { opacity: active ? 1 : 0.45, y: 0 } : undefined}
+			animate={inView ? { opacity: active ? 1 : 0.28, y: 0 } : undefined}
 			transition={reduced ? { duration: 0 } : { duration: 0.45, ease: EASE, delay }}
 		>
 			{active && (

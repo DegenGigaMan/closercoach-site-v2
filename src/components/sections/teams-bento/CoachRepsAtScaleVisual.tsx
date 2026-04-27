@@ -29,22 +29,24 @@ import Image from 'next/image'
 import type { ReactElement } from 'react'
 import { Sparkle } from '@phosphor-icons/react'
 
-const HOURS = [
-	{ label: '8 AM', faded: false },
-	{ label: '9 AM', faded: false },
-	{ label: '10 AM', faded: true },
-	{ label: '11 AM', faded: true },
+type Meeting = { hour: string; faded: boolean; name: string; time: string; avatar: string }
+
+const MEETINGS: readonly Meeting[] = [
+	{ hour: '8 AM', faded: false, name: 'Marcus Rivera', time: '8:15am', avatar: '/images/step1/avatar-marcus-face.png' },
+	{ hour: '9 AM', faded: false, name: 'Priya Patel', time: '9:30am', avatar: '/images/avatars/closer-1.png' },
+	{ hour: '10 AM', faded: true, name: 'Tom Walsh', time: '10:30am', avatar: '/images/avatars/closer-2.png' },
+	{ hour: '11 AM', faded: true, name: 'Jordan Kim', time: '11:45am', avatar: '/images/avatars/closer-3.png' },
 ] as const
 
 const STACKED_AVATARS = [
-	{ src: '/images/step1/avatar-sarah-v2.png', alt: 'Closer 1' },
-	{ src: '/images/avatars/closer-1.png', alt: 'Closer 2' },
-	{ src: '/images/avatars/closer-2.png', alt: 'Closer 3' },
-	{ src: '/images/avatars/closer-3.png', alt: 'Closer 4' },
-	{ src: '/images/step1/avatar-marcus-face.png', alt: 'Closer 5' },
+	{ src: '/images/step1/avatar-sarah-v2.png', alt: 'Sarah Chen' },
+	{ src: '/images/avatars/closer-1.png', alt: 'Priya Patel' },
+	{ src: '/images/avatars/closer-2.png', alt: 'Tom Walsh' },
+	{ src: '/images/avatars/closer-3.png', alt: 'Jordan Kim' },
+	{ src: '/images/step1/avatar-marcus-face.png', alt: 'Marcus Rivera' },
 ] as const
 
-function MeetingCard({ faded = false }: { faded?: boolean }): ReactElement {
+function MeetingCard({ faded = false, name, time, avatar }: { faded?: boolean; name: string; time: string; avatar: string }): ReactElement {
 	return (
 		<div
 			className={`relative flex items-center gap-3 rounded-xl border border-cc-surface-border bg-cc-surface-card/80 px-3 py-2.5 backdrop-blur-sm transition-opacity duration-300 ${faded ? 'opacity-15' : 'opacity-100'}`}
@@ -52,8 +54,8 @@ function MeetingCard({ faded = false }: { faded?: boolean }): ReactElement {
 			<span aria-hidden='true' className='absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-full bg-cc-accent' />
 			<div className='relative ml-1 h-7 w-7 shrink-0 overflow-hidden rounded-full ring-1 ring-cc-surface-border'>
 				<Image
-					src='/images/step1/avatar-sarah-v2.png'
-					alt='Sarah Chen'
+					src={avatar}
+					alt={name}
 					fill
 					sizes='28px'
 					className='object-cover'
@@ -61,8 +63,8 @@ function MeetingCard({ faded = false }: { faded?: boolean }): ReactElement {
 				/>
 			</div>
 			<div className='flex min-w-0 flex-col leading-none'>
-				<span className='text-trim text-[13px] font-semibold text-white'>Sarah Chen</span>
-				<span className='text-trim mt-1 text-[11px] text-cc-text-secondary'>10:30am</span>
+				<span className='text-trim text-[13px] font-semibold text-white'>{name}</span>
+				<span className='text-trim mt-1 text-[11px] text-cc-text-secondary'>{time}</span>
 			</div>
 		</div>
 	)
@@ -101,10 +103,10 @@ export default function CoachRepsAtScaleVisual(): ReactElement {
 
 			{/* Calendar lane */}
 			<div className='mt-5 flex flex-col gap-2'>
-				{HOURS.map((hour, i) => {
+				{MEETINGS.map((meeting, i) => {
 					const showAiDivider = i === 2 // Between 9 AM (i=1) and 10 AM (i=2)
 					return (
-						<div key={hour.label}>
+						<div key={meeting.hour}>
 							{showAiDivider && (
 								<div className='mb-2 flex items-center gap-2'>
 									<span aria-hidden='true' className='h-px flex-1 border-t border-dashed border-cc-accent/50' />
@@ -116,13 +118,13 @@ export default function CoachRepsAtScaleVisual(): ReactElement {
 							)}
 							<div className='flex items-start gap-3'>
 								<span
-									className={`text-trim mt-2 w-10 shrink-0 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-wider ${hour.faded ? 'text-cc-text-secondary/30' : 'text-cc-text-secondary/70'}`}
+									className={`text-trim mt-2 w-10 shrink-0 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-wider ${meeting.faded ? 'text-cc-text-secondary/30' : 'text-cc-text-secondary/70'}`}
 								>
-									{hour.label}
+									{meeting.hour}
 								</span>
 								<div className='relative flex-1'>
 									<span aria-hidden='true' className='absolute -top-1 left-0 right-0 h-px bg-cc-surface-border' />
-									<MeetingCard faded={hour.faded} />
+									<MeetingCard faded={meeting.faded} name={meeting.name} time={meeting.time} avatar={meeting.avatar} />
 								</div>
 							</div>
 						</div>

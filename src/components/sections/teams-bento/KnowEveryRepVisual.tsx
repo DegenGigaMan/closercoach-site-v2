@@ -21,17 +21,22 @@ import Image from 'next/image'
 import type { ReactElement } from 'react'
 import { ChartBar } from '@phosphor-icons/react'
 
-const SARAH = '/images/step1/avatar-sarah-v2.png'
-
-type Row = { rank: number; delta: string; opacity: number }
+type Row = { rank: number; delta: string; opacity: number; name: string; avatar: string }
 
 const STACK_TOP: readonly Row[] = [
-	{ rank: 22, delta: '↓ 9%', opacity: 0.35 },
-	{ rank: 23, delta: '↓ 13%', opacity: 0.55 },
-	{ rank: 24, delta: '↓ 18%', opacity: 0.75 },
+	{ rank: 22, delta: '↓ 9%', opacity: 0.35, name: 'Tom Walsh', avatar: '/images/avatars/closer-2.png' },
+	{ rank: 23, delta: '↓ 13%', opacity: 0.55, name: 'Jordan Kim', avatar: '/images/avatars/closer-3.png' },
+	{ rank: 24, delta: '↓ 18%', opacity: 0.75, name: 'Marcus Rivera', avatar: '/images/step1/avatar-marcus-face.png' },
 ] as const
 
-function StackRow({ rank, delta, opacity, isTopRow }: Row & { isTopRow: boolean }): ReactElement {
+const FRONT_ROW = {
+	rank: 25,
+	delta: '↓ 22%',
+	name: 'Priya Patel',
+	avatar: '/images/avatars/closer-1.png',
+} as const
+
+function StackRow({ rank, delta, opacity, name, avatar, isTopRow }: Row & { isTopRow: boolean }): ReactElement {
 	return (
 		<div
 			className={`relative flex items-center gap-3 rounded-xl border border-cc-surface-border bg-cc-surface-card/80 px-3 py-2.5 backdrop-blur-sm ${isTopRow ? 'pr-12 sm:pr-3' : ''}`}
@@ -39,9 +44,9 @@ function StackRow({ rank, delta, opacity, isTopRow }: Row & { isTopRow: boolean 
 		>
 			<span className='text-trim w-5 shrink-0 font-[family-name:var(--font-mono)] text-[11px] font-medium text-cc-text-secondary'>{rank}</span>
 			<div className='relative h-6 w-6 shrink-0 overflow-hidden rounded-full ring-1 ring-cc-surface-border'>
-				<Image src={SARAH} alt='' fill sizes='24px' className='object-cover' unoptimized />
+				<Image src={avatar} alt='' fill sizes='24px' className='object-cover' unoptimized />
 			</div>
-			<span className='text-trim flex-1 text-[12px] font-medium text-white/85'>Sarah Chen</span>
+			<span className='text-trim flex-1 text-[12px] font-medium text-white/85'>{name}</span>
 			<span className='text-trim shrink-0 text-[11px] font-semibold text-cc-error'>{delta}</span>
 		</div>
 	)
@@ -57,16 +62,16 @@ export default function KnowEveryRepVisual(): ReactElement {
 
 				{/* Front card (rank 25): emphasized */}
 				<div className='relative flex items-center gap-3 rounded-xl border border-cc-accent/30 bg-cc-surface-card px-3 py-3 shadow-[0_8px_24px_rgba(0,0,0,0.35)]'>
-					<span className='text-trim w-5 shrink-0 font-[family-name:var(--font-mono)] text-[11px] font-semibold text-white'>25</span>
+					<span className='text-trim w-5 shrink-0 font-[family-name:var(--font-mono)] text-[11px] font-semibold text-white'>{FRONT_ROW.rank}</span>
 					<div className='relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-1 ring-cc-surface-border'>
-						<Image src={SARAH} alt='Sarah Chen' fill sizes='36px' className='object-cover' unoptimized />
+						<Image src={FRONT_ROW.avatar} alt={FRONT_ROW.name} fill sizes='36px' className='object-cover' unoptimized />
 					</div>
 					<div className='flex min-w-0 flex-1 flex-col leading-none'>
-						<span className='text-trim text-[13px] font-semibold text-white'>Sarah Chen</span>
+						<span className='text-trim text-[13px] font-semibold text-white'>{FRONT_ROW.name}</span>
 						<span className='text-trim mt-1 text-[11px] text-cc-text-secondary'>39 calls · 180 mins</span>
 					</div>
 					<div className='flex shrink-0 flex-col items-end leading-none'>
-						<span className='text-trim text-[12px] font-bold text-cc-error'>↓ 22%</span>
+						<span className='text-trim text-[12px] font-bold text-cc-error'>{FRONT_ROW.delta}</span>
 						<span className='text-trim mt-1 font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-wider text-cc-text-secondary/80'>Close Rate</span>
 					</div>
 				</div>

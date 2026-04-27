@@ -164,7 +164,7 @@ function MeetingCard({ name, time, avatarSrc, active = false, inView, reduced, d
 				active ? '' : 'border-white/[0.14]',
 			].join(' ').trim()}
 			initial={{ opacity: 0, x: -8 }}
-			animate={inView ? { opacity: active ? 1 : 0.4, x: 0 } : undefined}
+			animate={inView ? { opacity: active ? 1 : 0.28, x: 0 } : undefined}
 			transition={reduced ? { duration: 0 } : { duration: 0.45, ease: EASE, delay: PHASE.meetingsPopulate + delay }}
 		>
 			{active && (

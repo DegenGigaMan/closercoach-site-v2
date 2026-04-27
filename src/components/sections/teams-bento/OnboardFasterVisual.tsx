@@ -19,7 +19,7 @@ import Image from 'next/image'
 import type { ReactElement } from 'react'
 import { Flag, Sparkle, User } from '@phosphor-icons/react'
 
-const SARAH = '/images/step1/avatar-sarah-v2.png'
+const TRAINED_REP = { name: 'Priya Patel', avatar: '/images/avatars/closer-1.png' } as const
 
 export default function OnboardFasterVisual(): ReactElement {
 	return (
@@ -49,7 +49,7 @@ export default function OnboardFasterVisual(): ReactElement {
 					<div className='h-full w-full rounded-full bg-gradient-to-r from-cc-accent/80 via-cc-mint to-cc-accent shadow-[0_0_12px_rgba(52,225,142,0.4)]' />
 				</div>
 				<div className='relative h-7 w-7 shrink-0 overflow-hidden rounded-full ring-1 ring-cc-surface-border'>
-					<Image src={SARAH} alt='Sarah Chen' fill sizes='28px' className='object-cover' unoptimized />
+					<Image src={TRAINED_REP.avatar} alt={TRAINED_REP.name} fill sizes='28px' className='object-cover' unoptimized />
 				</div>
 			</div>
 
