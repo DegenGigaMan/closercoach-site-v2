@@ -1,5 +1,5 @@
 /** @fileoverview S5 Results — Floating Proof Composition per Figma 81:4377
- * (recomposed master, Wave Q 2026-04-27).
+ * (recomposed master, Wave Q 2026-04-27; Wave Q.2 mobile pattern 2026-04-27).
  *
  * 7 designed proof components orbit the centered "Every call, scored. Every
  * rep, improving." billboard on a warm surface:
@@ -20,8 +20,11 @@
  * Figma 81:4377 frame coordinates. Container max-w-[1232px] mx-auto with
  * generous height to fit headline + 7 floating cards.
  *
- * Mobile (<lg): vertical stack — headline centered on top, all 7 cards stack
- * below in a 1-col then 2-col grid.
+ * Mobile (<lg): Reflex AI floating-on-mobile pattern. Only 2 cards reveal —
+ * Camil Reese profile above the headline and Coached vs Uncoached chart
+ * below. Cards retain their native 240px width, slight horizontal offsets
+ * preserve the "floating, not gridded" feel. The other 5 cards stay defined
+ * as components (still invoked on desktop) but are not rendered on mobile.
  *
  * Color discipline: card surface #F2EDE5 (raw hex per Figma — no new token).
  * "improving" italic uses raw #10B981 emerald per Figma master (large display
@@ -669,60 +672,18 @@ function ResultsHeadline(): ReactElement {
 export default function FloatingProofComposition(): ReactElement {
 	return (
 		<div className='relative mx-auto w-full max-w-[1232px] px-6 lg:px-0'>
-			{/* Mobile / tablet (<lg): headline + stacked cards in a grid. No eyebrow
-			 * (removed in Wave Q per Figma master). */}
-			<div className='flex flex-col gap-8 lg:hidden'>
-				<div className='flex flex-col items-center'>
-					<ResultsHeadline />
-				</div>
-				<div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-					<Float delay={0}>
-						<div className='flex justify-center'>
-							<CamilReeseProfileCard />
-						</div>
-					</Float>
-					<Float delay={0.06}>
-						<div className='flex justify-center'>
-							<PerformanceGainsCard />
-						</div>
-					</Float>
-				</div>
-				<div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-					<Float delay={0.12}>
-						<div className='flex justify-center'>
-							<GradeUpCard />
-						</div>
-					</Float>
-					<Float delay={0.18}>
-						<div className='flex justify-center'>
-							<IndustriesPill />
-						</div>
-					</Float>
-				</div>
-				<div className='grid grid-cols-2 gap-4'>
-					<Float delay={0.22}>
-						<div className='flex justify-center'>
-							<StatCard value='20,000+' label='Sales closers' />
-						</div>
-					</Float>
-					<Float delay={0.26}>
-						<div className='flex justify-center'>
-							<StatCard value='3,000+' label='Calls / day' />
-						</div>
-					</Float>
-				</div>
-				<div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-					<Float delay={0.3}>
-						<div className='flex justify-center'>
-							<SevenDimensionsRadar />
-						</div>
-					</Float>
-					<Float delay={0.36}>
-						<div className='flex justify-center'>
-							<CoachedVsUncoachedChart />
-						</div>
-					</Float>
-				</div>
+			{/* Mobile / tablet (<lg): Reflex AI floating-on-mobile pattern.
+			 * Only Camil profile (above) and Coached vs Uncoached chart (below)
+			 * reveal. Headline stays the dominant centerpiece. Subtle horizontal
+			 * offsets preserve the floating feel. */}
+			<div className='flex flex-col items-center gap-6 lg:hidden'>
+				<Float delay={0} className='self-center -translate-x-3'>
+					<CamilReeseProfileCard />
+				</Float>
+				<ResultsHeadline />
+				<Float delay={0.12} className='self-center translate-x-3'>
+					<CoachedVsUncoachedChart />
+				</Float>
 			</div>
 
 			{/* Desktop floating layout (lg+).
