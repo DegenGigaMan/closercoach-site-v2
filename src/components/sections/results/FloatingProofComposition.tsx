@@ -27,9 +27,11 @@
  * as components (still invoked on desktop) but are not rendered on mobile.
  *
  * Color discipline: card surface #F2EDE5 (raw hex per Figma — no new token).
- * "improving" italic uses raw #10B981 emerald per Figma master (large display
- * type, passes WCAG 3:1 large text). Smaller emerald body text uses #059669
- * (cc-accent-hover) for AA compliance. */
+ * Wave R FIX-03 (2026-04-27): every TEXT color use of emerald flips to
+ * #059669 (cc-accent-hover) for WCAG AA on the warm #F2EDE5 surface (raw
+ * #10B981 measures ~2.0:1, fails 3:1 even at large-text). Raw #10B981
+ * stays on DECORATIVE SVG fills only — radar polygon, chart strokes/fills,
+ * grade-ring arcs, legend dots, badge backgrounds. */
 
 'use client'
 
@@ -165,7 +167,7 @@ function CamilReeseProfileCard(): ReactElement {
 							<div className='flex items-center gap-1'>
 								<span
 									className='text-trim text-[24px] font-bold leading-[36px]'
-									style={{ fontFamily: 'var(--font-heading)', color: EMERALD_RAW }}
+									style={{ fontFamily: 'var(--font-heading)', color: EMERALD_AA }}
 								>
 									A
 								</span>
@@ -224,7 +226,7 @@ function PerformanceGainsCard(): ReactElement {
 					<div key={s.label} className='flex flex-1 flex-col items-center justify-center gap-3'>
 						<p
 							className='text-trim whitespace-nowrap text-[28px] font-bold leading-none'
-							style={{ fontFamily: 'var(--font-heading)', color: EMERALD_RAW }}
+							style={{ fontFamily: 'var(--font-heading)', color: EMERALD_AA }}
 						>
 							{s.value}
 						</p>
@@ -658,7 +660,7 @@ function ResultsHeadline(): ReactElement {
 			Every rep,{' '}
 			<em
 				className='italic font-bold'
-				style={{ color: EMERALD_RAW, fontFamily: 'var(--font-heading)' }}
+				style={{ color: EMERALD_AA, fontFamily: 'var(--font-heading)' }}
 			>
 				improving
 			</em>
@@ -671,12 +673,14 @@ function ResultsHeadline(): ReactElement {
 
 export default function FloatingProofComposition(): ReactElement {
 	return (
-		<div className='relative mx-auto w-full max-w-[1232px] px-6 lg:px-0'>
-			{/* Mobile / tablet (<lg): Reflex AI floating-on-mobile pattern.
+		<div className='relative mx-auto w-full max-w-[1232px] px-6 md:px-0'>
+			{/* Mobile (<md, <768): Reflex AI floating-on-mobile pattern.
 			 * Only Camil profile (above) and Coached vs Uncoached chart (below)
 			 * reveal. Headline stays the dominant centerpiece. Subtle horizontal
-			 * offsets preserve the floating feel. */}
-			<div className='flex flex-col items-center gap-6 lg:hidden'>
+			 * offsets preserve the floating feel. Wave R FIX-05 (2026-04-27):
+			 * trigger flipped from `lg:` to `md:` so tablets (768-1023) get the
+			 * full 7-card composition. */}
+			<div className='flex flex-col items-center gap-6 md:hidden'>
 				<Float delay={0} className='self-center -translate-x-3'>
 					<CamilReeseProfileCard />
 				</Float>
@@ -686,7 +690,11 @@ export default function FloatingProofComposition(): ReactElement {
 				</Float>
 			</div>
 
-			{/* Desktop floating layout (lg+).
+			{/* Tablet + desktop floating layout (md+, 768+). Wave R FIX-05
+			 * (2026-04-27): the absolute-positioned coordinate map is preserved
+			 * at its native 1232px frame width and compressed via CSS scale on
+			 * narrower tablets so cards never overflow or collide. lg+ (1024+)
+			 * snaps back to native scale.
 			 *
 			 * Coordinate map per Figma 81:4377 master (frame ~1024×570). Mapped
 			 * to a 1232-wide container with proportional left percentages and
@@ -701,51 +709,62 @@ export default function FloatingProofComposition(): ReactElement {
 			 *   - 7-Dimensions Radar: left 50%,  top 460px (translate-x-1/2 center)
 			 *   - Coached chart:      right 0,   top 440px (bottom-right)
 			 */}
-			<div className='relative hidden h-[760px] lg:block'>
-				{/* Headline gravity center */}
-				<div className='absolute left-1/2 top-[230px] z-10 flex w-[860px] -translate-x-1/2 flex-col items-center'>
-					<ResultsHeadline />
-				</div>
-
-				{/* Top row */}
-				<Float delay={0} className='absolute' style={{ left: '8%', top: '0px' }}>
-					<CamilReeseProfileCard />
-				</Float>
-				<Float
-					delay={0.06}
-					className='absolute -translate-x-1/2'
-					style={{ left: '50%', top: '110px' }}
-				>
-					<PerformanceGainsCard />
-				</Float>
-				<Float delay={0.12} className='absolute' style={{ right: '5%', top: '20px' }}>
-					<GradeUpCard />
-				</Float>
-
-				{/* Mid row */}
-				<Float delay={0.18} className='absolute' style={{ right: '0%', top: '230px' }}>
-					<IndustriesPill />
-				</Float>
-				<Float delay={0.22} className='absolute' style={{ left: '-1%', top: '320px' }}>
-					<div className='flex flex-col items-start gap-4'>
-						<StatCard value='20,000+' label='Sales closers' />
-						<div className='pl-12'>
-							<StatCard value='3,000+' label='Calls / day' />
+			<div className='hidden md:block'>
+				{/* Outer height tracks the scaled-down box so the section
+				 * preserves its vertical rhythm. 760 × 0.58 ≈ 441, × 0.82 ≈ 624.
+				 * Wave R FIX-05: scale chosen so the 1232 frame's edge-aligned
+				 * cards (left:-1%, right:0%) clear the md viewport (768) without
+				 * clipping. */}
+				<div className='relative h-[460px] overflow-visible lg:h-[640px] xl:h-[760px]'>
+					<div
+						className='absolute left-1/2 top-0 h-[760px] w-[1232px] origin-top -translate-x-1/2 scale-[0.58] lg:scale-[0.82] xl:scale-100'
+					>
+						{/* Headline gravity center */}
+						<div className='absolute left-1/2 top-[230px] z-10 flex w-[860px] -translate-x-1/2 flex-col items-center'>
+							<ResultsHeadline />
 						</div>
-					</div>
-				</Float>
 
-				{/* Bottom row */}
-				<Float
-					delay={0.3}
-					className='absolute -translate-x-1/2'
-					style={{ left: '50%', top: '430px' }}
-				>
-					<SevenDimensionsRadar />
-				</Float>
-				<Float delay={0.36} className='absolute' style={{ right: '0%', top: '420px' }}>
-					<CoachedVsUncoachedChart />
-				</Float>
+						{/* Top row */}
+						<Float delay={0} className='absolute' style={{ left: '8%', top: '0px' }}>
+							<CamilReeseProfileCard />
+						</Float>
+						<Float
+							delay={0.06}
+							className='absolute -translate-x-1/2'
+							style={{ left: '50%', top: '110px' }}
+						>
+							<PerformanceGainsCard />
+						</Float>
+						<Float delay={0.12} className='absolute' style={{ right: '5%', top: '20px' }}>
+							<GradeUpCard />
+						</Float>
+
+						{/* Mid row */}
+						<Float delay={0.18} className='absolute' style={{ right: '0%', top: '230px' }}>
+							<IndustriesPill />
+						</Float>
+						<Float delay={0.22} className='absolute' style={{ left: '-1%', top: '320px' }}>
+							<div className='flex flex-col items-start gap-4'>
+								<StatCard value='20,000+' label='Sales closers' />
+								<div className='pl-12'>
+									<StatCard value='3,000+' label='Calls / day' />
+								</div>
+							</div>
+						</Float>
+
+						{/* Bottom row */}
+						<Float
+							delay={0.3}
+							className='absolute -translate-x-1/2'
+							style={{ left: '50%', top: '430px' }}
+						>
+							<SevenDimensionsRadar />
+						</Float>
+						<Float delay={0.36} className='absolute' style={{ right: '0%', top: '420px' }}>
+							<CoachedVsUncoachedChart />
+						</Float>
+					</div>
+				</div>
 			</div>
 		</div>
 	)
