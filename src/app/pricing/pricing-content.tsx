@@ -80,7 +80,11 @@ const TIERS = [
 		getPrice: () => ({ amount: PRICING.enterprise.label, period: '', note: 'Volume pricing · SSO · custom integrations' }),
 		trial: null,
 		cta: { text: CTA.contactSales.text, href: CTA.contactSales.href },
-		ctaVariant: 'ghost' as const,
+		/* Wave R FIX-04 (2026-04-27): swap ghost → secondary so Enterprise gets
+		 * the same bordered-outline emerald CTA as Teams (was bare-text "Book a
+		 * Demo" with no padding/styling, looked orphaned next to bordered Closer
+		 * + Teams cards). */
+		ctaVariant: 'secondary' as const,
 		features: [
 			'Everything in Teams, plus:',
 			'Single sign-on (SSO / SAML)',
@@ -292,12 +296,15 @@ export default function PricingContent() {
 								<ScrollReveal key={tier.key} delay={i * 0.1}>
 									<div
 										{...(tier.highlighted ? { 'data-primary-cta': '' } : {})}
+										/* Wave R FIX-04 (2026-04-27): Enterprise (i===2) bg flipped
+										 * from bg-cc-foundation (which matched the section behind
+										 * it, making the border invisible and the card look
+										 * bottomless) to bg-cc-surface-card so the bordered frame
+										 * reads with the same visual weight as Teams. */
 										className={`relative flex h-full flex-col rounded-xl border p-8 ${
 											tier.highlighted
 												? 'border-cc-accent bg-cc-surface-card shadow-[0_0_64px_-24px_rgba(16,185,129,0.35)] ring-1 ring-cc-accent/25'
-												: i === 2
-													? 'border-cc-surface-border bg-cc-foundation'
-													: 'border-cc-surface-border bg-cc-surface-card'
+												: 'border-cc-surface-border bg-cc-surface-card'
 										}`}
 									>
 										{/* Most Popular badge (top-right absolute, Closer only) */}
