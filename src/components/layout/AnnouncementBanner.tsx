@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { X } from '@phosphor-icons/react'
 
-const STORAGE_KEY = 'cc-announcement-dismissed-2026-04-26'
+const STORAGE_KEY = 'cc-announcement-dismissed-2026-04-27'
 const BANNER_HEIGHT = 36
 
 type AnnouncementBannerProps = {
@@ -17,13 +17,9 @@ type AnnouncementBannerProps = {
 }
 
 export default function AnnouncementBanner({
-	// Wave I FIX-06: shifted off the Duolingo hook to avoid redundancy with the
-	// on-page Press Strip section ("The Duolingo for sales."). The promo bar
-	// now leads with a live-scale anchor that doesn't duplicate the press
-	// positioning landing within the first 2000px scroll.
-	message = '20,000+ closers training on CloserCoach every day',
-	href = '#',
-	linkLabel = 'See the numbers',
+	message = 'CloserCoach raises $1M to build Duolingo for sales',
+	href = '/blog/closercoach-raises-1m',
+	linkLabel = 'Read more',
 }: AnnouncementBannerProps) {
 	// SSR-safe initial: render nothing until client hydrates.
 	const [dismissed, setDismissed] = useState<boolean | null>(null)
@@ -57,7 +53,10 @@ export default function AnnouncementBanner({
 			style={{ height: BANNER_HEIGHT }}
 		>
 			<div className='mx-auto flex h-full max-w-7xl items-center justify-center gap-3 px-6 text-xs text-cc-text-secondary md:text-sm'>
-				<span className='inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-cc-accent' aria-hidden='true' />
+				<span className='relative flex h-2 w-2 shrink-0' aria-hidden='true'>
+					<span className='absolute inline-flex h-full w-full rounded-full bg-cc-accent opacity-60 motion-safe:animate-ping' />
+					<span className='relative inline-flex h-2 w-2 rounded-full bg-cc-accent' />
+				</span>
 				<p className='truncate text-center'>
 					<span className='text-white'>{message}</span>
 					{href && (
