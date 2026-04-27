@@ -1,5 +1,6 @@
-/** @fileoverview /blog -- editorial warm coming-soon index. Placeholder post-card skeletons signal
- * future shape. Content population deferred to post-launch. W12 enhancement. */
+/** @fileoverview /blog -- editorial warm index. Surfaces the $1M funding-announcement
+ * post as a hero card above the placeholder grid so the AnnouncementBanner CTA has a
+ * visible destination on the index. Wave R FIX-01. */
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
@@ -18,6 +19,16 @@ export const metadata: Metadata = {
 }
 
 const LINKEDIN_URL = 'https://linkedin.com/company/closercoach'
+
+const HERO_POST = {
+	href: '/blog/closercoach-raises-1m',
+	kicker: 'Announcement',
+	titlePre: 'CloserCoach raises ',
+	titleEm: '$1M',
+	titlePost: ' to build Duolingo for sales.',
+	meta: 'March 2026 · 3 min read · By the CloserCoach team',
+	cta: 'Read post',
+} as const
 
 const PLACEHOLDER_POSTS = [
 	{ kicker: 'Playbook', title: 'How top AEs structure their first 60 seconds' },
@@ -55,10 +66,10 @@ export default function BlogPage() {
 						Short reads for people who close for a living. Frameworks you can use on your next call, teardowns of real roleplays, and lessons from the 20,000+ closers training inside the app.
 					</p>
 
-					{/* Placeholder state */}
+					{/* LinkedIn follow row */}
 					<div className='mt-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
 						<p className='text-sm text-cc-text-secondary-warm'>
-							First posts drop soon. Follow on LinkedIn for updates.
+							New posts drop here. Follow on LinkedIn for updates.
 						</p>
 						<Link
 							href={LINKEDIN_URL}
@@ -73,8 +84,69 @@ export default function BlogPage() {
 					</div>
 				</div>
 
+				{/* Hero post — full-width feature card linking to the live post. Wave R FIX-01. */}
+				<Link
+					href={HERO_POST.href}
+					className='group mt-14 block overflow-hidden rounded-3xl border border-cc-warm-border bg-white/70 transition-colors hover:border-cc-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent-hover focus-visible:ring-offset-2 focus-visible:ring-offset-cc-warm-light md:grid md:grid-cols-[5fr_7fr] md:items-stretch'
+				>
+					{/* Typographic cover: large 01 numeral on emerald-tinted gradient warm surface. */}
+					<div className='relative flex aspect-[16/10] items-center justify-center overflow-hidden bg-gradient-to-br from-cc-warm-light-secondary via-cc-warm-light to-[rgba(16,185,129,0.12)] md:aspect-auto md:min-h-[280px]'>
+						<span
+							aria-hidden='true'
+							className='select-none font-bold leading-none text-cc-accent-hover/30 transition-transform duration-500 group-hover:scale-105'
+							style={{
+								fontFamily: 'var(--font-heading)',
+								fontSize: 'clamp(7rem, 18vw, 14rem)',
+							}}
+						>
+							01
+						</span>
+						{/* subtle emerald wash bottom-right */}
+						<span
+							aria-hidden='true'
+							className='absolute -bottom-12 -right-12 h-48 w-48 rounded-full bg-cc-accent-hover/10 blur-3xl'
+						/>
+					</div>
+
+					{/* Content side */}
+					<div className='flex flex-col justify-center gap-4 p-8 md:p-10'>
+						<span className='font-mono text-[11px] uppercase tracking-[0.18em] text-cc-accent-hover'>
+							{HERO_POST.kicker}
+						</span>
+						<h2
+							className='text-balance text-cc-text-primary-warm'
+							style={{
+								fontFamily: 'var(--font-heading)',
+								fontWeight: 700,
+								fontSize: 'clamp(1.75rem, 3.4vw, 2.5rem)',
+								lineHeight: 1.05,
+								letterSpacing: '-0.015em',
+							}}
+						>
+							{HERO_POST.titlePre}
+							<em className='italic text-cc-accent-hover'>{HERO_POST.titleEm}</em>
+							{HERO_POST.titlePost}
+						</h2>
+						<p className='font-mono text-xs uppercase tracking-[0.14em] text-cc-text-secondary-warm'>
+							{HERO_POST.meta}
+						</p>
+						<span className='inline-flex items-center gap-2 text-sm font-medium text-cc-accent-hover transition-transform duration-200 group-hover:translate-x-1'>
+							{HERO_POST.cta}
+							<ArrowRight weight='bold' className='h-3.5 w-3.5' aria-hidden='true' />
+						</span>
+					</div>
+				</Link>
+
+				{/* More posts coming soon — eyebrow + placeholder grid */}
+				<div className='mt-16 flex items-center gap-3'>
+					<span className='font-mono text-[11px] uppercase tracking-[0.18em] text-cc-text-tertiary-warm'>
+						More posts coming soon
+					</span>
+					<span aria-hidden='true' className='h-px flex-1 bg-cc-warm-border' />
+				</div>
+
 				{/* Placeholder post-card skeletons */}
-				<div className='mt-14 grid gap-6 md:grid-cols-3'>
+				<div className='mt-8 grid gap-6 md:grid-cols-3'>
 					{PLACEHOLDER_POSTS.map((post, i) => (
 						<article
 							key={post.title}
@@ -102,7 +174,7 @@ export default function BlogPage() {
 							</div>
 
 							<p className='mt-6 font-mono text-[11px] uppercase tracking-[0.18em] text-cc-text-tertiary-warm'>
-								Post #{String(i + 1).padStart(2, '0')}
+								Post #{String(i + 2).padStart(2, '0')}
 							</p>
 						</article>
 					))}
