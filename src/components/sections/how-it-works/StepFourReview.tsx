@@ -203,9 +203,15 @@ export default function StepFourReview() {
 					})}
 				</div>
 
-				{/* Framed scorecard: sidebar + main content */}
+				{/* Framed scorecard: sidebar + main content.
+				 * Wave R FIX-06 (2026-04-27): at <md viewport (where sidebar +
+				 * content side-by-side overflows the 390 frame and renders as a
+				 * ~28px peek of the next column), the layout stacks vertically
+				 * with the dimensions list collapsing to a horizontal scroll-snap
+				 * pill row above the card content. md+ keeps the side-by-side
+				 * Figma layout. */}
 				<div
-					className='relative flex w-full items-start gap-8 overflow-hidden rounded-[24px] border border-white/[0.08] pl-4 pr-8 py-4'
+					className='relative flex w-full flex-col items-start gap-4 overflow-hidden rounded-[24px] border border-white/[0.08] p-4 md:flex-row md:gap-8 md:pl-4 md:pr-8 md:py-4'
 					style={{
 						boxShadow:
 							'0px 8px 16px 0px rgba(0,0,0,0.6), 0px 0px 20px 0px rgba(16,185,129,0.05), inset 0px 0px 16px 0px rgba(10,18,51,0.4)',
@@ -219,10 +225,12 @@ export default function StepFourReview() {
 						style={{ backgroundColor: 'rgba(30,34,48,0.8)' }}
 					/>
 
-					{/* Left sidebar: dimensions */}
+					{/* Left sidebar: dimensions.
+					 * <md: full-width horizontal pill row, scroll-snap on x.
+					 * md+: 250px vertical column with right hairline. */}
 					<nav
 						aria-label='Scoring dimensions'
-						className='relative flex w-[250px] shrink-0 flex-col gap-4 self-stretch border-r border-white/[0.06] pr-6'
+						className='relative -mx-1 flex w-full shrink-0 items-stretch gap-2 self-stretch overflow-x-auto px-1 pb-1 md:mx-0 md:w-[250px] md:flex-col md:gap-4 md:overflow-visible md:border-r md:border-white/[0.06] md:px-0 md:pb-0 md:pr-6'
 					>
 						{dimensions.map((d) => {
 							const isActive = d === dimension
@@ -237,21 +245,21 @@ export default function StepFourReview() {
 									type='button'
 									aria-pressed={isActive}
 									onClick={() => setDimension(d)}
-									className={`flex w-full items-center justify-between rounded-[12px] border transition-opacity ${
+									className={`flex shrink-0 items-center justify-between gap-2 rounded-[12px] border transition-opacity md:w-full md:shrink ${
 										isActive
-											? 'border-white/[0.06] pl-[17px] pr-[9px] py-[9px]'
-											: 'border-transparent pl-4 pr-2 py-2 opacity-50 hover:opacity-75'
+											? 'border-white/[0.06] pl-3 pr-2 py-1.5 md:pl-[17px] md:pr-[9px] md:py-[9px]'
+											: 'border-transparent pl-3 pr-2 py-1.5 opacity-50 hover:opacity-75 md:pl-4 md:pr-2 md:py-2'
 									}`}
 									style={isActive ? { backgroundColor: 'rgba(16,185,129,0.2)' } : undefined}
 								>
 									<span className='flex items-center gap-2'>
 										<Icon size={14} weight='regular' className='text-white' aria-hidden='true' />
-										<span className='text-[12px] font-medium leading-[16px] text-white/90'>
+										<span className='whitespace-nowrap text-[12px] font-medium leading-[16px] text-white/90'>
 											{d}
 										</span>
 									</span>
 									<span
-										className='flex h-[21px] w-[32px] items-center justify-center rounded-[4px] border px-[7px] py-[3px]'
+										className='flex h-[21px] w-[32px] shrink-0 items-center justify-center rounded-[4px] border px-[7px] py-[3px]'
 										style={{ backgroundColor: styles.bg, borderColor: styles.border }}
 										aria-label={`Grade ${grade}`}
 									>
