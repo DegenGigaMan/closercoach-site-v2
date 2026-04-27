@@ -339,7 +339,7 @@ function GradeUpCard(): ReactElement {
 					</svg>
 					<span
 						className='relative text-[28px] font-semibold leading-[40px]'
-						style={{ fontFamily: 'var(--font-heading)', color: '#34E18E' }}
+						style={{ fontFamily: 'var(--font-heading)', color: EMERALD_AA }}
 					>
 						A
 					</span>
