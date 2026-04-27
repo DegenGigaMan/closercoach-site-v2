@@ -1,45 +1,50 @@
-/** @fileoverview S5 Results — Floating Proof Composition per Figma 81:4377.
+/** @fileoverview S5 Results — Floating Proof Composition per Figma 81:4377
+ * (recomposed master, Wave Q 2026-04-27).
  *
- * Replaces the prior hub-spoke composition. 6 designed proof components
- * orbit the centered "Every call, scored. Every rep, improving." billboard
- * on a warm surface:
+ * 7 designed proof components orbit the centered "Every call, scored. Every
+ * rep, improving." billboard on a warm surface:
  *
- *   1. Camil Reese profile card (top-left) — Recent Performance bars
- *      (Week 1 amber C, Week 8 emerald A with +2 trust badge)
- *   2. Pitch score card (top-right) — B+ rating + You 72% / Top 10% 89%
- *      progress bars
- *   3. Close Rate ↑10% pill (mid-left)
- *   4. "We have a deal" italic quote pill (center-bottom)
- *   5. 7-Dimensions Scored radar (center) — Discovery / Pitch / Objection
- *      Handling / Closing / Tonality / Pace / Clarity heptagon
- *   6. Coached vs Uncoached area chart (bottom-right) — 2x outcome delta
+ *   1. Camil Reese profile card (top-left, w 240) — Recent Performance bars
+ *      (Week 1 amber C, Week 8 emerald A with +2 trust badge), real headshot
+ *      from /images/prospects/camil-reese.png
+ *   2. Performance Gains stats (top-center) — 7% Close Rate / 50% Faster Ramp
+ *      / 30% More Deals
+ *   3. C+ → A grade-up badge card (top-right) — +2 grades indicator
+ *   4. 16+ Industries pill (right mid)
+ *   5. 20,000+ closers + 3,000+ calls/day stack (left mid)
+ *   6. 7-Dimensions Scored radar (center bottom) — Discovery / Pitch /
+ *      Objection Handling / Closing / Tonality / Pace / Clarity heptagon
+ *   7. Coached vs Uncoached area chart (bottom-right) — 2x outcome delta
  *
  * Desktop (lg+): floating layout with absolute positioning matching the
- * Figma frame exactly. Container max-w-[1232px] mx-auto h-[600px].
+ * Figma 81:4377 frame coordinates. Container max-w-[1232px] mx-auto with
+ * generous height to fit headline + 7 floating cards.
  *
- * Mobile (<lg): vertical stack — headline centered on top, all 6 cards
- * stack below in a 1-col then 2-col grid that surfaces the most narrative
- * cards (profile + pitch + radar + chart) and puts the chip components
- * (close rate + quote) in their own row.
+ * Mobile (<lg): vertical stack — headline centered on top, all 7 cards stack
+ * below in a 1-col then 2-col grid.
  *
- * AA-safe on warm surface — emerald #059669 (cc-accent-hover), no raw
- * #10B981 in interactive text. Card backgrounds use cc-warm-secondary
- * (#F2EDE5) with subtle border + emerald-tinted shadow per Figma. */
+ * Color discipline: card surface #F2EDE5 (raw hex per Figma — no new token).
+ * "improving" italic uses raw #10B981 emerald per Figma master (large display
+ * type, passes WCAG 3:1 large text). Smaller emerald body text uses #059669
+ * (cc-accent-hover) for AA compliance. */
 
 'use client'
 
 import { useRef, type ReactElement } from 'react'
 import { motion, useInView, useReducedMotion } from 'motion/react'
 import Image from 'next/image'
-import { CaretDown, ArrowUp } from '@phosphor-icons/react'
+import { ArrowRight, ArrowUp } from '@phosphor-icons/react'
 
-const EMERALD_AA = '#059669'
-const AMBER_WARM = '#B45309'
-const CARD_BG = 'rgba(242,237,229,0.9)'
-const CARD_BORDER = 'rgba(0,0,0,0.06)'
-const CARD_SHADOW = '0 0 24px rgba(16,185,129,0.06), 0 8px 24px rgba(13,15,20,0.04)'
+const EMERALD_RAW = '#10B981'    // Figma master raw emerald (large-text/decorative)
+const EMERALD_AA = '#059669'     // cc-accent-hover (small body text on warm)
+const AMBER_RAW = '#F59E0B'      // Figma master raw amber (display type only)
+const SLATE_LABEL = '#475569'    // Body labels in legend
+const SANDSTONE = '#7A6E60'      // Radar axis labels
+const CARD_BG = '#F2EDE5'        // Figma master card surface
+const CARD_BORDER = 'rgba(0,0,0,0.05)'
+const CARD_SHADOW = '0px 0px 20px 0px rgba(16,185,129,0.05)'
 
-const CAMIL_AVATAR = '/images/avatars/closer-1.png'
+const CAMIL_AVATAR = '/images/prospects/camil-reese.png'
 
 /* ─── Float wrapper: handles entrance motion + reduced-motion fallback ─── */
 
@@ -69,198 +74,339 @@ function Float({ children, delay = 0, className = '', style }: FloatProps): Reac
 	)
 }
 
-/* ─── 1. Camil Reese profile card ─── */
+/* ─── Shared card shell ─── */
+
+const CARD_STYLE: React.CSSProperties = {
+	background: CARD_BG,
+	border: `1px solid ${CARD_BORDER}`,
+	boxShadow: CARD_SHADOW,
+}
+
+/* ─── 1. Camil Reese profile card (Figma 81:4380) ─── */
 
 function CamilReeseProfileCard(): ReactElement {
 	return (
 		<div
-			className='flex w-[240px] flex-col gap-4 rounded-2xl p-[13px]'
-			style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}`, boxShadow: CARD_SHADOW }}
+			className='flex w-[240px] flex-col gap-4 overflow-clip rounded-[16px] p-[13px]'
+			style={CARD_STYLE}
 		>
 			{/* Header: avatar + name + role */}
-			<div className='flex items-center gap-3'>
-				<div className='relative h-8 w-8 shrink-0 overflow-hidden rounded-full' style={{ border: '1px solid rgba(255,255,255,0.15)' }}>
-					<Image src={CAMIL_AVATAR} alt='Camil Reese' fill sizes='32px' className='object-cover' unoptimized />
+			<div className='flex w-full items-center gap-3'>
+				<div
+					className='relative h-8 w-8 shrink-0 overflow-hidden rounded-full'
+					style={{ border: '1px solid rgba(255,255,255,0.15)' }}
+				>
+					<Image
+						src={CAMIL_AVATAR}
+						alt='Camil Reese'
+						fill
+						sizes='32px'
+						className='object-cover'
+						unoptimized
+					/>
 				</div>
-				<div className='flex min-w-0 flex-col gap-1'>
-					<p className='text-trim text-[12px] font-semibold leading-none' style={{ color: 'rgba(0,0,0,0.7)' }}>
+				<div className='flex min-w-0 flex-1 flex-col items-start justify-center gap-2'>
+					<p
+						className='text-trim whitespace-nowrap text-[12px] font-semibold leading-none'
+						style={{ color: 'rgba(0,0,0,0.7)' }}
+					>
 						Camil Reese
 					</p>
-					<p className='text-trim text-[10px] leading-none' style={{ color: 'rgba(0,0,0,0.5)' }}>
+					<p
+						className='text-trim whitespace-nowrap text-[10px] leading-none'
+						style={{ color: 'rgba(0,0,0,0.5)' }}
+					>
 						Sales rep
 					</p>
 				</div>
 			</div>
 
 			{/* Recent Performance label */}
-			<p className='text-trim text-[10px] font-medium leading-tight text-black'>
-				Recent Performance
-			</p>
+			<div className='flex w-full flex-col gap-2'>
+				<p className='text-trim text-[10px] font-medium leading-[1.4] text-black'>
+					Recent Performance
+				</p>
 
-			{/* Two bars: Week 1 (amber C, short) + Week 8 (emerald A, tall) */}
-			<div className='flex items-end justify-center gap-6'>
-				<div className='flex flex-1 flex-col gap-2'>
-					<div
-						className='flex h-[47px] items-start rounded-t-xl px-[9px] py-[13px]'
-						style={{
-							background: 'rgba(245,158,11,0.1)',
-							border: '1px solid rgba(245,158,11,0.1)',
-						}}
-					>
-						<span
-							className='text-[24px] font-bold leading-none'
-							style={{ fontFamily: 'var(--font-heading)', color: AMBER_WARM }}
+				{/* Two bars: Week 1 (amber C, h-47) + Week 8 (emerald A, h-86 with +2 badge) */}
+				<div className='flex w-full items-end justify-center gap-4'>
+					<div className='flex flex-1 flex-col items-center gap-2'>
+						<div
+							className='flex h-[47px] w-full items-start rounded-tl-[12px] rounded-tr-[12px] px-[9px] py-[13px]'
+							style={{
+								background: 'rgba(245,158,11,0.1)',
+								border: '1px solid rgba(245,158,11,0.1)',
+							}}
 						>
-							C
-						</span>
-					</div>
-					<p className='text-center text-[10px] font-medium leading-tight' style={{ color: 'rgba(0,0,0,0.4)' }}>
-						Week 1
-					</p>
-				</div>
-				<div className='flex flex-1 flex-col gap-2'>
-					<div
-						className='flex h-[86px] items-start rounded-t-xl px-[9px] py-[13px]'
-						style={{
-							background: 'rgba(16,185,129,0.1)',
-							border: '1px solid rgba(16,185,129,0.1)',
-						}}
-					>
-						<div className='flex items-center gap-1'>
 							<span
-								className='text-[24px] font-bold leading-none'
-								style={{ fontFamily: 'var(--font-heading)', color: EMERALD_AA }}
+								className='text-trim text-[24px] font-bold leading-[36px]'
+								style={{ fontFamily: 'var(--font-heading)', color: AMBER_RAW }}
 							>
-								A
-							</span>
-							<span
-								className='inline-flex items-center gap-0.5 rounded p-[3px]'
-								style={{ background: EMERALD_AA, border: '1px solid rgba(16,185,129,0.1)' }}
-							>
-								<ArrowUp size={9} weight='bold' className='text-white' aria-hidden='true' />
-								<span className='text-[12px] font-semibold leading-none text-white'>2</span>
+								C
 							</span>
 						</div>
+						<p
+							className='text-trim w-full text-center text-[10px] font-medium leading-[1.4]'
+							style={{ color: 'rgba(0,0,0,0.4)' }}
+						>
+							Week 1
+						</p>
 					</div>
-					<p className='text-center text-[10px] font-medium leading-tight' style={{ color: 'rgba(0,0,0,0.4)' }}>
-						Week 8
-					</p>
+					<div className='flex flex-1 flex-col items-center gap-2'>
+						<div
+							className='flex h-[86px] w-full items-start rounded-tl-[12px] rounded-tr-[12px] px-[9px] py-[13px]'
+							style={{
+								background: 'rgba(16,185,129,0.1)',
+								border: '1px solid rgba(16,185,129,0.1)',
+							}}
+						>
+							<div className='flex items-center gap-1'>
+								<span
+									className='text-trim text-[24px] font-bold leading-[36px]'
+									style={{ fontFamily: 'var(--font-heading)', color: EMERALD_RAW }}
+								>
+									A
+								</span>
+								<span
+									className='inline-flex items-center gap-[2px] rounded-[4px] p-[3px]'
+									style={{ background: EMERALD_RAW, border: '1px solid rgba(16,185,129,0.1)' }}
+								>
+									<ArrowUp size={9} weight='bold' style={{ color: '#DBE8DB' }} aria-hidden='true' />
+									<span
+										className='text-[12px] font-semibold leading-none'
+										style={{ color: '#DBE8DB' }}
+									>
+										2
+									</span>
+								</span>
+							</div>
+						</div>
+						<p
+							className='text-trim w-full text-center text-[10px] font-medium leading-[1.4]'
+							style={{ color: 'rgba(0,0,0,0.4)' }}
+						>
+							Week 8
+						</p>
+					</div>
 				</div>
 			</div>
 		</div>
 	)
 }
 
-/* ─── 2. Pitch score card ─── */
+/* ─── 2. Performance Gains stats (3-stat strip) ─── */
 
-function PitchScoreCard(): ReactElement {
+function PerformanceGainsCard(): ReactElement {
+	const stats = [
+		{ value: '7%', label: 'Close rate' },
+		{ value: '50%', label: 'Faster ramp' },
+		{ value: '30%', label: 'More deals' },
+	] as const
 	return (
 		<div
-			className='w-[271px] overflow-hidden rounded-2xl'
-			style={{ background: CARD_BG, border: '1px solid #E5DDD4', boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}
+			className='flex flex-col items-center gap-4 overflow-clip rounded-[16px] p-[13px]'
+			style={CARD_STYLE}
 		>
-			{/* Header: Pitch + B+ pill + caret */}
-			<div className='flex items-center justify-between px-5 py-2'>
-				<p className='text-[14px] font-bold leading-5 text-[#1A1A1A]' style={{ fontFamily: 'var(--font-heading)' }}>
-					Pitch
-				</p>
-				<div className='flex items-center gap-3'>
-					<div
-						className='flex items-start rounded-lg px-2 py-1'
-						style={{ background: 'rgba(5,150,105,0.1)' }}
+			<p
+				className='text-trim whitespace-nowrap text-[12px] font-semibold uppercase leading-none'
+				style={{
+					fontFamily: 'var(--font-mono)',
+					color: SLATE_LABEL,
+					letterSpacing: '0.72px',
+				}}
+			>
+				Performance gains
+			</p>
+			<div className='flex w-[278px] items-center gap-4'>
+				{stats.map((s) => (
+					<div key={s.label} className='flex flex-1 flex-col items-center justify-center gap-3'>
+						<p
+							className='text-trim whitespace-nowrap text-[28px] font-bold leading-none'
+							style={{ fontFamily: 'var(--font-heading)', color: EMERALD_RAW }}
+						>
+							{s.value}
+						</p>
+						<p
+							className='text-trim whitespace-nowrap text-[10px] font-medium uppercase leading-none'
+							style={{
+								fontFamily: 'var(--font-mono)',
+								color: 'rgba(0,0,0,0.5)',
+								letterSpacing: '1px',
+							}}
+						>
+							{s.label}
+						</p>
+					</div>
+				))}
+			</div>
+		</div>
+	)
+}
+
+/* ─── 3. Grade-up badge: C+ → A (+2 grades) ─── */
+
+function GradeUpCard(): ReactElement {
+	return (
+		<div
+			className='flex flex-col items-center justify-center rounded-[16px] px-[14px] py-[12px]'
+			style={{
+				background: '#F5F0EB',
+				border: '1px solid #E5DDD4',
+			}}
+		>
+			<div className='flex items-center gap-2'>
+				{/* C+ ring */}
+				<div className='relative flex h-[64px] w-[64px] items-center justify-center'>
+					<svg
+						className='absolute inset-0'
+						viewBox='0 0 64 64'
+						aria-hidden='true'
+					>
+						<circle
+							cx='32'
+							cy='32'
+							r='28'
+							fill='none'
+							stroke='rgba(245,158,11,0.2)'
+							strokeWidth='3'
+						/>
+						<circle
+							cx='32'
+							cy='32'
+							r='28'
+							fill='none'
+							stroke={AMBER_RAW}
+							strokeWidth='3'
+							strokeLinecap='round'
+							strokeDasharray={`${2 * Math.PI * 28 * 0.5} ${2 * Math.PI * 28}`}
+							transform='rotate(-90 32 32)'
+						/>
+					</svg>
+					<span
+						className='relative text-[28px] font-semibold leading-[40px]'
+						style={{ fontFamily: 'var(--font-heading)', color: AMBER_RAW }}
+					>
+						C+
+					</span>
+				</div>
+
+				{/* Arrow + +2 grades pill */}
+				<div className='flex flex-col items-center gap-1'>
+					<ArrowRight size={20} weight='regular' style={{ color: SANDSTONE }} aria-hidden='true' />
+					<span
+						className='inline-flex items-start rounded-full px-[6px] py-[4px]'
+						style={{ background: 'rgba(16,185,129,0.1)' }}
 					>
 						<span
-							className='text-[20px] font-bold leading-4'
-							style={{ fontFamily: 'var(--font-heading)', color: EMERALD_AA }}
+							className='text-trim whitespace-nowrap text-[8px] font-semibold leading-none'
+							style={{ color: EMERALD_AA }}
 						>
-							B+
+							+2 grades
 						</span>
-					</div>
-					<CaretDown size={12} weight='regular' style={{ color: '#64748B' }} aria-hidden='true' />
+					</span>
+				</div>
+
+				{/* A ring */}
+				<div className='relative flex h-[64px] w-[64px] items-center justify-center'>
+					<svg
+						className='absolute inset-0'
+						viewBox='0 0 64 64'
+						aria-hidden='true'
+					>
+						<circle
+							cx='32'
+							cy='32'
+							r='28'
+							fill='none'
+							stroke='rgba(16,185,129,0.2)'
+							strokeWidth='3'
+						/>
+						<circle
+							cx='32'
+							cy='32'
+							r='28'
+							fill='none'
+							stroke={EMERALD_RAW}
+							strokeWidth='3'
+							strokeLinecap='round'
+							strokeDasharray={`${2 * Math.PI * 28 * 0.95} ${2 * Math.PI * 28}`}
+							transform='rotate(-90 32 32)'
+						/>
+					</svg>
+					<span
+						className='relative text-[28px] font-semibold leading-[40px]'
+						style={{ fontFamily: 'var(--font-heading)', color: '#34E18E' }}
+					>
+						A
+					</span>
 				</div>
 			</div>
-
-			{/* Body: progress bars */}
-			<div className='flex flex-col gap-3 border-t border-[#E5DDD4] px-5 py-4'>
-				<div className='flex flex-col gap-1.5'>
-					<div className='flex items-center justify-between'>
-						<span className='text-[10px] leading-4 text-[#475569]'>You</span>
-						<span
-							className='text-[10px] font-semibold leading-[15px] text-[#1A1A1A]'
-							style={{ fontFamily: 'var(--font-mono)' }}
-						>
-							72%
-						</span>
-					</div>
-					<div className='h-1.5 w-full overflow-hidden rounded-full bg-[#F5F0EB]'>
-						<div className='h-full rounded-full' style={{ width: '72%', background: EMERALD_AA }} />
-					</div>
-				</div>
-				<div className='flex flex-col gap-1.5'>
-					<div className='flex items-center justify-between'>
-						<span className='text-[10px] leading-4 text-[#475569]'>Top 10%</span>
-						<span
-							className='text-[10px] font-semibold leading-[15px] text-[#1A1A1A]'
-							style={{ fontFamily: 'var(--font-mono)' }}
-						>
-							89%
-						</span>
-					</div>
-					<div className='h-1.5 w-full overflow-hidden rounded-full bg-[#F5F0EB]'>
-						<div className='h-full rounded-full' style={{ width: '89%', background: 'rgba(16,185,129,0.4)' }} />
-					</div>
-				</div>
-			</div>
 		</div>
 	)
 }
 
-/* ─── 3. Close Rate ↑10% pill ─── */
+/* ─── 4. 16+ Industries pill ─── */
 
-function CloseRatePill(): ReactElement {
+function IndustriesPill(): ReactElement {
 	return (
 		<div
-			className='inline-flex items-center gap-8 rounded-2xl px-[13px] py-[13px]'
-			style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}`, boxShadow: CARD_SHADOW }}
+			className='flex flex-col items-center gap-3 overflow-clip rounded-[16px] p-[13px]'
+			style={CARD_STYLE}
 		>
-			<span
-				className='text-[20px] font-medium leading-none whitespace-nowrap'
+			<p
+				className='text-trim whitespace-nowrap text-[28px] font-bold leading-none'
 				style={{ fontFamily: 'var(--font-heading)', color: 'rgba(0,0,0,0.7)' }}
 			>
-				Close Rate
-			</span>
-			<span className='inline-flex items-center gap-0.5'>
-				<ArrowUp size={20} weight='bold' style={{ color: EMERALD_AA }} aria-hidden='true' />
-				<span
-					className='text-[24px] font-bold leading-none whitespace-nowrap'
-					style={{ fontFamily: 'var(--font-heading)', color: EMERALD_AA }}
-				>
-					10%
-				</span>
-			</span>
+				16+
+			</p>
+			<p
+				className='text-trim whitespace-nowrap text-[10px] font-medium uppercase leading-none'
+				style={{
+					fontFamily: 'var(--font-mono)',
+					color: 'rgba(0,0,0,0.5)',
+					letterSpacing: '1px',
+				}}
+			>
+				Industries
+			</p>
 		</div>
 	)
 }
 
-/* ─── 4. "We have a deal" quote pill ─── */
+/* ─── 5a. Single stat card (used for 20,000+ + 3,000+ stack) ─── */
 
-function DealQuotePill(): ReactElement {
+type StatCardProps = {
+	value: string
+	label: string
+	width?: number
+}
+
+function StatCard({ value, label, width = 200 }: StatCardProps): ReactElement {
 	return (
 		<div
-			className='inline-flex h-[46px] items-center justify-center rounded-2xl px-[13px]'
-			style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}`, boxShadow: CARD_SHADOW }}
+			className='flex flex-col items-start gap-4 overflow-clip rounded-[16px] p-[17px]'
+			style={{ ...CARD_STYLE, width }}
 		>
-			<span
-				className='text-[20px] font-medium italic leading-none whitespace-nowrap'
+			<p
+				className='text-trim whitespace-nowrap text-[28px] font-bold leading-none'
 				style={{ fontFamily: 'var(--font-heading)', color: 'rgba(0,0,0,0.7)' }}
 			>
-				&ldquo;We have a deal&rdquo;
-			</span>
+				{value}
+			</p>
+			<p
+				className='text-trim whitespace-nowrap text-[12px] font-medium uppercase leading-none'
+				style={{
+					fontFamily: 'var(--font-mono)',
+					color: 'rgba(0,0,0,0.5)',
+					letterSpacing: '1.2px',
+				}}
+			>
+				{label}
+			</p>
 		</div>
 	)
 }
 
-/* ─── 5. 7-Dimensions Scored radar ─── */
+/* ─── 6. 7-Dimensions Scored radar (Figma 81:4428) ─── */
 
 const RADAR_AXES = [
 	'Discovery',
@@ -277,7 +423,7 @@ const RADAR_SCORES = [0.78, 0.85, 0.7, 0.92, 0.6, 0.72, 0.82] as const
 function SevenDimensionsRadar(): ReactElement {
 	const size = 220
 	const cx = size / 2
-	const cy = size / 2 + 8 // shift down slightly so axis labels sit in margin
+	const cy = size / 2 + 6
 	const radius = 70
 
 	const axisPoint = (i: number, scale: number) => {
@@ -311,16 +457,21 @@ function SevenDimensionsRadar(): ReactElement {
 
 	return (
 		<div
-			className='flex flex-col items-center gap-4 rounded-2xl p-[13px]'
-			style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}`, boxShadow: CARD_SHADOW }}
+			className='flex flex-col items-center gap-4 overflow-clip rounded-[16px] p-[13px]'
+			style={CARD_STYLE}
 		>
 			<p
-				className='text-[20px] font-medium leading-tight'
-				style={{ fontFamily: 'var(--font-heading)', color: 'rgba(0,0,0,0.7)' }}
+				className='text-trim text-[20px] font-medium leading-[1.4] opacity-70'
+				style={{ fontFamily: 'var(--font-heading)', color: 'black' }}
 			>
 				7-Dimensions Scored
 			</p>
-			<svg width={size} height={size + 16} viewBox={`0 0 ${size} ${size + 16}`} aria-hidden='true'>
+			<svg
+				width={size}
+				height={size + 16}
+				viewBox={`0 0 ${size} ${size + 16}`}
+				aria-hidden='true'
+			>
 				{/* Concentric heptagon rings */}
 				{ringPaths.map((d, i) => (
 					<path
@@ -350,7 +501,7 @@ function SevenDimensionsRadar(): ReactElement {
 				<path
 					d={scoredPath}
 					fill='rgba(16,185,129,0.25)'
-					stroke={EMERALD_AA}
+					stroke={EMERALD_RAW}
 					strokeWidth={1.5}
 					strokeLinejoin='round'
 				/>
@@ -363,7 +514,7 @@ function SevenDimensionsRadar(): ReactElement {
 							cx={p.x}
 							cy={p.y}
 							r={3}
-							fill={EMERALD_AA}
+							fill={EMERALD_RAW}
 						/>
 					)
 				})}
@@ -379,7 +530,7 @@ function SevenDimensionsRadar(): ReactElement {
 							fontWeight={500}
 							textAnchor='middle'
 							dominantBaseline='middle'
-							fill='#7A6E60'
+							fill={SANDSTONE}
 							style={{ fontFamily: 'var(--font-sans)' }}
 						>
 							{axis.split('\n').map((line, j) => (
@@ -395,23 +546,39 @@ function SevenDimensionsRadar(): ReactElement {
 	)
 }
 
-/* ─── 6. Coached vs Uncoached area chart ─── */
+/* ─── 7. Coached vs Uncoached area chart ─── */
 
 function CoachedVsUncoachedChart(): ReactElement {
 	return (
 		<div
-			className='flex w-[240px] flex-col gap-4 rounded-2xl p-[13px]'
-			style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}`, boxShadow: CARD_SHADOW }}
+			className='flex w-[240px] flex-col gap-4 overflow-clip rounded-[16px] p-[13px]'
+			style={CARD_STYLE}
 		>
 			{/* Legend */}
-			<div className='flex items-center justify-center gap-6'>
-				<div className='flex items-center gap-2'>
-					<span className='inline-block h-2.5 w-2.5 rounded-full' style={{ background: EMERALD_AA }} />
-					<span className='text-[14px] leading-5 text-[#475569]'>Coached</span>
+			<div className='flex w-full items-center justify-center gap-4'>
+				<div className='flex items-center gap-2 whitespace-nowrap'>
+					<span
+						className='shrink-0 rounded-full'
+						style={{ width: 10, height: 10, background: EMERALD_RAW }}
+					/>
+					<span
+						className='text-[13px] leading-[20px]'
+						style={{ color: SLATE_LABEL }}
+					>
+						Coached
+					</span>
 				</div>
-				<div className='flex items-center gap-2'>
-					<span className='inline-block h-2.5 w-2.5 rounded-full bg-[#94A3B8]' />
-					<span className='text-[14px] leading-5 text-[#475569]'>Uncoached</span>
+				<div className='flex items-center gap-2 whitespace-nowrap'>
+					<span
+						className='shrink-0 rounded-full'
+						style={{ width: 10, height: 10, background: '#94A3B8' }}
+					/>
+					<span
+						className='text-[13px] leading-[20px]'
+						style={{ color: SLATE_LABEL }}
+					>
+						Uncoached
+					</span>
 				</div>
 			</div>
 
@@ -448,14 +615,14 @@ function CoachedVsUncoachedChart(): ReactElement {
 					<path
 						d='M 0 58 L 30 54 L 60 48 L 90 38 L 120 28 L 150 20 L 180 14 L 214 10'
 						fill='none'
-						stroke={EMERALD_AA}
+						stroke={EMERALD_RAW}
 						strokeWidth={1.5}
 						strokeLinejoin='round'
 					/>
 				</svg>
 				{/* 2x badge */}
 				<span
-					className='absolute right-1 top-0 text-[20px] font-bold leading-5 text-black'
+					className='absolute right-1 top-0 text-[24px] font-bold leading-[20px] text-black'
 					style={{ fontFamily: 'var(--font-heading)' }}
 				>
 					2x
@@ -465,7 +632,7 @@ function CoachedVsUncoachedChart(): ReactElement {
 	)
 }
 
-/* ─── Headline ─── */
+/* ─── Headline (per Figma 81:4377 master, text-[80px] Lora Bold, leading 0.9) ─── */
 
 function ResultsHeadline(): ReactElement {
 	return (
@@ -478,29 +645,22 @@ function ResultsHeadline(): ReactElement {
 			style={{
 				fontFamily: 'var(--font-heading)',
 				fontWeight: 700,
-				fontSize: 'clamp(2.25rem, 8vw, 6.5rem)',
-				lineHeight: 0.95,
+				fontSize: 'clamp(2.25rem, 7.2vw, 5rem)',
+				lineHeight: 0.9,
 				letterSpacing: '-0.015em',
 			}}
 		>
 			Every call, scored.
 			<br />
-			Every rep, <em className='italic font-bold' style={{ color: EMERALD_AA }}>improving</em>.
+			Every rep,{' '}
+			<em
+				className='italic font-bold'
+				style={{ color: EMERALD_RAW, fontFamily: 'var(--font-heading)' }}
+			>
+				improving
+			</em>
+			.
 		</motion.h2>
-	)
-}
-
-function ResultsEyebrow(): ReactElement {
-	return (
-		<motion.p
-			initial={{ opacity: 0, y: 12 }}
-			whileInView={{ opacity: 1, y: 0 }}
-			viewport={{ once: true }}
-			transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }}
-			className='text-center font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.22em] text-cc-text-secondary-warm md:text-xs'
-		>
-			Real numbers. Real closers.
-		</motion.p>
 	)
 }
 
@@ -509,10 +669,10 @@ function ResultsEyebrow(): ReactElement {
 export default function FloatingProofComposition(): ReactElement {
 	return (
 		<div className='relative mx-auto w-full max-w-[1232px] px-6 lg:px-0'>
-			{/* Mobile / tablet (<lg): eyebrow + headline + stacked cards in a grid. */}
+			{/* Mobile / tablet (<lg): headline + stacked cards in a grid. No eyebrow
+			 * (removed in Wave Q per Figma master). */}
 			<div className='flex flex-col gap-8 lg:hidden'>
-				<div className='flex flex-col items-center gap-5'>
-					<ResultsEyebrow />
+				<div className='flex flex-col items-center'>
 					<ResultsHeadline />
 				</div>
 				<div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
@@ -521,31 +681,43 @@ export default function FloatingProofComposition(): ReactElement {
 							<CamilReeseProfileCard />
 						</div>
 					</Float>
-					<Float delay={0.08}>
+					<Float delay={0.06}>
 						<div className='flex justify-center'>
-							<PitchScoreCard />
+							<PerformanceGainsCard />
 						</div>
 					</Float>
 				</div>
 				<div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-					<Float delay={0.16}>
+					<Float delay={0.12}>
 						<div className='flex justify-center'>
-							<CloseRatePill />
+							<GradeUpCard />
 						</div>
 					</Float>
-					<Float delay={0.2}>
+					<Float delay={0.18}>
 						<div className='flex justify-center'>
-							<DealQuotePill />
+							<IndustriesPill />
+						</div>
+					</Float>
+				</div>
+				<div className='grid grid-cols-2 gap-4'>
+					<Float delay={0.22}>
+						<div className='flex justify-center'>
+							<StatCard value='20,000+' label='Sales closers' />
+						</div>
+					</Float>
+					<Float delay={0.26}>
+						<div className='flex justify-center'>
+							<StatCard value='3,000+' label='Calls / day' />
 						</div>
 					</Float>
 				</div>
 				<div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-					<Float delay={0.24}>
+					<Float delay={0.3}>
 						<div className='flex justify-center'>
 							<SevenDimensionsRadar />
 						</div>
 					</Float>
-					<Float delay={0.32}>
+					<Float delay={0.36}>
 						<div className='flex justify-center'>
 							<CoachedVsUncoachedChart />
 						</div>
@@ -553,55 +725,64 @@ export default function FloatingProofComposition(): ReactElement {
 				</div>
 			</div>
 
-			{/* Desktop floating layout (lg+). Container is positioned BEHIND the
-			 * SectionResults heading, with cards absolutely placed per Figma
-			 * 81:4377 frame coordinates. The headline above is not nested inside
-			 * this wrapper — it stays in SectionResults' main flow so semantic
-			 * heading order is preserved.
+			{/* Desktop floating layout (lg+).
 			 *
-			 * Coordinate map (Figma frame 1232 × ~600):
-			 *   - Camil Reese:   left 160,  top 21,  w 240
-			 *   - Pitch:         left 750,  top 73,  w 271
-			 *   - Close Rate:    left  -7,  top 396
-			 *   - "We have a deal": left 91, top 454
-			 *   - 7-Dimensions:  left 486,  top 442
-			 *   - Coached chart: left 921,  top 437, w 240
+			 * Coordinate map per Figma 81:4377 master (frame ~1024×570). Mapped
+			 * to a 1232-wide container with proportional left percentages and
+			 * absolute top offsets. Headline is the gravity center (z-10), cards
+			 * float around (z-0).
 			 *
-			 * Heading sits in the visual gap between the top row (Camil + Pitch)
-			 * and the bottom row (chips + radar + chart). Z-index pattern: cards
-			 * z-0, headline z-10. */}
-			{/* Desktop floating layout (lg+). Container is `relative h-[760px]`
-			 * with eyebrow + headline absolutely centered in the middle band
-			 * and the 6 floating cards positioned around them per Figma frame
-			 * coordinates. Heading sits between top row (Camil + Pitch) and
-			 * bottom row (chips + radar + chart). Z-index pattern: cards z-0,
-			 * heading z-10. */}
+			 *   - Camil Reese:        left  9%,  top   0px (top-left)
+			 *   - Performance Gains:  left 50%,  top 130px (translate-x-1/2 center)
+			 *   - Grade-up (C+ → A):  right 5%,  top  20px (top-right)
+			 *   - 16+ Industries:     right 0,   top 240px (mid-right)
+			 *   - 20k stack:          left -1%,  top 320px (mid-left, two cards)
+			 *   - 7-Dimensions Radar: left 50%,  top 460px (translate-x-1/2 center)
+			 *   - Coached chart:      right 0,   top 440px (bottom-right)
+			 */}
 			<div className='relative hidden h-[760px] lg:block'>
-				{/* Eyebrow + headline in middle band */}
-				<div className='absolute left-1/2 top-[200px] z-10 flex w-[860px] -translate-x-1/2 flex-col items-center gap-5'>
-					<ResultsEyebrow />
+				{/* Headline gravity center */}
+				<div className='absolute left-1/2 top-[230px] z-10 flex w-[860px] -translate-x-1/2 flex-col items-center'>
 					<ResultsHeadline />
 				</div>
 
-				{/* Top row: Camil Reese + Pitch */}
-				<Float delay={0} className='absolute' style={{ left: '13%', top: '21px' }}>
+				{/* Top row */}
+				<Float delay={0} className='absolute' style={{ left: '8%', top: '0px' }}>
 					<CamilReeseProfileCard />
 				</Float>
-				<Float delay={0.08} className='absolute' style={{ left: '60.9%', top: '73px' }}>
-					<PitchScoreCard />
+				<Float
+					delay={0.06}
+					className='absolute -translate-x-1/2'
+					style={{ left: '50%', top: '110px' }}
+				>
+					<PerformanceGainsCard />
+				</Float>
+				<Float delay={0.12} className='absolute' style={{ right: '5%', top: '20px' }}>
+					<GradeUpCard />
 				</Float>
 
-				{/* Bottom row: chips + radar + chart */}
-				<Float delay={0.16} className='absolute' style={{ left: '0%', top: '500px' }}>
-					<CloseRatePill />
+				{/* Mid row */}
+				<Float delay={0.18} className='absolute' style={{ right: '0%', top: '230px' }}>
+					<IndustriesPill />
 				</Float>
-				<Float delay={0.2} className='absolute' style={{ left: '8%', top: '584px' }}>
-					<DealQuotePill />
+				<Float delay={0.22} className='absolute' style={{ left: '-1%', top: '320px' }}>
+					<div className='flex flex-col items-start gap-4'>
+						<StatCard value='20,000+' label='Sales closers' />
+						<div className='pl-12'>
+							<StatCard value='3,000+' label='Calls / day' />
+						</div>
+					</div>
 				</Float>
-				<Float delay={0.24} className='absolute' style={{ left: '39%', top: '470px' }}>
+
+				{/* Bottom row */}
+				<Float
+					delay={0.3}
+					className='absolute -translate-x-1/2'
+					style={{ left: '50%', top: '430px' }}
+				>
 					<SevenDimensionsRadar />
 				</Float>
-				<Float delay={0.32} className='absolute' style={{ left: '74.7%', top: '540px' }}>
+				<Float delay={0.36} className='absolute' style={{ right: '0%', top: '420px' }}>
 					<CoachedVsUncoachedChart />
 				</Float>
 			</div>
