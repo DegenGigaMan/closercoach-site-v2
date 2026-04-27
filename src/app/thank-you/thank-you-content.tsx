@@ -196,7 +196,7 @@ export default function ThankYouContent({ firstName }: Props) {
 							Daily sales clips, roleplay breakdowns, and product drops.
 						</p>
 
-						<ul className='mt-auto flex gap-3 pt-6'>
+						<ul className='mt-5 flex gap-3'>
 							<li>
 								<Link
 									href={INSTAGRAM_URL}
@@ -231,6 +231,14 @@ export default function ThankYouContent({ firstName }: Props) {
 								</Link>
 							</li>
 						</ul>
+
+						{/* Wave R.2 FIX-02 (2026-04-27): footer kicker brings Card 3
+						 * to baseline parity with Cards 1-2. Mono uppercase voice
+						 * matches the eyebrow "FOLLOW" treatment higher in the card
+						 * and adds a concrete cadence cue. */}
+						<p className='mt-4 font-mono text-[11px] uppercase tracking-[0.18em] text-cc-text-muted'>
+							Daily clips, every weekday
+						</p>
 					</div>
 				</div>
 
