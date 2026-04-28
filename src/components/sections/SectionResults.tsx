@@ -72,23 +72,35 @@ function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElem
 	)
 }
 
-/* ── Customer success tier cards (ported from SectionCaseStudies 2026-04-23) ──
+/* ── Customer success tier cards (Figma 108:2, 2026-04-27) ──
  *
- * 3 named-customer tiers: CLOSER (Dimitriy, T2 verbatim), TEAMS (Chris, T3
- * verbatim), ENTERPRISE (G9 reframe, placeholder until a real enterprise
- * testimonial lands). Tier accents map: emerald #059669 / amber #B45309 /
- * slate #334155 — all AA on warm surface. */
+ * 3 named-customer cards rebuilt to match Figma 108:2 exactly:
+ *   ─ Card shell: #fafaf8 fill, 1px rgba(13,15,20,0.08) border, rounded-16,
+ *     drop-shadow 0 2px 8px rgba(0,0,0,0.03), p-[33px], gap-[28px], h-[500px]
+ *     on desktop (auto on mobile so long quotes don't clip).
+ *   ─ Header ROW: 128px circular portrait LEFT + industry tag pill RIGHT
+ *     (Geist Mono Medium 11px uppercase tracking 1.54px slate, light bg).
+ *   ─ Optional metric headline: Lora Bold 28px / 32.2 / -0.28px tracking,
+ *     slate #1a1d26. Renders multiline on \n so 2-line headlines break clean.
+ *   ─ Block quote: Lora Bold Italic 27px emerald open-quote + Inter Italic
+ *     16px / 1.6 line-height slate #475569 body.
+ *   ─ Footer (separated by border-t rgba(13,15,20,0.08), pt-[21px]):
+ *     name (Lora Bold 16px slate #1a1d26) + role (Inter Regular 12px slate
+ *     #94a3b8) on the left, emerald check pill on the right (rounded-full
+ *     rgba(5,150,105,0.08) / rgba(5,150,105,0.2), Geist Mono Regular 10px
+ *     uppercase tracking 0.25px emerald #059669).
+ *   ─ Prior CLOSER / TEAMS / ENTERPRISE tier label retired — Figma 108:2 uses
+ *     the industry tag pill in the header instead. */
 
-const SLATE_WARM = '#334155'
-const AMBER_WARM = '#B45309'
 const WARM_BORDER = 'rgba(13,15,20,0.08)'
+const SLATE_HEADING = '#1a1d26'
+const SLATE_BODY = '#475569'
+const SLATE_MUTED = '#94a3b8'
 
 type TierCardProps = {
-	tier: string
-	tierAccent: string
 	portraitSrc: string
-	metricHeadline?: string
 	industryTag: string
+	metricHeadline?: string
 	quote: string
 	name: string
 	role: string
@@ -96,121 +108,138 @@ type TierCardProps = {
 }
 
 function TierCard({
-	tier,
-	tierAccent,
 	portraitSrc,
-	metricHeadline,
 	industryTag,
+	metricHeadline,
 	quote,
 	name,
 	role,
 	badge,
 }: TierCardProps): ReactElement {
+	const headlineLines = metricHeadline ? metricHeadline.split('\n') : null
 	return (
 		<article
-			className='relative flex h-full flex-col gap-6 rounded-2xl bg-cc-warm-secondary p-6 md:gap-7 md:p-8'
+			className='relative flex flex-col gap-7 rounded-[16px] p-[33px] md:h-[500px]'
 			style={{
+				backgroundColor: '#fafaf8',
 				border: `1px solid ${WARM_BORDER}`,
-				boxShadow: '0 1px 2px rgba(13,15,20,0.04), 0 24px 48px -32px rgba(13,15,20,0.18)',
+				boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
 			}}
 		>
-			<header className='relative'>
-				<div className='relative h-28 w-28 overflow-hidden rounded-full md:h-32 md:w-32'>
+			<header className='flex w-full items-start justify-between gap-3'>
+				<div className='relative h-32 w-32 shrink-0 overflow-hidden rounded-full'>
 					<Image
 						src={portraitSrc}
 						alt=''
 						aria-hidden='true'
 						fill
-						sizes='(min-width: 768px) 128px, 112px'
+						sizes='128px'
 						style={{ objectFit: 'cover' }}
 					/>
 				</div>
 				<span
-					className='absolute -top-1 left-24 inline-flex items-center rounded-full bg-cc-warm px-3 py-1.5 md:left-28'
+					className='inline-flex shrink-0 items-center rounded-full px-[13px] py-[5px]'
 					style={{
+						backgroundColor: 'rgba(13,15,20,0.04)',
 						border: `1px solid ${WARM_BORDER}`,
-						boxShadow: '0 4px 12px -6px rgba(13,15,20,0.12)',
 					}}
 				>
 					<span
-						className='font-[family-name:var(--font-mono)] text-[10px] font-semibold uppercase tracking-[0.18em] md:text-[11px]'
-						style={{ color: tierAccent }}
+						className='uppercase'
+						style={{
+							fontFamily: 'var(--font-mono)',
+							fontWeight: 500,
+							fontSize: '11px',
+							lineHeight: '16.5px',
+							letterSpacing: '1.54px',
+							color: SLATE_BODY,
+						}}
 					>
-						{tier}
+						{industryTag}
 					</span>
 				</span>
 			</header>
 
-			{metricHeadline ? (
+			{headlineLines ? (
 				<h3
-					className='text-trim text-balance text-cc-text-primary-warm'
+					className='text-trim'
 					style={{
 						fontFamily: 'var(--font-heading)',
 						fontWeight: 700,
-						fontSize: 'clamp(1.375rem, 2.4vw, 1.75rem)',
-						lineHeight: 1.15,
-						letterSpacing: '-0.01em',
+						fontSize: '28px',
+						lineHeight: '32.2px',
+						letterSpacing: '-0.28px',
+						color: SLATE_HEADING,
 					}}
 				>
-					{metricHeadline}
+					{headlineLines.map((line, i) => (
+						<span key={i} className='block'>
+							{line}
+						</span>
+					))}
 				</h3>
 			) : null}
 
-			<span
-				className='inline-flex w-fit items-center rounded-full px-3 py-1'
-				style={{
-					backgroundColor: 'rgba(13,15,20,0.04)',
-					border: `1px solid ${WARM_BORDER}`,
-				}}
-			>
-				<span className='font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.14em] text-cc-text-secondary-warm md:text-[11px]'>
-					{industryTag}
-				</span>
-			</span>
-
-			<blockquote
-				className='text-cc-text-primary-warm'
-				style={{
-					fontFamily: 'var(--font-heading)',
-					fontWeight: 700,
-					fontStyle: 'italic',
-					fontSize: 'clamp(1rem, 1.4vw, 1.125rem)',
-					lineHeight: 1.5,
-					letterSpacing: '-0.005em',
-				}}
-			>
+			<blockquote className='flex items-start gap-1.5'>
 				<span
 					aria-hidden='true'
-					className='mr-1.5 align-top'
-					style={{ color: EMERALD_AA, fontSize: '1.5em', lineHeight: 0.8 }}
+					className='shrink-0 italic'
+					style={{
+						fontFamily: 'var(--font-heading)',
+						fontWeight: 700,
+						fontSize: '27px',
+						lineHeight: '21.6px',
+						color: EMERALD_AA,
+					}}
 				>
 					&ldquo;
 				</span>
-				{quote}
+				<p
+					className='italic'
+					style={{
+						fontFamily: 'var(--font-sans)',
+						fontWeight: 400,
+						fontSize: '16px',
+						lineHeight: 1.6,
+						letterSpacing: '-0.09px',
+						color: SLATE_BODY,
+					}}
+				>
+					{quote}
+				</p>
 			</blockquote>
 
 			<footer
-				className='mt-auto flex flex-col gap-3 border-t pt-5'
+				className='mt-auto flex w-full items-start gap-3 border-t pt-[21px]'
 				style={{ borderColor: WARM_BORDER }}
 			>
-				<div className='flex flex-col gap-0.5'>
+				<div className='flex min-w-0 flex-1 flex-col gap-2.5'>
 					<p
-						className='text-trim text-cc-text-primary-warm'
+						className='text-trim'
 						style={{
 							fontFamily: 'var(--font-heading)',
 							fontWeight: 700,
-							fontSize: '1rem',
-							lineHeight: 1.25,
+							fontSize: '16px',
+							lineHeight: '20px',
+							color: SLATE_HEADING,
 						}}
 					>
 						{name}
 					</p>
-					<p className='font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.16em] text-cc-text-secondary-warm md:text-[11px]'>
+					<p
+						style={{
+							fontFamily: 'var(--font-sans)',
+							fontWeight: 400,
+							fontSize: '12px',
+							lineHeight: '16px',
+							color: SLATE_MUTED,
+						}}
+					>
 						{role}
 					</p>
 				</div>
 				<span
-					className='inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1'
+					className='inline-flex shrink-0 items-center gap-1.5 rounded-full px-[11px] py-[9px]'
 					style={{
 						backgroundColor: 'rgba(5,150,105,0.08)',
 						border: '1px solid rgba(5,150,105,0.2)',
@@ -227,8 +256,15 @@ function TierCard({
 						/>
 					</svg>
 					<span
-						className='font-[family-name:var(--font-mono)] text-[9px] font-semibold uppercase tracking-[0.16em] md:text-[10px]'
-						style={{ color: EMERALD_AA }}
+						className='uppercase'
+						style={{
+							fontFamily: 'var(--font-mono)',
+							fontWeight: 400,
+							fontSize: '10px',
+							lineHeight: '15px',
+							letterSpacing: '0.25px',
+							color: EMERALD_AA,
+						}}
 					>
 						{badge}
 					</span>
@@ -389,50 +425,9 @@ export default function SectionResults(): ReactElement {
 					))}
 				</div>
 
-				{/* Customer success tier cards — CLOSER / TEAMS / ENTERPRISE */}
-				<div className='mt-10 grid grid-cols-1 gap-5 md:mt-14 md:grid-cols-3 md:gap-6'>
-					<Reveal delay={0}>
-						<TierCard
-							tier='Closer'
-							tierAccent={EMERALD_AA}
-							portraitSrc='/images/placeholders/case-dimitriy.jpg'
-							industryTag='Insurance Sales'
-							quote={'Honestly a great app and a surprisingly well thought out and detail-oriented use of AI. I\u2019ve been using CloserCoach to sharpen my skills and get back into sales after being out of the game, it\u2019s the most valuable resource I have.'}
-							name='Dimitriy'
-							role='Insurance Sales'
-							badge='Verified User'
-						/>
-					</Reveal>
-					<Reveal delay={0.08}>
-						<TierCard
-							tier='Teams'
-							tierAccent={AMBER_WARM}
-							portraitSrc='/images/placeholders/case-chris.jpg'
-							metricHeadline='1 hour per week. 20 reps trained.'
-							industryTag='Sales Manager, Lake Washington'
-							quote={'Before CloserCoach, I was spending 1 hour per week per rep. Now, I spend 1 hour per week training 20 reps.'}
-							name='Chris'
-							role='Sales Manager, Lake Washington'
-							badge='Sales Manager'
-						/>
-					</Reveal>
-					<Reveal delay={0.16}>
-						<TierCard
-							tier='Enterprise'
-							tierAccent={SLATE_WARM}
-							portraitSrc='/images/placeholders/case-enterprise.jpg'
-							metricHeadline='22-seat team onboarding.'
-							industryTag='Enterprise Sales Team'
-							quote={'Enterprise sales teams are onboarding CloserCoach at scale. One of the fastest-growing teams on the platform has 22 active seats.'}
-							name='Enterprise Sales Team'
-							role='Anonymized'
-							badge='Platform Deal'
-						/>
-					</Reveal>
-				</div>
-
 				{/* Review count anchor (Figma 1:8435). "378+" in Lora Bold Italic
-				 * emerald; the rest in Inter Medium uppercase slate. */}
+				 * emerald; the rest in Inter Medium uppercase slate. Sits directly
+				 * beneath the 3 App Store review cards per Andy 2026-04-27. */}
 				<Reveal className='mt-8 md:mt-10' delay={0.05}>
 					<p
 						className='text-trim text-center uppercase text-cc-text-secondary-warm'
@@ -453,6 +448,42 @@ export default function SectionResults(): ReactElement {
 						</span>
 					</p>
 				</Reveal>
+
+				{/* Customer success tier cards — CLOSER / TEAMS / ENTERPRISE */}
+				<div className='mt-12 grid grid-cols-1 gap-5 md:mt-16 md:grid-cols-3 md:gap-6'>
+					<Reveal delay={0}>
+						<TierCard
+							portraitSrc='/images/case-studies/dimitriy.jpg'
+							industryTag='Insurance Sales'
+							quote={'Honestly a great app and a surprisingly well thought out and detail-oriented use of AI. I\u2019ve been using CloserCoach to sharpen my skills and get back into sales after being out of the game, it\u2019s the most valuable resource I have.'}
+							name='Dimitriy'
+							role='Insurance Sales'
+							badge='Verified User'
+						/>
+					</Reveal>
+					<Reveal delay={0.08}>
+						<TierCard
+							portraitSrc='/images/case-studies/chris.jpg'
+							industryTag='Home Services'
+							metricHeadline={'1 hour per week.\n20 reps trained.'}
+							quote={'Before CloserCoach, I was spending 1 hour per week per rep. Now, I spend 1 hour per week training 20 reps.'}
+							name='Chris'
+							role='Sales Manager, Lake Washington'
+							badge='Sales Manager'
+						/>
+					</Reveal>
+					<Reveal delay={0.16}>
+						<TierCard
+							portraitSrc='/images/case-studies/enterprise.jpg'
+							industryTag='Insurance Sales'
+							metricHeadline={'22-seat team\nonboarding.'}
+							quote={'Enterprise sales teams are onboarding CloserCoach at scale. One of the fastest-growing teams on the platform has 22 active seats.'}
+							name='Enterprise Sales Team'
+							role='Anonymized'
+							badge='Platform Deal'
+						/>
+					</Reveal>
+				</div>
 
 				{/* Ego appeal line (PC5 + PC6) */}
 				<Reveal className='mt-16 md:mt-24' delay={0.05}>

@@ -21,7 +21,7 @@
 
 import Image from 'next/image'
 import { useRef, type ReactElement, type RefObject } from 'react'
-import { Sparkle, User } from '@phosphor-icons/react'
+import { User } from '@phosphor-icons/react'
 import { AnimatedBeam } from '@/components/ui/animated-beam'
 
 const HUBSPOT_ICON = (
@@ -72,7 +72,7 @@ export default function IntegrateSalesTechVisual(): ReactElement {
 	return (
 		<div
 			ref={containerRef}
-			className='relative h-full w-full overflow-hidden bg-cc-foundation px-6 py-8 md:px-10'
+			className='relative h-full w-full overflow-hidden px-6 py-8 md:px-10'
 		>
 			{/* Composition layout: 3-column horizontal grid with the CC hub centred.
 			 * On lg+ the right satellites form a vertical column; on smaller widths
@@ -83,16 +83,26 @@ export default function IntegrateSalesTechVisual(): ReactElement {
 					<User size={20} weight='regular' className='text-cc-text-secondary' />
 				</SatelliteOrb>
 
-				{/* Centre hub: CC sparkle (matches the rest of the bento's emerald
-				 * sparkle vocabulary used for "AI orb" moments across cards 1, 3,
-				 * 4, 5). Wave M chose the sparkle over the wordmark logo so the
-				 * hub reads as the AI brain receiving from the satellites rather
-				 * than as a brand mark. */}
+				{/* Centre hub: actual CC logomark (Wave V). Replaces the prior
+				 * Sparkle vocabulary so the brand mark anchors the integration
+				 * composition. Triple-layer emerald glow + radial-gradient
+				 * interior matches the chip recipe used in Card 1 + Card 3. */}
 				<div
 					ref={hubRef}
-					className='relative z-20 flex h-16 w-16 items-center justify-center rounded-full bg-cc-foundation-deep ring-2 ring-cc-accent shadow-[0_0_32px_rgba(16,185,129,0.55)]'
+					className='relative z-20 flex h-16 w-16 items-center justify-center rounded-full shadow-[0_0_0_2px_rgba(16,208,120,0.3),0_0_32px_rgba(16,208,120,0.55),0_0_80px_rgba(16,208,120,0.2)]'
+					style={{
+						background: 'radial-gradient(ellipse at center, rgba(8,40,4,1) 30%, rgba(4,20,2,1) 65%, rgba(2,10,1,1) 82%, rgba(0,0,0,1) 100%)',
+					}}
 				>
-					<Sparkle size={28} weight='fill' className='text-cc-accent' aria-label='CloserCoach AI hub' />
+					<Image
+						src='/images/cc-logomark-figma.png'
+						alt='CloserCoach AI hub'
+						width={32}
+						height={32}
+						sizes='32px'
+						className='h-8 w-8 object-contain'
+						unoptimized
+					/>
 				</div>
 
 				{/* Right satellites: stacked vertically on lg+, horizontal on sm */}

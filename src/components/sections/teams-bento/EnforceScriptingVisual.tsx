@@ -1,24 +1,32 @@
 /** @fileoverview S6 Card 4 visual — "Enforce New Scripting Efficiently".
  *
- * Composition (per Figma 95-18382, equal-inverted col-span-1 row 2):
- *   ─ Vertical timeline: 5 steps connected by a thin white hairline rail.
- *   ─ Each step: 26px tinted-bg badge with tinted border + label. The
- *     active step adds an emerald glow shadow and an emerald sub-label.
- *   ─ Per-step opacity tiers Figma 0.28 / 0.55 / 1.0 / 0.55 / 0.28 so the
+ * Composition (Figma node 81:5069 + 93:17386 timeline group):
+ *   ─ Vertical timeline: 5 steps connected by a 1px white hairline rail
+ *     anchored at x=13 (which is the horizontal center of the 26x26
+ *     badges). Rail spans y=13 to y=206 inside the 171x219 group.
+ *   ─ Each step row: 42px pitch (rows 1, 2, 4, 5). Active row (3): 51px
+ *     pitch to fit the sub-label. Badge at row-relative (x=0, y=8),
+ *     label container at (x=36, y=8) so the gap between badge right
+ *     edge and label start is exactly 10px.
+ *   ─ Each badge: 26x26 circle, tinted bg + tinted 1px border. The
+ *     active step adds an emerald glow shadow (`Overlay+Border+Shadow`
+ *     in Figma) and an emerald sub-label.
+ *   ─ Per-step opacity tiers 0.3 / 0.55 / 1.0 / 0.55 / 0.3 so the
  *     active "Reps drill in roleplay" step is the unmistakable focal
- *     point and the trail of completed/upcoming steps fades out from it.
- *   ─ Icon vocabulary per status:
+ *     point and the trail of completed/upcoming steps fades from it.
+ *   ─ Icon vocabulary per status (14px Phosphor inside 26x26 badge):
  *       Step 1 done-old   : blue tint, NotePencil   (script written)
  *       Step 2 done-recent: green tint, PaperPlane  (rolled out)
  *       Step 3 active     : emerald glow, Sparkle   (AI runs the reps)
- *       Step 4 upcoming   : amber tint, Flag        (quota / mastery)
+ *       Step 4 upcoming   : amber tint, Flag        (mastery / quota)
  *       Step 5 last       : faded green, Eye        (manager visibility)
  *
- * Wave T (Figma 95-18382 alignment, 2026-04-27): existing 5-step labels
- * preserved. Visual treatment refined to match Figma -- tinted icon
- * badges replace solid-ring orbs, opacity tiers replace text-color
- * fades, and the rail switches from emerald-gradient to neutral
- * hairline so the active-step emerald glow is the only emerald moment. */
+ * Wave T fine-tune (2026-04-27): rail inset corrected to 13px (matches
+ * Figma badge centerline anchor), active-step emerald glow layered to
+ * match OnboardFasterVisual's emerald glow recipe, label/sub-label
+ * colors switched from raw hex to CC tokens (cc-text-secondary muted,
+ * white active, cc-mint emphasis sub-label), opacity tier doc updated
+ * to the canonical 0.3/0.55/1/0.55/0.3 ladder. */
 
 'use client'
 
@@ -47,55 +55,55 @@ const TONE: Record<StepTone, { wrapperOpacity: string; badgeBg: string; badgeBor
 		wrapperOpacity: 'opacity-30',
 		badgeBg: 'bg-[rgba(100,160,255,0.1)]',
 		badgeBorder: 'border-[rgba(100,160,255,0.22)]',
-		iconColor: 'text-[#9bbcff]',
-		labelColor: 'text-[#808880]',
+		iconColor: 'text-[rgba(155,188,255,0.95)]',
+		labelColor: 'text-cc-text-secondary',
 		labelWeight: 'font-semibold',
 	},
 	'green-faded': {
 		wrapperOpacity: 'opacity-55',
 		badgeBg: 'bg-[rgba(16,208,120,0.1)]',
 		badgeBorder: 'border-[rgba(16,208,120,0.22)]',
-		iconColor: 'text-[#10d078]',
-		labelColor: 'text-[#808880]',
+		iconColor: 'text-cc-mint',
+		labelColor: 'text-cc-text-secondary',
 		labelWeight: 'font-semibold',
 	},
 	'emerald-active': {
 		wrapperOpacity: 'opacity-100',
-		badgeBg: 'bg-[rgba(16,208,120,0.15)]',
-		badgeBorder: 'border-[rgba(16,208,120,0.4)]',
-		badgeGlow: 'shadow-[0_0_8px_rgba(16,208,120,0.35)]',
+		badgeBg: 'bg-[rgba(16,208,120,0.18)]',
+		badgeBorder: 'border-[rgba(16,208,120,0.45)]',
+		badgeGlow: 'shadow-[0_0_12px_rgba(16,208,120,0.45),0_0_28px_rgba(16,208,120,0.2)]',
 		iconColor: 'text-cc-accent',
-		labelColor: 'text-[#efefef]',
+		labelColor: 'text-white',
 		labelWeight: 'font-bold',
 	},
 	'amber-faded': {
 		wrapperOpacity: 'opacity-55',
 		badgeBg: 'bg-[rgba(245,197,24,0.1)]',
 		badgeBorder: 'border-[rgba(245,197,24,0.22)]',
-		iconColor: 'text-[#f5c518]',
-		labelColor: 'text-[#808880]',
+		iconColor: 'text-[rgba(245,197,24,0.95)]',
+		labelColor: 'text-cc-text-secondary',
 		labelWeight: 'font-semibold',
 	},
 	'green-last': {
 		wrapperOpacity: 'opacity-30',
 		badgeBg: 'bg-[rgba(16,208,120,0.07)]',
 		badgeBorder: 'border-[rgba(16,208,120,0.15)]',
-		iconColor: 'text-[#10d078]',
-		labelColor: 'text-[#808880]',
+		iconColor: 'text-cc-mint',
+		labelColor: 'text-cc-text-secondary',
 		labelWeight: 'font-semibold',
 	},
 }
 
 export default function EnforceScriptingVisual(): ReactElement {
 	return (
-		<div className='relative h-full w-full overflow-hidden bg-cc-foundation px-5 py-6 md:px-6 md:py-7'>
+		<div className='relative h-full w-full overflow-hidden px-5 py-6 md:px-6 md:py-7'>
 			<div className='relative'>
-				{/* Vertical rail — neutral hairline aligned with icon-badge
-				 * center (13px from left). Active step's emerald glow on its
-				 * badge is the only color moment so the eye lands there. */}
+				{/* Vertical rail — neutral 1px hairline anchored at the badge
+				 * centerline (left:13px == 26/2). Inset 13px top/bottom to
+				 * match Figma 93:17387 (rail y=13, height=193 inside 219). */}
 				<span
 					aria-hidden='true'
-					className='absolute left-[13px] top-3 bottom-3 w-px bg-white/[0.07]'
+					className='absolute left-[13px] top-[13px] bottom-[13px] w-px bg-white/[0.07]'
 				/>
 				<ul className='relative flex flex-col'>
 					{STEPS.map((step) => {
@@ -113,7 +121,7 @@ export default function EnforceScriptingVisual(): ReactElement {
 										{step.label}
 									</span>
 									{step.sub && (
-										<span className='text-trim text-[10px] leading-[1.3] font-medium text-[#10d078]'>
+										<span className='text-trim text-[10px] leading-[1.3] font-medium text-cc-mint'>
 											{step.sub}
 										</span>
 									)}

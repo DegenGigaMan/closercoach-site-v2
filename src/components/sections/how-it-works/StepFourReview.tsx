@@ -32,6 +32,9 @@ import {
 	SpeakerHigh,
 	XCircle,
 	PencilSimple,
+	AppleLogo,
+	AndroidLogo,
+	Globe,
 	type IconProps,
 } from '@phosphor-icons/react'
 import type { ComponentType } from 'react'
@@ -164,12 +167,6 @@ export default function StepFourReview() {
 				<h3 className='mt-6 text-3xl leading-[1.15] text-white md:text-4xl lg:text-[2.75rem]'>
 					See <em className='text-cc-accent'>Exactly</em> What&rsquo;s Losing You Deals
 				</h3>
-				<p className='mt-6 text-base leading-relaxed text-cc-text-secondary md:text-lg'>
-					Every call gets scored A through F, with industry-tailored scorecards and word-for-word talk-tracks showing you exactly what you should have said.
-				</p>
-				<p className='mt-4 text-base leading-relaxed text-cc-text-secondary md:text-lg'>
-					Track how your skills improve over time: discovery, pitch, objection handling, tone, talk time, and close rate. The more you sell, the more your AI knows exactly where you&rsquo;re winning and where you&rsquo;re bleeding deals.
-				</p>
 			</div>
 
 			{/* Scorecard composite — Figma 61:3023. Top industry pill row, then
@@ -334,14 +331,34 @@ export default function StepFourReview() {
 				</div>
 			</div>
 
-			{/* Bottom CTA */}
-			<div className='mt-12 flex flex-wrap items-center justify-center gap-3'>
+			{/* Subhead beneath the visual — first paragraph from the canvas
+			 * v5 deck only (second paragraph dropped per Andy 2026-04-27). */}
+			<p className='mx-auto mt-12 max-w-3xl text-center text-base leading-relaxed text-cc-text-secondary md:text-lg'>
+				Every call gets scored A through F, with industry-tailored scorecards and word-for-word talk-tracks showing you exactly what you should have said.
+			</p>
+
+			{/* Bottom CTA: button stacked on its own line, platform list below
+			 * (mirrors SectionHero pattern at line 222) per Andy 2026-04-27. */}
+			<div className='mt-8 flex flex-col items-center gap-4'>
 				<MotionCTA variant='primary' size='lg' href={CTA.tryFree.href}>
 					{CTA.tryFree.text}
 				</MotionCTA>
-				<span className='font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.15em] text-cc-text-muted'>
-					App Store / Google Play
-				</span>
+				<div className='flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center font-sans text-sm text-cc-text-muted'>
+					<span className='inline-flex items-center gap-1.5'>
+						<AppleLogo size={14} weight='fill' aria-hidden='true' />
+						<span>iOS</span>
+					</span>
+					<span className='text-cc-text-muted/40' aria-hidden='true'>·</span>
+					<span className='inline-flex items-center gap-1.5'>
+						<AndroidLogo size={14} weight='fill' aria-hidden='true' />
+						<span>Android</span>
+					</span>
+					<span className='text-cc-text-muted/40' aria-hidden='true'>·</span>
+					<span className='inline-flex items-center gap-1.5'>
+						<Globe size={14} weight='regular' aria-hidden='true' />
+						<span>Web</span>
+					</span>
+				</div>
 			</div>
 		</div>
 	)

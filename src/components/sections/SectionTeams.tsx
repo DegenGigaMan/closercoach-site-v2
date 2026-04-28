@@ -1,8 +1,11 @@
-/** @fileoverview S6 Teams — Wave M bento rebuild per Figma 93-16838 (2026-04-26).
+/** @fileoverview S6 Teams — Wave U bento per Figma 93-16838 (2026-04-27).
  *
  * Six-card bento, 3-row asymmetric composition per Andy's 2026-04-26 master
- * frame. Wave M replaces Wave F.4's PNG visuals with React-rendered
- * compositions (each card hand-designed per its Figma sub-node).
+ * frame. Wave U corrects Wave M/S/T errors:
+ *   ─ Chapter markers ([01]..[06]) removed — were never in Figma.
+ *   ─ Gradient fade between visual + body removed — Figma cards are one fill.
+ *   ─ Card 5 promoted from row-2 split to row-2+3 tall vertical column.
+ *   ─ Card 6 narrowed from col-span-3 to col-span-2 (Card 5 owns col 3).
  *
  * Parent container: 1232x1159 desktop frame -> max-w-[1232px] at lg+.
  *
@@ -10,12 +13,12 @@
  *     01 Coach Reps At Scale (93:16849) -- col-span-2, calendar mockup
  *     02 Know Where Every Rep Stands (93:16986) -- col-span-1, rep score stack
  *
- *   ROW 2 (1/1/1 equal, ~340px tall)
+ *   ROW 2-3 (left two cols 1/1, right col tall col-span-1 row-span-2)
  *     03 Onboard New Reps 10x Faster (81:5018) -- progress bar viz
  *     04 Enforce New Scripting Efficiently (81:5069) -- vertical timeline
- *     05 Hire Better, Faster (81:4739) -- candidate ranking list
+ *     05 Hire Better, Faster (81:4739) -- candidate ranking list (TALL)
  *
- *   ROW 3 (full, ~316px tall)
+ *   ROW 3 (col-span-2 under cards 3+4)
  *     06 Integrate Your Existing Sales Technology (81:4702) -- hub-and-spoke
  *
  * Card body (title + supporting copy) sits beneath each visual on the same
@@ -51,6 +54,7 @@ import OnboardFasterVisual from './teams-bento/OnboardFasterVisual'
 import EnforceScriptingVisual from './teams-bento/EnforceScriptingVisual'
 import HireBetterFasterVisual from './teams-bento/HireBetterFasterVisual'
 import IntegrateSalesTechVisual from './teams-bento/IntegrateSalesTechVisual'
+import { CompliancePills } from './SectionCompliance'
 
 /* ── Reveal wrapper (hydration-safe, reduced-motion aware) ── */
 
@@ -114,19 +118,19 @@ const MANAGER_LOGOS = [
  *  - 'equal-inverted' : Card 4 (col-span-1, row 2). INVERTED — visual TOP
  *                       (~60%), title+body BOTTOM (~40%) per Figma 81-5069.
  *                       Wave S 2026-04-27.
- *  - 'split-equal'    : Card 5 (col-span-1, row 2). HORIZONTAL split at lg+ —
- *                       title+body LEFT (~40%), visual RIGHT (~60%) per Figma
- *                       81-4739. Collapses to vertical at <lg. Wave S 2026-04-27.
- *  - 'split-full'     : Card 6 (col-span-3, row 3). HORIZONTAL split at lg+ —
+ *  - 'tall'           : Card 5 (col-span-1, ROW-SPAN-2 covering rows 2+3).
+ *                       Vertical stack — title+body TOP, visual fills the
+ *                       remaining tall column with flex-1 per Figma 81-4739.
+ *                       Wave U 2026-04-27 (replaces prior 'split-equal').
+ *  - 'split-full'     : Card 6 (col-span-2, row 3). HORIZONTAL split at lg+ —
  *                       title+body LEFT (~40%), hub-spoke RIGHT (~60%) per
- *                       Figma 81-4702. Collapses to vertical at <lg. Wave S
- *                       2026-04-27 (replaces former 'full' with vertical
- *                       stack + lg:max-w-2xl text constraint).
+ *                       Figma 81-4702. Collapses to vertical at <lg. Wave U
+ *                       narrows from col-span-3 to col-span-2 since Card 5
+ *                       now owns the third column for both rows 2 and 3.
  */
-type FeatureRole = 'hero' | 'narrow' | 'equal' | 'equal-inverted' | 'split-equal' | 'split-full'
+type FeatureRole = 'hero' | 'narrow' | 'equal' | 'equal-inverted' | 'tall' | 'split-full'
 
 type Feature = {
-	chapter: string
 	title: string
 	body: string
 	Visual: () => ReactElement
@@ -135,42 +139,36 @@ type Feature = {
 
 const FEATURES: readonly Feature[] = [
 	{
-		chapter: '[01]',
 		title: 'Coach Reps At Scale',
 		body: 'AI handles the repetitions so your coaching time goes to the moments that actually need you.',
 		Visual: CoachRepsAtScaleVisual,
 		role: 'hero',
 	},
 	{
-		chapter: '[02]',
 		title: 'Know Where Every Rep Stands',
 		body: 'See every rep’s performance from one dashboard.',
 		Visual: KnowEveryRepVisual,
 		role: 'narrow',
 	},
 	{
-		chapter: '[03]',
 		title: 'Onboard New Reps 10x Faster',
 		body: 'New reps practice before they ever talk to a customer.',
 		Visual: OnboardFasterVisual,
 		role: 'equal',
 	},
 	{
-		chapter: '[04]',
 		title: 'Enforce New Scripting Efficiently',
 		body: 'Roll out a new talk track and push it as a structured practice.',
 		Visual: EnforceScriptingVisual,
 		role: 'equal-inverted',
 	},
 	{
-		chapter: '[05]',
 		title: 'Hire Better, Faster',
 		body: 'Send candidates a roleplay challenge before they interview.',
 		Visual: HireBetterFasterVisual,
-		role: 'split-equal',
+		role: 'tall',
 	},
 	{
-		chapter: '[06]',
 		title: 'Integrate Your Existing Sales Technology',
 		body: 'Salesforce. HubSpot. GoHighLevel. Request a connection to the tools your team already uses.',
 		Visual: IntegrateSalesTechVisual,
@@ -181,122 +179,98 @@ const FEATURES: readonly Feature[] = [
 /* ── Bento card ── */
 
 /* Per-role span class on lg+ (matches the 3-row asymmetric composition).
- * Below lg the grid is single-col so spans are inert. */
+ * Below lg the grid is single-col so spans are inert. Card 5 (tall) uses
+ * lg:row-span-2 so it claims col 3 across rows 2 and 3; Card 6 narrows to
+ * col-span-2 so it sits under cards 3+4 only. */
 const roleSpanClass: Record<FeatureRole, string> = {
 	hero: 'lg:col-span-2',
 	narrow: 'lg:col-span-1',
 	equal: 'lg:col-span-1',
 	'equal-inverted': 'lg:col-span-1',
-	'split-equal': 'lg:col-span-1',
-	'split-full': 'lg:col-span-3',
+	tall: 'lg:col-span-1 lg:row-span-2',
+	'split-full': 'lg:col-span-2',
 }
 
 /* Per-role visual area height. Hero + narrow share the same height to keep
  * row 1 visually balanced. Equal cards (row 2) drop a touch shorter so the
  * three-up reads as its own beat. equal-inverted reuses equal so row 2
- * cards line up vertically. split-equal + split-full ignore this map and
- * size the visual via flex-basis on the right column instead. */
+ * cards line up vertically. tall + split-full ignore this map — tall lets
+ * the visual fill remaining flex space, split-full sizes via flex-basis on
+ * its right column. */
 const roleVisualHeight: Record<FeatureRole, string> = {
 	hero: 'h-[300px] md:h-[360px]',
 	narrow: 'h-[280px] md:h-[360px]',
-	equal: 'h-[300px]',
-	'equal-inverted': 'h-[300px]',
-	'split-equal': 'h-[300px]',
+	equal: 'h-[230px] md:h-[250px]',
+	'equal-inverted': 'h-[230px] md:h-[250px]',
+	tall: 'flex-1',
 	'split-full': 'h-[280px] md:h-[300px]',
-}
-
-/* Title display class. Hero + split-full carry the larger Lora display-sm
- * treatment; narrow + equal + equal-inverted + split-equal stay on the
- * body-scale title. */
-const roleUsesDisplayTitle: Record<FeatureRole, boolean> = {
-	hero: true,
-	narrow: false,
-	equal: false,
-	'equal-inverted': false,
-	'split-equal': false,
-	'split-full': true,
 }
 
 function BentoCard({ feature, index }: { feature: Feature; index: number }): ReactElement {
 	const { role, Visual } = feature
-	const displayTitle = roleUsesDisplayTitle[role]
 	const isInverted = role === 'equal-inverted'
-	const isSplit = role === 'split-equal' || role === 'split-full'
+	const isSplit = role === 'split-full'
+	const isTall = role === 'tall'
 
+	/* Title typography per Figma 93:16840: Lora Bold 24px white, line-height
+	 * 1.2 — same on every card (no hero / body split). */
 	const titleNode = (
 		<h3
-			className={`text-trim text-white ${displayTitle ? 'display-sm' : 'text-xl font-semibold'}`}
-			style={{ fontFamily: displayTitle ? 'var(--font-heading)' : undefined, lineHeight: 1.2 }}
+			className='text-trim text-white text-[24px] font-bold'
+			style={{ fontFamily: 'var(--font-heading)', lineHeight: 1.2 }}
 		>
 			{feature.title}
 		</h3>
 	)
+	/* Subhead per Figma 93:16847: Inter Light 14px #94a3b8, line-height 1.6 —
+	 * same on every card. */
 	const bodyNode = (
-		<p className={`text-trim text-cc-text-secondary ${displayTitle ? 'text-base md:text-lg' : 'text-sm md:text-base'}`}>
+		<p
+			className='text-trim font-light text-[14px] text-[#94a3b8]'
+			style={{ lineHeight: 1.6 }}
+		>
 			{feature.body}
 		</p>
 	)
-	const chapterNode = (
-		<span
-			aria-hidden='true'
-			className='absolute right-5 top-5 z-10 font-[family-name:var(--font-mono)] text-[11px] font-medium tracking-wider text-cc-accent/70'
-		>
-			{feature.chapter}
-		</span>
-	)
 
-	/* ── Horizontal split layout (Cards 5 + 6 at lg+) ──
-	 * At <lg the flex-row collapses to flex-col so the title sits ABOVE the
-	 * visual (mobile vertical stack). At lg+ the title+body claim ~40-45% on
-	 * the left and the visual claims ~55-60% on the right. The visual gets a
-	 * fixed height to anchor the row. */
+	/* Shared article shell per Figma 93:16840:
+	 *   ─ Background: rgba(30,34,48,0.2) — translucent surface, NOT solid card.
+	 *   ─ Border: 1px rgba(255,255,255,0.06) — subtler than cc-surface-border.
+	 *   ─ Radius: 24px (was rounded-2xl 16px).
+	 *   ─ Padding: 32px on the title/body block (was p-6 md:p-8).
+	 *   ─ Heading→visual gap: 40px (was mt-auto). */
+	const articleClass =
+		'group relative flex h-full flex-col overflow-hidden rounded-[24px] border border-[rgba(255,255,255,0.06)] bg-[rgba(30,34,48,0.2)] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.12] hover:shadow-[0_0_32px_rgba(16,185,129,0.12)]'
+
+	/* ── Card 6: horizontal split at lg+ ──
+	 * Title+body left (~42%), hub-spoke right (~58%). Collapses to vertical
+	 * stack at <lg. */
 	if (isSplit) {
 		return (
 			<Reveal delay={index * 0.05} className={roleSpanClass[role]}>
-				<article className='group relative flex h-full flex-col overflow-hidden rounded-2xl border border-cc-surface-border bg-cc-surface-card transition-all duration-300 hover:-translate-y-0.5 hover:border-cc-surface-border-hover hover:shadow-[0_0_32px_rgba(16,185,129,0.12)] lg:flex-row'>
-					{chapterNode}
-					{/* Text column — top on mobile, left on lg+ */}
-					<div className='flex flex-1 flex-col justify-center gap-3 p-6 md:p-8 lg:basis-[42%] lg:pr-4'>
+				<article className={`${articleClass} lg:flex-row`}>
+					<div className='flex flex-1 flex-col justify-center gap-4 p-8 lg:basis-[42%] lg:pr-4'>
 						{titleNode}
 						{bodyNode}
 					</div>
-					{/* Visual column — bottom on mobile, right on lg+ */}
-					<div
-						className={`relative w-full overflow-hidden ${roleVisualHeight[role]} lg:h-auto lg:basis-[58%] lg:self-stretch`}
-					>
+					<div className={`relative w-full overflow-hidden ${roleVisualHeight[role]} lg:h-auto lg:basis-[58%] lg:self-stretch`}>
 						<Visual />
-						{/* Mobile vignette only — at lg+ the visual sits on its own
-						 * column edge so the bottom fade would clip the right side
-						 * of the card oddly. */}
-						<div
-							aria-hidden='true'
-							className='pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-b from-transparent to-cc-surface-card/80 lg:hidden'
-						/>
 					</div>
 				</article>
 			</Reveal>
 		)
 	}
 
-	/* ── Vertical stack — inverted (Card 4 at all breakpoints) ──
-	 * Visual TOP (~60%), title+body BOTTOM (~40%). Inverted layout is kept
-	 * on mobile too for narrative consistency (the timeline is the hook). */
+	/* ── Card 4: visual on top, body on bottom ──
+	 * Inverted vertical stack — timeline visual is the hook so it leads. */
 	if (isInverted) {
 		return (
 			<Reveal delay={index * 0.05} className={roleSpanClass[role]}>
-				<article className='group relative flex h-full flex-col overflow-hidden rounded-2xl border border-cc-surface-border bg-cc-surface-card transition-all duration-300 hover:-translate-y-0.5 hover:border-cc-surface-border-hover hover:shadow-[0_0_32px_rgba(16,185,129,0.12)]'>
-					{chapterNode}
-					{/* Visual on TOP */}
+				<article className={articleClass}>
 					<div className={`relative w-full overflow-hidden ${roleVisualHeight[role]}`}>
 						<Visual />
-						{/* Soft bottom vignette into the body block below */}
-						<div
-							aria-hidden='true'
-							className='pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-b from-transparent to-cc-surface-card/80'
-						/>
 					</div>
-					{/* Body on BOTTOM */}
-					<div className='flex flex-1 flex-col gap-3 p-6 md:p-8'>
+					<div className='flex flex-1 flex-col gap-4 p-8'>
 						{titleNode}
 						{bodyNode}
 					</div>
@@ -305,30 +279,37 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 		)
 	}
 
-	/* ── Default vertical stack — title+body TOP, visual BOTTOM (Cards 1, 2, 3) ──
-	 * Per Figma 93-16838: title block sits at the top of the card, visual
-	 * anchors the bottom. Wave M shipped this reversed (visual-top, body-
-	 * bottom for all cards). Wave S corrects the default role to title-first
-	 * so cards 1/2/3 read as the master frame intends. */
+	/* ── Card 5: tall vertical (col-span-1, row-span-2) ──
+	 * Title+body TOP, visual fills the remaining tall column with flex-1.
+	 * Spans rows 2 and 3 at lg+, single-row stack on mobile/tablet. */
+	if (isTall) {
+		return (
+			<Reveal delay={index * 0.05} className={roleSpanClass[role]}>
+				<article className={articleClass}>
+					<div className='flex flex-col gap-4 px-8 pt-8 pb-3'>
+						{titleNode}
+						{bodyNode}
+					</div>
+					<div className='relative flex-1 w-full overflow-hidden min-h-[420px]'>
+						<Visual />
+					</div>
+				</article>
+			</Reveal>
+		)
+	}
+
+	/* ── Default (Cards 1, 2, 3): title+body top, visual bottom ──
+	 * mt-auto on the visual keeps row-1 / row-2 baselines aligned even when
+	 * body copy lengths differ. */
 	return (
 		<Reveal delay={index * 0.05} className={roleSpanClass[role]}>
-			<article className='group relative flex h-full flex-col overflow-hidden rounded-2xl border border-cc-surface-border bg-cc-surface-card transition-all duration-300 hover:-translate-y-0.5 hover:border-cc-surface-border-hover hover:shadow-[0_0_32px_rgba(16,185,129,0.12)]'>
-				{chapterNode}
-				{/* Body on TOP */}
-				<div className='flex flex-col gap-3 p-6 md:p-8'>
+			<article className={articleClass}>
+				<div className='flex flex-col gap-4 px-8 pt-8 pb-3'>
 					{titleNode}
 					{bodyNode}
 				</div>
-				{/* Visual on BOTTOM — mt-auto pushes it to the card's bottom edge so
-				 * cards in the same row keep aligned visual baselines even when
-				 * body copy lengths differ. */}
 				<div className={`relative mt-auto w-full overflow-hidden ${roleVisualHeight[role]}`}>
 					<Visual />
-					{/* Soft top vignette so the visual seats against the body block above */}
-					<div
-						aria-hidden='true'
-						className='pointer-events-none absolute inset-x-0 top-0 h-12 bg-gradient-to-t from-transparent to-cc-surface-card/80'
-					/>
 				</div>
 			</article>
 		</Reveal>
@@ -408,8 +389,15 @@ export default function SectionTeams(): ReactElement {
 					))}
 				</div>
 
+				{/* ── Compliance pill strip — moved here from its own section per
+				 * Andy 2026-04-27 so the trust anchor sits directly under the
+				 * bento and above the closing CTAs. */}
+				<Reveal delay={0.05} className='mt-10 md:mt-12'>
+					<CompliancePills />
+				</Reveal>
+
 				{/* ── CTAs ── */}
-				<Reveal delay={0.1} className='mt-12 flex flex-col items-center gap-5 sm:gap-6'>
+				<Reveal delay={0.1} className='mt-10 flex flex-col items-center gap-5 sm:gap-6 md:mt-12'>
 					<p className='text-center text-base text-cc-text-secondary md:text-lg'>
 						Want to scale your sales team training?
 					</p>

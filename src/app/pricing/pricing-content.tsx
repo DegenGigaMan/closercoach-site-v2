@@ -325,9 +325,13 @@ export default function PricingContent() {
 										{/* Tier subtitle */}
 										<p className='mt-2 text-sm text-cc-text-secondary'>{tier.subtitle}</p>
 
-										{/* Price */}
+										{/* Price — Lora Bold for the headline amount + the
+										 * "Custom" enterprise label, per Andy 2026-04-27. */}
 										<div className='mt-6 flex items-baseline gap-1'>
-											<span className='font-[family-name:var(--font-mono)] text-5xl font-medium text-white'>
+											<span
+												className='text-5xl font-bold text-white'
+												style={{ fontFamily: 'var(--font-heading)' }}
+											>
 												{price.amount}
 											</span>
 											{price.period && (
@@ -495,10 +499,16 @@ export default function PricingContent() {
 						<div className='rounded-xl border border-cc-surface-border bg-cc-surface-card p-8 md:p-12'>
 							<div className='flex flex-col items-center gap-4 text-center'>
 								<div className='flex items-baseline gap-4'>
-									<span className='font-[family-name:var(--font-mono)] text-5xl font-semibold text-cc-amber md:text-6xl'>
+									<span
+										className='text-5xl font-bold text-cc-amber md:text-6xl'
+										style={{ fontFamily: 'var(--font-heading)' }}
+									>
 										${PRICING.individual.monthly}
 									</span>
-									<span className='font-[family-name:var(--font-mono)] text-xl text-cc-text-muted line-through md:text-2xl'>
+									<span
+										className='text-xl font-bold text-cc-text-muted line-through md:text-2xl'
+										style={{ fontFamily: 'var(--font-heading)' }}
+									>
 										$200+
 									</span>
 								</div>

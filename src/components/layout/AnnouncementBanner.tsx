@@ -67,13 +67,13 @@ export default function AnnouncementBanner({
 				<Link
 					href={href}
 					aria-label={`${message} — ${linkLabel}`}
-					className='absolute inset-0 flex h-full items-center justify-center gap-3 px-6 text-xs text-cc-text-secondary md:text-sm'
+					className='group absolute inset-0 flex h-full items-center justify-center gap-2.5 px-12 text-xs text-cc-text-secondary md:text-sm'
 				>
 					<span className='relative flex h-2 w-2 shrink-0' aria-hidden='true'>
 						<span className='absolute inline-flex h-full w-full rounded-full bg-cc-accent opacity-60 motion-safe:animate-ping' />
 						<span className='relative inline-flex h-2 w-2 rounded-full bg-cc-accent' />
 					</span>
-					<p className='mx-auto max-w-[calc(100%-100px)] truncate text-center'>
+					<p className='min-w-0 truncate'>
 						<span className='text-white'>{message}</span>
 						{' '}
 						<span className='text-cc-accent underline-offset-2 group-hover:underline'>
@@ -83,17 +83,17 @@ export default function AnnouncementBanner({
 					<ArrowRight
 						size={12}
 						weight='bold'
-						className='mr-6 shrink-0 text-cc-accent'
+						className='shrink-0 text-cc-accent'
 						aria-hidden='true'
 					/>
 				</Link>
 			) : (
-				<div className='mx-auto flex h-full max-w-7xl items-center justify-center gap-3 px-6 text-xs text-cc-text-secondary md:text-sm'>
+				<div className='absolute inset-0 flex h-full items-center justify-center gap-2.5 px-12 text-xs text-cc-text-secondary md:text-sm'>
 					<span className='relative flex h-2 w-2 shrink-0' aria-hidden='true'>
 						<span className='absolute inline-flex h-full w-full rounded-full bg-cc-accent opacity-60 motion-safe:animate-ping' />
 						<span className='relative inline-flex h-2 w-2 rounded-full bg-cc-accent' />
 					</span>
-					<p className='truncate text-center'>
+					<p className='min-w-0 truncate'>
 						<span className='text-white'>{message}</span>
 					</p>
 				</div>
