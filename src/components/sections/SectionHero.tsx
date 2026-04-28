@@ -90,41 +90,15 @@ export default function SectionHero() {
 				/>
 			</motion.div>
 
-			{/* L1.5: Corner light rays — Figma 62:3294 / 62:3367. Bright diagonal
-			 * emerald beams streaming in from the top-left and top-right corners
-			 * and extending past the headline. Stack = bright radial core + two
-			 * linear beams at ~210° / ~225° so each side reads as a cluster of
-			 * layered ribbons, not a flat wedge. Container spans the full hero
-			 * so the beams can reach well past mid-section. */}
-			<div className='pointer-events-none absolute inset-0 z-[1] overflow-hidden' aria-hidden='true'>
-				{/* Right-side beam cluster. */}
-				<div
-					className='absolute right-[-260px] top-[-300px] h-[1600px] w-[1200px]'
-					style={{
-						background: [
-							'radial-gradient(ellipse 35% 45% at 82% 18%, rgba(52,225,142,0.42) 0%, rgba(16,185,129,0.18) 30%, transparent 55%)',
-							'linear-gradient(210deg, rgba(16,185,129,0.55) 0%, rgba(16,185,129,0.22) 14%, rgba(16,185,129,0.08) 28%, rgba(16,185,129,0.02) 42%, transparent 55%)',
-							'linear-gradient(225deg, rgba(16,185,129,0.28) 5%, rgba(16,185,129,0.1) 22%, transparent 42%)',
-						].join(', '),
-						filter: 'blur(28px)',
-						mixBlendMode: 'screen',
-					}}
-				/>
-				{/* Left-side beam cluster — mirror of the right (scaleX -1). */}
-				<div
-					className='absolute left-[-260px] top-[-300px] h-[1600px] w-[1200px]'
-					style={{
-						transform: 'scaleX(-1)',
-						background: [
-							'radial-gradient(ellipse 35% 45% at 82% 18%, rgba(52,225,142,0.42) 0%, rgba(16,185,129,0.18) 30%, transparent 55%)',
-							'linear-gradient(210deg, rgba(16,185,129,0.55) 0%, rgba(16,185,129,0.22) 14%, rgba(16,185,129,0.08) 28%, rgba(16,185,129,0.02) 42%, transparent 55%)',
-							'linear-gradient(225deg, rgba(16,185,129,0.28) 5%, rgba(16,185,129,0.1) 22%, transparent 42%)',
-						].join(', '),
-						filter: 'blur(28px)',
-						mixBlendMode: 'screen',
-					}}
-				/>
-			</div>
+			{/* L1.5 corner light rays REMOVED in Wave X.5 (2026-04-28) reduction
+			 * pass. Per Alim 'Improvement via reduction is the play' + 'okay
+			 * with LESS on the visuals'. The corner rays stacked 3 layered
+			 * backgrounds per side on top of L1 gradient + L2 noise + L3
+			 * particles + 3-layer phone glow -- 4 ambient layers competing
+			 * with the phone's product-as-light-source role per R7 v3 D8.
+			 * Removing the rays lets the phone be the singular emerald source.
+			 * If Andy wants the rays back, restore from main HEAD 06d0415
+			 * SectionHero.tsx lines 93-127. */}
 
 			{/* L2: Noise texture. */}
 			<AtmosphereNoise opacity={0.035} />
