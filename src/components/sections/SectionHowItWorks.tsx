@@ -404,24 +404,49 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 
 			{devPin && null}
 
-			<div className="mt-8 flex max-w-xl flex-wrap items-center gap-2 rounded-full border border-cc-surface-border bg-cc-surface-card/40 px-4 py-2">
-				<span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.15em] text-cc-text-secondary">
+			{/* CloserCoach replaces -- logo strip per Alim 2026-04-28 overnight
+			 * Slack feedback: 'CloserCoach replaces -- was hoping wed have the
+			 * logos here of who we replace. like logo logo logo'.
+			 *
+			 * Canonical replacement list (lp-copy-deck-v5.md §S3 Step 2):
+			 *   Voice Memos + ChatGPT + Phone App
+			 *
+			 * TODO(Andy + Alim): replace these Phosphor placeholder icon-marks
+			 * with real brand logos. Apple Voice Memos has no clean public
+			 * brand mark; ChatGPT has OpenAI's mark (simple-icons is in deps).
+			 * Phone App is Apple's system phone -- Apple Phone wordmark is a
+			 * trademark concern. Confirm the approved logo set before swapping. */}
+			<div className="mt-8 flex max-w-xl flex-col gap-3">
+				<span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.18em] text-cc-text-secondary">
 					CloserCoach replaces
 				</span>
-				<span className="inline-flex items-center gap-1.5 rounded-full bg-cc-surface/60 px-2.5 py-1 text-xs text-white">
-					<Microphone size={12} weight="regular" className="text-cc-accent" />
-					Voice Memos
-				</span>
-				<span className="text-cc-text-muted">+</span>
-				<span className="inline-flex items-center gap-1.5 rounded-full bg-cc-surface/60 px-2.5 py-1 text-xs text-white">
-					<Sparkle size={12} weight="regular" className="text-cc-accent" />
-					ChatGPT
-				</span>
-				<span className="text-cc-text-muted">+</span>
-				<span className="inline-flex items-center gap-1.5 rounded-full bg-cc-surface/60 px-2.5 py-1 text-xs text-white">
-					<PhoneCall size={12} weight="regular" className="text-cc-accent" />
-					Phone App
-				</span>
+				<div
+					role="img"
+					aria-label="CloserCoach replaces Voice Memos, ChatGPT, and your Phone App"
+					className="flex items-center gap-8 rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 px-6 py-4"
+				>
+					{/* Voice Memos placeholder */}
+					<div className="flex flex-col items-center gap-1.5 opacity-70 transition-opacity duration-300 hover:opacity-100">
+						<Microphone size={28} weight="duotone" className="text-white/85" aria-hidden="true" />
+						<span className="font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary">
+							Voice Memos
+						</span>
+					</div>
+					{/* ChatGPT placeholder */}
+					<div className="flex flex-col items-center gap-1.5 opacity-70 transition-opacity duration-300 hover:opacity-100">
+						<Sparkle size={28} weight="duotone" className="text-white/85" aria-hidden="true" />
+						<span className="font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary">
+							ChatGPT
+						</span>
+					</div>
+					{/* Phone App placeholder */}
+					<div className="flex flex-col items-center gap-1.5 opacity-70 transition-opacity duration-300 hover:opacity-100">
+						<PhoneCall size={28} weight="duotone" className="text-white/85" aria-hidden="true" />
+						<span className="font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary">
+							Phone App
+						</span>
+					</div>
+				</div>
 			</div>
 		</>
 	)
