@@ -170,7 +170,7 @@ function CloneHeader({ inView, reduced }: { inView: boolean; reduced: boolean })
 						animate={inView ? { backgroundColor: EMERALD } : undefined}
 						transition={reduced
 							? { duration: 0 }
-							: { duration: 0.3, ease: EASE, delay: 1.1 + i * 0.1 }
+							: { duration: 0.4, ease: EASE, delay: 1.4 + i * 0.18 }
 						}
 					/>
 				))}
