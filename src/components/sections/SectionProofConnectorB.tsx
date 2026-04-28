@@ -45,10 +45,27 @@ export default function SectionProofConnectorB(): ReactElement {
 				animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
 				transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.95, ease: [0.25, 0.46, 0.45, 0.94] }}
 			>
+				{/*
+				 * PLACEHOLDER QUOTE -- Wave X.4 (2026-04-28)
+				 *
+				 * Alim 2026-04-28 Slack: 'This could be strong -- [Taylor] can
+				 * you give us a better, stronger quote from a client'.
+				 *
+				 * The block below holds the current A4 App Store pull-quote
+				 * (proof-inventory A4, permission-free). Replace this block
+				 * with the upgraded client quote from Taylor when it lands.
+				 * Source location: TBD with Taylor (likely vault/clients/closer-
+				 * coach/copy/proof-inventory.md as a new entry, or a fresh
+				 * docs/quotes.md). Update both the <p> body and the attribution
+				 * line. Do NOT generate a fake stronger quote; preserve the
+				 * current quote until Taylor ships the replacement.
+				 */}
+
 				{/* A4 pull quote. Lora Bold (weight 700) + italic emphasis. White text for
 				    contrast against the dark-to-mid gradient mid-range where the quote sits. */}
 				<p
 					className='text-balance text-cc-text-primary'
+					data-quote-placeholder='alim-2026-04-28-stronger-quote-pending'
 					style={{
 						fontFamily: 'var(--font-heading)',
 						fontWeight: 700,
@@ -63,6 +80,7 @@ export default function SectionProofConnectorB(): ReactElement {
 
 				<p
 					className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.22em] text-cc-text-secondary'
+					data-quote-attribution='alim-2026-04-28-stronger-quote-pending'
 					aria-label='App Store Review, five stars'
 				>
 					App Store Review &middot; 5 stars
