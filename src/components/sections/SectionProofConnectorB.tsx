@@ -61,6 +61,21 @@ export default function SectionProofConnectorB(): ReactElement {
 				 * current quote until Taylor ships the replacement.
 				 */}
 
+				{/* Attribution moved ABOVE the quote (Wave X.7 / DD R1 M1, 2026-04-28).
+				    Previously sat below the quote where the gradient transitions from
+				    cc-surface (#1A1D26) into the warm mid-tone (#4A443E) -- mid-grey
+				    text on that brown band failed WCAG AA (~3.7:1). Above the quote
+				    the attribution sits on solid cc-surface, giving cc-text-secondary
+				    (#94A3B8) on #1A1D26 a clean ~6.4:1 ratio. Standard tombstone-
+				    quote ordering (source then quote body). */}
+				<p
+					className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.22em] text-cc-text-secondary'
+					data-quote-attribution='alim-2026-04-28-stronger-quote-pending'
+					aria-label='App Store Review, five stars'
+				>
+					App Store Review &middot; 5 stars
+				</p>
+
 				{/* A4 pull quote. Lora Bold (weight 700) + italic emphasis. White text for
 				    contrast against the dark-to-mid gradient mid-range where the quote sits. */}
 				<p
@@ -76,14 +91,6 @@ export default function SectionProofConnectorB(): ReactElement {
 					}}
 				>
 					&ldquo;This app went from something that was a nice idea that needed some work to something that is super useful.&rdquo;
-				</p>
-
-				<p
-					className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.22em] text-cc-text-secondary'
-					data-quote-attribution='alim-2026-04-28-stronger-quote-pending'
-					aria-label='App Store Review, five stars'
-				>
-					App Store Review &middot; 5 stars
 				</p>
 			</motion.div>
 		</section>
