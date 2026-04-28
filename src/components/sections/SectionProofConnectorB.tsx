@@ -43,7 +43,7 @@ export default function SectionProofConnectorB(): ReactElement {
 				className='mx-auto flex max-w-3xl flex-col items-center gap-4 px-6 text-center'
 				initial={{ opacity: 0, y: 12 }}
 				animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-				transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+				transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.95, ease: [0.25, 0.46, 0.45, 0.94] }}
 			>
 				{/* A4 pull quote. Lora Bold (weight 700) + italic emphasis. White text for
 				    contrast against the dark-to-mid gradient mid-range where the quote sits. */}

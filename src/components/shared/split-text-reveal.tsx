@@ -34,8 +34,8 @@ export default function SplitTextReveal({ children, className = '', delay = 0 }:
 						initial={{ y: '100%', opacity: 0 }}
 						animate={isInView ? { y: 0, opacity: 1 } : {}}
 						transition={{
-							duration: 0.5,
-							delay: delay + i * 0.03,
+							duration: 0.7,
+							delay: delay + i * 0.06,
 							ease: EASE,
 						}}
 					>

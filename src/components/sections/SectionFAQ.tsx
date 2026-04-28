@@ -242,7 +242,7 @@ export default function SectionFAQ(): ReactElement {
 					transition={
 						prefersReducedMotion
 							? { duration: 0 }
-							: { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }
+							: { duration: 0.85, ease: [0.25, 0.46, 0.45, 0.94] }
 					}
 					className='flex flex-col items-center gap-[15px] text-center'
 				>
@@ -288,7 +288,7 @@ export default function SectionFAQ(): ReactElement {
 					transition={
 						prefersReducedMotion
 							? { duration: 0 }
-							: { duration: 0.6, delay: 0.08, ease: [0.25, 0.46, 0.45, 0.94] }
+							: { duration: 0.9, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }
 					}
 					className='flex w-full flex-col gap-3'
 				>

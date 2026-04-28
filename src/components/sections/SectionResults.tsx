@@ -65,7 +65,7 @@ function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElem
 			className={className}
 			initial={{ opacity: 0, y: 18 }}
 			animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.55, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.9, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
 		>
 			{children}
 		</motion.div>
@@ -419,7 +419,7 @@ export default function SectionResults(): ReactElement {
 				 * desktop, stack on mobile. */}
 				<div className='mt-12 grid grid-cols-1 gap-4 md:mt-16 md:grid-cols-3'>
 					{APP_STORE_REVIEWS.map((r, i) => (
-						<Reveal key={i} delay={i * 0.08}>
+						<Reveal key={i} delay={i * 0.22}>
 							<ReviewCard quote={r.quote} />
 						</Reveal>
 					))}

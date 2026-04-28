@@ -191,7 +191,7 @@ function StepRoom({
 			 * via transition.duration: 0 below. */
 			initial={{ opacity: 0, y: 24 }}
 			animate={isInView ? { opacity: 1, y: 0 } : {}}
-			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
 			className="flex flex-col py-10 lg:min-h-screen lg:justify-start lg:py-16"
 		>
 			{children}
@@ -216,7 +216,7 @@ function RightColumnVisual({ activeStep, devPin }: { activeStep: number; devPin:
 					initial={{ opacity: 0, y: 16 }}
 					animate={{ opacity: 1, y: 0 }}
 					exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -16 }}
-					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
+					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
 					className="flex h-full w-full items-center justify-center p-4"
 				>
 					{activeStep === 1 && <PlanVisual devPin={devPin} />}
