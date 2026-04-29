@@ -244,7 +244,11 @@ export default function SectionFAQ(): ReactElement {
 							? { duration: 0 }
 							: { duration: 0.85, ease: [0.25, 0.46, 0.45, 0.94] }
 					}
-					className='flex flex-col items-center gap-[15px] text-center'
+					/* Q17 Wave D1-8 (Andy 2026-04-29 #21): label → heading →
+					 * subhead gap was 15px which Andy flagged as too tight.
+					 * Bumped to gap-8 (32px) so each line gets clear vertical
+					 * separation matching the step section header rhythm. */
+					className='flex flex-col items-center gap-8 text-center'
 				>
 					<p
 						className='text-trim font-semibold uppercase text-cc-accent'
