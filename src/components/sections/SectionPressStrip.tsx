@@ -2,7 +2,17 @@
  * S3 dark. Refined 2026-04-26 (Wave F.3) per Figma 85:16459: vertical
  * hairline between quote and attribution removed, gap between the two
  * tightened to 24px (Figma blockquote `gap-[24px]`). Compact 32px vertical
- * padding preserved; horizontal emerald gradient framing lines preserved. */
+ * padding preserved; horizontal emerald gradient framing lines preserved.
+ *
+ * Wave Y.2 (Alim 2026-04-28): pull-quote rewritten from "The Duolingo for
+ * sales." to the Hypepotamus article's framing angle. Alim shared the source
+ * URL and suggested pulling the angle "Ex prizepicks engineer bringing
+ * sports-like competition to sales" — that headline summary now anchors the
+ * strip. This rewrite supersedes Wave X.5's REDUCTION CANDIDATE C (remove
+ * SectionPressStrip): the prior "Duolingo for sales" line was flagged as
+ * redundant with ProofConnectorB's App Store quote, but the Hypepotamus
+ * angle is editorial press framing — not customer testimony — so the two
+ * surfaces are no longer redundant. */
 
 'use client'
 
@@ -22,7 +32,7 @@ export default function SectionPressStrip() {
 			<div className='mx-auto flex max-w-7xl flex-col items-center px-6 md:px-[104px]'>
 				<blockquote className='flex flex-col items-center gap-6 text-center'>
 					<p
-						className='text-trim text-white'
+						className='text-trim text-balance text-white'
 						style={{
 							fontFamily: 'var(--font-heading)',
 							fontStyle: 'italic',
@@ -31,7 +41,9 @@ export default function SectionPressStrip() {
 							lineHeight: '33px',
 						}}
 					>
-						&ldquo;The{' '}<span className='text-cc-accent'>Duolingo</span>{' '}for sales.&rdquo;
+						Ex-PrizePicks engineer brings{' '}
+						<span className='text-cc-accent'>sports-like competition</span>{' '}
+						to sales.
 					</p>
 					<footer>
 						<span
