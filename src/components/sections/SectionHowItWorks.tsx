@@ -472,14 +472,17 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 			 *
 			 * Canonical order (lp-copy-deck-v5.md §S3 Step 2):
 			 *   Voice Memos (left), ChatGPT (middle), Phone (right). */}
-			<div className="mt-8 flex max-w-xl flex-col gap-3">
+			{/* Q17 Wave D1-5 (Andy 2026-04-29 #14): card was stretching to
+			 * column width. Added w-fit + self-start to outer + inner card
+			 * so the icon strip hugs Voice Memos / ChatGPT / Phone content. */}
+			<div className="mt-8 flex w-fit max-w-xl flex-col gap-3 self-start">
 				<span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.18em] text-cc-text-secondary">
 					CloserCoach replaces
 				</span>
 				<div
 					role="img"
 					aria-label="CloserCoach replaces Voice Memos, ChatGPT, and your Phone app"
-					className="flex items-center gap-8 rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 px-6 py-4"
+					className="flex w-fit items-center gap-8 rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 px-6 py-4"
 				>
 					{/* Voice Memos — white waveform on red gradient rounded square. */}
 					<div className="flex flex-col items-center gap-1.5">
