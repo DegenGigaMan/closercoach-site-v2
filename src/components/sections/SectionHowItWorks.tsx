@@ -111,8 +111,13 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 				<p className="font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.2em] text-cc-accent">
 					HOW IT WORKS
 				</p>
+				{/* Q17 Wave E (Andy 2026-04-29 #25): heading reframed to verb-map
+				 * directly to the 4 steps (PREPARE/Practice, TRAIN/Train,
+				 * CLOSE/Close, WIN/Win). Closer 'Win.' uses italic emerald
+				 * emphasis matching the SectionFeatures 'win more deals.' VIS
+				 * lock 2026-04-21 pattern (italic primary, color secondary). */}
 				<h2 className="display-lg mx-auto mt-6 max-w-4xl text-white md:text-5xl lg:text-6xl">
-					Practice. Lose. Learn. <span className="text-cc-accent">Compound.</span>
+					Practice. Train. Close. <em className="italic font-bold text-cc-accent">Win.</em>
 				</h2>
 				<p className="mx-auto mt-6 max-w-2xl text-lg text-cc-text-secondary md:text-xl">
 					Train before the call. Find out where you lost it. Fix it before it costs you again.
