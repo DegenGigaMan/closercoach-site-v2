@@ -93,16 +93,21 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 			{/* Section opener.
 			 * Wave Y.4 (Alim 2026-04-28): bottom padding bumped (py-24 lg:py-32
 			 * -> pt-24 pb-40 lg:pt-32 lg:pb-56) to add breathing room between
-			 * the section heading 'Practice. Lose. Learn. Win.' and the first
-			 * step content (now PREPARE). Alim feedback: 'Increase margin from
-			 * SELL and heading' — increasing the gap so the section heading
-			 * lands cleanly without crowding the step rail. */}
+			 * the section heading and the first step content (now PREPARE).
+			 * Alim feedback: 'Increase margin from SELL and heading' — increasing
+			 * the gap so the section heading lands cleanly without crowding the
+			 * step rail.
+			 *
+			 * Wave Y DD R1 S1 (2026-04-28): closer 'Win.' previously spoiled the
+			 * Step 4 kicker post-rename (Review→Win). Swapped closer to
+			 * 'Compound.' so the opener ends on the cycle frame (compound
+			 * interest of skill) without pre-calling Step 4. */}
 			<div className="mx-auto max-w-7xl px-6 pt-24 pb-40 text-center md:px-12 lg:px-24 lg:pt-32 lg:pb-56">
 				<p className="font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.2em] text-cc-accent">
 					HOW IT WORKS
 				</p>
 				<h2 className="display-lg mx-auto mt-6 max-w-4xl text-white md:text-5xl lg:text-6xl">
-					Practice. Lose. Learn. <span className="text-cc-accent">Win.</span>
+					Practice. Lose. Learn. <span className="text-cc-accent">Compound.</span>
 				</h2>
 				<p className="mx-auto mt-6 max-w-2xl text-lg text-cc-text-secondary md:text-xl">
 					Train before the call. Find out where you lost it. Fix it before it costs you again.
