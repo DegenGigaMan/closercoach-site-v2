@@ -90,8 +90,14 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 			data-surface="dark-education"
 			className="relative w-full bg-cc-foundation"
 		>
-			{/* Section opener */}
-			<div className="mx-auto max-w-7xl px-6 py-24 text-center md:px-12 lg:px-24 lg:py-32">
+			{/* Section opener.
+			 * Wave Y.4 (Alim 2026-04-28): bottom padding bumped (py-24 lg:py-32
+			 * -> pt-24 pb-40 lg:pt-32 lg:pb-56) to add breathing room between
+			 * the section heading 'Practice. Lose. Learn. Win.' and the first
+			 * step content (now PREPARE). Alim feedback: 'Increase margin from
+			 * SELL and heading' — increasing the gap so the section heading
+			 * lands cleanly without crowding the step rail. */}
+			<div className="mx-auto max-w-7xl px-6 pt-24 pb-40 text-center md:px-12 lg:px-24 lg:pt-32 lg:pb-56">
 				<p className="font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.2em] text-cc-accent">
 					HOW IT WORKS
 				</p>

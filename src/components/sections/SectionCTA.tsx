@@ -78,10 +78,11 @@ export default function SectionCTA() {
 						Download. Pick your industry. Start your first roleplay. Get your score. Done.
 					</p>
 
-					{/* Body confidence line ($4) */}
-					<p className='text-base text-cc-text-secondary'>
-						3 days is plenty. Most closers know after one session.
-					</p>
+					{/* Body confidence line — REMOVED Wave Y.12 (Alim 2026-04-28
+					 * Slack: 'remove the "3 days is plenty" QR call to action').
+					 * The QR museum exhibit + scan label below already frame the
+					 * download moment without a confidence boilerplate. The headline
+					 * + subhead carry the close. */}
 
 					{/* QR museum exhibit (AD) -- concentric rings behind, emerald frame, corner registration */}
 					<div className='relative mt-4 flex flex-col items-center gap-3'>
