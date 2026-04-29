@@ -1,6 +1,6 @@
 /** @fileoverview S3 How It Works section (production port, W6).
  *
- * Scroll-pinned 4-step narrative: Plan / Practice / Sell / Review. Left column
+ * Scroll-pinned 4-step narrative: Prepare / Train / Close / Win. Left column
  * scrolls naturally through four ~100vh rooms; right column is sticky-pinned
  * and swaps its visual per activeStep. Emerald StepIndicator thread spans the
  * split column with a scroll-linked pulse.
@@ -292,7 +292,7 @@ function StepBody({ children }: { children: ReactNode }) {
 function Step1Plan({ devPin }: { devPin: boolean }) {
 	return (
 		<>
-			<StepKicker number="01" stepIndex={1}>PLAN</StepKicker>
+			<StepKicker number="01" stepIndex={1}>PREPARE</StepKicker>
 			<StepHeadline>
 				Clone Your <em className="text-cc-accent">Clients</em>
 			</StepHeadline>
@@ -354,7 +354,7 @@ function Step1Plan({ devPin }: { devPin: boolean }) {
 function Step2Practice({ devPin }: { devPin: boolean }) {
 	return (
 		<>
-			<StepKicker number="02" stepIndex={2}>PRACTICE</StepKicker>
+			<StepKicker number="02" stepIndex={2}>TRAIN</StepKicker>
 			<StepHeadline>
 				Roleplay Until <em className="text-cc-accent">Every Objection</em> Feels Predictable
 			</StepHeadline>
@@ -385,7 +385,7 @@ function Step2Practice({ devPin }: { devPin: boolean }) {
 function Step3Sell({ devPin }: { devPin: boolean }) {
 	return (
 		<>
-			<StepKicker number="03" stepIndex={3}>SELL</StepKicker>
+			<StepKicker number="03" stepIndex={3}>CLOSE</StepKicker>
 			<StepHeadline>
 				Close The <em className="text-cc-accent">Deal</em>
 			</StepHeadline>

@@ -161,7 +161,7 @@ export default function StepFourReview() {
 				<div className='inline-flex items-center gap-2 rounded-full border border-cc-accent/25 bg-cc-accent/5 px-3 py-1'>
 					<span className='h-1.5 w-1.5 rounded-full bg-cc-accent' aria-hidden='true' />
 					<span className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.2em] text-cc-accent'>
-						04 &middot; Review
+						04 &middot; Win
 					</span>
 				</div>
 				<h3 className='mt-6 text-3xl leading-[1.15] text-white md:text-4xl lg:text-[2.75rem]'>
