@@ -69,13 +69,37 @@ import {
 const SARAH_IMG = '/images/prospects/sarah-chen.png'
 const CC_LOGO = '/images/closercoach-logo.svg'
 
-/* Sub-state timings (ms). Each value is the moment the state begins. */
+/* Sub-state timings (ms). Each value is the moment the state begins.
+ *
+ * Wave AA.5 (Andy 2026-04-28): pacing slowdown for the AI Phone Call beats.
+ * Andy verbatim: "for the step 3 close, I think that that animation could
+ * also be like slowed down from like the first sub state with like Sarah
+ * Chen calling that first initial screen. It just goes by wave fast, like
+ * let's reduce like the AI phone call part of it to be slowed down so that
+ * it actually feels like it's ringing. And then it gets connected like a
+ * second or two extra on like connected and then it goes into the next
+ * phase because right now it's transitioning very, very fast. And kind of
+ * difficult to keep up with like I wasn't even able to consume the contents
+ * of the screen before it jumped right into the record in person."
+ *
+ * Retimed:
+ *   3A dialer/ringing: 0     -> 2800   (was 800ms, now 2.8s so the ring
+ *                                       actually FEELS like ringing)
+ *   3B connecting:    2800   -> 4400   (was 1600ms, now 1.6s but fires AFTER
+ *                                       the long ring so the lingering
+ *                                       reads correctly)
+ *   3C live call:     4400   -> 6800   (extended +400ms so messages can
+ *                                       stagger one at a time)
+ *   3D mode swap:     6800   -> 8400
+ *   3E annotations:   8400   -> 10000
+ *   3F settled:       10000+
+ */
 const T_3A = 0
-const T_3B = 800
-const T_3C = 2400
-const T_3D = 4000
-const T_3E = 5600
-const T_3F = 7200
+const T_3B = 2800
+const T_3C = 4400
+const T_3D = 6800
+const T_3E = 8400
+const T_3F = 10000
 
 type SubState = '3A' | '3B' | '3C' | '3D' | '3E' | '3F'
 
@@ -400,6 +424,13 @@ function ConnectingPanel({ prefersReducedMotion }: { prefersReducedMotion: boole
 }
 
 function LiveCallPanel({ timer, prefersReducedMotion }: { timer: number, prefersReducedMotion: boolean }) {
+	/* Wave AA.5 (Andy): "all the messages in the phone call part two should
+	 * be popping in one at a time, similar to the steps to how the messages
+	 * pop in like that". Mirror Step 2's stagger pattern: AI bubble -> chip
+	 * -> User bubble -> chip, each with its own delay. Spring-in chips piggy-
+	 * back on their preceding transcript bubble's settle. Reduced-motion
+	 * collapses to settled instantly. */
+	const EASE_INNER: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94]
 	return (
 		<motion.div
 			key="live"
@@ -421,20 +452,34 @@ function LiveCallPanel({ timer, prefersReducedMotion }: { timer: number, prefers
 					<NumberFlow value={timer} format={{ minimumIntegerDigits: 2 }} prefix="00:" />
 				</div>
 			</div>
-			{/* Transcript area + in-phone coaching annotations */}
+			{/* Transcript area + in-phone coaching annotations. Stagger schedule:
+			 *   AI line:  0.30s
+			 *   neg pill: 0.85s
+			 *   User:     1.30s
+			 *   pos pill: 1.80s   */}
 			<div className="flex flex-1 flex-col gap-2 overflow-hidden py-1">
-				<div className="mr-auto max-w-[88%] rounded-2xl rounded-bl-sm border border-l-2 border-white/[0.06] border-l-cc-accent/50 bg-cc-surface-card/80 px-2.5 py-1.5">
+				<motion.div
+					className="mr-auto max-w-[88%] rounded-2xl rounded-bl-sm border border-l-2 border-white/[0.06] border-l-cc-accent/50 bg-cc-surface-card/80 px-2.5 py-1.5"
+					initial={{ opacity: 0, x: -8 }}
+					animate={{ opacity: 1, x: 0 }}
+					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4, ease: EASE_INNER, delay: 0.30 }}
+				>
 					<p className="text-[10.5px] italic leading-[1.4] text-cc-text-secondary">
 						{TRANSCRIPT_AI}
 					</p>
-				</div>
-				<InPhoneCoachingPill type="negative" label="Weak objection pivot" prefersReducedMotion={prefersReducedMotion} delay={0.25} align="left" />
-				<div className="ml-auto max-w-[88%] rounded-2xl rounded-br-sm border border-cc-accent/20 bg-cc-accent/15 px-2.5 py-1.5">
+				</motion.div>
+				<InPhoneCoachingPill type="negative" label="Weak objection pivot" prefersReducedMotion={prefersReducedMotion} delay={0.85} align="left" />
+				<motion.div
+					className="ml-auto max-w-[88%] rounded-2xl rounded-br-sm border border-cc-accent/20 bg-cc-accent/15 px-2.5 py-1.5"
+					initial={{ opacity: 0, x: 8 }}
+					animate={{ opacity: 1, x: 0 }}
+					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4, ease: EASE_INNER, delay: 1.30 }}
+				>
 					<p className="text-[10.5px] leading-[1.4] text-white">
 						{TRANSCRIPT_USER}
 					</p>
-				</div>
-				<InPhoneCoachingPill type="positive" label="Strong discovery question" prefersReducedMotion={prefersReducedMotion} delay={0.65} align="right" />
+				</motion.div>
+				<InPhoneCoachingPill type="positive" label="Strong discovery question" prefersReducedMotion={prefersReducedMotion} delay={1.80} align="right" />
 			</div>
 			{/* Mute / End bar */}
 			<div className="flex items-center justify-between gap-2 border-t border-white/[0.05] pt-1.5">
