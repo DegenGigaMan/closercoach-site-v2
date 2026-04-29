@@ -85,9 +85,19 @@ const GRADE_TONE_STYLES: Record<GradeTone, { bg: string; border: string; text: s
 }
 
 /* Phone frame — borrows the structure from StepThreeVisual's PhoneFrame but
- * sized for a wider portrait scorecard (260px wide vs 240px). The wider
- * frame gives the SAID / SHOULD-HAVE-SAID panels enough horizontal room
- * to read at 13px without wrapping awkwardly. */
+ * sized for a wider portrait scorecard (280px wide vs 240px) and given a
+ * fixed iPhone-proper aspect ratio (Q17 Wave E fix per Andy 2026-04-29).
+ *
+ * The wider frame gives the SAID / SHOULD-HAVE-SAID panels enough horizontal
+ * room to read at 13px without wrapping awkwardly. The inner screen area
+ * uses aspect-ratio 9/19 (close to iPhone 14/15 Pro 9:19.5) so the phone
+ * always renders at proper proportions — never short-and-squat. Content
+ * distributes inside the screen with justify-between + flex-1 spacers
+ * giving each panel proper breathing room.
+ *
+ * Width 280 × (19/9) = ~591px content height + ~36px dynamic island/home
+ * indicator chrome = ~627px total phone height, mirroring the visual cadence
+ * of the S1 Hero phone (240px / 16.8 ratio = ~448px). */
 function PhoneFrame({ children, mode }: { children: React.ReactNode; mode: string }) {
 	return (
 		<div className='relative z-10 w-[280px]'>
@@ -107,7 +117,12 @@ function PhoneFrame({ children, mode }: { children: React.ReactNode; mode: strin
 							</span>
 						</div>
 					</div>
-					{children}
+					{/* Screen content area: fixed aspect ratio so the phone is
+					 * always proper-iPhone-proportioned. Content laid out
+					 * vertically with breathing room. */}
+					<div className='relative' style={{ aspectRatio: '9 / 19' }}>
+						{children}
+					</div>
 					{/* Home indicator */}
 					<div className='flex justify-center pb-1.5 pt-1'>
 						<div className='h-[3px] w-20 rounded-full bg-white/20' />
@@ -239,7 +254,7 @@ export default function StepFourReviewPhone() {
 
 				{/* Phone frame */}
 				<PhoneFrame mode='Score Review'>
-					<div className='flex flex-col gap-3 px-3 pb-3 pt-1'>
+					<div className='absolute inset-0 flex flex-col gap-4 px-3 pb-3 pt-2'>
 						{/* Title row + grade ring */}
 						<div className='flex items-center justify-between gap-2 px-1'>
 							<div className='flex flex-col gap-1'>
@@ -305,8 +320,10 @@ export default function StepFourReviewPhone() {
 							})}
 						</div>
 
-						{/* SAID / SHOULD-HAVE-SAID panels */}
-						<div className='flex flex-col gap-2.5 pt-1'>
+						{/* SAID / SHOULD-HAVE-SAID panels — flex-1 fills remaining
+						 * vertical room inside the aspect-locked screen so the
+						 * content distributes nicely across the phone height. */}
+						<div className='flex flex-1 flex-col justify-around gap-3 pt-1'>
 							<SaidSection variant='said' label='What you said' body={active.said} />
 							<SaidSection variant='should' label='What you should have said' body={active.shouldHaveSaid} />
 						</div>
