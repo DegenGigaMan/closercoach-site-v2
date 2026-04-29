@@ -223,8 +223,12 @@ export default function SectionFeatures(): ReactElement {
 				    rhythm; Linear / Mercury both keep billboard text in a tighter
 				    centered column. */}
 				<div className='mx-auto max-w-6xl'>
+					{/* Q17 Wave D1-7 (Andy 2026-04-29 #18): heading was left-
+					    aligned (per F0B0VUURF89.png ref). Andy locked centered
+					    alignment to match the centered subhead below it.
+					    text-left → text-center. */}
 					<h2
-						className='text-trim mb-6 text-cc-text-primary text-balance text-left md:mb-8'
+						className='text-trim mb-6 text-cc-text-primary text-balance text-center md:mb-8'
 						style={{
 							fontFamily: 'var(--font-heading)',
 							fontSize: 'clamp(2.5rem, 10vw, 10rem)',
