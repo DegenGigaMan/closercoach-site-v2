@@ -283,8 +283,12 @@ function StepKicker({ number, stepIndex, children }: { number: string; stepIndex
 }
 
 function StepHeadline({ children }: { children: ReactNode }) {
+	/* Q17 Wave D1-1 (Andy 2026-04-29 #11): label→heading vertical gap on
+	 * desktop felt cramped. Bumped mt-4 → mt-4 md:mt-8 (16px → 32px on
+	 * desktop) so the kicker breathes before the headline lands. Mobile
+	 * spacing unchanged. */
 	return (
-		<h3 className="text-trim mt-4 text-3xl leading-[1.15] text-white md:text-4xl lg:text-[2.75rem]">
+		<h3 className="text-trim mt-4 text-3xl leading-[1.15] text-white md:mt-8 md:text-4xl lg:text-[2.75rem]">
 			{children}
 		</h3>
 	)
