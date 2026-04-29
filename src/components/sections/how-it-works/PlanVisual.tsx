@@ -718,6 +718,7 @@ export default function PlanVisual({}: { devPin?: boolean } = {}) {
 
 	useEffect(() => {
 		if (reduced) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect -- prefers-reduced-motion short-circuit fast-forwards all sub-states; intentional one-shot batch update
 			setFilled(7)
 			setPulseFooter(false)
 			setIsComplete(true)
