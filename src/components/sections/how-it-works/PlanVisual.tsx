@@ -595,9 +595,12 @@ function CloningLabState({ reduced }: { reduced: boolean }) {
 				</div>
 			</div>
 
-			{/* Big label */}
+			{/* Big label. Wave C1 (Q17 A4): unified register to sans sentence-case
+			 * for both lines so the primary "Cloning Sarah" reads with the same
+			 * voice as the descriptive sub-line, removing the mono-caps /
+			 * sans-sentence break. */}
 			<div className='flex flex-col items-center gap-1'>
-				<span className='text-trim font-[family-name:var(--font-mono)] text-[14px] font-semibold uppercase tracking-[0.18em] text-cc-accent'>
+				<span className='text-trim font-sans text-[14px] font-semibold text-cc-accent'>
 					Cloning Sarah
 				</span>
 				<span className='text-trim font-sans text-[11px] text-cc-text-secondary'>
