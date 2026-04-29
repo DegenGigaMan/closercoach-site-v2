@@ -1,6 +1,15 @@
-/** @fileoverview /thank-you client component. "You're in." celebration header + 3-step next-actions
- * (Download with QR + badges, WhatsApp community join, follow on social). Dark surface with warm
- * celebration atmospheric accent. Minimal footer handled via Footer.tsx pathname detection. */
+/** @fileoverview /thank-you client component. Calendly demo-booking confirmation
+ * page (rewired Wave Y.15, Alim 2026-04-28). Header confirms the demo, three
+ * next-action cards (download the app while you wait, join the WhatsApp
+ * community, follow on social) keep the moment productive. Dark surface with
+ * warm celebration atmospheric accent. Minimal footer handled via Footer.tsx
+ * pathname detection.
+ *
+ * Wave Y.15 copy rewrite: prior framing said 'Trial Active / 3-day free trial
+ * just started' but the page is wired for Calendly demo redirects per W6.
+ * Confirmation copy now matches the demo flow. The QR + Install card stays
+ * (closers may still want to download the app after booking) but loses its
+ * 'trial' framing and reads as 'explore while you wait'. */
 
 'use client'
 
@@ -17,7 +26,7 @@ import {
 	LinkedinLogo,
 } from '@phosphor-icons/react'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
-import { BRAND, STATS } from '@/lib/constants'
+import { BRAND } from '@/lib/constants'
 
 const QR_DESTINATION = 'https://closercoach-site-v2.vercel.app/download?source=qr-thankyou'
 const WHATSAPP_URL = 'https://chat.whatsapp.com/HkG7urngZAV4wV9Ufd02Z1'
@@ -48,29 +57,31 @@ export default function ThankYouContent({ firstName }: Props) {
 			<AtmosphereNoise opacity={0.03} />
 
 			<div className='relative z-10 mx-auto max-w-3xl px-6 py-20 md:py-28'>
-				{/* Confirmation header */}
+				{/* Confirmation header (Wave Y.15: rewritten for Calendly demo
+				 * confirmation flow). Pill, headline, and subhead all confirm
+				 * the booking instead of activating a trial. */}
 				<div className='text-center'>
 					<span className='mx-auto inline-flex items-center gap-2 rounded-full border border-cc-accent/30 bg-cc-accent/8 px-4 py-1.5 text-xs font-medium text-cc-accent'>
 						<CheckCircle weight='fill' className='h-4 w-4' aria-hidden='true' />
-						<span className='font-mono uppercase tracking-[0.2em]'>Trial Active</span>
+						<span className='font-mono uppercase tracking-[0.2em]'>Demo Booked</span>
 					</span>
 
 					<h1 className='mt-6 display-lg text-white md:display-xl'>
 						{firstName ? (
 							<>
-								You are <span className='italic text-cc-accent'>in</span>, {firstName}.
+								See you <span className='italic text-cc-accent'>soon</span>, {firstName}.
 							</>
 						) : (
 							<>
-								You are <span className='italic text-cc-accent'>in</span>.
+								Your demo is <span className='italic text-cc-accent'>booked</span>.
 							</>
 						)}
 					</h1>
 					<p className='mt-5 text-lg text-cc-text-secondary md:text-xl'>
-						Your {STATS.trialDays}-day free trial just started.
+						Check your inbox for the calendar invite. We will see you on the call.
 					</p>
 					<p className='mt-3 text-sm text-cc-text-muted'>
-						Full access. No restrictions. Your first scored session takes 60 seconds.
+						While you wait, get the app on your phone and join the community.
 					</p>
 				</div>
 
@@ -90,9 +101,9 @@ export default function ThankYouContent({ firstName }: Props) {
 							</div>
 						</div>
 
-						<h2 className='mt-4 display-sm text-white'>Install CloserCoach</h2>
+						<h2 className='mt-4 display-sm text-white'>Get the app while you wait</h2>
 						<p className='mt-2 text-sm text-cc-text-secondary'>
-							Scan the code or tap a store badge.
+							Scan the code or tap a store badge to explore CloserCoach before your demo.
 						</p>
 
 						{/* QR + badges */}
@@ -242,13 +253,16 @@ export default function ThankYouContent({ firstName }: Props) {
 					</div>
 				</div>
 
-				{/* Reassurance block */}
+				{/* Reassurance block (Wave Y.15: reframed for demo flow). The
+				 * '60 seconds to a scored session' moment landed under the
+				 * trial framing; under the demo framing the guidance is to
+				 * come prepared so the call is productive. */}
 				<div className='mt-14 rounded-2xl border border-cc-surface-border bg-cc-surface/40 p-6 text-center md:p-8'>
 					<p className='font-mono text-[11px] uppercase tracking-[0.2em] text-cc-accent'>
-						Next 60 seconds
+						Before the call
 					</p>
 					<p className='mt-3 text-base text-cc-text-secondary md:text-lg'>
-						Open the app, pick your industry, run your first roleplay. You will have a scored session before this page even needs another look.
+						Bring the questions you want answered. We will walk through the product, your team setup, and the metrics we coach on so you know exactly what changes after rollout.
 					</p>
 				</div>
 			</div>
