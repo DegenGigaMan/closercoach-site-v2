@@ -27,7 +27,12 @@ import StepCanvas from './how-it-works/StepCanvas'
 import PlanVisual from './how-it-works/PlanVisual'
 import StepTwoVisual from './how-it-works/StepTwoVisual'
 import StepThreeVisual from './how-it-works/StepThreeVisual'
-import StepFourReview from './how-it-works/StepFourReview'
+/* Q17 Wave D2-1 (Andy 2026-04-29 #16+#17): Step 4 review swapped from the
+ * dense scorecard composite to a phone-mockup variant for elegance parity
+ * with preceding steps. Legacy non-phone variant remains importable from
+ * './how-it-works/StepFourReview' and is exposed at /lab/legacy-step-detail
+ * for fallback / comparison. */
+import StepFourReview from './how-it-works/StepFourReviewPhone'
 import StepOneMobileVisual from './how-it-works/_mobile/StepOneMobileVisual'
 import StepTwoMobileVisual from './how-it-works/_mobile/StepTwoMobileVisual'
 import StepThreeMobileVisual from './how-it-works/_mobile/StepThreeMobileVisual'
