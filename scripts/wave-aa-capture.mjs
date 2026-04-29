@@ -1,7 +1,16 @@
 /** Wave AA capture — verify hero entrance revert + Step 1/2/3 staged choreography.
- *  Captures hero (1440 + 390) + How-It-Works step rooms at multiple sub-states.
- *  Each step capture uses a FRESH page load so the inView trigger fires from a
- *  cold scroll, not a warm-already-in-view state. */
+ *
+ *  Wave C1 update (Q17 audit MR-Q17-CC-3):
+ *  - Step 3 + Step 4 sub-states now captured via `/lab/how-it-works?pin=<state>`
+ *    URL pins. This eliminates the inView race that was producing
+ *    `step3-stage-1-ringing-390.png` showing post-3F annotations on mobile.
+ *  - Step 1 early-frame timing tightened: capture polled at 200/400/700ms
+ *    after inView trigger so `stage-1-integrations` actually shows the
+ *    integrations pill landing pre-rail-draw.
+ *  - Hero unchanged (cold homepage load, three timed snapshots).
+ *
+ *  Each step capture uses a FRESH page load so the inView trigger fires from
+ *  a cold scroll, not a warm-already-in-view state. */
 
 import { chromium } from 'playwright'
 import { mkdirSync } from 'node:fs'
@@ -10,21 +19,21 @@ import { join } from 'node:path'
 const OUT = '/Users/degengigaman/Desktop/workspace/closercoach-site-v2/scratch/captures/playwright/wave-aa'
 mkdirSync(OUT, { recursive: true })
 
-const BASE = 'http://localhost:3000'
+const BASE = process.env.CC_BASE || 'http://localhost:3000'
 
 const VIEWPORTS = [
 	['1440', 1440, 900],
 	['390', 390, 844],
 ]
 
-async function freshPage(browser, w, h) {
+async function freshPage(browser, w, h, path = '') {
 	const context = await browser.newContext({
 		viewport: { width: w, height: h },
 		deviceScaleFactor: 2,
 		reducedMotion: 'no-preference',
 	})
 	const page = await context.newPage()
-	await page.goto(BASE, { waitUntil: 'networkidle', timeout: 30000 })
+	await page.goto(BASE + path, { waitUntil: 'networkidle', timeout: 30000 })
 	await page.evaluate(() => document.fonts.ready)
 	return { context, page }
 }
@@ -32,16 +41,14 @@ async function freshPage(browser, w, h) {
 async function scrollToStepRoom(page, stepNumber) {
 	/* Each StepRoom in the LEFT column contains a StepKicker rendering the
 	 * 2-digit step number (01/02/03) inside an absolutely-positioned
-	 * font-mono span. We look up the kicker for the requested number and
-	 * scroll its parent into view. This works for ALL steps regardless of
-	 * activeStep (the right-column visual mounts after we scroll). */
+	 * font-mono span. Scroll the kicker's StepRoom motion.div ancestor into
+	 * view so the right-column visual mounts and inView fires. */
 	return page.evaluate((n) => {
 		const padded = String(n).padStart(2, '0')
 		const spans = Array.from(document.querySelectorAll('span'))
 		for (const s of spans) {
 			if (s.textContent && s.textContent.trim() === padded
 				&& s.className.includes('font-[family-name:var(--font-mono)]')) {
-				/* climb to the StepRoom motion.div ancestor (~6 levels up) */
 				let el = s
 				for (let i = 0; i < 8 && el; i++) {
 					el = el.parentElement
@@ -64,87 +71,76 @@ async function scrollToStepRoom(page, stepNumber) {
 const browser = await chromium.launch({ headless: true })
 
 for (const [vpName, w, h] of VIEWPORTS) {
-	/* HERO: cold load, capture early frames so the entrance pacing is visible. */
+	/* HERO: cold homepage load, capture early frames so the entrance pacing
+	 * is visible. */
 	{
 		const { context, page } = await freshPage(browser, w, h)
-		// 0.4s -- early in entrance: badge + headline clipPath revealing
 		await page.waitForTimeout(400)
 		await page.screenshot({ path: join(OUT, `hero-stage-1-early-${vpName}.png`) })
-		// 1.2s -- italic accent locked, subhead in, CTAs landing
 		await page.waitForTimeout(800)
 		await page.screenshot({ path: join(OUT, `hero-stage-2-mid-${vpName}.png`) })
-		// 2.5s -- entire hero settled (phone + glow + app badges)
 		await page.waitForTimeout(1300)
 		await page.screenshot({ path: join(OUT, `hero-stage-3-settled-${vpName}.png`) })
 		await context.close()
 	}
 
-	/* STEP 1: cold-scroll to Step 1 room. */
+	/* STEP 1: cold homepage scroll. Step 1 has no URL pin (no sub-state
+	 * machine). Use tightened polling intervals from inView trigger so the
+	 * integrations-pill / meetings-caption landing frames are actually
+	 * captured rather than skipped. */
 	{
 		const { context, page } = await freshPage(browser, w, h)
 		const r1 = await scrollToStepRoom(page, 1)
 		console.log(`step1 vp=${vpName}`, r1)
-		// 0.4s -- container should still be near-empty (only integrations pill landing)
-		await page.waitForTimeout(400)
+		await page.waitForTimeout(200)
 		await page.screenshot({ path: join(OUT, `step1-stage-1-integrations-${vpName}.png`) })
-		// 1.6s -- rail drew, Today's Meetings caption + Sarah card just landing
-		await page.waitForTimeout(1200)
+		await page.waitForTimeout(500)
 		await page.screenshot({ path: join(OUT, `step1-stage-2-meetings-${vpName}.png`) })
-		// 3.0s -- cloning lab visible (right column populated, lab halo showing)
-		await page.waitForTimeout(1400)
+		await page.waitForTimeout(1100)
 		await page.screenshot({ path: join(OUT, `step1-stage-3-cloning-${vpName}.png`) })
-		// 6.2s -- card snap-in + typewriter cascade in progress
-		await page.waitForTimeout(3200)
+		await page.waitForTimeout(2000)
 		await page.screenshot({ path: join(OUT, `step1-stage-4-card-typewriter-${vpName}.png`) })
-		// 8.0s -- settled card with all fields rendered
-		await page.waitForTimeout(1800)
+		await page.waitForTimeout(2500)
 		await page.screenshot({ path: join(OUT, `step1-stage-5-settled-${vpName}.png`) })
 		await context.close()
 	}
 
-	/* STEP 2: cold-scroll to Step 2 room. */
+	/* STEP 2: cold homepage scroll. StepTwoVisual has no sub-state machine. */
 	{
 		const { context, page } = await freshPage(browser, w, h)
 		const r2 = await scrollToStepRoom(page, 2)
 		console.log(`step2 vp=${vpName}`, r2)
-		// 0.5s -- AI Clone card landed, roleplay shell still entering
 		await page.waitForTimeout(500)
 		await page.screenshot({ path: join(OUT, `step2-stage-1-clone-card-${vpName}.png`) })
-		// 1.4s -- shell + first AI message
 		await page.waitForTimeout(900)
 		await page.screenshot({ path: join(OUT, `step2-stage-2-first-message-${vpName}.png`) })
-		// 2.7s -- mid-stagger
 		await page.waitForTimeout(1300)
 		await page.screenshot({ path: join(OUT, `step2-stage-3-mid-stagger-${vpName}.png`) })
-		// 5.0s -- settled
 		await page.waitForTimeout(2300)
 		await page.screenshot({ path: join(OUT, `step2-stage-4-settled-${vpName}.png`) })
 		await context.close()
 	}
 
-	/* STEP 3: cold-scroll to Step 3 room. */
-	{
-		const { context, page } = await freshPage(browser, w, h)
+	/* STEP 3: PIN MODE via /lab/how-it-works?pin=<state>. Each pin captures a
+	 * deterministic sub-state without racing the auto-advance chain. The
+	 * mobile-3-ringing race that captured post-3F annotations is now
+	 * impossible because the state machine is bypassed entirely. */
+	const STEP3_PINS = [
+		['3A', 'step3-stage-1-ringing'],
+		['3B', 'step3-stage-2-connecting'],
+		['3C', 'step3-stage-3-live-message1'],
+		['3C', 'step3-stage-4-live-mid'],
+		['3D', 'step3-stage-5-record'],
+		['3F', 'step3-stage-6-settled'],
+	]
+	for (const [pin, label] of STEP3_PINS) {
+		const { context, page } = await freshPage(browser, w, h, `/lab/how-it-works?pin=${pin}`)
 		const r3 = await scrollToStepRoom(page, 3)
-		console.log(`step3 vp=${vpName}`, r3)
-		// 1.4s -- early ringing/dialer phase (inside 3A ringing window)
-		await page.waitForTimeout(1400)
-		await page.screenshot({ path: join(OUT, `step3-stage-1-ringing-${vpName}.png`) })
-		// 3.4s -- connecting phase (inside 3B linger)
-		await page.waitForTimeout(2000)
-		await page.screenshot({ path: join(OUT, `step3-stage-2-connecting-${vpName}.png`) })
-		// 5.2s -- live call early (first AI transcript landing)
-		await page.waitForTimeout(1800)
-		await page.screenshot({ path: join(OUT, `step3-stage-3-live-message1-${vpName}.png`) })
-		// 6.7s -- live call mid (user message + chip)
-		await page.waitForTimeout(1500)
-		await page.screenshot({ path: join(OUT, `step3-stage-4-live-mid-${vpName}.png`) })
-		// 9.0s -- mode swap (record mode)
-		await page.waitForTimeout(2300)
-		await page.screenshot({ path: join(OUT, `step3-stage-5-record-${vpName}.png`) })
-		// 11.5s -- annotations + settled
-		await page.waitForTimeout(2500)
-		await page.screenshot({ path: join(OUT, `step3-stage-6-settled-${vpName}.png`) })
+		console.log(`step3-${pin} vp=${vpName}`, r3)
+		/* short settle so the pinned sub-state renders any internal animations
+		 * (typewriter for live-call messages, annotation springs for 3E/3F). */
+		await page.waitForTimeout(label === 'step3-stage-4-live-mid' ? 1500 : 600)
+		await page.screenshot({ path: join(OUT, `${label}-${vpName}.png`) })
 		await context.close()
 	}
 }
