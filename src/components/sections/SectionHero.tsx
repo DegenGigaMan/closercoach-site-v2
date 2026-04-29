@@ -17,7 +17,6 @@ import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react'
 import { BRAND, CTA, STATS } from '@/lib/constants'
 import MotionCTA from '@/components/shared/motion-cta'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
-import ParticleCanvas from '@/components/atmosphere/particle-canvas'
 import AnimatedBadge from '@/components/ui/animated-badge'
 import HeroPhoneV2 from '@/components/hero/hero-phone-v2'
 
@@ -103,8 +102,17 @@ export default function SectionHero() {
 			{/* L2: Noise texture. */}
 			<AtmosphereNoise opacity={0.035} />
 
-			{/* L3: Particles -- desktop only (JS-gated so mobile skips the canvas entirely). */}
-			{isDesktop && <ParticleCanvas mode='ambient' />}
+			{/* L3: Particles REMOVED Wave Y.13 (Andy approved, Alim 2026-04-28
+			 * 'okay with LESS on the visuals' + Wave X.5 reduction surface).
+			 * Surfaced as medium-confidence reduction candidate B in Wave X.5:
+			 * decorative ornament without a story beat — sits on top of the
+			 * L1 emerald gradient, L2 noise, and the 3-layer phone glow,
+			 * adding an ambient layer that competes with the phone's
+			 * product-as-light-source role per R7 v3 D8.
+			 *
+			 * If Andy wants particles back, restore from main HEAD 06d0415:
+			 *   - Add `import ParticleCanvas from '@/components/atmosphere/particle-canvas'`
+			 *   - Insert `{isDesktop && <ParticleCanvas mode='ambient' />}` here. */}
 
 			{/* H11: Progressive blur on hero bottom edge -- soft transition to S2. */}
 			<div
