@@ -12,7 +12,11 @@
  * SectionPressStrip): the prior "Duolingo for sales" line was flagged as
  * redundant with ProofConnectorB's App Store quote, but the Hypepotamus
  * angle is editorial press framing — not customer testimony — so the two
- * surfaces are no longer redundant. */
+ * surfaces are no longer redundant.
+ *
+ * Wave Z.1 P1-A (2026-04-28): attribution wrapped in source link to the
+ * Hypepotamus article so the editorial press framing is verifiably
+ * third-party. Subtle hover underline; new tab + noopener noreferrer. */
 
 'use client'
 
@@ -46,8 +50,11 @@ export default function SectionPressStrip() {
 						to sales.
 					</p>
 					<footer>
-						<span
-							className='text-trim font-[family-name:var(--font-mono)] uppercase text-cc-text-muted'
+						<a
+							href='https://hypepotamus.com/startup-news/prizepicks-alum-launches-closercoach-ai-sales-coaching-atlanta/'
+							target='_blank'
+							rel='noopener noreferrer'
+							className='text-trim font-[family-name:var(--font-mono)] uppercase text-cc-text-muted underline-offset-4 transition-colors hover:text-white hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
 							style={{
 								fontSize: '10px',
 								lineHeight: '15px',
@@ -55,7 +62,7 @@ export default function SectionPressStrip() {
 							}}
 						>
 							Hypepotamus, March 2026
-						</span>
+						</a>
 					</footer>
 				</blockquote>
 			</div>
