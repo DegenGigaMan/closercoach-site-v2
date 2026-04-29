@@ -23,8 +23,6 @@
 
 import { useMemo, useState } from 'react'
 import {
-	CaretLeft,
-	CaretRight,
 	MagnifyingGlass,
 	Megaphone,
 	ShieldCheck,
@@ -93,20 +91,9 @@ const GRADE_TONE_STYLES: Record<GradeTone, { bg: string; border: string; text: s
 	},
 }
 
-/* Finding number for the bottom pill. 4 industries × 5 dimensions = 20 total
- * examples; compute the 1-based index from the current selection so the pill
- * reads "Finding 1/20" through "Finding 20/20" in a stable row-major order. */
-function findingIndex(
-	industries: readonly string[],
-	dimensions: readonly string[],
-	industry: string,
-	dimension: string,
-): number {
-	const iIdx = industries.indexOf(industry)
-	const dIdx = dimensions.indexOf(dimension)
-	if (iIdx < 0 || dIdx < 0) return 1
-	return iIdx * dimensions.length + dIdx + 1
-}
+/* Wave Y.6 (Alim 2026-04-28): findingIndex helper REMOVED with the Finding
+ * N/total pill. The function is no longer referenced anywhere; the sidebar
+ * dimension list + industry tabs are the canonical navigation surface. */
 
 /**
  * @description Renders the S3 Step 4 Review section: kicker + headline + body
@@ -127,32 +114,9 @@ export default function StepFourReview() {
 		[examples, industry, dimension],
 	)
 	const activeGrade = gradeTone(active.grade)
-	const total = industries.length * dimensions.length
-	const finding = findingIndex(industries, dimensions, industry, dimension)
-
-	const stepPrev = () => {
-		const dIdx = dimensions.indexOf(dimension)
-		if (dIdx > 0) {
-			setDimension(dimensions[dIdx - 1])
-			return
-		}
-		const iIdx = industries.indexOf(industry)
-		const nextIndustry = iIdx > 0 ? industries[iIdx - 1] : industries[industries.length - 1]
-		setIndustry(nextIndustry)
-		setDimension(dimensions[dimensions.length - 1])
-	}
-
-	const stepNext = () => {
-		const dIdx = dimensions.indexOf(dimension)
-		if (dIdx < dimensions.length - 1) {
-			setDimension(dimensions[dIdx + 1])
-			return
-		}
-		const iIdx = industries.indexOf(industry)
-		const nextIndustry = iIdx < industries.length - 1 ? industries[iIdx + 1] : industries[0]
-		setIndustry(nextIndustry)
-		setDimension(dimensions[0])
-	}
+	/* Wave Y.6 (Alim 2026-04-28): total/finding/stepPrev/stepNext removed
+	 * with the Finding N/total pill. Industry tabs + sidebar dimension list
+	 * are the only navigation surface now. */
 
 	return (
 		<div className='mx-auto max-w-7xl px-6 pb-32 md:px-12 lg:px-16 lg:pb-40'>
@@ -296,36 +260,12 @@ export default function StepFourReview() {
 								/>
 							</div>
 
-							{/* Finding counter pill */}
-							<div
-								className='inline-flex items-center justify-end gap-4 self-start rounded-full border border-white/[0.06] px-[13px] py-[5px]'
-								style={{
-									backgroundColor: 'rgba(26,29,38,0.7)',
-									boxShadow: '0px 4px 16px 0px rgba(0,0,0,0.4)',
-								}}
-							>
-								<span className='font-[family-name:var(--font-mono)] text-[10px] uppercase leading-[15px] text-cc-accent' style={{ letterSpacing: '2px' }}>
-									Finding {finding}/{total}
-								</span>
-								<div className='flex items-center gap-1'>
-									<button
-										type='button'
-										aria-label='Previous finding'
-										onClick={stepPrev}
-										className='flex h-[10px] w-[10px] items-center justify-center text-cc-accent transition-colors hover:text-cc-accent-hover'
-									>
-										<CaretLeft size={10} weight='bold' />
-									</button>
-									<button
-										type='button'
-										aria-label='Next finding'
-										onClick={stepNext}
-										className='flex h-[10px] w-[10px] items-center justify-center text-cc-accent transition-colors hover:text-cc-accent-hover'
-									>
-										<CaretRight size={10} weight='bold' />
-									</button>
-								</div>
-							</div>
+							{/* Wave Y.6 (Alim 2026-04-28): Finding N/total prev/next pill
+							 * REMOVED. Per 'See why you're losing deals — current too
+							 * complex' directive, reduce moving parts: sidebar dimension
+							 * list + industry tabs already provide the navigation
+							 * surface; the secondary Finding counter stacked another
+							 * paginator on top and read as chrome overhead. */}
 						</div>
 					</div>
 				</div>
