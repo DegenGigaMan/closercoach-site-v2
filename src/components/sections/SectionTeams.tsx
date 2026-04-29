@@ -345,12 +345,16 @@ export default function SectionTeams(): ReactElement {
 			 * 96px-tall absolute gradient at the top: cream (#F5F0EB) at the
 			 * very top fading through warm-mid to cc-foundation, so the eye
 			 * reads a soft gradient instead of a hard surface flip. */}
+			{/* Wave Z.4 P2-C (2026-04-28): warm-mid stop swapped from #C9C0B2
+			 * (grey-leaning) to #D4C9B7 (warmer) so the cream surface tone
+			 * carries through the bridge instead of cooling off mid-fade.
+			 * DD R1 C3 / S+ Audit P2-C. */}
 			<div
 				className='pointer-events-none absolute inset-x-0 top-0 z-0 h-24 md:h-32'
 				aria-hidden='true'
 				style={{
 					background:
-						'linear-gradient(180deg, #F5F0EB 0%, #C9C0B2 30%, #4A443E 65%, #0D0F14 100%)',
+						'linear-gradient(180deg, #F5F0EB 0%, #D4C9B7 30%, #4A443E 65%, #0D0F14 100%)',
 				}}
 			/>
 
