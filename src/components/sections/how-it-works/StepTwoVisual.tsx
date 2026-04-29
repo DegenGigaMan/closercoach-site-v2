@@ -51,23 +51,56 @@ const WAVE_BARS: ReadonlyArray<readonly [number, number]> = [
 ] as const
 
 /* Sequence delays (seconds) relative to inView. Coaching chips piggyback on
- * user-message delays via +0.35s. Gauge fill begins at first AI message. */
+ * user-message delays via +0.35s. Gauge fill begins at first AI message.
+ *
+ * Wave AA.4 (Andy 2026-04-28): staged entry choreography. Andy verbatim:
+ * "the container should start essentially empty with the first thing
+ * coming in being the AI clone component. And then the roleplay session
+ * on the right side, that starts popping in as well. You can retain the
+ * bottom interest and the waveform recording part to be there when the
+ * roleplay session comes up. And then the messages come in one by one,
+ * just like you have it already."
+ *
+ * Sequence (relative to inView):
+ *   0.00s  EMPTY container
+ *   0.10s  AI Clone card (left, with badge + portrait + meter)
+ *   0.95s  Roleplay session shell pops in (timeline rail + header +
+ *          interest gauge + audio bar at the bottom)
+ *   1.30s  AI message 1
+ *   1.95s  User message 1 + chip
+ *   2.65s  AI message 2
+ *   3.30s  User message 2 + chip
+ *   3.95s  Suggested-responses pill
+ */
+const SHELL = {
+	clone: 0.10,
+	roleplay: 0.95,
+} as const
+
 const DELAY = {
-	ai1: 0.25,
-	user1: 0.85,
-	ai2: 1.5,
-	user2: 2.1,
-	pill: 2.75,
-	gaugeStart: 0.25,
+	ai1: 1.30,
+	user1: 1.95,
+	ai2: 2.65,
+	user2: 3.30,
+	pill: 3.95,
+	gaugeStart: 1.10,
 } as const
 
 const EASE: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94]
 
 /* ─── AI Clone Card (left column) ─────────────────────────── */
 
-function CloneCard() {
+function CloneCard({ inView, reduced }: { inView: boolean; reduced: boolean }) {
 	return (
-		<div className='relative w-[213px] shrink-0'>
+		<motion.div
+			className='relative w-[213px] shrink-0'
+			initial={{ opacity: 0, scale: 0.94, y: 8 }}
+			animate={inView ? { opacity: 1, scale: 1, y: 0 } : undefined}
+			transition={reduced
+				? { duration: 0 }
+				: { type: 'spring', stiffness: 320, damping: 24, delay: SHELL.clone }
+			}
+		>
 			{/* Clone tab badge — Figma 40:1482. 84 × 43 positioned at (0, -27.5)
 			 * relative to the card. Inner padding pl-[9px] pr-[9px] pt-[9px]
 			 * pb-[25px]; the 25px bottom padding tucks the badge's lower 25px
@@ -150,7 +183,7 @@ function CloneCard() {
 					</div>
 				</div>
 			</div>
-		</div>
+		</motion.div>
 	)
 }
 
@@ -494,8 +527,21 @@ function SuggestedPill({ inView, reduced, delay }: { inView: boolean; reduced: b
 /* ─── Roleplay chat column ─────────────────────────────────── */
 
 function RoleplayChat({ inView, reduced }: { inView: boolean; reduced: boolean }) {
+	/* Wave AA.4: shell (timeline + header + bottom bar) pops in at SHELL.roleplay
+	 * as one cohesive unit. Per Andy: "the roleplay session on the right side,
+	 * that starts popping in as well. You can retain the bottom interest and
+	 * the waveform recording part to be there when the roleplay session comes
+	 * up". Messages then stagger in via DELAY.ai1..user2 (already implemented). */
 	return (
-		<div className='flex items-stretch gap-3'>
+		<motion.div
+			className='flex items-stretch gap-3'
+			initial={{ opacity: 0, y: 12 }}
+			animate={inView ? { opacity: 1, y: 0 } : undefined}
+			transition={reduced
+				? { duration: 0 }
+				: { duration: 0.5, ease: EASE, delay: SHELL.roleplay }
+			}
+		>
 			{/* Timeline: user icon + a hairline that stretches down to the bottom of
 			 * the chat column. items-stretch on the parent lets flex-1 on the line
 			 * fill the full column height. */}
@@ -547,7 +593,7 @@ function RoleplayChat({ inView, reduced }: { inView: boolean; reduced: boolean }
 					<AudioBar inView={inView} reduced={reduced} />
 				</div>
 			</div>
-		</div>
+		</motion.div>
 	)
 }
 
@@ -560,21 +606,22 @@ export default function StepTwoVisual({ devPin: _devPin = false }: { devPin?: bo
 	const rootRef = useRef<HTMLDivElement>(null)
 	const inView = useInView(rootRef, { amount: 0.3, once: true })
 
+	/* Wave AA.4: outer container is a no-fade frame so children own their own
+	 * staged-entry timing. CloneCard pops in at SHELL.clone, RoleplayChat
+	 * shell pops in at SHELL.roleplay, then messages stagger via DELAY.ai1..
+	 * user2. The container starts essentially empty per Andy's directive. */
 	return (
-		<motion.div
+		<div
 			ref={rootRef}
 			data-step='2'
 			className='relative flex h-full w-full items-center justify-center'
-			initial={{ opacity: 0, y: 12 }}
-			animate={inView ? { opacity: 1, y: 0 } : undefined}
-			transition={reduced ? { duration: 0 } : { duration: 0.55, ease: EASE }}
 		>
 			<div className='scale-[0.75] sm:scale-90 md:scale-[0.95] lg:scale-100'>
 				<div className='flex items-start gap-6'>
-					<CloneCard />
+					<CloneCard inView={inView} reduced={reduced} />
 					<RoleplayChat inView={inView} reduced={reduced} />
 				</div>
 			</div>
-		</motion.div>
+		</div>
 	)
 }
