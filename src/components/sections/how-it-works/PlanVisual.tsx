@@ -612,13 +612,18 @@ function CloningLabState({ reduced }: { reduced: boolean }) {
 }
 
 /* Connector "link" arrow — hangs off the left of the clone column at the
- * vertical level of Sarah's active meeting card. Figma: w=82, h=6,
- * positioned at left=-82, top=191 relative to the clone-visual container.
- * SVG keeps the gradient + endpoint dots in one paint pass.
+ * vertical level of Sarah's active meeting card. SVG keeps the gradient +
+ * endpoint dots in one paint pass.
  *
  * Wave AA.3: optional staged draw via `inView` + `delay`. The line draws
  * left -> right after Marcus's card lands, leading the eye into the clone
- * column. Reduced-motion renders settled. */
+ * column. Reduced-motion renders settled.
+ *
+ * Q17 Wave D1-2 (Andy 2026-04-29 #12a): connector y-anchor moved from
+ * top-[191px] to top-[224px] to vertically center against the Sarah card
+ * (measured live: Sarah card center at relY ~227.5; connector svg is 6px
+ * tall, so top = 227.5 - 3 = 224.5). Previously the connector sat ~36px
+ * above the card center, breaking the eye-line from "Sarah Chen" → clone. */
 function Connector({ inView, reduced, delay }: {
 	inView?: boolean
 	reduced?: boolean
@@ -631,7 +636,7 @@ function Connector({ inView, reduced, delay }: {
 			width='82'
 			height='6'
 			viewBox='0 0 82 6'
-			className='pointer-events-none absolute -left-[82px] top-[191px]'
+			className='pointer-events-none absolute -left-[82px] top-[224px]'
 		>
 			<defs>
 				<linearGradient id='cc-plan-link' x1='0%' y1='50%' x2='100%' y2='50%'>
