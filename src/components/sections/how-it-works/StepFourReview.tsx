@@ -134,8 +134,13 @@ export default function StepFourReview() {
 			</div>
 
 			{/* Scorecard composite — Figma 61:3023. Top industry pill row, then
-			 * the framed scorecard (sidebar + content). */}
-			<div className='mx-auto mt-12 flex w-full max-w-[800px] flex-col items-center gap-8'>
+			 * the framed scorecard (sidebar + content).
+			 *
+			 * Wave Z.3 P2-B (2026-04-28): widened from max-w-[800px] to
+			 * max-w-[1100px] so the composite no longer floats narrow against
+			 * the surrounding max-w-7xl Step rooms at 1440. DD R1 C2 / S+
+			 * Audit P2-B. */}
+			<div className='mx-auto mt-12 flex w-full max-w-[1100px] flex-col items-center gap-8'>
 				{/* Industry pill row */}
 				<div
 					role='tablist'
