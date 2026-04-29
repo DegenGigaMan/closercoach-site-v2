@@ -386,7 +386,11 @@ function Step2Practice({ devPin }: { devPin: boolean }) {
 
 			{devPin && null}
 
-			<div className="mt-8 inline-flex items-center gap-3 rounded-full border border-cc-surface-border bg-cc-surface-card/40 px-4 py-2">
+			{/* Q17 Wave D1-4 (Andy 2026-04-29 #13): pill was stretching to
+			 * full column width because the parent flex-col defaults to
+			 * align-items: stretch. inline-flex alone doesn't escape that.
+			 * Added self-start + w-fit so the pill hugs its text content. */}
+			<div className="mt-8 inline-flex w-fit items-center gap-3 self-start rounded-full border border-cc-surface-border bg-cc-surface-card/40 px-4 py-2">
 				<span className="font-[family-name:var(--font-mono)] text-sm text-cc-accent">5 min / week</span>
 				<span className="text-xs text-cc-text-secondary">=</span>
 				<span className="font-[family-name:var(--font-mono)] text-sm text-white">2 practice rounds</span>
