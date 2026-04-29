@@ -72,7 +72,9 @@ function Float({ children, delay = 0, className = '', style }: FloatProps): Reac
 			style={style}
 			initial={{ opacity: 0, y: 16 }}
 			animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-			transition={reduced ? { duration: 0 } : { duration: 0.6, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+			/* Wave Y.8 pacing pass: 0.6 -> 0.72 to align with the global
+			 * ScrollReveal cadence. */
+			transition={reduced ? { duration: 0 } : { duration: 0.72, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
 		>
 			{children}
 		</motion.div>

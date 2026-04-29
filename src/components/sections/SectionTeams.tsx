@@ -334,6 +334,26 @@ export default function SectionTeams(): ReactElement {
 			data-surface='dark-teams'
 			className='relative overflow-hidden bg-cc-foundation py-24 md:py-32'
 		>
+			{/* Wave Y.10 (Alim 2026-04-28: 'transition looks bad'): warm-to-dark
+			 * surface bridge at the top of S6 Teams. The flow Results (warm
+			 * #F5F0EB) -> Teams (dark #0D0F14) had no connector — the cream
+			 * surface terminated at the Results section bottom edge and the
+			 * dark cc-foundation slammed in at the Teams section top edge,
+			 * producing a sharp horizontal band. ProofConnectorB handles the
+			 * Features (dark) -> Results (warm) transition; this bridge is
+			 * its mirror image at the Results -> Teams handoff. Single
+			 * 96px-tall absolute gradient at the top: cream (#F5F0EB) at the
+			 * very top fading through warm-mid to cc-foundation, so the eye
+			 * reads a soft gradient instead of a hard surface flip. */}
+			<div
+				className='pointer-events-none absolute inset-x-0 top-0 z-0 h-24 md:h-32'
+				aria-hidden='true'
+				style={{
+					background:
+						'linear-gradient(180deg, #F5F0EB 0%, #C9C0B2 30%, #4A443E 65%, #0D0F14 100%)',
+				}}
+			/>
+
 			<AtmosphereNoise opacity={0.02} />
 
 			{/* Wave M (2026-04-26): cap at Figma master-frame 1232px. Wave J.3's
