@@ -29,12 +29,12 @@
 
 'use client'
 
-import { useRef, type ReactElement } from 'react'
+import { useRef, useState, type ReactElement } from 'react'
 import { motion, useInView, useReducedMotion } from 'motion/react'
 import Image from 'next/image'
 import MotionCTA from '@/components/shared/motion-cta'
 import { CTA } from '@/lib/constants'
-import { Star, AppleLogo } from '@phosphor-icons/react'
+import { Star } from '@phosphor-icons/react'
 import FloatingProofComposition from './results/FloatingProofComposition'
 
 /* ── Tokens used inline where Tailwind token lookup is insufficient for AA ── */
@@ -296,8 +296,6 @@ type Review = {
 	date: string
 }
 
-const YELLOW_STAR = '#FBBC04' // Figma Buttercup — brighter than AMBER_AA for star fills.
-
 /* Verbatim review bodies (Wave R baseline). Titles + reviewer handles + dates
  * added Wave Y.7 to match App Store review-box semantics (title is a real
  * App Store metadata field; handles + dates are public on each review). */
@@ -325,96 +323,101 @@ const APP_STORE_REVIEWS: ReadonlyArray<Review> = [
 	},
 ] as const
 
+/* Q17 Wave E (Andy 2026-04-29 #20 / CC-D3): swap to light-on-dark App Store
+   variant locked from /lab/app-store-reviews-explorations Variant A. Card
+   structure mirrors the real iOS App Store review box:
+     - Bold title top-left + "Xy ago" timestamp top-right
+     - 5 stars row (iOS orange #FF9500) + username right-aligned
+     - 2-paragraph body with line-clamp-3 + "more" link to expand
+   Light cream cards (#FAFAF8) on the dark surface band — see the wrapping
+   <div data-surface='dark-reviews-band'> below for the layered-depth context. */
+const STAR_COLOR = '#FF9500' // iOS orange (Variant A lock)
+
+function TruncatedBody({ body }: { body: string }): ReactElement {
+	const [expanded, setExpanded] = useState(false)
+	return (
+		<div>
+			<p
+				className={expanded ? '' : 'line-clamp-3'}
+				style={{
+					fontFamily: 'var(--font-sans)',
+					fontSize: '13px',
+					lineHeight: '18px',
+					color: '#1C1C1E',
+				}}
+			>
+				{body}
+			</p>
+			{!expanded && (
+				<button
+					type='button'
+					onClick={() => setExpanded(true)}
+					className='mt-1 inline-block text-left'
+					style={{
+						fontFamily: 'var(--font-sans)',
+						fontSize: '13px',
+						lineHeight: '18px',
+						color: '#007AFF',
+					}}
+				>
+					more
+				</button>
+			)}
+		</div>
+	)
+}
+
 function ReviewCard({ title, quote, reviewer, date }: Review): ReactElement {
 	return (
 		<div
-			className='group flex h-full flex-col gap-2.5 rounded-[18px] p-[18px] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(13,15,20,0.08)]'
+			className='flex h-full flex-col gap-3 rounded-[14px] p-4 shadow-[0_8px_28px_rgba(0,0,0,0.35)]'
 			style={{
-				backgroundColor: 'rgba(250,250,248,0.96)',
-				border: '1px solid rgba(229,221,212,0.8)',
-				boxShadow: '0 2px 16px rgba(0,0,0,0.04)',
+				backgroundColor: '#FAFAF8',
+				border: '1px solid rgba(0,0,0,0.08)',
 			}}
 		>
-			{/* Header row: stars LEFT, "App Store" wordmark RIGHT — matches
-			    the real App Store review-box header where the rating sits
-			    next to the platform chip. */}
-			<div className='flex items-center justify-between'>
-				<div role='img' className='flex items-center gap-[2px]' aria-label='Five stars'>
-					{Array.from({ length: 5 }, (_, i) => (
-						<Star key={i} size={14} weight='fill' style={{ color: YELLOW_STAR }} aria-hidden='true' />
-					))}
-				</div>
-				<span
-					className='inline-flex items-center gap-1'
+			{/* Title row + timestamp top-right */}
+			<div className='flex items-start justify-between gap-3'>
+				<h4
+					className='leading-tight'
 					style={{
 						fontFamily: 'var(--font-sans)',
-						fontSize: '11px',
-						lineHeight: '14px',
-						color: SLATE_MUTED,
+						fontWeight: 700,
+						fontSize: '15px',
+						color: '#1C1C1E',
+						letterSpacing: '-0.1px',
 					}}
 				>
-					<AppleLogo size={11} weight='fill' style={{ color: SLATE_MUTED }} aria-hidden='true' />
-					<span>App Store</span>
-				</span>
-			</div>
-
-			{/* Review title — semibold, San Francisco-equivalent (Inter on web).
-			    Matches the prominent title line in every real iOS review box. */}
-			<h4
-				className='text-cc-text-primary-warm'
-				style={{
-					fontFamily: 'var(--font-sans)',
-					fontWeight: 600,
-					fontSize: '15px',
-					lineHeight: '20px',
-					letterSpacing: '-0.1px',
-				}}
-			>
-				{title}
-			</h4>
-
-			{/* Body — flex-1 so cards equalize height across the 3-up grid.
-			    Quote marks dropped: real App Store review bodies do not wrap
-			    in curly quotes. */}
-			<p
-				className='flex-1 text-cc-text-primary-warm'
-				style={{
-					fontFamily: 'var(--font-sans)',
-					fontSize: '13.5px',
-					lineHeight: '21px',
-				}}
-			>
-				{quote}
-			</p>
-
-			{/* Footer: handle + dot + date (Apple's review byline format). */}
-			<div
-				className='mt-auto flex items-center gap-1.5 pt-2'
-				style={{ borderTop: '1px solid rgba(13,15,20,0.06)' }}
-			>
+					{title}
+				</h4>
 				<span
-					style={{
-						fontFamily: 'var(--font-sans)',
-						fontWeight: 500,
-						fontSize: '12px',
-						lineHeight: '16px',
-						color: SLATE_BODY,
-					}}
-				>
-					{reviewer}
-				</span>
-				<span aria-hidden='true' style={{ color: SLATE_MUTED, fontSize: '12px' }}>·</span>
-				<span
-					style={{
-						fontFamily: 'var(--font-sans)',
-						fontSize: '12px',
-						lineHeight: '16px',
-						color: SLATE_MUTED,
-					}}
+					className='shrink-0'
+					style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: '#8E8E93' }}
 				>
 					{date}
 				</span>
 			</div>
+
+			{/* Stars (5 colored) + username right-aligned */}
+			<div className='flex items-center justify-between'>
+				<div role='img' aria-label='5 out of 5 stars' className='flex items-center gap-[1px]'>
+					{Array.from({ length: 5 }, (_, i) => (
+						<Star
+							key={i}
+							size={14}
+							weight='fill'
+							style={{ color: STAR_COLOR }}
+							aria-hidden='true'
+						/>
+					))}
+				</div>
+				<span style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: '#8E8E93' }}>
+					{reviewer}
+				</span>
+			</div>
+
+			{/* Truncated body + "more" link */}
+			<TruncatedBody body={quote} />
 		</div>
 	)
 }
@@ -441,8 +444,8 @@ export default function SectionResults(): ReactElement {
 				<FloatingProofComposition />
 			</div>
 
-			{/* ── Below-billboard content ── */}
-			<div className='mx-auto max-w-7xl px-6 pb-16 md:pb-24'>
+			{/* ── Below-billboard content (top: warm pill + headline) ── */}
+			<div className='mx-auto max-w-7xl px-6'>
 				{/* Context pill + billboard title (Figma 1:8353). Pill carries the
 				 * quota stat with red/emerald accents; title below in Lora Bold
 				 * 48px anchors the App Store Review block. */}
@@ -477,14 +480,19 @@ export default function SectionResults(): ReactElement {
 						Top sales producers are training on CloserCoach at least 2 hours/week.
 					</h3>
 				</Reveal>
+			</div>
 
-				{/* App Store review cards (Figma 1:8359). 3 cards @ 400px each on
-				 * desktop, stack on mobile.
-				 *
-				 * Wave Z.6 P2-E (2026-04-28): per-card stagger tightened from
-				 * 0.22s to 0.12s so all three cards land within the same fast
-				 * scroll envelope. DD R1 C5 / S+ Audit P2-E. */}
-				<div className='mt-12 grid grid-cols-1 gap-4 md:mt-16 md:grid-cols-3'>
+			{/* ── Q17 Wave E (Andy 2026-04-29 #20 / CC-D3): edge-to-edge dark
+			 * surface band hosting the App Store reviews per /lab/app-store-
+			 * reviews-explorations Variant A. Cream cards on cc-foundation give
+			 * the layered light-on-dark depth that mirrors actual App Store
+			 * visual grammar. Wave Z.6 P2-E stagger preserved.
+			 *
+			 * Sits OUTSIDE the warm max-w-7xl wrapper so the dark band is
+			 * edge-to-edge of the viewport. The cards inner grid restores the
+			 * max-w-7xl + px-6 constraint. */}
+			<div data-surface='dark-reviews-band' className='mt-12 bg-cc-foundation py-12 md:mt-16 md:py-16'>
+				<div className='mx-auto grid max-w-7xl grid-cols-1 gap-4 px-6 md:grid-cols-3'>
 					{APP_STORE_REVIEWS.map((r, i) => (
 						<Reveal key={i} delay={i * 0.12}>
 							<ReviewCard
@@ -496,11 +504,17 @@ export default function SectionResults(): ReactElement {
 						</Reveal>
 					))}
 				</div>
+			</div>
 
+			{/* ── Below-reviews content (back to warm: anchor + tier cards + ego appeal + CTA) ── */}
+			<div className='mx-auto max-w-7xl px-6 pb-16 md:pb-24'>
 				{/* Review count anchor (Figma 1:8435). "378+" in Lora Bold Italic
 				 * emerald; the rest in Inter Medium uppercase slate. Sits directly
-				 * beneath the 3 App Store review cards per Andy 2026-04-27. */}
-				<Reveal className='mt-8 md:mt-10' delay={0.05}>
+				 * beneath the 3 App Store review cards per Andy 2026-04-27.
+				 *
+				 * Q17 Wave E: spacing bumped from mt-8/mt-10 to pt-12/pt-16 to
+				 * compensate for the dark band's bottom padding boundary. */}
+				<Reveal className='pt-12 md:pt-16' delay={0.05}>
 					<p
 						className='text-trim text-center uppercase text-cc-text-secondary-warm'
 						style={{
