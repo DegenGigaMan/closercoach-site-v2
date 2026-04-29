@@ -106,10 +106,27 @@ const PHASE = {
 	footerPulse: 6.10,
 } as const
 
-/* Per-field typewriter stagger inside the clone card. Each field starts
- * FIELD_TYPE_GAP seconds after the previous one, beginning ~0.35s after
- * the card spring lands so the frame settles before the type starts. */
+/* Per-field typewriter stagger inside the clone card. Each field's `start`
+ * flag flips false -> true at FIELD_START[label] (absolute seconds from the
+ * sequence root, NOT relative to card mount). Card mount lands at
+ * PHASE.cardReveal (5.40s) and the first field begins ~0.35s later so the
+ * card spring settles before any typing starts. FIELD_TYPE_GAP staggers
+ * subsequent fields. Using flag-flips (not initialDelay inside TextType)
+ * matches the proven Wave C pattern from commit 14446f3 -- single
+ * setTimeout per field instead of a chained-render loop, more robust under
+ * React 19's set-state-in-effect rule. */
 const FIELD_TYPE_GAP = 0.18
+const FIELD_TYPE_BASE = PHASE.cardReveal + 0.35
+const FIELD_START: Record<string, number> = {}
+{
+	const ordered = [
+		...CLONE_CARD.fields.filter((f) => f.span === 'short'),
+		...CLONE_CARD.fields.filter((f) => f.span === 'long'),
+	]
+	ordered.forEach((f, i) => {
+		FIELD_START[f.label] = FIELD_TYPE_BASE + i * FIELD_TYPE_GAP
+	})
+}
 
 /* Bar segment fill schedule (7 pips, evenly distributed across the cloning
  * window). 7 fills across cloningStart..cardReveal. */
@@ -364,11 +381,10 @@ function CloneHeader({ filled, reduced, isComplete }: { filled: number, reduced:
  * also be Using that typewriter Animation". TextType has its own reduced-
  * motion handling that snaps to the full string. Stagger is gated on
  * `start` (card-revealed) and `delay` (per-field offset). */
-function FieldShort({ label, value, start, delay }: {
+function FieldShort({ label, value, start }: {
 	label: string
 	value: string
 	start: boolean
-	delay: number
 }) {
 	return (
 		<div className='flex flex-col items-start gap-1.5'>
@@ -380,7 +396,6 @@ function FieldShort({ label, value, start, delay }: {
 				className='text-trim font-sans text-[13px] leading-[18px] text-white'
 				text={value}
 				start={start}
-				initialDelay={delay * 1000}
 				typingSpeed={26}
 				cursorClassName='text-cc-accent/80'
 			/>
@@ -388,11 +403,10 @@ function FieldShort({ label, value, start, delay }: {
 	)
 }
 
-function FieldLong({ label, value, start, delay }: {
+function FieldLong({ label, value, start }: {
 	label: string
 	value: string
 	start: boolean
-	delay: number
 }) {
 	return (
 		<div className='flex flex-col items-start gap-1.5'>
@@ -404,7 +418,6 @@ function FieldLong({ label, value, start, delay }: {
 				className='text-balance font-sans text-[12px] leading-[17px] text-white/95'
 				text={value}
 				start={start}
-				initialDelay={delay * 1000}
 				typingSpeed={22}
 				cursorClassName='text-cc-accent/80'
 			/>
@@ -432,24 +445,18 @@ function ProofBadge({ pulse }: { pulse: boolean }) {
 }
 
 /* CloneCard. Wave AA.3: card snap-in spring (matches Wave X.2) followed by
- * per-field typewriter cascade. The card frame lands first, then name + AI
- * Clone badge, then 4 short fields stagger in via TextType (FIELD_TYPE_GAP
- * = 0.18s between starts), then 3 long fields. Reduced-motion: TextType
- * collapses to the full string instantly. */
-function CloneCard({ reduced, pulseFooter }: {
+ * per-field typewriter cascade. The card frame lands first, then 4 short
+ * fields stagger in via TextType (FIELD_TYPE_GAP between starts), then 3
+ * long fields. Each field's `start` flag is supplied via `fieldStarts` --
+ * the parent flips false -> true at FIELD_START[label]. Reduced-motion:
+ * TextType collapses to the full string instantly. */
+function CloneCard({ reduced, pulseFooter, fieldStarts }: {
 	reduced: boolean
 	pulseFooter: boolean
+	fieldStarts: Record<string, boolean>
 }) {
 	const shortFields = CLONE_CARD.fields.filter((f) => f.span === 'short')
 	const longFields = CLONE_CARD.fields.filter((f) => f.span === 'long')
-	/* Per-field stagger schedule. Counted relative to CARD MOUNT (the
-	 * AnimatePresence sets the swap-in moment). The first short field begins
-	 * after the card spring settles (~0.35s), with FIELD_TYPE_GAP between
-	 * each. Long fields begin after all short fields finish, but the GAP is
-	 * smaller than the full type-time so fields visually overlap their tails
-	 * rather than feel labored. */
-	const fieldStartDelay = 0.35
-	const numShort = shortFields.length
 	return (
 		<motion.div
 			className='relative w-full rounded-2xl border-[0.5px] border-cc-accent/60 bg-cc-surface-card px-[12.5px] pb-[32.5px] pt-[12.5px] shadow-[-8px_8px_16px_0_rgba(0,0,0,0.6),0_0_24px_0_rgba(16,185,129,0.18)]'
@@ -475,16 +482,16 @@ function CloneCard({ reduced, pulseFooter }: {
 					</span>
 				</div>
 
-				{/* 2-col grid for 4 short fields. Wave AA.3: per-field typewriter
-				 * starts on card mount; FIELD_TYPE_GAP staggers each one. */}
+				{/* 2-col grid for 4 short fields. Wave AA.3: each field's `start`
+				 * flag flips false -> true at FIELD_START[label] so its TextType
+				 * begins typing on schedule. */}
 				<div className='grid grid-cols-2 gap-x-3 gap-y-3.5'>
-					{shortFields.map((f, i) => (
+					{shortFields.map((f) => (
 						<FieldShort
 							key={f.label}
 							label={f.label}
 							value={f.value}
-							start={true}
-							delay={fieldStartDelay + i * FIELD_TYPE_GAP}
+							start={fieldStarts[f.label] ?? false}
 						/>
 					))}
 				</div>
@@ -492,13 +499,12 @@ function CloneCard({ reduced, pulseFooter }: {
 				{/* Stack of 3 long full-width rows. Begin after the short-field
 				 * cascade lands so the eye reads short -> long without overlap. */}
 				<div className='flex flex-col gap-3'>
-					{longFields.map((f, i) => (
+					{longFields.map((f) => (
 						<FieldLong
 							key={f.label}
 							label={f.label}
 							value={f.value}
-							start={true}
-							delay={fieldStartDelay + (numShort + i) * FIELD_TYPE_GAP}
+							start={fieldStarts[f.label] ?? false}
 						/>
 					))}
 				</div>
@@ -653,7 +659,7 @@ function Connector({ inView, reduced, delay }: {
 	)
 }
 
-function CloneVisual({ reduced, filled, pulseFooter, isComplete, cardRevealed, cloningStarted, inView }: {
+function CloneVisual({ reduced, filled, pulseFooter, isComplete, cardRevealed, cloningStarted, inView, fieldStarts }: {
 	reduced: boolean
 	filled: number
 	pulseFooter: boolean
@@ -661,6 +667,7 @@ function CloneVisual({ reduced, filled, pulseFooter, isComplete, cardRevealed, c
 	cardRevealed: boolean
 	cloningStarted: boolean
 	inView: boolean
+	fieldStarts: Record<string, boolean>
 }) {
 	/* Wave AA.3: the right column starts EMPTY and only mounts the cloning
 	 * header + lab visual when the staged sequence reaches PHASE.cloningStart.
@@ -679,7 +686,7 @@ function CloneVisual({ reduced, filled, pulseFooter, isComplete, cardRevealed, c
 				<div className='relative w-full min-h-[340px]'>
 					<AnimatePresence mode='wait' initial={false}>
 						{cardRevealed ? (
-							<CloneCard key='card' reduced={reduced} pulseFooter={pulseFooter} />
+							<CloneCard key='card' reduced={reduced} pulseFooter={pulseFooter} fieldStarts={fieldStarts} />
 						) : (
 							<CloningLabState key='lab' reduced={reduced} />
 						)}
@@ -705,6 +712,9 @@ export default function PlanVisual({}: { devPin?: boolean } = {}) {
 	const [isComplete, setIsComplete] = useState(reduced)
 	const [cardRevealed, setCardRevealed] = useState(reduced)
 	const [cloningStarted, setCloningStarted] = useState(reduced)
+	const [fieldStarts, setFieldStarts] = useState<Record<string, boolean>>(
+		() => Object.fromEntries(CLONE_CARD.fields.map((f) => [f.label, reduced])),
+	)
 
 	useEffect(() => {
 		if (reduced) {
@@ -713,6 +723,7 @@ export default function PlanVisual({}: { devPin?: boolean } = {}) {
 			setIsComplete(true)
 			setCardRevealed(true)
 			setCloningStarted(true)
+			setFieldStarts(Object.fromEntries(CLONE_CARD.fields.map((f) => [f.label, true])))
 			return
 		}
 		if (!inView) {
@@ -721,11 +732,13 @@ export default function PlanVisual({}: { devPin?: boolean } = {}) {
 			setIsComplete(false)
 			setCardRevealed(false)
 			setCloningStarted(false)
+			setFieldStarts(Object.fromEntries(CLONE_CARD.fields.map((f) => [f.label, false])))
 			return
 		}
 		/* Wave AA.3: schedule cloning column reveal at PHASE.cloningStart, then
 		 * progress bar segment fills, card snap-in at PHASE.cardReveal, footer
-		 * pulse beat. Right column is hidden via opacity until cloning starts. */
+		 * pulse beat. Right column is hidden via opacity until cloning starts.
+		 * Per-field typewriter starts flip false -> true at FIELD_START[label]. */
 		const timeouts: ReturnType<typeof setTimeout>[] = []
 		const tCloningStart = setTimeout(() => setCloningStarted(true), PHASE.cloningStart * 1000)
 		timeouts.push(tCloningStart)
@@ -737,6 +750,14 @@ export default function PlanVisual({}: { devPin?: boolean } = {}) {
 		const tReveal = setTimeout(() => setCardRevealed(true), PHASE.cardReveal * 1000)
 		const tPulse = setTimeout(() => setPulseFooter(true), PHASE.footerPulse * 1000)
 		timeouts.push(tComplete, tReveal, tPulse)
+		CLONE_CARD.fields.forEach((f) => {
+			const at = FIELD_START[f.label]
+			if (at == null) return
+			const t = setTimeout(() => {
+				setFieldStarts((prev) => ({ ...prev, [f.label]: true }))
+			}, at * 1000)
+			timeouts.push(t)
+		})
 		return () => timeouts.forEach(clearTimeout)
 	}, [inView, reduced])
 
@@ -756,6 +777,7 @@ export default function PlanVisual({}: { devPin?: boolean } = {}) {
 					cardRevealed={cardRevealed}
 					cloningStarted={cloningStarted}
 					inView={inView}
+					fieldStarts={fieldStarts}
 				/>
 			</div>
 		</div>
