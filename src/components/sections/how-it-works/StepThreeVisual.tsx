@@ -427,10 +427,28 @@ function LiveCallPanel({ timer, prefersReducedMotion }: { timer: number, prefers
 	/* Wave AA.5 (Andy): "all the messages in the phone call part two should
 	 * be popping in one at a time, similar to the steps to how the messages
 	 * pop in like that". Mirror Step 2's stagger pattern: AI bubble -> chip
-	 * -> User bubble -> chip, each with its own delay. Spring-in chips piggy-
-	 * back on their preceding transcript bubble's settle. Reduced-motion
-	 * collapses to settled instantly. */
+	 * -> User bubble -> chip. Implementation uses gated rendering via local
+	 * state flips (more reliable than motion's `delay` on initial+animate
+	 * because the LiveCallPanel mount-point is itself nested under
+	 * AnimatePresence and child motion delays were observed to not apply).
+	 * Reduced-motion collapses to settled instantly. */
 	const EASE_INNER: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94]
+	const [showAi, setShowAi] = useState(prefersReducedMotion)
+	const [showNeg, setShowNeg] = useState(prefersReducedMotion)
+	const [showUser, setShowUser] = useState(prefersReducedMotion)
+	const [showPos, setShowPos] = useState(prefersReducedMotion)
+
+	useEffect(() => {
+		/* Reduced-motion: lazy state init already seeded show-flags to true,
+		 * so this effect is a no-op under reduced motion. */
+		if (prefersReducedMotion) return
+		const t1 = setTimeout(() => setShowAi(true), 300)
+		const t2 = setTimeout(() => setShowNeg(true), 850)
+		const t3 = setTimeout(() => setShowUser(true), 1300)
+		const t4 = setTimeout(() => setShowPos(true), 1800)
+		return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4) }
+	}, [prefersReducedMotion])
+
 	return (
 		<motion.div
 			key="live"
@@ -452,34 +470,49 @@ function LiveCallPanel({ timer, prefersReducedMotion }: { timer: number, prefers
 					<NumberFlow value={timer} format={{ minimumIntegerDigits: 2 }} prefix="00:" />
 				</div>
 			</div>
-			{/* Transcript area + in-phone coaching annotations. Stagger schedule:
+			{/* Transcript area + in-phone coaching annotations. Stagger schedule
+			 * (relative to LiveCallPanel mount = 3C entry):
 			 *   AI line:  0.30s
 			 *   neg pill: 0.85s
 			 *   User:     1.30s
-			 *   pos pill: 1.80s   */}
+			 *   pos pill: 1.80s
+			 * Each motion.div is wrapped in AnimatePresence so the `initial`
+			 * state actually applies on the per-bubble mount moment. */}
 			<div className="flex flex-1 flex-col gap-2 overflow-hidden py-1">
-				<motion.div
-					className="mr-auto max-w-[88%] rounded-2xl rounded-bl-sm border border-l-2 border-white/[0.06] border-l-cc-accent/50 bg-cc-surface-card/80 px-2.5 py-1.5"
-					initial={{ opacity: 0, x: -8 }}
-					animate={{ opacity: 1, x: 0 }}
-					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4, ease: EASE_INNER, delay: 0.30 }}
-				>
-					<p className="text-[10.5px] italic leading-[1.4] text-cc-text-secondary">
-						{TRANSCRIPT_AI}
-					</p>
-				</motion.div>
-				<InPhoneCoachingPill type="negative" label="Weak objection pivot" prefersReducedMotion={prefersReducedMotion} delay={0.85} align="left" />
-				<motion.div
-					className="ml-auto max-w-[88%] rounded-2xl rounded-br-sm border border-cc-accent/20 bg-cc-accent/15 px-2.5 py-1.5"
-					initial={{ opacity: 0, x: 8 }}
-					animate={{ opacity: 1, x: 0 }}
-					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4, ease: EASE_INNER, delay: 1.30 }}
-				>
-					<p className="text-[10.5px] leading-[1.4] text-white">
-						{TRANSCRIPT_USER}
-					</p>
-				</motion.div>
-				<InPhoneCoachingPill type="positive" label="Strong discovery question" prefersReducedMotion={prefersReducedMotion} delay={1.80} align="right" />
+				<AnimatePresence>
+					{showAi && (
+						<motion.div
+							key="ai-line"
+							className="mr-auto max-w-[88%] rounded-2xl rounded-bl-sm border border-l-2 border-white/[0.06] border-l-cc-accent/50 bg-cc-surface-card/80 px-2.5 py-1.5"
+							initial={{ opacity: 0, x: -8 }}
+							animate={{ opacity: 1, x: 0 }}
+							transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4, ease: EASE_INNER }}
+						>
+							<p className="text-[10.5px] italic leading-[1.4] text-cc-text-secondary">
+								{TRANSCRIPT_AI}
+							</p>
+						</motion.div>
+					)}
+					{showNeg && (
+						<InPhoneCoachingPill key="neg" type="negative" label="Weak objection pivot" prefersReducedMotion={prefersReducedMotion} delay={0} align="left" />
+					)}
+					{showUser && (
+						<motion.div
+							key="user-line"
+							className="ml-auto max-w-[88%] rounded-2xl rounded-br-sm border border-cc-accent/20 bg-cc-accent/15 px-2.5 py-1.5"
+							initial={{ opacity: 0, x: 8 }}
+							animate={{ opacity: 1, x: 0 }}
+							transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4, ease: EASE_INNER }}
+						>
+							<p className="text-[10.5px] leading-[1.4] text-white">
+								{TRANSCRIPT_USER}
+							</p>
+						</motion.div>
+					)}
+					{showPos && (
+						<InPhoneCoachingPill key="pos" type="positive" label="Strong discovery question" prefersReducedMotion={prefersReducedMotion} delay={0} align="right" />
+					)}
+				</AnimatePresence>
 			</div>
 			{/* Mute / End bar */}
 			<div className="flex items-center justify-between gap-2 border-t border-white/[0.05] pt-1.5">
