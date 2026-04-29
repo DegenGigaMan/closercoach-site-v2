@@ -49,6 +49,7 @@ export default function TextType({
 
 	useEffect(() => {
 		if (reduced) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect -- prefers-reduced-motion short-circuit fast-forwards typewriter to settled; intentional one-shot batch update
 			setDisplayed(text)
 			setCharIndex(text.length)
 			return
