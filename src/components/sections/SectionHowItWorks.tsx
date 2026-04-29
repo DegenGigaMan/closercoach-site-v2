@@ -21,7 +21,7 @@
 import { createContext, useContext, useRef, useState, useEffect, useCallback, useSyncExternalStore, type CSSProperties, type ReactNode } from 'react'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'motion/react'
 import Image from 'next/image'
-import { Sparkle, Microphone, PhoneCall, Star } from '@phosphor-icons/react'
+import { Star } from '@phosphor-icons/react'
 import StepIndicator from './how-it-works/StepIndicator'
 import StepCanvas from './how-it-works/StepCanvas'
 import PlanVisual from './how-it-works/PlanVisual'
@@ -414,42 +414,116 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 			 * Slack feedback: 'CloserCoach replaces -- was hoping wed have the
 			 * logos here of who we replace. like logo logo logo'.
 			 *
-			 * Canonical replacement list (lp-copy-deck-v5.md §S3 Step 2):
-			 *   Voice Memos + ChatGPT + Phone App
+			 * Wave Y.5 (Alim 2026-04-28 AM): Phosphor placeholders replaced
+			 * with iOS-style app-icon SVGs matching how each app looks in the
+			 * App Store / on a phone home screen.
 			 *
-			 * TODO(Andy + Alim): replace these Phosphor placeholder icon-marks
-			 * with real brand logos. Apple Voice Memos has no clean public
-			 * brand mark; ChatGPT has OpenAI's mark (simple-icons is in deps).
-			 * Phone App is Apple's system phone -- Apple Phone wordmark is a
-			 * trademark concern. Confirm the approved logo set before swapping. */}
+			 * Sources:
+			 *   - Voice Memos: inline SVG iOS app icon (white waveform on red
+			 *     #FF453A -> #C30000 vertical gradient rounded square).
+			 *     simple-icons has no Apple Voice Memos mark; Brandfetch returns
+			 *     no clean public asset. iOS app icon recreated inline matching
+			 *     Apple's stock visual identity.
+			 *   - ChatGPT: inline SVG of OpenAI's 4-petal logomark on black
+			 *     rounded square (matches the public ChatGPT iOS app icon).
+			 *     simple-icons does not ship an openai/chatgpt SVG (verified
+			 *     2026-04-28 against node_modules/simple-icons/icons/);
+			 *     mark is rendered inline from the public OpenAI logomark.
+			 *   - Phone: inline SVG iOS app icon (white handset on green
+			 *     #4CD964 -> #1B9628 vertical gradient rounded square). Apple
+			 *     Phone trademark concern resolved by using a generic handset
+			 *     glyph at iOS-icon dimensions, no Apple wordmark.
+			 *
+			 * Canonical order (lp-copy-deck-v5.md §S3 Step 2):
+			 *   Voice Memos (left), ChatGPT (middle), Phone (right). */}
 			<div className="mt-8 flex max-w-xl flex-col gap-3">
 				<span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.18em] text-cc-text-secondary">
 					CloserCoach replaces
 				</span>
 				<div
 					role="img"
-					aria-label="CloserCoach replaces Voice Memos, ChatGPT, and your Phone App"
+					aria-label="CloserCoach replaces Voice Memos, ChatGPT, and your Phone app"
 					className="flex items-center gap-8 rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 px-6 py-4"
 				>
-					{/* Voice Memos placeholder */}
-					<div className="flex flex-col items-center gap-1.5 opacity-70 transition-opacity duration-300 hover:opacity-100">
-						<Microphone size={28} weight="duotone" className="text-white/85" aria-hidden="true" />
+					{/* Voice Memos — white waveform on red gradient rounded square. */}
+					<div className="flex flex-col items-center gap-1.5">
+						<svg
+							width={36}
+							height={36}
+							viewBox="0 0 36 36"
+							role="img"
+							aria-label="Voice Memos"
+							className="shrink-0"
+						>
+							<defs>
+								<linearGradient id="cc-voice-memos-bg" x1="0" y1="0" x2="0" y2="1">
+									<stop offset="0%" stopColor="#FF453A" />
+									<stop offset="100%" stopColor="#C30000" />
+								</linearGradient>
+							</defs>
+							<rect width={36} height={36} rx={8} fill="url(#cc-voice-memos-bg)" />
+							{/* Waveform: 7 vertical bars, varied heights, white. */}
+							<g fill="#FFFFFF">
+								<rect x={6}  y={15} width={2} height={6}  rx={1} />
+								<rect x={10} y={12} width={2} height={12} rx={1} />
+								<rect x={14} y={9}  width={2} height={18} rx={1} />
+								<rect x={18} y={11} width={2} height={14} rx={1} />
+								<rect x={22} y={13} width={2} height={10} rx={1} />
+								<rect x={26} y={10} width={2} height={16} rx={1} />
+								<rect x={30} y={14} width={2} height={8}  rx={1} />
+							</g>
+						</svg>
 						<span className="font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary">
 							Voice Memos
 						</span>
 					</div>
-					{/* ChatGPT placeholder */}
-					<div className="flex flex-col items-center gap-1.5 opacity-70 transition-opacity duration-300 hover:opacity-100">
-						<Sparkle size={28} weight="duotone" className="text-white/85" aria-hidden="true" />
+					{/* ChatGPT — OpenAI 4-petal logomark on black rounded square. */}
+					<div className="flex flex-col items-center gap-1.5">
+						<svg
+							width={36}
+							height={36}
+							viewBox="0 0 36 36"
+							role="img"
+							aria-label="ChatGPT"
+							className="shrink-0"
+						>
+							<rect width={36} height={36} rx={8} fill="#000000" />
+							<g transform="translate(7 7) scale(0.91)">
+								<path
+									d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365 2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z"
+									fill="#FFFFFF"
+								/>
+							</g>
+						</svg>
 						<span className="font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary">
 							ChatGPT
 						</span>
 					</div>
-					{/* Phone App placeholder */}
-					<div className="flex flex-col items-center gap-1.5 opacity-70 transition-opacity duration-300 hover:opacity-100">
-						<PhoneCall size={28} weight="duotone" className="text-white/85" aria-hidden="true" />
+					{/* Phone — white handset on green gradient rounded square. */}
+					<div className="flex flex-col items-center gap-1.5">
+						<svg
+							width={36}
+							height={36}
+							viewBox="0 0 36 36"
+							role="img"
+							aria-label="Phone"
+							className="shrink-0"
+						>
+							<defs>
+								<linearGradient id="cc-phone-bg" x1="0" y1="0" x2="0" y2="1">
+									<stop offset="0%" stopColor="#4CD964" />
+									<stop offset="100%" stopColor="#1B9628" />
+								</linearGradient>
+							</defs>
+							<rect width={36} height={36} rx={8} fill="url(#cc-phone-bg)" />
+							{/* Handset glyph: rotated phone receiver, white. */}
+							<path
+								d="M24.7 22.3c0 .5-.1 1.1-.3 1.6-.2.5-.5.9-.8 1.3-.5.6-1.1.9-1.7 1-.6.1-1.3.1-2-.1-.7-.2-1.5-.5-2.3-1-.8-.4-1.6-1-2.4-1.7-.8-.7-1.6-1.4-2.3-2.2-.7-.8-1.3-1.6-1.8-2.4-.5-.8-.9-1.6-1.2-2.4-.3-.8-.4-1.5-.4-2.2 0-.5.1-.9.2-1.4.2-.4.4-.8.8-1.1.4-.4.9-.6 1.4-.6.2 0 .4 0 .5.1.2.1.3.2.4.4l1.7 2.4c.1.2.2.3.3.5 0 .1.1.3.1.4 0 .2-.1.3-.2.5-.1.1-.2.3-.4.4l-.5.5c-.1.1-.1.2-.1.3 0 .1 0 .1.1.2 0 .1.1.1.1.2.1.2.4.5.7.9.4.4.7.8 1.1 1.2.4.4.8.7 1.2 1 .4.3.7.5.9.7l.2.1c.1 0 .1.1.2.1.1 0 .2 0 .3-.1l.5-.5c.2-.1.3-.3.5-.4.1-.1.3-.1.5-.1.1 0 .3 0 .4.1.2 0 .3.1.5.2l2.5 1.7c.2.1.3.2.4.4 0 .1.1.3.1.5z"
+								fill="#FFFFFF"
+							/>
+						</svg>
 						<span className="font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary">
-							Phone App
+							Phone
 						</span>
 					</div>
 				</div>
