@@ -332,7 +332,12 @@ function Step1Plan({ devPin }: { devPin: boolean }) {
 			 * gap-[2px]), italic Inter 16px quote leading-[1.4], and a user row
 			 * (40px circular avatar + name "Andy Bolton" 16px + role "Sales rep"
 			 * 14px in #8A9BA1). No card frame; container py-[12px] only. */}
-			<figure className="mt-10 flex max-w-xl flex-col gap-4 py-3">
+			{/* Q17 Wave D1-6 (Andy 2026-04-29 #15): testimonial sat too
+			 * close to the heading/body. Bumped mt-10 → mt-10 md:mt-20
+			 * so the testimonial reads as a separate beat in the same
+			 * vertical rhythm as Step 2/3/4 visual cards. Mobile rhythm
+			 * preserved. */}
+			<figure className="mt-10 flex max-w-xl flex-col gap-4 py-3 md:mt-20">
 				<div role="img" className="flex items-start gap-[2px]" aria-label="5 out of 5 stars">
 					{[0, 1, 2, 3, 4].map((i) => (
 						<Star key={i} size={16} weight="fill" style={{ color: '#FBBC04' }} aria-hidden="true" />
