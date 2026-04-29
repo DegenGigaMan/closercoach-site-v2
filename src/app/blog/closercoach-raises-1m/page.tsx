@@ -5,6 +5,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft } from '@phosphor-icons/react/dist/ssr'
+import ScrollTopOnMount from './ScrollTopOnMount'
 
 const TITLE = 'CloserCoach raises $1M to build Duolingo for sales'
 const PUBLISHED = 'March 2026'
@@ -25,6 +26,7 @@ export const metadata: Metadata = {
 export default function FundingAnnouncementPage() {
 	return (
 		<div className='bg-cc-warm-light text-cc-text-primary-warm'>
+			<ScrollTopOnMount />
 			<article className='mx-auto max-w-3xl px-6 py-20 md:py-28'>
 				{/* Back to blog */}
 				<Link
