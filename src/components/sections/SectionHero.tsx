@@ -55,10 +55,16 @@ export default function SectionHero() {
 	 * hydration mismatch (useReducedMotion returns null on server, boolean on client).
 	 * Reduced-motion users get duration 0 which snaps from initial to final instantly.
 	 *
-	 * Wave X.1 (Alim 2026-04-28): durations + delays expanded so the hero shows
-	 * one element at a time rather than a synchronised burst. Default duration
-	 * raised from 0.5s -> 0.85s; per-element delays widened at call sites. */
-	const enter = (delay: number, fromY = 12, duration = 0.85) => ({
+	 * Wave AA.2 (Andy 2026-04-28): hero-only revert of Wave X.1 pacing. Andy
+	 * verbatim: "for the hero like all the components in the hero like the
+	 * entrance animation like how they enter the screen not the actual phone
+	 * mock-up animation but like the phone itself entering the buttons and all
+	 * that stuff you slowed that down too much can we revert the entrance fade
+	 * in like split text animations for the hero section to go back to the way
+	 * they were". Default duration restored from 0.85s -> 0.5s; per-element
+	 * delays restored at call sites. Non-hero ScrollReveal / section pacing
+	 * stays at Wave X.1 values per Alim's directive. */
+	const enter = (delay: number, fromY = 12, duration = 0.5) => ({
 		initial: { opacity: 0, y: fromY },
 		animate: { opacity: 1, y: 0 },
 		transition: prefersReducedMotion
@@ -136,9 +142,8 @@ export default function SectionHero() {
 			<div className='relative z-[5] mx-auto flex min-h-screen max-w-[1200px] flex-col items-center justify-center px-6 pb-16 pt-16 md:pt-20 2xl:max-w-[1440px]'>
 
 				{/* Announcement badge (AnimatedBadge replaces v1's static trust pill).
-				 * Wave X.1 (2026-04-28): 0.5s -> 0.7s so the badge lands first
-				 * with weight before the headline starts. */}
-				<motion.div className='mb-8' {...enter(0, -8, 0.7)}>
+				 * Wave AA.2 (2026-04-28): reverted to 0.5s per Andy hero-only revert. */}
+				<motion.div className='mb-8' {...enter(0, -8, 0.5)}>
 					<AnimatedBadge text={`Join ${STATS.userCount} Sales Closers`} color='#10B981' />
 				</motion.div>
 
@@ -155,36 +160,34 @@ export default function SectionHero() {
 					}}
 					initial={{ clipPath: 'inset(0 0 100% 0)' }}
 					animate={{ clipPath: 'inset(0 0 0% 0)' }}
-					transition={prefersReducedMotion ? { duration: 0 } : { duration: 1.0, delay: 0.4, ease: EASE }}
+					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.8, delay: 0.15, ease: EASE }}
 				>
 					The AI Sales Coach That Lives{' '}
 					<motion.span
 						className='font-heading italic'
 						initial={{ color: '#FFFFFF' }}
 						animate={{ color: '#10B981' }}
-						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.55, delay: 1.4, ease: 'easeOut' }}
+						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4, delay: 0.95, ease: 'easeOut' }}
 					>
 						in Your Pocket
 					</motion.span>
 				</motion.h1>
 
-				{/* Subheadline -- centered, narrow. Wave X.1: arrives after the
-				 * italic accent locks (1.7s + 0.6s ≈ 2.3s). Lands distinctly. */}
+				{/* Subheadline -- centered, narrow. Wave AA.2: reverted to original timing. */}
 				<motion.p
 					className='mt-6 max-w-[600px] text-center font-sans text-lg leading-relaxed text-cc-text-secondary'
-					{...enter(1.9, 12, 0.65)}
+					{...enter(0.35, 12, 0.45)}
 				>
 					Practice closing deals. Record your meetings. Know exactly where you&rsquo;re losing deals. All from your phone.
 				</motion.p>
 
 				{/* CTA cluster -- centered pair, stacked on mobile, row on sm+.
-				 * Wave X.1: arrives after the subhead settles. Slower scale-in
-				 * builds anticipation. */}
+				 * Wave AA.2: reverted to original timing. */}
 				<motion.div
 					className='mt-10 flex w-full max-w-[420px] flex-col items-center gap-3 sm:max-w-none sm:flex-row sm:justify-center sm:gap-4'
 					initial={{ opacity: 0, scale: 0.96 }}
 					animate={{ opacity: 1, scale: 1 }}
-					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.65, delay: 2.5, ease: EASE }}
+					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, delay: 0.45, ease: EASE }}
 				>
 					<MotionCTA
 						href={CTA.tryFree.href}
@@ -214,7 +217,7 @@ export default function SectionHero() {
 					className='mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center font-sans text-sm text-cc-text-muted'
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
-					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 2.9, ease: EASE }}
+					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, delay: 0.55, ease: EASE }}
 				>
 					<span className='inline-flex items-center gap-1.5'>
 						<AppleLogo size={14} weight='fill' aria-hidden='true' />
@@ -237,7 +240,7 @@ export default function SectionHero() {
 				 * Store" in Inter Regular 16. 8px gap between rows. */}
 				<motion.div
 					className='mt-8 flex flex-col items-center gap-2'
-					{...enter(3.3, 8, 0.7)}
+					{...enter(0.6, 8, 0.5)}
 				>
 					{/* Wave H.4 (2026-04-26): "(378+ reviews)" subline dropped to
 					 * reclaim ~20px of vertical density so phone reaches above-fold
@@ -304,7 +307,7 @@ export default function SectionHero() {
 						aria-hidden='true'
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
-						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.8, delay: 4.0, ease: 'easeOut' }}
+						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 1.1, ease: 'easeOut' }}
 						style={isDesktop && !prefersReducedMotion ? { y: glowParallax } : undefined}
 					>
 						<div
@@ -320,7 +323,7 @@ export default function SectionHero() {
 						aria-hidden='true'
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
-						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.8, delay: 4.2, ease: 'easeOut' }}
+						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 1.2, ease: 'easeOut' }}
 						style={isDesktop && !prefersReducedMotion ? { y: glowParallax } : undefined}
 					>
 						<div
@@ -333,7 +336,7 @@ export default function SectionHero() {
 						aria-hidden='true'
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
-						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.8, delay: 4.4, ease: 'easeOut' }}
+						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 1.3, ease: 'easeOut' }}
 						style={isDesktop && !prefersReducedMotion ? { y: glowParallax } : undefined}
 					>
 						<div
@@ -351,7 +354,7 @@ export default function SectionHero() {
 							className='relative'
 							initial={{ opacity: 0, y: 32, scale: 0.97 }}
 							animate={{ opacity: 1, y: 0, scale: 1 }}
-							transition={prefersReducedMotion ? { duration: 0 } : { duration: 1.1, delay: 3.7, ease: EASE }}
+							transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.8, delay: 0.8, ease: EASE }}
 							style={isDesktop && !prefersReducedMotion ? { y: phoneParallax } : undefined}
 						>
 							{/* Scale wrapper: down-scale on small viewports so the 640px composite
@@ -372,7 +375,7 @@ export default function SectionHero() {
 				 * below the badges (Figma 85:5940). */}
 				<motion.div
 					className='mt-0 flex flex-col items-center gap-4'
-					{...enter(4.9, 8, 0.6)}
+					{...enter(0.95, 8, 0.4)}
 				>
 					<div className='flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4'>
 						<a
