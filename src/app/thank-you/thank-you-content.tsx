@@ -153,6 +153,15 @@ export default function ThankYouContent({ firstName }: Props) {
 									/>
 								</Link>
 							</div>
+							{/* Wave Z.7 P2-F (2026-04-28): scan-cue caption fills the
+							 * dead vertical space below the QR + store badges at
+							 * 1440 grid heights, where Card 1 was floating short
+							 * relative to Cards 2-3. Mono uppercase voice mirrors
+							 * Card 3's "Daily clips, every weekday" footer cadence
+							 * so all three cards now baseline-align at the bottom. */}
+							<p className='mt-auto pt-4 font-mono text-[11px] uppercase tracking-[0.18em] text-cc-text-muted'>
+								Scan with your phone camera
+							</p>
 						</div>
 					</div>
 
