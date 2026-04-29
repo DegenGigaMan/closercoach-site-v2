@@ -5,6 +5,7 @@ import { lora, geistMono, inter, plusJakarta } from '@/lib/fonts'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import SmoothScroll from '@/components/layout/SmoothScroll'
+import ScrollToTop from '@/components/layout/ScrollToTop'
 import CookieConsent from '@/components/layout/CookieConsent'
 import AnnouncementBanner from '@/components/layout/AnnouncementBanner'
 import './globals.css'
@@ -57,6 +58,7 @@ export default function RootLayout({
 			</head>
 			<body className='flex min-h-full flex-col'>
 				<SmoothScroll />
+				<ScrollToTop />
 				<AnnouncementBanner />
 				<Header />
 				<main
