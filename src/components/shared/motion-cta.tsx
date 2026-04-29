@@ -66,7 +66,7 @@ const sitewidePadding = 'px-6 py-4 text-[16px]'
  * breaking the dual-CTA pair height parity in Hero / Teams / Final rows. */
 const variantStyles: Record<Variant, string> = {
 	primary:
-		'rounded-full border border-transparent bg-cc-mint text-cc-foundation shadow-[0_4px_12px_rgba(29,184,104,0.4)] hover:bg-cc-mint',
+		'rounded-full border border-transparent bg-cc-mint text-cc-foundation shadow-[0_4px_12px_rgba(29,184,104,0.34)] hover:bg-cc-mint',
 	secondary:
 		'rounded-full border border-cc-accent bg-cc-foundation-deep text-cc-mint backdrop-blur-[12px] hover:border-cc-accent-hover hover:bg-cc-foundation-deep',
 	ghost: 'rounded-lg text-cc-accent hover:text-cc-accent-hover hover:underline',
@@ -102,9 +102,12 @@ export default function MotionCTA({
 	const base =
 		'inline-flex items-center justify-center focus-visible:ring-2 focus-visible:ring-cc-accent-glow focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
 
+	/* Wave C1 (Q17 A10): primary hover shadow alpha reduced from 0.55 -> 0.47
+	 * (-15%) to match the new restraint after Wave X removed the hero rays.
+	 * Resting glow alpha also dropped 0.4 -> 0.34 in variantStyles above. */
 	const hoverShadow =
 		variant === 'primary'
-			? '0 6px 20px rgba(29,184,104,0.55)'
+			? '0 6px 20px rgba(29,184,104,0.47)'
 			: variant === 'secondary'
 				? '0 4px 24px rgba(16,185,129,0.25)'
 				: undefined
