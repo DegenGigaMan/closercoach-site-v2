@@ -328,7 +328,7 @@ const APP_STORE_REVIEWS: ReadonlyArray<Review> = [
 function ReviewCard({ title, quote, reviewer, date }: Review): ReactElement {
 	return (
 		<div
-			className='flex h-full flex-col gap-2.5 rounded-[18px] p-[18px]'
+			className='group flex h-full flex-col gap-2.5 rounded-[18px] p-[18px] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(13,15,20,0.08)]'
 			style={{
 				backgroundColor: 'rgba(250,250,248,0.96)',
 				border: '1px solid rgba(229,221,212,0.8)',
@@ -479,10 +479,14 @@ export default function SectionResults(): ReactElement {
 				</Reveal>
 
 				{/* App Store review cards (Figma 1:8359). 3 cards @ 400px each on
-				 * desktop, stack on mobile. */}
+				 * desktop, stack on mobile.
+				 *
+				 * Wave Z.6 P2-E (2026-04-28): per-card stagger tightened from
+				 * 0.22s to 0.12s so all three cards land within the same fast
+				 * scroll envelope. DD R1 C5 / S+ Audit P2-E. */}
 				<div className='mt-12 grid grid-cols-1 gap-4 md:mt-16 md:grid-cols-3'>
 					{APP_STORE_REVIEWS.map((r, i) => (
-						<Reveal key={i} delay={i * 0.22}>
+						<Reveal key={i} delay={i * 0.12}>
 							<ReviewCard
 								title={r.title}
 								quote={r.quote}
