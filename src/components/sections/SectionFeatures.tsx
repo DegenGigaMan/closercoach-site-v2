@@ -203,16 +203,16 @@ export default function SectionFeatures(): ReactElement {
 			 * the 320px-per-side rails at 1920 viewport. Mercury / Linear push
 			 * to 1440-1536 at 2xl. */}
 			<div className='relative z-10 mx-auto max-w-[1400px] px-6 2xl:max-w-[1440px]'>
-				{/* Billboard headline. Rewritten 2026-04-27 (Wave P): the prior
-				    "Practice. Record. Review. Improve." mirrored S3's 4-verb
-				    "Practice. Lose. Learn. Win." rhythm too closely (both started
-				    with "Practice", both ended with italic-emerald verb). S4's
-				    job is product-breadth ("100+ scenarios across 16+ industries"
-				    eyebrow + 5-card bento), so the new headline positions the
-				    platform as a tool built for every type of close — distinct
-				    from S3's process narrative. Lora Bold with italic emerald
-				    emphasis on "close." per VIS lock 2026-04-21. Fluid clamp so
-				    the headline owns the viewport on desktop and scales down. */}
+				{/* Billboard headline. Rewritten Wave P (2026-04-27), then again
+				    Wave Y.9 (Alim 2026-04-28: '"built for..." -> outcome-driven
+				    copy. built to win more deals'). The Wave P rewrite framed
+				    the audience surface ('Built for every kind of close.'); the
+				    Wave Y rewrite re-centers on the outcome ('win more deals')
+				    so the S4 bento + 5-card breadth read as a means-to-an-end
+				    rather than as capability marketing. Audience breadth is
+				    still implied by the eyebrow '100+ scenarios across 16+
+				    industries.' Lora Bold with italic emerald emphasis on
+				    'win more deals.' per VIS lock 2026-04-21. */}
 				{/* Wave I FIX-02: wrap billboard + callout in max-w-6xl mx-auto so the
 				    headline doesn't bleed to the viewport edges at 1440+. The parent
 				    max-w-[1400px] container is too wide for a centered editorial
@@ -229,9 +229,9 @@ export default function SectionFeatures(): ReactElement {
 							fontWeight: 700,
 						}}
 					>
-						Built for every kind of{' '}
+						Built to{' '}
 						<em className='italic font-bold text-cc-accent'>
-							close.
+							win more deals.
 						</em>
 					</h2>
 
