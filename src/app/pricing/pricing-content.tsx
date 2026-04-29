@@ -393,16 +393,29 @@ export default function PricingContent() {
 						</h2>
 					</ScrollReveal>
 
-					{/* Desktop table */}
+					{/* Desktop table. Wave C1 (Q17 A30): sticky thead so column tier
+					 * names (Closer / Teams / Enterprise) stay visible while scrolling
+					 * the long row list. Top offset = banner height + header height
+					 * (~64px) so the row stays clear of the announcement bar + main
+					 * sticky header. Background painted on the inner cell wrappers
+					 * to opaque-mask the rows scrolling underneath. */}
 					<ScrollReveal>
-						<div className='hidden overflow-x-auto lg:block'>
+						{/* Wave C1 (Q17 A30): drop `overflow-x-auto` so the thead's
+						 * sticky offset is computed against the viewport rather than
+						 * the wrapper's scroll container (overflow:auto on either
+						 * axis creates a scroll container that traps sticky). 4 cols
+						 * fit easily at lg+ (1024+). */}
+						<div className='hidden lg:block'>
 							<table className='w-full text-left'>
-								<thead>
-									<tr className='border-b border-cc-surface-border'>
-										<th className='pb-4 pr-4 text-sm font-medium text-cc-text-secondary'>Feature</th>
-										<th className='pb-4 text-center text-sm font-medium text-cc-accent'>Closer</th>
-										<th className='pb-4 text-center text-sm font-medium text-cc-text-secondary'>Teams</th>
-										<th className='pb-4 text-center text-sm font-medium text-cc-text-secondary'>Enterprise</th>
+								<thead
+									className='sticky z-10'
+									style={{ top: 'calc(var(--cc-banner-h, 0px) + 64px)' }}
+								>
+									<tr className='border-b border-cc-surface-border bg-cc-foundation'>
+										<th className='bg-cc-foundation pb-4 pr-4 pt-4 text-sm font-medium text-cc-text-secondary'>Feature</th>
+										<th className='bg-cc-foundation pb-4 pt-4 text-center text-sm font-medium text-cc-accent'>Closer</th>
+										<th className='bg-cc-foundation pb-4 pt-4 text-center text-sm font-medium text-cc-text-secondary'>Teams</th>
+										<th className='bg-cc-foundation pb-4 pt-4 text-center text-sm font-medium text-cc-text-secondary'>Enterprise</th>
 									</tr>
 								</thead>
 								<tbody>
