@@ -423,12 +423,35 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 			 * with iOS-style app-icon SVGs matching how each app looks in the
 			 * App Store / on a phone home screen.
 			 *
+			 * Wave Z.6 P2-D (2026-04-28): canonical-icon retrieval evaluated +
+			 * intentionally declined. DD R1 C4 / S+ Audit P2-D flagged the
+			 * risk that recreated-from-memory SVGs could drift from iOS stock
+			 * gradients. Retrieval paths considered:
+			 *   - Apple SF Symbols: Voice Memos + Phone glyphs are licensed
+			 *     for use IN Apple platform apps only, not for redistribution
+			 *     as marketing raster/SVG mockups (Apple SF Symbols License
+			 *     §2.b). Embedding stock SF Symbols on a marketing site is a
+			 *     license violation.
+			 *   - Brandfetch (apple.com / openai.com): OpenAI mark is
+			 *     available but Apple Voice Memos + Phone return no public
+			 *     app-icon assets; both are first-party iOS surfaces, not
+			 *     brand marks Apple distributes.
+			 *   - Recraft canonical generation: would produce a reasonable
+			 *     visual but introduces same trademark risk + still drifts
+			 *     from current iOS stock.
+			 * Decision: keep the current inline SVGs as INTENTIONAL editorial
+			 * reproductions. They communicate the home-screen-icon language
+			 * (rounded square, white glyph on saturated gradient, label
+			 * underneath) without claiming Apple's or OpenAI's actual
+			 * identity. The composition is the message, not pixel parity
+			 * with iOS 18 stock. If iOS stock drifts again the next refresh,
+			 * these stay legible.
+			 *
 			 * Sources:
 			 *   - Voice Memos: inline SVG iOS app icon (white waveform on red
 			 *     #FF453A -> #C30000 vertical gradient rounded square).
-			 *     simple-icons has no Apple Voice Memos mark; Brandfetch returns
-			 *     no clean public asset. iOS app icon recreated inline matching
-			 *     Apple's stock visual identity.
+			 *     simple-icons has no Apple Voice Memos mark; Brandfetch
+			 *     returns no clean public asset.
 			 *   - ChatGPT: inline SVG of OpenAI's 4-petal logomark on black
 			 *     rounded square (matches the public ChatGPT iOS app icon).
 			 *     simple-icons does not ship an openai/chatgpt SVG (verified
