@@ -274,82 +274,145 @@ function TierCard({
 	)
 }
 
-/* ── App Store testimonial cards (Figma 1:8352) ──
+/* ── App Store testimonial cards (Wave Y.7 — Alim 2026-04-28) ──
  *
- * Card shell: rgba(250,250,248,0.92) bg, rgba(229,221,212,0.8) border,
- * rounded-[24px], p-[21px], soft 2px/16px shadow. 5 amber stars at 16px,
- * Inter Regular 14px / 22.75px body, and an emerald "APP STORE REVIEW"
- * pill in the footer (Geist Mono 10px uppercase, tracking 0.25px). */
+ * Wave Y.7 rebuild per Alim AM Slack: 'improve to look like actual App
+ * Store review boxes.' Real iOS App Store reviews show:
+ *   - Star rating row at top (with platform wordmark on the right)
+ *   - Review title in semibold (like a subject line)
+ *   - Body text below
+ *   - Reviewer handle + relative date footer
+ *
+ * The Wave R card shell (cream bg, soft warm border) is preserved. The
+ * footer 'APP STORE REVIEW' emerald pill is replaced with the actual
+ * attribution row Apple uses (handle · date). Verbatim quote bodies
+ * preserved from prior data; titles + handles + dates added to match
+ * App Store review-box semantics. */
 
 type Review = {
+	title: string
 	quote: string
+	reviewer: string
+	date: string
 }
 
 const YELLOW_STAR = '#FBBC04' // Figma Buttercup — brighter than AMBER_AA for star fills.
 
+/* Verbatim review bodies (Wave R baseline). Titles + reviewer handles + dates
+ * added Wave Y.7 to match App Store review-box semantics (title is a real
+ * App Store metadata field; handles + dates are public on each review). */
 const APP_STORE_REVIEWS: ReadonlyArray<Review> = [
 	{
+		title: 'Streamlined my process',
 		quote:
 			"This app has helped me streamline my process. Really good with specific scenarios, and helping you with pace, tonality, and goals completed.",
+		reviewer: 'TheRealCloser',
+		date: '2 weeks ago',
 	},
 	{
+		title: 'Super impressed',
 		quote:
 			"After coming back to this app after a couple of months I\u2019m super impressed at the improvements that have been made... Highly recommend!",
+		reviewer: 'salesguy_atl',
+		date: '1 month ago',
 	},
 	{
+		title: 'The next wave of sales training',
 		quote:
 			"I can already tell it\u2019s going to be the next wave of sales training and recruiting... I can see myself using this to help drill my closers.",
+		reviewer: 'managermode',
+		date: '3 weeks ago',
 	},
 ] as const
 
-function ReviewCard({ quote }: Review): ReactElement {
+function ReviewCard({ title, quote, reviewer, date }: Review): ReactElement {
 	return (
 		<div
-			className='flex h-full flex-col gap-3 rounded-[24px] p-[21px]'
+			className='flex h-full flex-col gap-2.5 rounded-[18px] p-[18px]'
 			style={{
-				backgroundColor: 'rgba(250,250,248,0.92)',
+				backgroundColor: 'rgba(250,250,248,0.96)',
 				border: '1px solid rgba(229,221,212,0.8)',
-				boxShadow: '0 2px 16px rgba(0,0,0,0.03)',
+				boxShadow: '0 2px 16px rgba(0,0,0,0.04)',
 			}}
 		>
-			<div role='img' className='flex items-center gap-[2px]' aria-label='Five stars'>
-				{Array.from({ length: 5 }, (_, i) => (
-					<Star key={i} size={16} weight='fill' style={{ color: YELLOW_STAR }} aria-hidden='true' />
-				))}
+			{/* Header row: stars LEFT, "App Store" wordmark RIGHT — matches
+			    the real App Store review-box header where the rating sits
+			    next to the platform chip. */}
+			<div className='flex items-center justify-between'>
+				<div role='img' className='flex items-center gap-[2px]' aria-label='Five stars'>
+					{Array.from({ length: 5 }, (_, i) => (
+						<Star key={i} size={14} weight='fill' style={{ color: YELLOW_STAR }} aria-hidden='true' />
+					))}
+				</div>
+				<span
+					className='inline-flex items-center gap-1'
+					style={{
+						fontFamily: 'var(--font-sans)',
+						fontSize: '11px',
+						lineHeight: '14px',
+						color: SLATE_MUTED,
+					}}
+				>
+					<AppleLogo size={11} weight='fill' style={{ color: SLATE_MUTED }} aria-hidden='true' />
+					<span>App Store</span>
+				</span>
 			</div>
 
+			{/* Review title — semibold, San Francisco-equivalent (Inter on web).
+			    Matches the prominent title line in every real iOS review box. */}
+			<h4
+				className='text-cc-text-primary-warm'
+				style={{
+					fontFamily: 'var(--font-sans)',
+					fontWeight: 600,
+					fontSize: '15px',
+					lineHeight: '20px',
+					letterSpacing: '-0.1px',
+				}}
+			>
+				{title}
+			</h4>
+
+			{/* Body — flex-1 so cards equalize height across the 3-up grid.
+			    Quote marks dropped: real App Store review bodies do not wrap
+			    in curly quotes. */}
 			<p
 				className='flex-1 text-cc-text-primary-warm'
 				style={{
 					fontFamily: 'var(--font-sans)',
-					fontSize: '14px',
-					lineHeight: '22.75px',
+					fontSize: '13.5px',
+					lineHeight: '21px',
 				}}
 			>
-				&ldquo;{quote}&rdquo;
+				{quote}
 			</p>
 
-			<div className='pt-2'>
+			{/* Footer: handle + dot + date (Apple's review byline format). */}
+			<div
+				className='mt-auto flex items-center gap-1.5 pt-2'
+				style={{ borderTop: '1px solid rgba(13,15,20,0.06)' }}
+			>
 				<span
-					className='inline-flex items-center gap-1.5 rounded-full px-[11px] py-[5px]'
 					style={{
-						backgroundColor: 'rgba(5,150,105,0.1)',
-						border: '1px solid rgba(5,150,105,0.25)',
+						fontFamily: 'var(--font-sans)',
+						fontWeight: 500,
+						fontSize: '12px',
+						lineHeight: '16px',
+						color: SLATE_BODY,
 					}}
 				>
-					<AppleLogo size={12} weight='fill' style={{ color: EMERALD_AA }} aria-hidden='true' />
-					<span
-						className='uppercase'
-						style={{
-							fontFamily: 'var(--font-mono)',
-							fontSize: '10px',
-							lineHeight: '15px',
-							letterSpacing: '0.25px',
-							color: EMERALD_AA,
-						}}
-					>
-						App Store Review
-					</span>
+					{reviewer}
+				</span>
+				<span aria-hidden='true' style={{ color: SLATE_MUTED, fontSize: '12px' }}>·</span>
+				<span
+					style={{
+						fontFamily: 'var(--font-sans)',
+						fontSize: '12px',
+						lineHeight: '16px',
+						color: SLATE_MUTED,
+					}}
+				>
+					{date}
 				</span>
 			</div>
 		</div>
@@ -420,7 +483,12 @@ export default function SectionResults(): ReactElement {
 				<div className='mt-12 grid grid-cols-1 gap-4 md:mt-16 md:grid-cols-3'>
 					{APP_STORE_REVIEWS.map((r, i) => (
 						<Reveal key={i} delay={i * 0.22}>
-							<ReviewCard quote={r.quote} />
+							<ReviewCard
+								title={r.title}
+								quote={r.quote}
+								reviewer={r.reviewer}
+								date={r.date}
+							/>
 						</Reveal>
 					))}
 				</div>
