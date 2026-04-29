@@ -197,7 +197,11 @@ export default function SectionFeatures(): ReactElement {
 		<section
 			id='features'
 			data-surface='dark-features'
-			className='relative overflow-hidden bg-cc-foundation py-24 md:py-32'
+			/* Wave C1 (Alim batch #5): increased vertical padding from py-24/32 to
+			 * py-32/40 (96/128 -> 128/160px) so the SELL billboard breathes more
+			 * generously above + below. Alim flagged the prior cadence as too
+			 * compressed against neighbouring sections. */
+			className='relative overflow-hidden bg-cc-foundation py-32 md:py-40'
 		>
 			{/* Wave J.3 (FIX-04 P1, 2026-04-26): 2xl bump 1400 -> 1440 reclaims
 			 * the 320px-per-side rails at 1920 viewport. Mercury / Linear push
