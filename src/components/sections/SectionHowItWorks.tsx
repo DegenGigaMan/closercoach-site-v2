@@ -212,7 +212,7 @@ function StepRoom({
 			 * via transition.duration: 0 below. */
 			initial={{ opacity: 0, y: 24 }}
 			animate={isInView ? { opacity: 1, y: 0 } : {}}
-			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
+			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
 			className="flex flex-col py-10 lg:min-h-screen lg:justify-start lg:py-16"
 		>
 			{children}

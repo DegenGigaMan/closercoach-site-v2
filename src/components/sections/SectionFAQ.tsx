@@ -204,8 +204,8 @@ export default function SectionFAQ(): ReactElement {
 	const sectionRef = useRef<HTMLElement | null>(null)
 	const headerRef = useRef<HTMLDivElement | null>(null)
 	const listRef = useRef<HTMLDivElement | null>(null)
-	const headerInView = useInView(headerRef, { once: true, margin: '-15% 0px' })
-	const listInView = useInView(listRef, { once: true, margin: '-10% 0px' })
+	const headerInView = useInView(headerRef, { once: true, margin: '0px' })
+	const listInView = useInView(listRef, { once: true, margin: '0px' })
 	const prefersReducedMotion = useReducedMotion()
 
 	const handleToggle = (id: string): void => {
@@ -279,7 +279,7 @@ export default function SectionFAQ(): ReactElement {
 					transition={
 						prefersReducedMotion
 							? { duration: 0 }
-							: { duration: 0.85, ease: [0.25, 0.46, 0.45, 0.94] }
+							: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }
 					}
 					/* Q17 Wave D1-8 (Andy 2026-04-29 #21): label → heading →
 					 * subhead gap was 15px which Andy flagged as too tight.
@@ -329,7 +329,7 @@ export default function SectionFAQ(): ReactElement {
 					transition={
 						prefersReducedMotion
 							? { duration: 0 }
-							: { duration: 0.9, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }
+							: { duration: 0.55, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }
 					}
 					className='flex w-full flex-col gap-3'
 				>

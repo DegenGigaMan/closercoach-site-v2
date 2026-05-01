@@ -68,14 +68,16 @@ type RevealProps = {
  * @description Fades + lifts children on scroll. Stable initial props so SSR
  * matches first client render. Collapses to 0s under reduced-motion per F42.
  *
- * Wave X.1 (Alim 2026-04-28): duration 0.55s -> 0.9s and the bento stagger
- * multiplier (index * 0.05) -> (index * 0.18) at the call sites so the six
- * Teams cards land one at a time, not as a synchronised wave.
+ * Phase 8 (Andy 2026-05-01): bento was firing too late + cards were staggered
+ * too far apart. Wave X.1's 0.9s duration + 0.18 stagger (then doubled by
+ * Wave Y.8 to 1.8s + 0.36) meant Andy was scrolling past the section before
+ * the last cards revealed. Tightened: duration 0.55s, stagger 0.08, margin
+ * '-10% 0px' -> '0px' so cards reveal as the section enters viewport.
  */
 function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElement {
 	const prefersReducedMotion = useReducedMotion()
 	const ref = useRef<HTMLDivElement | null>(null)
-	const isInView = useInView(ref, { once: true, margin: '-10% 0px' })
+	const isInView = useInView(ref, { once: true, margin: '0px' })
 
 	return (
 		<motion.div
@@ -86,7 +88,7 @@ function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElem
 			transition={
 				prefersReducedMotion
 					? { duration: 0 }
-					: { duration: 1.8, delay: delay * 2, ease: [0.25, 0.46, 0.45, 0.94] }
+					: { duration: 0.55, delay, ease: [0.25, 0.46, 0.45, 0.94] }
 			}
 		>
 			{children}
@@ -264,7 +266,7 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 	 * stack at <lg. */
 	if (isSplit) {
 		return (
-			<Reveal delay={index * 0.36} className={roleSpanClass[role]}>
+			<Reveal delay={index * 0.08} className={roleSpanClass[role]}>
 				<article className={`${articleClass} lg:flex-row`}>
 					<div className='flex flex-1 flex-col justify-center gap-4 p-8 lg:basis-[42%] lg:pr-4'>
 						{titleNode}
@@ -282,7 +284,7 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 	 * Inverted vertical stack — timeline visual is the hook so it leads. */
 	if (isInverted) {
 		return (
-			<Reveal delay={index * 0.36} className={roleSpanClass[role]}>
+			<Reveal delay={index * 0.08} className={roleSpanClass[role]}>
 				<article className={articleClass}>
 					<div className={`relative w-full overflow-hidden ${roleVisualHeight[role]}`}>
 						<Visual />
@@ -301,7 +303,7 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 	 * Spans rows 2 and 3 at lg+, single-row stack on mobile/tablet. */
 	if (isTall) {
 		return (
-			<Reveal delay={index * 0.36} className={roleSpanClass[role]}>
+			<Reveal delay={index * 0.08} className={roleSpanClass[role]}>
 				<article className={articleClass}>
 					<div className='flex flex-col gap-4 px-8 pt-8 pb-3'>
 						{titleNode}
@@ -319,7 +321,7 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 	 * mt-auto on the visual keeps row-1 / row-2 baselines aligned even when
 	 * body copy lengths differ. */
 	return (
-		<Reveal delay={index * 0.36} className={roleSpanClass[role]}>
+		<Reveal delay={index * 0.08} className={roleSpanClass[role]}>
 			<article className={articleClass}>
 				<div className='flex flex-col gap-4 px-8 pt-8 pb-3'>
 					{titleNode}

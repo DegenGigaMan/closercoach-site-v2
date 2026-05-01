@@ -30,7 +30,7 @@ const directionOffset = {
  */
 export default function ScrollReveal({ children, className = '', delay = 0, direction = 'up' }: ScrollRevealProps) {
 	const ref = useRef(null)
-	const isInView = useInView(ref, { once: true, margin: '-10% 0px' })
+	const isInView = useInView(ref, { once: true, margin: '0px' })
 
 	return (
 		<motion.div
@@ -38,11 +38,15 @@ export default function ScrollReveal({ children, className = '', delay = 0, dire
 			className={className}
 			initial={{ opacity: 0, ...directionOffset[direction] }}
 			animate={isInView ? { opacity: 1, x: 0, y: 0 } : {}}
-			/* Wave Y.8 (Alim 2026-04-28): duration 0.6 -> 0.72 (+20%). Wave
-			 * X.1 paced Hero (0.5 -> 0.85); Wave Y.8 brings the rest of the
-			 * site's section-level scroll reveals into the same one-thing-at-
-			 * a-time rhythm without overshooting Hero's envelope. */
-			transition={{ duration: 1.44, delay: delay * 2, ease: EASE }}
+			/* Phase 8 (Andy 2026-05-01): entrance reveals were too slow and
+			 * fired too late ("scrolling halfway through section before the
+			 * animations appear"). Cut duration 1.44 -> 0.55 and dropped the
+			 * x2 delay multiplier so cascades feel snappy. Tightened margin
+			 * '-10% 0px' -> '0px' so reveals fire as the section enters
+			 * viewport, not 10% past. In-asset choreography (Step 1 cloning
+			 * lab, Step 3 live-call panel, hero phone state cycling, scoring
+			 * widgets) untouched. */
+			transition={{ duration: 0.55, delay, ease: EASE }}
 		>
 			{children}
 		</motion.div>
