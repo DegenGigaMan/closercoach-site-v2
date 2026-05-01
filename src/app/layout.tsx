@@ -1,7 +1,13 @@
-/** @fileoverview Root layout with fonts, metadata, and body wrapper. */
+/** @fileoverview Root layout with fonts, metadata, viewport, JSON-LD,
+ *  skip-nav, analytics provider, and body wrapper. */
 
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { lora, geistMono, inter, plusJakarta } from '@/lib/fonts'
+import { BRAND, FOOTER_LINKS, STATS, PRICING } from '@/lib/constants'
+import { PostHogProvider } from '@/components/providers/PostHogProvider'
+import { ScrollDepthTracker } from '@/components/providers/ScrollDepthTracker'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import SmoothScroll from '@/components/layout/SmoothScroll'
@@ -43,6 +49,43 @@ export const metadata: Metadata = {
 	},
 }
 
+export const viewport: Viewport = {
+	themeColor: '#0D0F14',
+}
+
+/* JSON-LD Organization schema. sameAs pulled from FOOTER_LINKS.social so the
+ * single source of truth (constants.ts) drives both UI and structured data.
+ * Content is fully static, internally controlled — no user input flows here. */
+const organizationJsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'Organization',
+	name: BRAND.name,
+	url: 'https://closercoach.ai',
+	logo: 'https://closercoach.ai/cc-logo.svg',
+	sameAs: FOOTER_LINKS.social.map((s) => s.href),
+}
+
+/* JSON-LD SoftwareApplication schema. Numeric strings per schema.org spec.
+ * All fields sourced from constants.ts — fully static, internally controlled. */
+const softwareApplicationJsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'SoftwareApplication',
+	name: BRAND.name,
+	operatingSystem: 'iOS, Android',
+	applicationCategory: 'BusinessApplication',
+	aggregateRating: {
+		'@type': 'AggregateRating',
+		ratingValue: STATS.appStoreRating,
+		ratingCount: '378',
+	},
+	offers: {
+		'@type': 'Offer',
+		price: String(PRICING.individual.monthly),
+		priceCurrency: 'USD',
+	},
+	downloadUrl: [BRAND.appStore, BRAND.googlePlay],
+}
+
 export default function RootLayout({
 	children,
 }: Readonly<{
@@ -50,24 +93,47 @@ export default function RootLayout({
 }>) {
 	return (
 		<html
-			lang="en"
+			lang='en'
 			className={`${lora.variable} ${geistMono.variable} ${inter.variable} ${plusJakarta.variable} h-full antialiased`}
 		>
 			<head>
 				<link rel='preload' href='/cc-logo.svg' as='image' type='image/svg+xml' />
+				{/* JSON-LD: content is statically composed from typed constants — safe to inline. */}
+				<script
+					type='application/ld+json'
+					// eslint-disable-next-line react/no-danger -- static, internally controlled JSON-LD
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+				/>
+				<script
+					type='application/ld+json'
+					// eslint-disable-next-line react/no-danger -- static, internally controlled JSON-LD
+					dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareApplicationJsonLd) }}
+				/>
 			</head>
 			<body className='flex min-h-full flex-col'>
-				<SmoothScroll />
-				<ScrollToTop />
-				<AnnouncementBanner />
-				<Header />
-				<main
-					className='flex-1 [padding-top:calc(var(--cc-banner-h,0px)+3.5rem)] md:[padding-top:calc(var(--cc-banner-h,0px)+4rem)]'
+				<a
+					href='#main'
+					className='sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-md focus:bg-cc-foundation focus:px-4 focus:py-2 focus:text-cc-text-primary focus:outline focus:outline-2 focus:outline-cc-accent'
 				>
-					{children}
-				</main>
-				<Footer />
-				<CookieConsent />
+					Skip to main content
+				</a>
+				<PostHogProvider>
+					<ScrollDepthTracker />
+					<SmoothScroll />
+					<ScrollToTop />
+					<AnnouncementBanner />
+					<Header />
+					<main
+						id='main'
+						className='flex-1 [padding-top:calc(var(--cc-banner-h,0px)+3.5rem)] md:[padding-top:calc(var(--cc-banner-h,0px)+4rem)]'
+					>
+						{children}
+					</main>
+					<Footer />
+					<CookieConsent />
+				</PostHogProvider>
+				<Analytics />
+				<SpeedInsights />
 			</body>
 		</html>
 	)
