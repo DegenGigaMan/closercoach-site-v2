@@ -7,7 +7,7 @@ import { Lora, Geist_Mono, Inter, Plus_Jakarta_Sans } from 'next/font/google'
 export const lora = Lora({
 	variable: '--font-lora',
 	subsets: ['latin'],
-	weight: ['400', '500', '600', '700'],
+	weight: ['600', '700'],
 	style: ['normal', 'italic'],
 	display: 'swap',
 })
