@@ -1,7 +1,14 @@
 /** @fileoverview Side-effect wrapper that initializes PostHog when cookie
  *  consent is 'accepted'. Re-evaluates on a 'cookie-consent-change' window
  *  event so a later accept (post-decline reversal) wires analytics live.
- *  Renders children unchanged. */
+ *  Renders children unchanged.
+ *
+ *  Privacy-conservative init defaults:
+ *  - autocapture: false (use manual track() for the 8 instrumented events)
+ *  - disable_session_recording: true (privacy-sensitive, not in cookie policy scope)
+ *  - disable_surveys: true (not used at launch)
+ *  - capture_pageview: false (manual SPA pageview emission)
+ *  Override at the project level in PostHog UI if any of these change. */
 
 'use client'
 
@@ -38,6 +45,9 @@ export const PostHogProvider = ({ children }: Props) => {
 			posthog.init(key, {
 				api_host: host,
 				capture_pageview: false,
+				autocapture: false,
+				disable_session_recording: true,
+				disable_surveys: true,
 				persistence: 'localStorage+cookie',
 			})
 			window.posthog = posthog
