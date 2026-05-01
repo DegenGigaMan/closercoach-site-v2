@@ -9,6 +9,9 @@ export const metadata: Metadata = {
 	title: 'Privacy Policy',
 	description:
 		'How CloserCoach collects, uses, and protects your data and call recordings. End-to-end encryption, isolated data, RBAC, and SOC2-aligned security.',
+	alternates: {
+		canonical: '/privacy',
+	},
 }
 
 const LAST_UPDATED = 'April 21, 2026'

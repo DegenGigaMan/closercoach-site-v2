@@ -1,5 +1,6 @@
 /** @fileoverview Homepage with all sections. */
 
+import type { Metadata } from 'next'
 import SectionHero from '@/components/sections/SectionHero'
 import SectionSocialProof from '@/components/sections/SectionSocialProof'
 import SectionPressStrip from '@/components/sections/SectionPressStrip'
@@ -11,6 +12,12 @@ import SectionResults from '@/components/sections/SectionResults'
 import SectionTeams from '@/components/sections/SectionTeams'
 import SectionFAQ from '@/components/sections/SectionFAQ'
 import SectionCTA from '@/components/sections/SectionCTA'
+
+export const metadata: Metadata = {
+	alternates: {
+		canonical: '/',
+	},
+}
 
 export default function HomePage() {
 	return (

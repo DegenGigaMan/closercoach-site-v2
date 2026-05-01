@@ -9,6 +9,9 @@ export const metadata: Metadata = {
 	title: 'List of Subprocessors',
 	description:
 		'Third-party service providers that may process customer data on behalf of CloserCoach.',
+	alternates: {
+		canonical: '/subprocessors',
+	},
 }
 
 const LAST_UPDATED = 'April 21, 2026'

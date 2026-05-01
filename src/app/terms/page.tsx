@@ -9,6 +9,9 @@ export const metadata: Metadata = {
 	title: 'Terms of Service',
 	description:
 		'CloserCoach Terms of Service. Subscription terms, cancellation policy, recording consent, and usage rules.',
+	alternates: {
+		canonical: '/terms',
+	},
 }
 
 const LAST_UPDATED = 'April 21, 2026'

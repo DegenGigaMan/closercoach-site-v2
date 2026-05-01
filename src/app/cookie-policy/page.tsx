@@ -9,6 +9,9 @@ export const metadata: Metadata = {
 	title: 'Cookie Policy',
 	description:
 		'How CloserCoach uses cookies, the types of cookies we use, and how to manage your preferences.',
+	alternates: {
+		canonical: '/cookie-policy',
+	},
 }
 
 const LAST_UPDATED = 'April 21, 2026'

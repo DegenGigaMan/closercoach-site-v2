@@ -211,6 +211,23 @@ export default function SectionFAQ(): ReactElement {
 		setOpenId((current) => (current === id ? null : id))
 	}
 
+	/* FAQPage JSON-LD for SERP rich-result eligibility. Mounts once per
+	   homepage render. Plain-text answers per Schema.org spec. Content is
+	   a static const literal serialized via JSON.stringify; no untrusted
+	   input flows into the script body. */
+	const faqJsonLd = {
+		'@context': 'https://schema.org',
+		'@type': 'FAQPage',
+		mainEntity: FAQS.map((faq) => ({
+			'@type': 'Question',
+			name: faq.question,
+			acceptedAnswer: {
+				'@type': 'Answer',
+				text: faq.answer,
+			},
+		})),
+	}
+
 	return (
 		<section
 			ref={sectionRef}
@@ -218,6 +235,11 @@ export default function SectionFAQ(): ReactElement {
 			data-surface='dark-faq'
 			className='relative overflow-hidden bg-cc-foundation py-24 md:py-32'
 		>
+			<script
+				type='application/ld+json'
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+			/>
+
 			{/* Soft emerald haze per prior atmosphere spec — kept for dark-surface depth. */}
 			<div
 				aria-hidden='true'

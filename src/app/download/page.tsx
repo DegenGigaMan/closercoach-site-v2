@@ -15,6 +15,9 @@ export const metadata: Metadata = {
 			'Get CloserCoach on your phone. Available on the App Store and Google Play. 3 days free. Full access.',
 		type: 'website',
 	},
+	alternates: {
+		canonical: '/download',
+	},
 }
 
 export default function DownloadPage() {

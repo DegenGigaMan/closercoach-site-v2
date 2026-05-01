@@ -16,6 +16,9 @@ export const metadata: Metadata = {
 			'Sales training insights, playbooks, and field notes from the CloserCoach team.',
 		type: 'website',
 	},
+	alternates: {
+		canonical: '/blog',
+	},
 }
 
 const LINKEDIN_URL = 'https://linkedin.com/company/closercoach'

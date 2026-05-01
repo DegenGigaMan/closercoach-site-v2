@@ -21,6 +21,9 @@ export const metadata: Metadata = {
 			'CloserCoach raises $1M seed round to scale AI-powered sales coaching for the 20,000+ closers training inside the app every day.',
 		type: 'article',
 	},
+	alternates: {
+		canonical: '/blog/closercoach-raises-1m',
+	},
 }
 
 export default function FundingAnnouncementPage() {
