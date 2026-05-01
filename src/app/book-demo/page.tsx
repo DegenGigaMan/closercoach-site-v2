@@ -6,3 +6,4 @@ import { BRAND } from '@/lib/constants'
 export default function BookDemo() {
 	redirect(BRAND.calendly)
 }
+// wiejpoqjdqd
