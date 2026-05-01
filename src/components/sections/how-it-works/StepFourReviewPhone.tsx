@@ -120,7 +120,7 @@ function PhoneFrame({ children, mode }: { children: React.ReactNode; mode: strin
 					{/* Screen content area: fixed aspect ratio so the phone is
 					 * always proper-iPhone-proportioned. Content laid out
 					 * vertically with breathing room. */}
-					<div className='relative' style={{ aspectRatio: '9 / 19' }}>
+					<div className='relative' style={{ aspectRatio: '9 / 19.5' }}>
 						{children}
 					</div>
 					{/* Home indicator */}
