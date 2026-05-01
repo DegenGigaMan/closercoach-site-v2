@@ -7,13 +7,19 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { BRAND, FOOTER_LINKS } from '@/lib/constants'
+import { track } from '@/lib/analytics'
 
 const TRUST_BADGES = ['Featured in Hypepotamus', 'SOC2', 'GDPR'] as const
+
+/* LS-006 (2026-05-01): drop the Live Chat placeholder (href='#') from the
+ * Support column. Removing it at render time so the constants stay shared
+ * with any other consumer; the column collapses naturally. */
+const supportLinks = FOOTER_LINKS.support.filter((link) => link.href !== '#')
 
 const columns = [
 	{ heading: 'Resources', links: FOOTER_LINKS.resources },
 	{ heading: 'Legal', links: FOOTER_LINKS.legal },
-	{ heading: 'Support', links: FOOTER_LINKS.support },
+	{ heading: 'Support', links: supportLinks },
 	{ heading: 'Social', links: FOOTER_LINKS.social },
 ] as const
 
@@ -74,6 +80,15 @@ export default function Footer() {
 							<ul className='space-y-3'>
 								{col.links.map((link) => {
 									const isExternal = 'external' in link && link.external
+									/* TS narrows link.href to the literal union from FOOTER_LINKS
+									 * (as const). Only `/download` matches a tracked event in the
+									 * current footer. If a Book a Demo link is added later (href
+									 * = BRAND.calendly or '/book-demo'), extend this conditional. */
+									const onLinkClick = () => {
+										if (link.href === '/download') {
+											track('download_click', { source: 'footer', cta_text: link.label })
+										}
+									}
 									return (
 										<li key={link.href}>
 											{isExternal ? (
@@ -81,6 +96,7 @@ export default function Footer() {
 													href={link.href}
 													target='_blank'
 													rel='noopener noreferrer'
+													onClick={onLinkClick}
 													className='text-sm text-cc-text-secondary transition-colors hover:text-white'
 												>
 													{link.label}
@@ -88,6 +104,7 @@ export default function Footer() {
 											) : (
 												<Link
 													href={link.href}
+													onClick={onLinkClick}
 													className='text-sm text-cc-text-secondary transition-colors hover:text-white'
 												>
 													{link.label}

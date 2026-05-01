@@ -15,6 +15,7 @@ import MotionCTA from '@/components/shared/motion-cta'
 import ScrollReveal from '@/components/shared/scroll-reveal'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
 import { BRAND, CTA, PRICING, STATS } from '@/lib/constants'
+import { track } from '@/lib/analytics'
 
 /* ---------- Tier data ---------- */
 
@@ -256,14 +257,23 @@ export default function PricingContent() {
 							Less than a lunch. More reps closed.
 						</p>
 
-						{/* Billing toggle */}
+						{/* Billing toggle. Verified working 2026-05-01 LS-005 — `yearly`
+						 * state flips on click, all 3 tier cards derive prices from
+						 * `tier.getPrice(yearly)`. */}
 						<div className='mt-6 flex items-center gap-3'>
 							<span className={`text-sm ${!yearly ? 'text-white' : 'text-cc-text-secondary'}`}>
 								Monthly
 							</span>
 							<button
 								type='button'
-								onClick={() => setYearly(!yearly)}
+								onClick={() => {
+									const next = !yearly
+									setYearly(next)
+									track('pricing_tier_select', {
+										interaction: 'billing_toggle',
+										billing: next ? 'yearly' : 'monthly',
+									})
+								}}
 								className={`relative h-7 w-12 rounded-full transition-colors ${yearly ? 'bg-cc-accent' : 'bg-cc-surface-card'}`}
 								role='switch'
 								aria-checked={yearly}
@@ -347,8 +357,17 @@ export default function PricingContent() {
 											<p className='mt-3 text-sm text-cc-accent'>{tier.trial}</p>
 										)}
 
-										{/* CTA */}
-										<div className='mt-6'>
+										{/* CTA. Wrapped in span+onClickCapture to instrument
+										 * pricing_tier_select without modifying MotionCTA. */}
+										<div
+											className='mt-6'
+											onClickCapture={() => track('pricing_tier_select', {
+												tier: tier.key,
+												billing: yearly ? 'yearly' : 'monthly',
+												cta_text: tier.cta.text,
+												destination: tier.cta.href,
+											})}
+										>
 											<MotionCTA
 												href={tier.cta.href}
 												variant={tier.ctaVariant}

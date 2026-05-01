@@ -28,6 +28,7 @@
 import { useState, useRef, useId, type ReactElement } from 'react'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'motion/react'
 import { CaretDown } from '@phosphor-icons/react'
+import { track } from '@/lib/analytics'
 
 /* ── FAQ content ── */
 
@@ -208,7 +209,21 @@ export default function SectionFAQ(): ReactElement {
 	const prefersReducedMotion = useReducedMotion()
 
 	const handleToggle = (id: string): void => {
-		setOpenId((current) => (current === id ? null : id))
+		setOpenId((current) => {
+			const next = current === id ? null : id
+			/* Fire on open only (not close) — single-direction signal is cleaner
+			 * for funnel analytics. */
+			if (next !== null && next !== current) {
+				const index = FAQS.findIndex((f) => f.id === id)
+				const faq = FAQS[index]
+				track('faq_open', {
+					question_id: id,
+					question_index: index,
+					question_text: faq?.question,
+				})
+			}
+			return next
+		})
 	}
 
 	/* FAQPage JSON-LD for SERP rich-result eligibility. Mounts once per

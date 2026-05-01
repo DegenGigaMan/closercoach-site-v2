@@ -15,6 +15,7 @@ import Image from 'next/image'
 import { AppleLogo, AndroidLogo, Globe } from '@phosphor-icons/react'
 import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react'
 import { BRAND, CTA, STATS } from '@/lib/constants'
+import { track } from '@/lib/analytics'
 import MotionCTA from '@/components/shared/motion-cta'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
 import AnimatedBadge from '@/components/ui/animated-badge'
@@ -189,24 +190,36 @@ export default function SectionHero() {
 					animate={{ opacity: 1, scale: 1 }}
 					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, delay: 0.45, ease: EASE }}
 				>
-					<MotionCTA
-						href={CTA.tryFree.href}
-						variant='primary'
-						size='lg'
-						className='w-full sm:w-auto'
-						dataPrimaryCta
+					{/* Wrapped in span+onClickCapture to instrument the click without
+					 * modifying MotionCTA. Capture phase fires before Link navigation. */}
+					<span
+						className='contents'
+						onClickCapture={() => track('hero_cta_click', { cta_text: CTA.tryFree.text, destination: CTA.tryFree.href, location: 'hero', position: 'primary' })}
 					>
-						{CTA.tryFree.text}
-					</MotionCTA>
-					<MotionCTA
-						href={CTA.contactSales.href}
-						variant='secondary'
-						size='lg'
-						className='w-full sm:w-auto'
-						dataPrimaryCta
+						<MotionCTA
+							href={CTA.tryFree.href}
+							variant='primary'
+							size='lg'
+							className='w-full sm:w-auto'
+							dataPrimaryCta
+						>
+							{CTA.tryFree.text}
+						</MotionCTA>
+					</span>
+					<span
+						className='contents'
+						onClickCapture={() => track('hero_cta_click', { cta_text: CTA.contactSales.text, destination: CTA.contactSales.href, location: 'hero', position: 'secondary' })}
 					>
-						{CTA.contactSales.text}
-					</MotionCTA>
+						<MotionCTA
+							href={CTA.contactSales.href}
+							variant='secondary'
+							size='lg'
+							className='w-full sm:w-auto'
+							dataPrimaryCta
+						>
+							{CTA.contactSales.text}
+						</MotionCTA>
+					</span>
 				</motion.div>
 
 				{/* Platform availability row. iOS / Android / Web tags only. The
@@ -384,6 +397,7 @@ export default function SectionHero() {
 							rel='noopener noreferrer'
 							data-primary-cta=''
 							className='transition-transform hover:scale-105'
+							onClick={() => track('hero_cta_click', { cta_text: 'App Store badge', destination: BRAND.appStore, location: 'hero', position: 'app_store_badge' })}
 						>
 							<Image
 								src='/images/app-store-badge.svg'
@@ -400,6 +414,7 @@ export default function SectionHero() {
 							rel='noopener noreferrer'
 							data-primary-cta=''
 							className='transition-transform hover:scale-105'
+							onClick={() => track('hero_cta_click', { cta_text: 'Google Play badge', destination: BRAND.googlePlay, location: 'hero', position: 'google_play_badge' })}
 						>
 							<Image
 								src='/images/google-play-badge.svg'
