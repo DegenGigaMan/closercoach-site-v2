@@ -96,7 +96,7 @@ function Waveform({ bars = 48, height = 80, mini = false, pulse = true, ducked =
 				height,
 				transform: shouldDuck ? 'scaleY(0.5)' : 'scaleY(1)',
 				transformOrigin: 'center',
-				transitionDuration: shouldDuck ? '80ms' : '120ms',
+				transitionDuration: shouldDuck ? '160ms' : '240ms',
 				transitionTimingFunction: 'ease-out',
 			}}
 		>
@@ -116,10 +116,10 @@ function Waveform({ bars = 48, height = 80, mini = false, pulse = true, ducked =
 					}
 					transition={shouldAnimate
 						? {
-							duration: bar.speed,
+							duration: bar.speed * 2,
 							repeat: Infinity,
 							ease: 'easeInOut',
-							delay: bar.phase * 0.05,
+							delay: bar.phase * 0.1,
 						}
 						: { duration: 0 }
 					}
@@ -213,7 +213,7 @@ function TrainState() {
 								width: subState === 'ready' ? '100%' : '30%',
 								backgroundColor: subState === 'ready' ? '#34E18E' : '#10B981',
 							}}
-							transition={{ duration: subState === 'ready' ? 0.5 : 2, ease: 'easeOut' }}
+							transition={{ duration: subState === 'ready' ? 1.0 : 4, ease: 'easeOut' }}
 						/>
 					</div>
 				</div>
@@ -228,7 +228,7 @@ function TrainState() {
 						initial={{ opacity: 0, y: 8 }}
 						animate={{ opacity: 0.7, y: 0 }}
 						exit={{ opacity: 0, y: -8 }}
-						transition={{ duration: 0.3 }}
+						transition={{ duration: 0.6 }}
 					>
 						{CHECKLIST_ITEMS.map((item, i) => (
 							<motion.div
@@ -236,12 +236,12 @@ function TrainState() {
 								className="flex items-center gap-2"
 								initial={{ opacity: 0, x: -8 }}
 								animate={{ opacity: 1, x: 0 }}
-								transition={{ duration: 0.2, delay: 0.2 + i * 0.25 }}
+								transition={{ duration: 0.4, delay: 0.4 + i * 0.5 }}
 							>
 								<motion.div
 									initial={{ scale: 0 }}
 									animate={{ scale: 1 }}
-									transition={{ duration: 0.15, delay: 0.35 + i * 0.25 }}
+									transition={{ duration: 0.3, delay: 0.7 + i * 0.5 }}
 								>
 									<Check size={12} weight="bold" className="text-cc-accent" />
 								</motion.div>
@@ -266,7 +266,7 @@ function TrainState() {
 							className={`rounded-2xl border border-white/[0.14] bg-cc-surface-card p-3 ${CARD_SHADOW}`}
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.4, delay: 0.4, ease: 'easeOut' }}
+							transition={{ duration: 0.8, delay: 0.8, ease: 'easeOut' }}
 						>
 							<div className="flex items-center gap-3">
 								<motion.div layoutId="prospect-avatar" className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-white/15">
@@ -292,7 +292,7 @@ function TrainState() {
 							className="flex items-center justify-center rounded-full bg-cc-mint py-2.5"
 							initial={{ opacity: 0, y: 8 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ delay: 0.7, duration: 0.3 }}
+							transition={{ delay: 1.4, duration: 0.6 }}
 						>
 							<span className="text-[14px] font-semibold text-black">Continue →</span>
 						</motion.div>
@@ -408,7 +408,7 @@ function PracticeState() {
 					<motion.div
 						className="ml-0.5 h-1.5 w-1.5 rounded-full bg-cc-accent"
 						animate={prefersReducedMotion ? { opacity: 1 } : { opacity: [0.4, 1, 0.4] }}
-						transition={prefersReducedMotion ? { duration: 0 } : { duration: 1, repeat: Infinity, ease: 'easeInOut' }}
+						transition={prefersReducedMotion ? { duration: 0 } : { duration: 2, repeat: Infinity, ease: 'easeInOut' }}
 					/>
 				</div>
 				<div className="ml-auto flex items-center gap-1 font-[family-name:var(--font-mono)] text-[10px] text-cc-text-muted tabular-nums">
@@ -443,7 +443,7 @@ function PracticeState() {
 						<motion.div
 							className="h-1.5 w-1.5 rounded-full bg-cc-accent/60"
 							animate={prefersReducedMotion ? { scale: 1 } : { scale: [1, 1.4, 1] }}
-							transition={prefersReducedMotion ? { duration: 0 } : { duration: 1.1, repeat: Infinity, ease: 'easeInOut' }}
+							transition={prefersReducedMotion ? { duration: 0 } : { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
 						/>
 						<span className="text-[10px] text-cc-text-muted">Connecting...</span>
 					</motion.div>
@@ -464,7 +464,7 @@ function PracticeState() {
 										animate={{ opacity: 1, x: 0 }}
 										transition={prefersReducedMotion
 											? { duration: 0 }
-											: { type: 'spring', stiffness: 320, damping: 24, delay: entry.delay }
+											: { type: 'spring', stiffness: 160, damping: 32, delay: entry.delay * 2 }
 										}
 									>
 										<p className="text-[12px] leading-[1.5] text-cc-text-secondary">{entry.text}</p>
@@ -485,7 +485,7 @@ function PracticeState() {
 										animate={{ opacity: 1, x: 0 }}
 										transition={prefersReducedMotion
 											? { duration: 0 }
-											: { type: 'spring', stiffness: 320, damping: 24, delay: group.user.delay }
+											: { type: 'spring', stiffness: 160, damping: 32, delay: group.user.delay * 2 }
 										}
 									>
 										<p className="text-[12px] leading-[1.5] text-white">{group.user.text}</p>
@@ -515,7 +515,7 @@ function PracticeState() {
 					 * below, which snaps from {opacity:0} to settled instantly. */
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
-					transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.1, duration: 0.3 }}
+					transition={prefersReducedMotion ? { duration: 0 } : { delay: 0.2, duration: 0.6 }}
 				>
 					<div className="flex items-center gap-2">
 						{[0, 1, 2].map((i) => {
@@ -536,7 +536,7 @@ function PracticeState() {
 										className="absolute inset-[1px] rounded-full bg-cc-accent"
 										initial={false}
 										animate={{ scale: isComplete ? 1 : 0 }}
-										transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+										transition={{ type: 'spring', stiffness: 200, damping: 30 }}
 									/>
 								</motion.div>
 							)
@@ -642,7 +642,7 @@ function CoachingPill({ type, label, delay, prefersReducedMotion, timestamp }: {
 							'0 0 0px rgba(16,185,129,0)',
 						],
 					}}
-					transition={{ duration: 0.9, ease: 'easeOut' }}
+					transition={{ duration: 1.8, ease: 'easeOut' }}
 				/>
 			)}
 			<motion.span
@@ -653,7 +653,7 @@ function CoachingPill({ type, label, delay, prefersReducedMotion, timestamp }: {
 				animate={{ opacity: 1, scale: 1, y: 0 }}
 				transition={prefersReducedMotion
 					? { duration: 0 }
-					: { type: 'spring', stiffness: 500, damping: 24, delay }
+					: { type: 'spring', stiffness: 250, damping: 34, delay: delay * 2 }
 				}
 				onAnimationComplete={() => {
 					if (!landed) setLanded(true)
@@ -788,7 +788,7 @@ function RecordState() {
 						scaleY: isCapture ? 0.55 : 1,
 						opacity: isCapture ? 0.6 : 1,
 					}}
-					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.55, ease: 'easeOut' }}
+					transition={prefersReducedMotion ? { duration: 0 } : { duration: 1.1, ease: 'easeOut' }}
 					style={{ transformOrigin: 'center' }}
 				>
 					<Waveform bars={56} height={80} pulse={!prefersReducedMotion} ducked={waveformDucked} />
@@ -806,7 +806,7 @@ function RecordState() {
 							 * below, which snaps from {opacity:0} to settled instantly. */
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
-							transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2 }}
+							transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4 }}
 						>
 							<CoachingPill
 								type="negative"
@@ -837,7 +837,7 @@ function RecordState() {
 							animate={{ opacity: 1, x: 0 }}
 							transition={prefersReducedMotion
 								? { duration: 0 }
-								: { type: 'spring', stiffness: 180, damping: 22, delay: REC_TRANSCRIPT_DELAY - 0.9 }
+								: { type: 'spring', stiffness: 90, damping: 28, delay: (REC_TRANSCRIPT_DELAY - 0.9) * 2 }
 							}
 						>
 							&ldquo;...it needs to actually drive revenue. Not just look nicer...&rdquo;
@@ -954,7 +954,7 @@ function ScoreState() {
 			 * below, which snaps from {opacity:0} to settled instantly. */
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
-			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.18, ease: 'easeOut' }}
+			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.36, ease: 'easeOut' }}
 		>
 			{/* Top: Top 15% badge + Grade Ring.
 			 *  Badge pops at t=+1.45s (after letter lands).
@@ -969,7 +969,7 @@ function ScoreState() {
 					animate={{ opacity: 1, scale: 1 }}
 					transition={prefersReducedMotion
 						? { duration: 0 }
-						: { type: 'spring', stiffness: 400, damping: 22, delay: 1.45 }
+						: { type: 'spring', stiffness: 200, damping: 30, delay: 2.9 }
 					}
 				>
 					<span className="flex items-center gap-1.5 text-[10px] font-medium text-cc-accent">
@@ -1046,7 +1046,7 @@ function ScoreState() {
 						animate={{ opacity: 1, scale: 1 }}
 						transition={prefersReducedMotion
 							? { duration: 0 }
-							: { type: 'spring', stiffness: 300, damping: 18, delay: 1.05 }
+							: { type: 'spring', stiffness: 150, damping: 25, delay: 2.1 }
 						}
 					>
 						<span className="font-[family-name:var(--font-heading)] text-4xl text-cc-amber">B</span>
@@ -1097,7 +1097,7 @@ function ScoreState() {
 						animate={{ opacity: 1, x: 0 }}
 						transition={prefersReducedMotion
 							? { duration: 0 }
-							: { type: 'spring', stiffness: 300, damping: 22, delay: 2.4 }
+							: { type: 'spring', stiffness: 150, damping: 30, delay: 4.8 }
 						}
 					>
 						<Timer size={16} weight="duotone" className="shrink-0 text-cc-score-red/85" />
@@ -1117,7 +1117,7 @@ function ScoreState() {
 						animate={{ opacity: 1, x: 0 }}
 						transition={prefersReducedMotion
 							? { duration: 0 }
-							: { type: 'spring', stiffness: 300, damping: 22, delay: 2.6 }
+							: { type: 'spring', stiffness: 150, damping: 30, delay: 5.2 }
 						}
 					>
 						<Users size={16} weight="duotone" className="shrink-0 text-blue-400/90" />
@@ -1134,7 +1134,7 @@ function ScoreState() {
 					 * below, which snaps from {opacity:0} to settled instantly. */
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
-					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3, delay: 3.2 }}
+					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 6.4 }}
 				>
 					<span className="font-[family-name:var(--font-mono)] text-[10px] font-medium tabular-nums text-blue-400">
 						<NumberFlow value={talkPct} suffix="% Talk" />
@@ -1259,7 +1259,7 @@ export default function HeroPhoneV2() {
 	const variants = stateVariants[activeIndex as 0 | 1 | 2 | 3]
 	const stateTransition = prefersReducedMotion
 		? { duration: 0 }
-		: { type: 'spring' as const, stiffness: 250, damping: 22 }
+		: { type: 'spring' as const, stiffness: 125, damping: 30 }
 
 	return (
 		<LayoutGroup>

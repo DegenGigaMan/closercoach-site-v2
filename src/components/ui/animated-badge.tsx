@@ -41,8 +41,8 @@ const AnimatedBadge = ({
         filter: "blur(0px)",
       }}
       transition={{
-        duration: 0.3,
-        delay: 0.1,
+        duration: 0.6,
+        delay: 0.2,
         ease: "easeInOut",
       }}
       viewport={{ once: true }}
@@ -122,7 +122,7 @@ const AnimatedBadge = ({
   animation: multiline-animation-path;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
-  animation-duration: 3s;
+  animation-duration: 6s;
 }
 
 .ml-light-1 {

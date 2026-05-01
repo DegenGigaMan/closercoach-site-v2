@@ -93,24 +93,26 @@ export default function SectionProofConnectorB(): ReactElement {
 					</p>
 				</motion.div>
 			</section>
-			{/* Q17 Wave E (Andy #19): diagonal cut + emerald hairline transition.
-			    Replaces the prior multi-stop gradient mush. Lab Variant A locked. */}
+			{/* Straight horizontal seam (Andy 2026-05-01): replaces prior diagonal
+			    cut. Both top polygon points share Y=70 (band midpoint) so the warm
+			    wedge bottom-half is a flat rectangle. Emerald hairline runs flat
+			    across the seam at the same Y. */}
 			<div
 				aria-hidden='true'
 				className='relative h-[120px] overflow-hidden md:h-[140px]'
-				data-transition='diagonal-emerald-hairline'
+				data-transition='straight-emerald-hairline'
 			>
 				{/* Top half: dark foundation */}
 				<div className='absolute inset-x-0 top-0 h-full bg-cc-foundation' />
-				{/* Diagonal warm wedge */}
+				{/* Bottom half: warm rectangle (flat top edge) */}
 				<svg
 					className='absolute inset-0 h-full w-full'
 					viewBox='0 0 1440 140'
 					preserveAspectRatio='none'
 				>
-					<polygon points='0,140 1440,140 1440,40 0,100' fill='#F5F0EB' />
+					<polygon points='0,140 1440,140 1440,70 0,70' fill='#F5F0EB' />
 				</svg>
-				{/* Emerald hairline along the diagonal seam */}
+				{/* Emerald hairline along the flat seam */}
 				<svg
 					className='pointer-events-none absolute inset-0 h-full w-full'
 					viewBox='0 0 1440 140'
@@ -123,7 +125,7 @@ export default function SectionProofConnectorB(): ReactElement {
 							<stop offset='100%' stopColor='#10B981' stopOpacity='0' />
 						</linearGradient>
 					</defs>
-					<line x1='0' y1='100' x2='1440' y2='40' stroke='url(#cc-proof-b-glow)' strokeWidth='2' />
+					<line x1='0' y1='70' x2='1440' y2='70' stroke='url(#cc-proof-b-glow)' strokeWidth='2' />
 				</svg>
 			</div>
 		</>

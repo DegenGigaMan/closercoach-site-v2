@@ -42,7 +42,7 @@ export default function ScrollReveal({ children, className = '', delay = 0, dire
 			 * X.1 paced Hero (0.5 -> 0.85); Wave Y.8 brings the rest of the
 			 * site's section-level scroll reveals into the same one-thing-at-
 			 * a-time rhythm without overshooting Hero's envelope. */
-			transition={{ duration: 0.72, delay, ease: EASE }}
+			transition={{ duration: 1.44, delay: delay * 2, ease: EASE }}
 		>
 			{children}
 		</motion.div>

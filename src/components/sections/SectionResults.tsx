@@ -370,14 +370,54 @@ function TruncatedBody({ body }: { body: string }): ReactElement {
 function ReviewCard({ title, quote, reviewer, date }: Review): ReactElement {
 	return (
 		<div
-			className='flex h-full flex-col gap-3 rounded-[14px] p-4 shadow-[0_8px_28px_rgba(0,0,0,0.35)]'
+			className='flex h-full flex-col gap-3 rounded-[14px] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.08)]'
 			style={{
 				backgroundColor: '#FAFAF8',
 				border: '1px solid rgba(0,0,0,0.08)',
 			}}
 		>
-			{/* Title row + timestamp top-right */}
-			<div className='flex items-start justify-between gap-3'>
+			{/* App Store Review chip — source-of-proof badge sitting above the
+			 * title row. Replaces the dark surface band as the contextual
+			 * signifier per Andy 2026-05-01. Inline App Store icon + emerald
+			 * mono label on a translucent emerald background. */}
+			<div className='flex items-center justify-between gap-3'>
+				<span
+					className='inline-flex items-center gap-1.5 rounded-full px-2.5 py-1'
+					style={{
+						backgroundColor: 'rgba(16,185,129,0.10)',
+						border: `1px solid ${EMERALD_AA}33`,
+					}}
+				>
+					<Image
+						src='/images/app-store-logo.svg'
+						alt=''
+						width={14}
+						height={14}
+						className='h-3.5 w-3.5 shrink-0'
+					/>
+					<span
+						style={{
+							fontFamily: 'var(--font-mono)',
+							fontSize: '10px',
+							fontWeight: 600,
+							letterSpacing: '0.08em',
+							color: EMERALD_AA,
+							textTransform: 'uppercase',
+						}}
+					>
+						App Store Review
+					</span>
+				</span>
+				<span
+					className='shrink-0'
+					style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: '#8E8E93' }}
+				>
+					{date}
+				</span>
+			</div>
+
+			{/* Title row */}
+			<div>
 				<h4
 					className='leading-tight'
 					style={{
@@ -390,12 +430,6 @@ function ReviewCard({ title, quote, reviewer, date }: Review): ReactElement {
 				>
 					{title}
 				</h4>
-				<span
-					className='shrink-0'
-					style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: '#8E8E93' }}
-				>
-					{date}
-				</span>
 			</div>
 
 			{/* Stars (5 colored) + username right-aligned */}
@@ -482,28 +516,23 @@ export default function SectionResults(): ReactElement {
 				</Reveal>
 			</div>
 
-			{/* ── Q17 Wave E (Andy 2026-04-29 #20 / CC-D3): edge-to-edge dark
-			 * surface band hosting the App Store reviews per /lab/app-store-
-			 * reviews-explorations Variant A. Cream cards on cc-foundation give
-			 * the layered light-on-dark depth that mirrors actual App Store
-			 * visual grammar. Wave Z.6 P2-E stagger preserved.
-			 *
-			 * Sits OUTSIDE the warm max-w-7xl wrapper so the dark band is
-			 * edge-to-edge of the viewport. The cards inner grid restores the
-			 * max-w-7xl + px-6 constraint. */}
-			<div data-surface='dark-reviews-band' className='mt-12 bg-cc-foundation py-12 md:mt-16 md:py-16'>
-				<div className='mx-auto grid max-w-7xl grid-cols-1 gap-4 px-6 md:grid-cols-3'>
-					{APP_STORE_REVIEWS.map((r, i) => (
-						<Reveal key={i} delay={i * 0.12}>
-							<ReviewCard
-								title={r.title}
-								quote={r.quote}
-								reviewer={r.reviewer}
-								date={r.date}
-							/>
-						</Reveal>
-					))}
-				</div>
+			{/* ── App Store reviews. Cream review cards sit directly on the warm
+			 * surface; the prior edge-to-edge dark band was dropped per Andy
+			 * 2026-05-01 in favour of a single continuous warm surface. Each
+			 * card now carries its own "App Store Review" chip beside the
+			 * title for source-of-proof identification (replacing the dark band
+			 * as the contextual signifier). Wave Z.6 P2-E stagger preserved. */}
+			<div className='mx-auto mt-12 grid max-w-7xl grid-cols-1 gap-4 px-6 md:mt-16 md:grid-cols-3'>
+				{APP_STORE_REVIEWS.map((r, i) => (
+					<Reveal key={i} delay={i * 0.12}>
+						<ReviewCard
+							title={r.title}
+							quote={r.quote}
+							reviewer={r.reviewer}
+							date={r.date}
+						/>
+					</Reveal>
+				))}
 			</div>
 
 			{/* ── Below-reviews content (back to warm: anchor + tier cards + ego appeal + CTA) ── */}

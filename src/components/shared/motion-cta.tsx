@@ -127,11 +127,11 @@ export default function MotionCTA({
 			whileHover={{
 				scale: 1.02,
 				boxShadow: hoverShadow,
-				transition: { type: 'spring', stiffness: 400, damping: 17 },
+				transition: { type: 'spring', stiffness: 200, damping: 25 },
 			}}
 			whileTap={{
 				scale: 0.98,
-				transition: { type: 'spring', stiffness: 600, damping: 20 },
+				transition: { type: 'spring', stiffness: 300, damping: 28 },
 			}}
 		>
 			{children}

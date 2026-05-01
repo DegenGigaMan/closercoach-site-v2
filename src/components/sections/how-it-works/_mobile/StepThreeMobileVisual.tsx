@@ -77,7 +77,7 @@ export default function StepThreeMobileVisual() {
 					}`}
 				>
 					<PhoneIcon size={9} weight="fill" aria-hidden="true" />
-					AI Phone Call
+					Phone Call
 				</button>
 				<button
 					ref={(el) => { tabRefs.current[1] = el }}

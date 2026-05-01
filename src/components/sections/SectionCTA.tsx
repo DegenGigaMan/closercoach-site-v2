@@ -92,13 +92,13 @@ export default function SectionCTA() {
 								className='absolute rounded-full border border-cc-accent/25'
 								style={{ width: 240, height: 240 }}
 								animate={prefersReducedMotion ? undefined : { scale: [1, 1.06, 1], opacity: [0.4, 0.15, 0.4] }}
-								transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+								transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
 							/>
 							<motion.div
 								className='absolute rounded-full border border-cc-accent/15'
 								style={{ width: 300, height: 300 }}
 								animate={prefersReducedMotion ? undefined : { scale: [1, 1.08, 1], opacity: [0.3, 0.1, 0.3] }}
-								transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 0.7 }}
+								transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut', delay: 1.4 }}
 							/>
 						</div>
 
@@ -180,7 +180,7 @@ export default function SectionCTA() {
 							<motion.span
 								className='absolute inline-flex h-full w-full rounded-full bg-cc-accent/60'
 								animate={prefersReducedMotion ? undefined : { scale: [1, 2.2, 1], opacity: [0.6, 0, 0.6] }}
-								transition={prefersReducedMotion ? undefined : { duration: 2.2, repeat: Infinity, ease: 'easeOut' }}
+								transition={prefersReducedMotion ? undefined : { duration: 4.4, repeat: Infinity, ease: 'easeOut' }}
 							/>
 							<span className='relative inline-flex h-2 w-2 rounded-full bg-cc-accent' />
 						</span>

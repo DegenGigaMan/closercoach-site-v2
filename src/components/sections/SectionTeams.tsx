@@ -86,7 +86,7 @@ function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElem
 			transition={
 				prefersReducedMotion
 					? { duration: 0 }
-					: { duration: 0.9, delay, ease: [0.25, 0.46, 0.45, 0.94] }
+					: { duration: 1.8, delay: delay * 2, ease: [0.25, 0.46, 0.45, 0.94] }
 			}
 		>
 			{children}
@@ -251,7 +251,7 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 	 * stack at <lg. */
 	if (isSplit) {
 		return (
-			<Reveal delay={index * 0.18} className={roleSpanClass[role]}>
+			<Reveal delay={index * 0.36} className={roleSpanClass[role]}>
 				<article className={`${articleClass} lg:flex-row`}>
 					<div className='flex flex-1 flex-col justify-center gap-4 p-8 lg:basis-[42%] lg:pr-4'>
 						{titleNode}
@@ -269,7 +269,7 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 	 * Inverted vertical stack — timeline visual is the hook so it leads. */
 	if (isInverted) {
 		return (
-			<Reveal delay={index * 0.18} className={roleSpanClass[role]}>
+			<Reveal delay={index * 0.36} className={roleSpanClass[role]}>
 				<article className={articleClass}>
 					<div className={`relative w-full overflow-hidden ${roleVisualHeight[role]}`}>
 						<Visual />
@@ -288,7 +288,7 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 	 * Spans rows 2 and 3 at lg+, single-row stack on mobile/tablet. */
 	if (isTall) {
 		return (
-			<Reveal delay={index * 0.18} className={roleSpanClass[role]}>
+			<Reveal delay={index * 0.36} className={roleSpanClass[role]}>
 				<article className={articleClass}>
 					<div className='flex flex-col gap-4 px-8 pt-8 pb-3'>
 						{titleNode}
@@ -306,7 +306,7 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 	 * mt-auto on the visual keeps row-1 / row-2 baselines aligned even when
 	 * body copy lengths differ. */
 	return (
-		<Reveal delay={index * 0.18} className={roleSpanClass[role]}>
+		<Reveal delay={index * 0.36} className={roleSpanClass[role]}>
 			<article className={articleClass}>
 				<div className='flex flex-col gap-4 px-8 pt-8 pb-3'>
 					{titleNode}
@@ -334,29 +334,10 @@ export default function SectionTeams(): ReactElement {
 			data-surface='dark-teams'
 			className='relative overflow-hidden bg-cc-foundation py-24 md:py-32'
 		>
-			{/* Wave Y.10 (Alim 2026-04-28: 'transition looks bad'): warm-to-dark
-			 * surface bridge at the top of S6 Teams. The flow Results (warm
-			 * #F5F0EB) -> Teams (dark #0D0F14) had no connector — the cream
-			 * surface terminated at the Results section bottom edge and the
-			 * dark cc-foundation slammed in at the Teams section top edge,
-			 * producing a sharp horizontal band. ProofConnectorB handles the
-			 * Features (dark) -> Results (warm) transition; this bridge is
-			 * its mirror image at the Results -> Teams handoff. Single
-			 * 96px-tall absolute gradient at the top: cream (#F5F0EB) at the
-			 * very top fading through warm-mid to cc-foundation, so the eye
-			 * reads a soft gradient instead of a hard surface flip. */}
-			{/* Wave Z.4 P2-C (2026-04-28): warm-mid stop swapped from #C9C0B2
-			 * (grey-leaning) to #D4C9B7 (warmer) so the cream surface tone
-			 * carries through the bridge instead of cooling off mid-fade.
-			 * DD R1 C3 / S+ Audit P2-C. */}
-			<div
-				className='pointer-events-none absolute inset-x-0 top-0 z-0 h-24 md:h-32'
-				aria-hidden='true'
-				style={{
-					background:
-						'linear-gradient(180deg, #F5F0EB 0%, #D4C9B7 30%, #4A443E 65%, #0D0F14 100%)',
-				}}
-			/>
+			{/* Andy 2026-05-01: prior 4-stop warm→mid→grey→dark gradient bridge
+			 * (Wave Y.10 / Z.4 P2-C) read muddy. Removed in favor of a normal
+			 * clean section seam — warm Results terminates at its bottom edge,
+			 * dark Teams begins at its top edge, no gradient mush in between. */}
 
 			<AtmosphereNoise opacity={0.02} />
 
@@ -385,7 +366,7 @@ export default function SectionTeams(): ReactElement {
 				</Reveal>
 
 				{/* ── Social proof line + manager logo wall ── */}
-				<Reveal delay={0.08} className='mt-10 flex flex-col items-center gap-6'>
+				<Reveal delay={0.16} className='mt-10 flex flex-col items-center gap-6'>
 					<p
 						className='text-center text-base text-white/90 md:text-lg'
 						style={{ fontFamily: 'var(--font-heading)', fontWeight: 700 }}
@@ -420,12 +401,12 @@ export default function SectionTeams(): ReactElement {
 				{/* ── Compliance pill strip — moved here from its own section per
 				 * Andy 2026-04-27 so the trust anchor sits directly under the
 				 * bento and above the closing CTAs. */}
-				<Reveal delay={0.05} className='mt-10 md:mt-12'>
+				<Reveal delay={0.1} className='mt-10 md:mt-12'>
 					<CompliancePills />
 				</Reveal>
 
 				{/* ── CTAs ── */}
-				<Reveal delay={0.1} className='mt-10 flex flex-col items-center gap-5 sm:gap-6 md:mt-12'>
+				<Reveal delay={0.2} className='mt-10 flex flex-col items-center gap-5 sm:gap-6 md:mt-12'>
 					<p className='text-center text-base text-cc-text-secondary md:text-lg'>
 						Want to scale your sales team training?
 					</p>

@@ -51,13 +51,14 @@
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion, AnimatePresence, LayoutGroup, useInView, useReducedMotion } from 'motion/react'
 import Image from 'next/image'
-import NumberFlow from '@number-flow/react'
 import {
 	CheckCircle,
+	Lightning,
 	Microphone,
 	Phone as PhoneIcon,
 	Warning,
 } from '@phosphor-icons/react'
+import NumberFlow from '@number-flow/react'
 import { useSubStateMachine } from './_shared/use-sub-state-machine'
 /* CARD_SHADOW is intentionally NOT imported: the phone frame carries its own
  * deeper shadow recipe inline (the phone is a 3D object, not an L1 card). */
@@ -94,18 +95,20 @@ const CC_LOGO = '/images/closercoach-logo.svg'
  *   3E annotations:   8400   -> 10000
  *   3F settled:       10000+
  */
-const T_3A = 0
-const T_3B = 2800
-const T_3C = 4400
-const T_3D = 6800
-const T_3E = 8400
-const T_3F = 10000
+/* 3C dwell extended (2026-04-30): the deal-card payoff lands at T_3C + 2350ms
+ * = ~3.95s. Previously T_3D=4400 fired the mode swap at 4.4s, leaving only
+ * ~450ms to register the $24.5k card before the recording UI took over. T_3D
+ * now sits ~4s after the deal lands so the win moment can breathe. */
+const T_3B = 0
+const T_3C = 1600
+const T_3D = 8000
+const T_3E = 9600
+const T_3F = 11200
 
-type SubState = '3A' | '3B' | '3C' | '3D' | '3E' | '3F'
+type SubState = '3B' | '3C' | '3D' | '3E' | '3F'
 
 /* Module-level pinned chain per F27 (states-array identity warning). */
 const STEP_THREE_STATES: ReadonlyArray<{ id: SubState, enterAtMs: number }> = [
-	{ id: '3A', enterAtMs: T_3A },
 	{ id: '3B', enterAtMs: T_3B },
 	{ id: '3C', enterAtMs: T_3C },
 	{ id: '3D', enterAtMs: T_3D },
@@ -116,8 +119,9 @@ const STEP_THREE_STATES: ReadonlyArray<{ id: SubState, enterAtMs: number }> = [
 /* Sarah Chen transcript lines fire inside the phone during 3C. Agent-authored,
  * anchored on the Step 1/2 OBJECTION (integration failure) for narrative
  * continuity. Logged DEV-024. */
-const TRANSCRIPT_AI = 'We\u2019ve tried tools before. Integration always breaks.'
-const TRANSCRIPT_USER = 'What specifically broke last time?'
+const TRANSCRIPT_AI = 'Honestly, I just don\u2019t think it\u2019s worth it at that price..'
+const TRANSCRIPT_USER = 'I hear you. Can I ask what\u2019s working well with your current setup?'
+const TRANSCRIPT_CLOSE = 'Alright, let\u2019s do it!'
 
 /* Coaching pill copy fired during 3E (signature annotations-spring-OUT moment).
  * Agent-authored, specific to the authentic-beat-observation tone per K6. Logged
@@ -208,7 +212,7 @@ function DualModeToggles({
 				ref={(el) => { tabRefs.current[0] = el }}
 				id="cc-s3-tab-mode-a"
 				icon={<PhoneIcon size={10} weight="fill" aria-hidden="true" />}
-				label="AI Phone Call"
+				label="Phone Call"
 				active={!modeBActive}
 				prefersReducedMotion={prefersReducedMotion}
 				onClick={() => onSelect('A')}
@@ -312,80 +316,30 @@ function PhoneFrame({ children, mode }: { children: React.ReactNode, mode: 'A' |
 	)
 }
 
-/* ─── Mode A interior (3A-3C) ──────────────────────────────── */
+/* ─── Mode A interior (3B-3C) ──────────────────────────────── */
 
 function ModeAInterior({ subState, prefersReducedMotion }: { subState: SubState, prefersReducedMotion: boolean }) {
-	const isDialer = subState === '3A'
 	const isConnecting = subState === '3B'
 	const isLive = subState === '3C'
 
-	/* Live call timer ticks 00:00 -> 00:12 during 3C so NumberFlow animates in.
-	 * setState scheduled via setTimeout(0) to avoid the repo-wide
-	 * react-hooks/set-state-in-effect lint rule (mirrors StepTwoVisual pattern). */
-	const [timer, setTimer] = useState(0)
-	useEffect(() => {
-		if (prefersReducedMotion) return
-		if (!isLive) {
-			const t = setTimeout(() => setTimer(0), 0)
-			return () => clearTimeout(t)
-		}
-		const id = setInterval(() => setTimer((prev) => (prev < 599 ? prev + 1 : prev)), 1000)
-		return () => clearInterval(id)
-	}, [isLive, prefersReducedMotion])
-
 	return (
 		<motion.div
-			layoutId="cc-s3-step-three-interior"
-			className="flex h-full w-full flex-col"
+			className="absolute inset-0 flex h-full w-full flex-col"
 			role="tabpanel"
 			id="cc-s3-tabpanel-mode-a"
 			aria-labelledby="cc-s3-tab-mode-a"
-		>
-			{isDialer && <DialerPanel prefersReducedMotion={prefersReducedMotion} />}
-			{isConnecting && <ConnectingPanel prefersReducedMotion={prefersReducedMotion} />}
-			{isLive && <LiveCallPanel timer={timer} prefersReducedMotion={prefersReducedMotion} />}
-		</motion.div>
-	)
-}
-
-function DialerPanel({ prefersReducedMotion }: { prefersReducedMotion: boolean }) {
-	return (
-		<motion.div
-			key="dialer"
-			className="flex h-full flex-col justify-between px-4 pb-3 pt-2"
+			/* Crossfade between Mode A and Mode B interiors via absolute overlap +
+			 * AnimatePresence. Sharing a layoutId between the two used to handle
+			 * the morph but it short-circuited the opacity tween once both could
+			 * coexist (Motion treated them as one morphing element rather than
+			 * sibling enter/exit), so the layoutId is removed. */
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
-			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.35, ease: 'easeOut' }}
+			exit={{ opacity: 0 }}
+			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
 		>
-			{/* Large prospect block */}
-			<div className="flex flex-col items-center gap-1.5 pt-4">
-				<div className="relative h-14 w-14 overflow-hidden rounded-full ring-2 ring-cc-accent/40">
-					<Image src={SARAH_IMG} alt="Sarah Chen" fill className="object-cover" sizes="56px" />
-				</div>
-				<span className="text-[13px] font-semibold text-white">Sarah Chen</span>
-				<span className="font-[family-name:var(--font-mono)] text-[10px] tabular-nums text-cc-text-secondary">+1 (555) 0134</span>
-			</div>
-			{/* Caller-ID sub-text (verbatim from copy deck). Lifted from /80 to /90
-			 * for WCAG AA on the 9.5px italic copy (emerald base #10B981 4.96:1 on
-			 * cc-foundation at full alpha; /90 composite clears 4.5:1 AA). */}
-			<div className="px-1 pb-1">
-				<p className="text-center text-[9.5px] italic leading-snug text-cc-accent/90">
-					&ldquo;Your number, not a rented spam line.&rdquo;
-				</p>
-			</div>
-			{/* Call button */}
-			<div className="flex justify-center pb-3">
-				<motion.button
-					type="button"
-					tabIndex={-1}
-					aria-hidden="true"
-					className="flex h-11 w-11 items-center justify-center rounded-full bg-cc-accent shadow-[0_0_16px_rgba(16,185,129,0.45)]"
-					animate={prefersReducedMotion ? { scale: 1 } : { scale: [1, 1.05, 1] }}
-					transition={prefersReducedMotion ? { duration: 0 } : { duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-				>
-					<PhoneIcon size={18} weight="fill" className="text-cc-foundation" />
-				</motion.button>
-			</div>
+			{isConnecting && <ConnectingPanel prefersReducedMotion={prefersReducedMotion} />}
+			{isLive && <LiveCallPanel prefersReducedMotion={prefersReducedMotion} />}
 		</motion.div>
 	)
 }
@@ -423,160 +377,320 @@ function ConnectingPanel({ prefersReducedMotion }: { prefersReducedMotion: boole
 	)
 }
 
-function LiveCallPanel({ timer, prefersReducedMotion }: { timer: number, prefersReducedMotion: boolean }) {
-	/* Wave AA.5 (Andy): "all the messages in the phone call part two should
-	 * be popping in one at a time, similar to the steps to how the messages
-	 * pop in like that". Mirror Step 2's stagger pattern: AI bubble -> chip
-	 * -> User bubble -> chip. Implementation uses gated rendering via local
-	 * state flips (more reliable than motion's `delay` on initial+animate
-	 * because the LiveCallPanel mount-point is itself nested under
-	 * AnimatePresence and child motion delays were observed to not apply).
-	 * Reduced-motion collapses to settled instantly. */
+/* Semi-circle interest meter (speedometer). Radius 16, centered at (cx=22, cy=22).
+ * Arc: M 6 22 A 16 16 0 0 1 38 22 (left to right). Gradient: red→amber→green.
+ * Dot placed at the 98% position near the right end of the arc. */
+function InterestMeter({ value = 98 }: { value?: number }) {
+	const R = 16, cx = 22, cy = 22
+	const circ = Math.PI * R
+	const fill = (value / 100) * circ
+	const angleRad = Math.PI * (1 - value / 100)
+	const dotX = cx + R * Math.cos(angleRad)
+	const dotY = cy - R * Math.sin(angleRad)
+	return (
+		<div className="flex flex-col items-center gap-0">
+			<div className="relative" style={{ width: 44, height: 24 }}>
+				<svg width="44" height="24" viewBox="0 0 44 24">
+					<defs>
+						<linearGradient id="s3-meter-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+							<stop offset="0%" stopColor="#ef4444" />
+							<stop offset="45%" stopColor="#f59e0b" />
+							<stop offset="100%" stopColor="#10B981" />
+						</linearGradient>
+					</defs>
+					<path d={`M ${cx - R} ${cy} A ${R} ${R} 0 0 1 ${cx + R} ${cy}`}
+						fill="none" stroke="rgba(255,255,255,0.10)" strokeWidth="2.5" strokeLinecap="round" />
+					<path d={`M ${cx - R} ${cy} A ${R} ${R} 0 0 1 ${cx + R} ${cy}`}
+						fill="none" stroke="url(#s3-meter-grad)" strokeWidth="2.5" strokeLinecap="round"
+						strokeDasharray={`${circ}`} strokeDashoffset={`${circ - fill}`} />
+					<circle cx={dotX} cy={dotY} r="2.5" fill="#10B981" />
+				</svg>
+				<div className="absolute inset-0 flex items-end justify-center pb-[1px]">
+					<span className="font-[family-name:var(--font-mono)] text-[9px] font-bold leading-none text-white">{value}</span>
+				</div>
+			</div>
+			<span className="font-[family-name:var(--font-mono)] text-[6px] uppercase tracking-[0.08em] text-cc-text-muted">Interest Meter</span>
+		</div>
+	)
+}
+
+function LiveCallPanel({ prefersReducedMotion }: { prefersReducedMotion: boolean }) {
+	/* Staggered reveal: contact card → AI bubble → user reply (with attached
+	 * Winning Response badge as one component) → Alright / DEAL CLOSED → $24.5k
+	 * deal card. Each element mounts individually so AnimatePresence initial
+	 * state actually fires. */
 	const EASE_INNER: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94]
+	const [showContact, setShowContact] = useState(prefersReducedMotion)
 	const [showAi, setShowAi] = useState(prefersReducedMotion)
-	const [showNeg, setShowNeg] = useState(prefersReducedMotion)
 	const [showUser, setShowUser] = useState(prefersReducedMotion)
-	const [showPos, setShowPos] = useState(prefersReducedMotion)
+	const [showClose, setShowClose] = useState(prefersReducedMotion)
+	const [showDeal, setShowDeal] = useState(prefersReducedMotion)
 
 	useEffect(() => {
-		/* Reduced-motion: lazy state init already seeded show-flags to true,
-		 * so this effect is a no-op under reduced motion. */
 		if (prefersReducedMotion) return
-		const t1 = setTimeout(() => setShowAi(true), 300)
-		const t2 = setTimeout(() => setShowNeg(true), 850)
-		const t3 = setTimeout(() => setShowUser(true), 1300)
-		const t4 = setTimeout(() => setShowPos(true), 1800)
-		return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4) }
+		const t1 = setTimeout(() => setShowContact(true), 150)
+		const t2 = setTimeout(() => setShowAi(true), 500)
+		const t3 = setTimeout(() => setShowUser(true), 1100)
+		const t4 = setTimeout(() => setShowClose(true), 1750)
+		const t5 = setTimeout(() => setShowDeal(true), 2350)
+		return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5) }
 	}, [prefersReducedMotion])
 
 	return (
 		<motion.div
 			key="live"
-			className="flex h-full flex-col gap-2 px-3 pb-3 pt-1.5"
+			className="relative flex h-full flex-col gap-1.5 overflow-hidden px-2.5 pb-2.5 pt-1"
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
 			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.35, ease: 'easeOut' }}
 		>
-			{/* Live call header */}
-			<div className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-cc-surface/50 px-2.5 py-1.5">
-				<div className="relative h-7 w-7 overflow-hidden rounded-full ring-1 ring-white/10">
-					<Image src={SARAH_IMG} alt="Sarah Chen" fill className="object-cover" sizes="28px" />
-				</div>
-				<div className="flex min-w-0 flex-1 flex-col">
-					<span className="truncate text-[10.5px] font-semibold text-white">Sarah Chen</span>
-					<span className="truncate text-[8.5px] text-cc-text-secondary">VP Ops, Apex</span>
-				</div>
-				<div className="flex items-center gap-1 font-[family-name:var(--font-mono)] text-[10px] text-cc-accent tabular-nums">
-					<NumberFlow value={timer} format={{ minimumIntegerDigits: 2 }} prefix="00:" />
-				</div>
+			{/* Celebration flash: brief emerald radial pulse when the deal closes.
+			 * Fires once at showDeal=true. Sits behind content (z-0 relative to
+			 * conversation flow) but reads as an ambient "this is the moment" beat. */}
+			<AnimatePresence>
+				{showDeal && !prefersReducedMotion && (
+					<motion.div
+						key="celebration-flash"
+						aria-hidden="true"
+						className="pointer-events-none absolute inset-0"
+						style={{
+							background:
+								'radial-gradient(ellipse at 50% 80%, rgba(16,185,129,0.35) 0%, rgba(16,185,129,0.10) 35%, transparent 65%)',
+						}}
+						initial={{ opacity: 0 }}
+						animate={{ opacity: [0, 1, 0.25] }}
+						transition={{ duration: 1.4, ease: 'easeOut', times: [0, 0.18, 1] }}
+					/>
+				)}
+			</AnimatePresence>
+
+			{/* "REAL SALES CALL" badge */}
+			<div className="relative z-[1] flex items-center">
+				<span className="inline-flex items-center gap-1 rounded-md bg-cc-accent/20 px-2 py-0.5 font-[family-name:var(--font-mono)] text-[8px] font-semibold uppercase tracking-[0.12em] text-cc-accent">
+					<PhoneIcon size={7} weight="fill" aria-hidden="true" />
+					Real Sales Call
+				</span>
 			</div>
-			{/* Transcript area + in-phone coaching annotations. Stagger schedule
-			 * (relative to LiveCallPanel mount = 3C entry):
-			 *   AI line:  0.30s
-			 *   neg pill: 0.85s
-			 *   User:     1.30s
-			 *   pos pill: 1.80s
-			 * Each motion.div is wrapped in AnimatePresence so the `initial`
-			 * state actually applies on the per-bubble mount moment. */}
-			<div className="flex flex-1 flex-col gap-2 overflow-hidden py-1">
+
+			{/* Contact card: avatar + name/title + interest meter */}
+			<AnimatePresence>
+				{showContact && (
+					<motion.div
+						key="contact"
+						className="relative z-[1] flex items-center gap-2 rounded-xl border border-white/[0.08] bg-[rgba(30,34,48,0.7)] px-2.5 py-2"
+						initial={{ opacity: 0, y: 6 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4, ease: EASE_INNER }}
+					>
+						<div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full ring-1 ring-white/15">
+							<Image src={SARAH_IMG} alt="Sarah Chen" fill className="object-cover" sizes="36px" />
+						</div>
+						<div className="flex min-w-0 flex-1 flex-col">
+							<span className="text-[11px] font-semibold text-white">Sarah Chen</span>
+							<span className="text-[9px] text-cc-text-secondary">VP Operations</span>
+						</div>
+						<InterestMeter value={98} />
+					</motion.div>
+				)}
+			</AnimatePresence>
+
+			{/* Divider */}
+			<div className="relative z-[1] flex items-center gap-1.5 py-0.5">
+				<div className="h-px flex-1 bg-white/[0.06]" />
+				<span className="font-[family-name:var(--font-mono)] text-[7.5px] text-cc-text-muted">Start of call · 0:00</span>
+				<div className="h-px flex-1 bg-white/[0.06]" />
+			</div>
+
+			{/* Conversation */}
+			<div className="relative z-[1] flex flex-1 flex-col gap-1.5 overflow-hidden">
 				<AnimatePresence>
 					{showAi && (
 						<motion.div
 							key="ai-line"
-							className="mr-auto max-w-[88%] rounded-2xl rounded-bl-sm border border-l-2 border-white/[0.06] border-l-cc-accent/50 bg-cc-surface-card/80 px-2.5 py-1.5"
+							className="flex items-end gap-1.5"
 							initial={{ opacity: 0, x: -8 }}
 							animate={{ opacity: 1, x: 0 }}
 							transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4, ease: EASE_INNER }}
 						>
-							<p className="text-[10.5px] italic leading-[1.4] text-cc-text-secondary">
-								{TRANSCRIPT_AI}
-							</p>
+							<div className="relative h-5 w-5 shrink-0 overflow-hidden rounded-full">
+								<Image src={SARAH_IMG} alt="" fill className="object-cover" sizes="20px" />
+							</div>
+							<div className="max-w-[78%] rounded-2xl rounded-bl-sm bg-[rgba(40,44,58,0.9)] px-2.5 py-1.5">
+								<p className="text-[9.5px] leading-[1.45] text-cc-text-secondary">{TRANSCRIPT_AI}</p>
+							</div>
 						</motion.div>
-					)}
-					{showNeg && (
-						<InPhoneCoachingPill key="neg" type="negative" label="Weak objection pivot" prefersReducedMotion={prefersReducedMotion} delay={0} align="left" />
 					)}
 					{showUser && (
 						<motion.div
-							key="user-line"
-							className="ml-auto max-w-[88%] rounded-2xl rounded-br-sm border border-cc-accent/20 bg-cc-accent/15 px-2.5 py-1.5"
-							initial={{ opacity: 0, x: 8 }}
+							key="winning-group"
+							/* Merged "Winning Response" group: badge sits attached above the
+							 * user bubble, both read as one highlighted unit. The bubble's
+							 * text + padding are sized up vs surrounding messages so this
+							 * beat carries visual weight. Calm ease-out entrance — no spring
+							 * overshoot, no scale-pop. mt-3 reserves room for the badge to
+							 * extend above the bubble's top edge. */
+							className="relative ml-auto mt-3 max-w-[94%] self-end"
+							initial={{ opacity: 0, y: 6 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={prefersReducedMotion
+								? { duration: 0 }
+								: { duration: 0.45, ease: EASE_INNER }
+							}
+						>
+							{/* Winning Response badge: dark pill with emerald label, anchored
+							 * to the top-left corner of the bubble. Sits inside the bubble's
+							 * top-padding zone so it never covers the message text. */}
+							<span
+								className="absolute -top-2 left-2 z-[2] inline-flex items-center gap-1 rounded-full border border-white/[0.08] bg-[rgba(20,22,30,0.95)] px-2 py-[3px] font-semibold text-cc-accent shadow-[0_4px_10px_rgba(0,0,0,0.35)] backdrop-blur-sm"
+								style={{ fontSize: '9.5px', letterSpacing: '0.01em' }}
+							>
+								<Lightning size={9} weight="fill" aria-hidden="true" />
+								Winning Response
+							</span>
+							{/* User bubble — meaningfully larger than surrounding messages
+							 * (12px vs 9.5px, generous pt-4 to clear the badge). Subtle blue
+							 * glow shadow so it reads as the emphasized winning beat. */}
+							<div
+								className="rounded-2xl rounded-br-sm bg-blue-500 px-3.5 pb-3 pt-4 shadow-[0_4px_18px_rgba(59,130,246,0.30)]"
+							>
+								<p className="text-[12px] leading-[1.4] text-white">{TRANSCRIPT_USER}</p>
+							</div>
+						</motion.div>
+					)}
+					{showClose && (
+						<motion.div
+							key="close"
+							className="flex flex-col gap-1.5"
+							initial={{ opacity: 0, x: -8 }}
 							animate={{ opacity: 1, x: 0 }}
 							transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4, ease: EASE_INNER }}
 						>
-							<p className="text-[10.5px] leading-[1.4] text-white">
-								{TRANSCRIPT_USER}
-							</p>
+							<div className="flex items-end gap-1.5">
+								<div className="relative h-5 w-5 shrink-0 overflow-hidden rounded-full">
+									<Image src={SARAH_IMG} alt="" fill className="object-cover" sizes="20px" />
+								</div>
+								<motion.div
+									className="rounded-2xl rounded-bl-sm border border-cc-accent/50 bg-cc-foundation px-2.5 py-1.5"
+									animate={prefersReducedMotion
+										? undefined
+										: {
+											boxShadow: [
+												'0 0 0px rgba(16,185,129,0)',
+												'0 0 16px rgba(16,185,129,0.55)',
+												'0 0 8px rgba(16,185,129,0.25)',
+											],
+										}
+									}
+									transition={prefersReducedMotion ? undefined : { duration: 1.1, ease: 'easeOut' }}
+								>
+									<p className="text-[9.5px] font-medium leading-[1.45] text-white">{TRANSCRIPT_CLOSE}</p>
+								</motion.div>
+							</div>
+							<motion.div
+								className="ml-7 flex items-center gap-1.5"
+								initial={{ opacity: 0, scale: 0.7 }}
+								animate={{ opacity: 1, scale: prefersReducedMotion ? 1 : [0.7, 1.25, 1] }}
+								transition={prefersReducedMotion
+									? { duration: 0 }
+									: { duration: 0.7, ease: 'easeOut', times: [0, 0.5, 1], delay: 0.2 }
+								}
+							>
+								<Lightning size={11} weight="fill" className="text-cc-accent" aria-hidden="true" />
+								<span className="font-[family-name:var(--font-mono)] text-[9px] font-bold uppercase tracking-[0.14em] text-cc-accent">
+									Deal Closed
+								</span>
+							</motion.div>
 						</motion.div>
-					)}
-					{showPos && (
-						<InPhoneCoachingPill key="pos" type="positive" label="Strong discovery question" prefersReducedMotion={prefersReducedMotion} delay={0} align="right" />
 					)}
 				</AnimatePresence>
 			</div>
-			{/* Mute / End bar */}
-			<div className="flex items-center justify-between gap-2 border-t border-white/[0.05] pt-1.5">
-				<div className="flex h-7 w-7 items-center justify-center rounded-full border border-white/[0.08] bg-cc-surface/60">
-					<Microphone size={11} weight="regular" className="text-cc-text-secondary" aria-hidden="true" />
-				</div>
-				<span className="font-[family-name:var(--font-mono)] text-[8.5px] uppercase tracking-[0.15em] text-cc-text-muted">
-					Live
-				</span>
-				<div className="flex h-7 w-7 items-center justify-center rounded-full bg-cc-score-red/80">
-					<PhoneIcon size={11} weight="fill" className="rotate-[135deg] text-white" aria-hidden="true" />
-				</div>
-			</div>
+
+			{/* Deal card — the moment. Bouncy spring entrance, expanding glow rings,
+			 * the $ figure pops with a follow-up scale flourish, Personal Best
+			 * badge slides in last. Reduced-motion collapses to settled instantly. */}
+			<AnimatePresence>
+				{showDeal && (
+					<motion.div
+						key="deal"
+						className="relative z-[1] flex flex-col items-center justify-center overflow-visible rounded-2xl border border-cc-accent/40 bg-[rgba(16,185,129,0.10)] py-3 shadow-[0_0_28px_rgba(16,185,129,0.30)]"
+						initial={{ opacity: 0, y: 12, scale: 0.7 }}
+						animate={{ opacity: 1, y: 0, scale: 1 }}
+						transition={prefersReducedMotion
+							? { duration: 0 }
+							: { type: 'spring', stiffness: 220, damping: 14, mass: 0.85 }
+						}
+					>
+						{/* Expanding glow rings: two staggered emerald rings ripple outward
+						 * the moment the card lands, signalling celebration. */}
+						{!prefersReducedMotion && (
+							<>
+								<motion.span
+									aria-hidden="true"
+									className="pointer-events-none absolute inset-0 rounded-2xl border-2 border-cc-accent"
+									initial={{ opacity: 0.7, scale: 1 }}
+									animate={{ opacity: 0, scale: 1.22 }}
+									transition={{ duration: 1.0, ease: 'easeOut' }}
+								/>
+								<motion.span
+									aria-hidden="true"
+									className="pointer-events-none absolute inset-0 rounded-2xl border border-cc-accent"
+									initial={{ opacity: 0.55, scale: 1 }}
+									animate={{ opacity: 0, scale: 1.4 }}
+									transition={{ duration: 1.4, ease: 'easeOut', delay: 0.18 }}
+								/>
+							</>
+						)}
+						<motion.span
+							className="font-[family-name:var(--font-heading)] font-bold leading-none text-cc-accent"
+							style={{
+								fontSize: '30px',
+								letterSpacing: '-0.5px',
+								textShadow: '0 0 18px rgba(16,185,129,0.45)',
+							}}
+							initial={{ scale: 0.7 }}
+							animate={{ scale: prefersReducedMotion ? 1 : [0.7, 1.12, 1] }}
+							transition={prefersReducedMotion
+								? { duration: 0 }
+								: { duration: 0.65, ease: 'easeOut', times: [0, 0.55, 1], delay: 0.12 }
+							}
+						>
+							$24.5k
+						</motion.span>
+						<motion.div
+							className="mt-2 flex items-center gap-1 rounded-full border border-cc-accent/40 bg-cc-accent/15 px-2 py-0.5"
+							initial={{ opacity: 0, y: 6 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={prefersReducedMotion
+								? { duration: 0 }
+								: { duration: 0.4, ease: 'easeOut', delay: 0.55 }
+							}
+						>
+							<Lightning size={8} weight="fill" className="text-cc-accent" aria-hidden="true" />
+							<span className="font-[family-name:var(--font-mono)] text-[8px] font-semibold text-cc-accent">Personal Best</span>
+						</motion.div>
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</motion.div>
 	)
 }
 
-/* In-phone coaching pill fired during 3C transcript moments. Lighter weight
- * than the signature pills in 3E; these are inline with the transcript. */
-function InPhoneCoachingPill({ type, label, delay, prefersReducedMotion, align }: {
-	type: 'positive' | 'negative'
-	label: string
-	delay: number
-	prefersReducedMotion: boolean
-	align: 'left' | 'right'
-}) {
-	const isPositive = type === 'positive'
-	const pillClass = `inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[9.5px] font-medium ${isPositive
-		? 'border-cc-accent/30 bg-cc-accent/10 text-cc-accent'
-		: 'border-cc-score-red/30 bg-cc-score-red/10 text-red-400'
-	}`
-	const wrapperAlign = align === 'right' ? 'self-end' : 'self-start'
-	return (
-		<div className={wrapperAlign}>
-			<motion.span
-				className={pillClass}
-				/* F39: stable initial. Reduced-motion snaps via duration: 0. */
-				initial={{ opacity: 0, scale: 0.9, y: -4 }}
-				animate={{ opacity: 1, scale: 1, y: 0 }}
-				transition={prefersReducedMotion
-					? { duration: 0 }
-					: { type: 'spring', stiffness: 500, damping: 24, delay }
-				}
-			>
-				{isPositive
-					? <CheckCircle size={10} weight="fill" aria-hidden="true" />
-					: <Warning size={10} weight="fill" aria-hidden="true" />
-				}
-				{label}
-			</motion.span>
-		</div>
-	)
-}
 
 /* ─── Mode B interior (3D-3F) ──────────────────────────────── */
 
 function ModeBInterior({ subState, prefersReducedMotion }: { subState: SubState, prefersReducedMotion: boolean }) {
 	return (
 		<motion.div
-			layoutId="cc-s3-step-three-interior"
-			className="flex h-full w-full flex-col justify-between px-3 pb-3 pt-2"
+			className="absolute inset-0 flex h-full w-full flex-col justify-between px-3 pb-3 pt-2"
 			role="tabpanel"
 			id="cc-s3-tabpanel-mode-b"
 			aria-labelledby="cc-s3-tab-mode-b"
+			/* Match Mode A's crossfade timing so the mode swap reads as one smooth
+			 * crossfade rather than a wait-then-pop. */
+			initial={{ opacity: 0 }}
+			animate={{ opacity: 1 }}
+			exit={{ opacity: 0 }}
+			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
 		>
 			{/* REC header */}
 			<div className="flex items-center justify-between">
@@ -816,7 +930,7 @@ function useSubStatePin(enabled: boolean): SubState | null {
 		const t = setTimeout(() => {
 			if (typeof window === 'undefined') return
 			const raw = new URLSearchParams(window.location.search).get('pin')
-			if (raw === '3A' || raw === '3B' || raw === '3C' || raw === '3D' || raw === '3E' || raw === '3F') {
+			if (raw === '3B' || raw === '3C' || raw === '3D' || raw === '3E' || raw === '3F') {
 				setPin(raw)
 			}
 		}, 0)
@@ -836,7 +950,7 @@ export default function StepThreeVisual({ devPin = false }: { devPin?: boolean }
 		states: STEP_THREE_STATES,
 		trigger: inView,
 		reducedMotion: prefersReducedMotion,
-		initialState: '3A',
+		initialState: '3B',
 		settledState: '3F',
 		once: true,
 	})
@@ -902,7 +1016,7 @@ export default function StepThreeVisual({ devPin = false }: { devPin?: boolean }
 						<RoomBlurBackdrop active={modeBActive} prefersReducedMotion={prefersReducedMotion} />
 
 						<PhoneFrame mode={modeBActive ? 'B' : 'A'}>
-							<AnimatePresence mode="wait" initial={false}>
+							<AnimatePresence initial={false}>
 								{modeBActive
 									? (
 										<ModeBInterior
