@@ -14,6 +14,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import { track } from '@/lib/analytics'
 
 const STORAGE_KEY = 'cookie-consent'
 const SCROLL_THRESHOLD = 200
@@ -88,6 +89,11 @@ export default function CookieConsent() {
 
 	const handleChoice = (choice: 'accepted' | 'declined') => {
 		localStorage.setItem(STORAGE_KEY, choice)
+		/* Dispatch FIRST so PostHogProvider initializes synchronously when the
+		 * user accepts. After init, window.posthog is set, and the subsequent
+		 * track() call captures successfully on the same event loop tick. */
+		window.dispatchEvent(new Event('cookie-consent-change'))
+		track('cookie_consent_choice', { choice })
 		setDismissed(true)
 	}
 

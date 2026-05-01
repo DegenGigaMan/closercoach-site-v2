@@ -1,21 +1,30 @@
 /** @fileoverview Root layout with fonts, metadata, viewport, JSON-LD structured
- * data, and body wrapper.
+ * data, analytics + observability providers, and body wrapper.
  *
  * Metadata strategy (2026-05-01):
- *   ─ Title template ensures every subpage reads "Page | CloserCoach".
- *   ─ Open Graph + Twitter cards mirror the same hero copy + 1200x630 og-image
+ *   - Title template ensures every subpage reads "Page | CloserCoach".
+ *   - Open Graph + Twitter cards mirror the same hero copy + 1200x630 og-image
  *     so link unfurls (LinkedIn, Slack, iMessage, Twitter) all render the same
  *     branded preview.
- *   ─ canonical via `alternates.canonical` (root) + per-page metadata where
+ *   - canonical via `alternates.canonical` (root) + per-page metadata where
  *     each subpage extends the template.
- *   ─ Web App Manifest, sitemap, robots, and themeColor wired here so search
+ *   - Web App Manifest, sitemap, robots, and themeColor wired here so search
  *     engines and PWA installs see a consistent identity.
- *   ─ JSON-LD Organization + SoftwareApplication injected so Google rich
- *     results can surface app rating / pricing in search SERPs.
+ *   - JSON-LD Organization + SoftwareApplication + WebSite injected so Google
+ *     rich results can surface app rating / pricing in search SERPs.
+ *
+ * Observability (2026-05-01):
+ *   - Vercel Analytics + Speed Insights mounted at body end.
+ *   - PostHogProvider wraps the entire app shell so client events fire from
+ *     any nested component via the analytics helper at @/lib/analytics.
+ *   - ScrollDepthTracker reports 25/50/75/100% depth events.
+ *   - Skip-nav anchor as the first body child for keyboard a11y.
  */
 
 import type { Metadata, Viewport } from 'next'
 import Script from 'next/script'
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { lora, geistMono, inter, plusJakarta } from '@/lib/fonts'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
@@ -23,6 +32,8 @@ import SmoothScroll from '@/components/layout/SmoothScroll'
 import ScrollToTop from '@/components/layout/ScrollToTop'
 import CookieConsent from '@/components/layout/CookieConsent'
 import AnnouncementBanner from '@/components/layout/AnnouncementBanner'
+import { PostHogProvider } from '@/components/providers/PostHogProvider'
+import { ScrollDepthTracker } from '@/components/providers/ScrollDepthTracker'
 import { BRAND, STATS, PRICING } from '@/lib/constants'
 import './globals.css'
 
@@ -50,7 +61,7 @@ function resolveSiteUrl(): string {
 
 const SITE_URL = resolveSiteUrl()
 const SITE_NAME = 'CloserCoach'
-const SITE_TITLE = 'CloserCoach - AI Sales Coach for B2B Sales Rep'
+const SITE_TITLE = 'CloserCoach - AI Sales Coach for B2C Sales Reps'
 const SITE_DESCRIPTION =
 	'Practice before every meeting, record real calls, and get scored by AI. 20,000+ closers train with CloserCoach. Try free for 3 days.'
 
@@ -99,7 +110,7 @@ export const metadata: Metadata = {
 				url: '/og-image.png',
 				width: 1200,
 				height: 630,
-				alt: 'CloserCoach — The AI Sales Coach That Lives in Your Pocket',
+				alt: 'CloserCoach - The AI Sales Coach That Lives in Your Pocket',
 				type: 'image/png',
 			},
 		],
@@ -228,6 +239,12 @@ export default function RootLayout({
 				<link rel='preconnect' href='https://calendly.com' crossOrigin='anonymous' />
 			</head>
 			<body className='flex min-h-full flex-col'>
+				<a
+					href='#main'
+					className='sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-cc-foundation focus:px-4 focus:py-2 focus:text-white focus:outline-none focus:ring-2 focus:ring-cc-accent'
+				>
+					Skip to main content
+				</a>
 				<Script
 					id='ld-organization'
 					type='application/ld+json'
@@ -246,17 +263,23 @@ export default function RootLayout({
 					strategy='beforeInteractive'
 					dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_LD) }}
 				/>
-				<SmoothScroll />
-				<ScrollToTop />
-				<AnnouncementBanner />
-				<Header />
-				<main
-					className='flex-1 [padding-top:calc(var(--cc-banner-h,0px)+3.5rem)] md:[padding-top:calc(var(--cc-banner-h,0px)+4rem)]'
-				>
-					{children}
-				</main>
-				<Footer />
-				<CookieConsent />
+				<PostHogProvider>
+					<ScrollDepthTracker />
+					<SmoothScroll />
+					<ScrollToTop />
+					<AnnouncementBanner />
+					<Header />
+					<main
+						id='main'
+						className='flex-1 [padding-top:calc(var(--cc-banner-h,0px)+3.5rem)] md:[padding-top:calc(var(--cc-banner-h,0px)+4rem)]'
+					>
+						{children}
+					</main>
+					<Footer />
+					<CookieConsent />
+				</PostHogProvider>
+				<Analytics />
+				<SpeedInsights />
 			</body>
 		</html>
 	)

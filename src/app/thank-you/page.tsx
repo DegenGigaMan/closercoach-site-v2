@@ -6,7 +6,7 @@ import type { Metadata } from 'next'
 import ThankYouContent from './thank-you-content'
 
 export const metadata: Metadata = {
-	title: 'Your demo is booked. CloserCoach',
+	title: 'Your demo is booked.',
 	description: 'Your CloserCoach demo is on the calendar. Check your inbox for the invite and start exploring the app while you wait.',
 	robots: { index: false, follow: false },
 }

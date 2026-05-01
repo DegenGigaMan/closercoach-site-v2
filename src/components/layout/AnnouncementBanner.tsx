@@ -66,7 +66,7 @@ export default function AnnouncementBanner({
 			{href ? (
 				<Link
 					href={href}
-					aria-label={`${message} — ${linkLabel}`}
+					aria-label={`${message}: ${linkLabel}`}
 					className='group absolute inset-0 flex h-full items-center justify-center gap-2.5 px-12 text-xs text-cc-text-secondary md:text-sm'
 				>
 					<span className='relative flex h-2 w-2 shrink-0' aria-hidden='true'>
