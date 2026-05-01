@@ -26,7 +26,29 @@ import AnnouncementBanner from '@/components/layout/AnnouncementBanner'
 import { BRAND, STATS, PRICING } from '@/lib/constants'
 import './globals.css'
 
-const SITE_URL = 'https://closercoach.ai'
+/**
+ * Resolve the site origin so OG image / canonical URLs always point at the
+ * domain that's actually serving the response.
+ *
+ *   1. NEXT_PUBLIC_SITE_URL — manual override (set in Vercel project env if
+ *      we ever need to force a specific origin).
+ *   2. Vercel production build — closercoach.ai. NOTE: until DNS cuts the
+ *      apex over to this v2 deploy, closercoach.ai still 404s for assets
+ *      like /og-image.png. Once cut, link previews on the apex work.
+ *   3. Vercel preview build — use VERCEL_URL so social-preview crawlers
+ *      hitting the *.vercel.app share URL fetch the OG image from the SAME
+ *      deploy that's serving the page (otherwise crawler asks closercoach.ai
+ *      for /og-image.png and gets a 404 from the legacy site).
+ *   4. Local dev — localhost:3000.
+ */
+function resolveSiteUrl(): string {
+	if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL
+	if (process.env.VERCEL_ENV === 'production') return 'https://closercoach.ai'
+	if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
+	return 'http://localhost:3000'
+}
+
+const SITE_URL = resolveSiteUrl()
 const SITE_NAME = 'CloserCoach'
 const SITE_TITLE = 'CloserCoach - AI Sales Coach for B2B Sales Rep'
 const SITE_DESCRIPTION =
