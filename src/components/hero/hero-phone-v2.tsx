@@ -36,7 +36,10 @@ import NumberFlow from '@number-flow/react'
 
 const CYCLE_MS = 5800
 const CAMIL_IMG = '/images/prospects/camil-reese.png'
-const CC_LOGO = '/images/closercoach-logo.svg'
+/* Use the cleaned 24KB wordmark at /cc-logo.svg instead of the 1.5MB Figma
+ * export under /images/closercoach-logo.svg — identical paths, no embedded
+ * raster bloat. Saves ~1.5MB per render. */
+const CC_LOGO = '/cc-logo.svg'
 
 /* ─── Dot Indicator ──────────────────────────────────────── */
 

@@ -9,6 +9,14 @@ export const metadata: Metadata = {
 	title: 'Terms of Service',
 	description:
 		'CloserCoach Terms of Service. Subscription terms, cancellation policy, recording consent, and usage rules.',
+	alternates: { canonical: '/terms' },
+	openGraph: {
+		title: 'Terms of Service | CloserCoach',
+		description:
+			'CloserCoach Terms of Service. Subscription, cancellation, recording consent, and usage rules.',
+		url: '/terms',
+		type: 'website',
+	},
 }
 
 const LAST_UPDATED = 'April 21, 2026'

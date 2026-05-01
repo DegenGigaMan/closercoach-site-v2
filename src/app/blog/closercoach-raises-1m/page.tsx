@@ -11,15 +11,25 @@ const TITLE = 'CloserCoach raises $1M to build Duolingo for sales'
 const PUBLISHED = 'March 2026'
 const READ_TIME = '3 min read'
 
+const DESCRIPTION =
+	'CloserCoach raises $1M seed round to scale AI-powered sales coaching for the 20,000+ closers training inside the app every day.'
+
 export const metadata: Metadata = {
 	title: TITLE,
-	description:
-		'CloserCoach raises $1M seed round to scale AI-powered sales coaching for the 20,000+ closers training inside the app every day.',
+	description: DESCRIPTION,
+	alternates: { canonical: '/blog/closercoach-raises-1m' },
 	openGraph: {
 		title: TITLE,
-		description:
-			'CloserCoach raises $1M seed round to scale AI-powered sales coaching for the 20,000+ closers training inside the app every day.',
+		description: DESCRIPTION,
+		url: '/blog/closercoach-raises-1m',
 		type: 'article',
+		publishedTime: '2026-03-15T00:00:00.000Z',
+		authors: ['CloserCoach'],
+	},
+	twitter: {
+		card: 'summary_large_image',
+		title: TITLE,
+		description: DESCRIPTION,
 	},
 }
 

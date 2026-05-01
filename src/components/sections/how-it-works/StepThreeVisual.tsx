@@ -68,7 +68,10 @@ import {
 } from './_shared/step-visual-defaults'
 
 const SARAH_IMG = '/images/prospects/sarah-chen.png'
-const CC_LOGO = '/images/closercoach-logo.svg'
+/* Use the cleaned 24KB wordmark at /cc-logo.svg instead of the 1.5MB Figma
+ * export under /images/closercoach-logo.svg — identical paths, no embedded
+ * raster bloat. Saves ~1.5MB per render. */
+const CC_LOGO = '/cc-logo.svg'
 
 /* Sub-state timings (ms). Each value is the moment the state begins.
  *

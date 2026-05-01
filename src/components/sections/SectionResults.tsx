@@ -600,25 +600,14 @@ export default function SectionResults(): ReactElement {
 					</Reveal>
 				</div>
 
-				{/* Ego appeal line (PC5 + PC6) */}
-				<Reveal className='mt-16 md:mt-24' delay={0.05}>
-					<p className='mx-auto max-w-3xl text-balance text-center text-base text-cc-text-primary-warm md:text-lg'>
-						After one roleplay you will know:{' '}
-						<span className='font-[family-name:var(--font-mono)] font-medium'>B grade</span>
-						{' '}&middot;{' '}
-						<span className='font-[family-name:var(--font-mono)] font-medium'>Top 15%</span>
-						{' '}&middot;{' '}
-						<span className='font-[family-name:var(--font-mono)] font-medium'>211 WPM</span>
-						{' '}&middot;{' '}
-						<span className='font-[family-name:var(--font-mono)] font-medium'>
-							64/36 talk-listen ratio
-						</span>
-						. Every number gets better.
-					</p>
-				</Reveal>
+				{/* Ego appeal line removed 2026-05-01 — was previously a PC5+PC6
+				 * stat-stuffed paragraph ("After one roleplay you will know: B
+				 * grade · Top 15% · 211 WPM · 64/36 talk-listen ratio. Every
+				 * number gets better."). Cut to tighten the testimonial → CTA
+				 * read; numbers already live in S3 Step 4 + S5 results grid. */}
 
 				{/* CTA */}
-				<Reveal className='mt-12 flex justify-center md:mt-16' delay={0.05}>
+				<Reveal className='mt-16 flex justify-center md:mt-24' delay={0.05}>
 					<MotionCTA variant='primary' size='lg' href={CTA.tryFree.href} warmSurface>
 						{CTA.tryFree.text}
 					</MotionCTA>

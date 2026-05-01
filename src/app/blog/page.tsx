@@ -6,15 +6,25 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BookOpen, ArrowRight, LinkedinLogo } from '@phosphor-icons/react/dist/ssr'
 
+const TITLE = 'Blog'
+const DESCRIPTION =
+	'Sales training insights, playbooks, and field notes from the CloserCoach team. First posts dropping soon.'
+
 export const metadata: Metadata = {
-	title: 'Blog',
-	description:
-		'Sales training insights, playbooks, and field notes from the CloserCoach team. First posts dropping soon.',
+	title: TITLE,
+	description: DESCRIPTION,
+	alternates: { canonical: '/blog' },
 	openGraph: {
 		title: 'CloserCoach Blog',
 		description:
 			'Sales training insights, playbooks, and field notes from the CloserCoach team.',
+		url: '/blog',
 		type: 'website',
+	},
+	twitter: {
+		card: 'summary_large_image',
+		title: 'CloserCoach Blog',
+		description: DESCRIPTION,
 	},
 }
 

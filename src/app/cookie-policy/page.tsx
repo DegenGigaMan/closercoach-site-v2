@@ -9,6 +9,14 @@ export const metadata: Metadata = {
 	title: 'Cookie Policy',
 	description:
 		'How CloserCoach uses cookies, the types of cookies we use, and how to manage your preferences.',
+	alternates: { canonical: '/cookie-policy' },
+	openGraph: {
+		title: 'Cookie Policy | CloserCoach',
+		description:
+			'How CloserCoach uses cookies and how to manage your preferences.',
+		url: '/cookie-policy',
+		type: 'website',
+	},
 }
 
 const LAST_UPDATED = 'April 21, 2026'

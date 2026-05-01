@@ -132,7 +132,7 @@ const MANAGER_LOGOS = [
  *                       narrows from col-span-3 to col-span-2 since Card 5
  *                       now owns the third column for both rows 2 and 3.
  */
-type FeatureRole = 'hero' | 'narrow' | 'equal' | 'equal-inverted' | 'tall' | 'split-full'
+type FeatureRole = 'hero' | 'narrow' | 'equal' | 'equal-inverted' | 'equal-flow' | 'tall' | 'split-full'
 
 type Feature = {
 	title: string
@@ -164,7 +164,12 @@ const FEATURES: readonly Feature[] = [
 		title: 'Enforce New Scripting Efficiently',
 		body: 'Roll out a new talk track and push it as a structured practice.',
 		Visual: EnforceScriptingVisual,
-		role: 'equal-inverted',
+		/* Andy 2026-05-01: flipped from 'equal-inverted' → 'equal-flow' to
+		 * match the assignment-flow visual reference (title+body TOP, visual
+		 * BOTTOM, ~420px tall). 'equal-flow' is a dedicated tier — the 4-node
+		 * Manager → Task → App → Reps stack needs taller breathing room than
+		 * the standard 250px 'equal' tier so the emerald rails read cleanly. */
+		role: 'equal-flow',
 	},
 	{
 		title: 'Hire Better, Faster',
@@ -191,6 +196,7 @@ const roleSpanClass: Record<FeatureRole, string> = {
 	narrow: 'lg:col-span-1',
 	equal: 'lg:col-span-1',
 	'equal-inverted': 'lg:col-span-1',
+	'equal-flow': 'lg:col-span-1',
 	tall: 'lg:col-span-1 lg:row-span-2',
 	'split-full': 'lg:col-span-2',
 }
@@ -206,6 +212,13 @@ const roleVisualHeight: Record<FeatureRole, string> = {
 	narrow: 'h-[280px] md:h-[360px]',
 	equal: 'h-[230px] md:h-[250px]',
 	'equal-inverted': 'h-[230px] md:h-[250px]',
+	/* Andy 2026-05-01: 'equal-flow' is for the Enforce New Scripting card.
+	 * Matches the 'equal' tier (230/250px) so the row-2 grid lockstep keeps
+	 * both Onboard and Enforce cards at the same total height (~412px).
+	 * The flow-visual elements are tuned compact (sm rails, 24px manager
+	 * badge, 36px app icon, 32px avatars) so the assignment flow still
+	 * reads cleanly inside the 250px visual area. */
+	'equal-flow': 'h-[230px] md:h-[250px]',
 	tall: 'flex-1',
 	'split-full': 'h-[280px] md:h-[300px]',
 }

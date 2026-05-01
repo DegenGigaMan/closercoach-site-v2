@@ -5,15 +5,25 @@
 import type { Metadata } from 'next'
 import DownloadContent from './download-content'
 
+const TITLE = 'Download CloserCoach for iOS and Android'
+const DESCRIPTION =
+	'Get CloserCoach on your phone. Available on the App Store and Google Play. Your first AI coaching session starts in 60 seconds.'
+
 export const metadata: Metadata = {
-	title: 'Download CloserCoach for iOS and Android',
-	description:
-		'Get CloserCoach on your phone. Available on the App Store and Google Play. Your first AI coaching session starts in 60 seconds.',
+	title: TITLE,
+	description: DESCRIPTION,
+	alternates: { canonical: '/download' },
 	openGraph: {
-		title: 'Download CloserCoach for iOS and Android',
+		title: TITLE,
 		description:
 			'Get CloserCoach on your phone. Available on the App Store and Google Play. 3 days free. Full access.',
+		url: '/download',
 		type: 'website',
+	},
+	twitter: {
+		card: 'summary_large_image',
+		title: TITLE,
+		description: DESCRIPTION,
 	},
 }
 

@@ -9,6 +9,14 @@ export const metadata: Metadata = {
 	title: 'List of Subprocessors',
 	description:
 		'Third-party service providers that may process customer data on behalf of CloserCoach.',
+	alternates: { canonical: '/subprocessors' },
+	openGraph: {
+		title: 'List of Subprocessors | CloserCoach',
+		description:
+			'Third-party service providers that may process customer data on behalf of CloserCoach.',
+		url: '/subprocessors',
+		type: 'website',
+	},
 }
 
 const LAST_UPDATED = 'April 21, 2026'
