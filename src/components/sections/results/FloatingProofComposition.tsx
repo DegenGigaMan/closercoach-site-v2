@@ -2,7 +2,9 @@
  * (recomposed master, Wave Q 2026-04-27; Wave Q.2 mobile pattern 2026-04-27).
  *
  * 7 designed proof components orbit the centered "Every call, scored. Every
- * rep, improving." billboard on a warm surface:
+ * no, is now a yes." billboard on a warm surface (AL-017 copy swap, Alim
+ * 2026-05-01 AM Slack — italic emphasis moves from "improving" to the
+ * closer's transformation moment):
  *
  *   1. Camil Reese profile card (top-left, w 240) — Recent Performance bars
  *      (Week 1 amber C, Week 8 emerald A with +2 trust badge), real headshot
@@ -659,12 +661,12 @@ function ResultsHeadline(): ReactElement {
 		>
 			Every call, scored.
 			<br />
-			Every rep,{' '}
+			Every no,{' '}
 			<em
 				className='italic font-bold'
 				style={{ color: EMERALD_AA, fontFamily: 'var(--font-heading)' }}
 			>
-				improving
+				is now a yes
 			</em>
 			.
 		</motion.h2>
