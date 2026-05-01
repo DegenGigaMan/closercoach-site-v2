@@ -28,7 +28,7 @@ import './globals.css'
 
 const SITE_URL = 'https://closercoach.ai'
 const SITE_NAME = 'CloserCoach'
-const SITE_TITLE = 'CloserCoach — AI Sales Coach for Your Phone'
+const SITE_TITLE = 'CloserCoach - AI Sales Coach for B2B Sales Rep'
 const SITE_DESCRIPTION =
 	'Practice before every meeting, record real calls, and get scored by AI. 20,000+ closers train with CloserCoach. Try free for 3 days.'
 
@@ -134,7 +134,15 @@ const ORGANIZATION_LD = {
 	'@id': `${SITE_URL}#organization`,
 	name: SITE_NAME,
 	url: SITE_URL,
-	logo: `${SITE_URL}/cc-logo.svg`,
+	/* ImageObject (instead of bare URL) so Google's Knowledge Graph can use
+	 * the logomark with explicit dimensions. 512×512 PNG is the canonical
+	 * favicon-grade asset extracted from the brand logomark.svg. */
+	logo: {
+		'@type': 'ImageObject',
+		url: `${SITE_URL}/cc-logomark-512.png`,
+		width: 512,
+		height: 512,
+	},
 	email: BRAND.email,
 	sameAs: [
 		'https://linkedin.com/company/closercoach',
