@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { List, X } from '@phosphor-icons/react'
 import { BRAND, NAV_LINKS, CTA } from '@/lib/constants'
+import { track } from '@/lib/analytics'
 
 export default function Header() {
 	const pathname = usePathname()
@@ -60,6 +61,9 @@ export default function Header() {
 							<Link
 								key={link.href}
 								href={link.href}
+								onClick={() => {
+									if (link.href === '/download') track('download_click', { source: 'header', cta_text: link.label })
+								}}
 								className={`text-sm transition-colors ${
 									isActive(link.href)
 										? 'text-white'
@@ -75,6 +79,7 @@ export default function Header() {
 					<div className="flex items-center gap-3">
 						<Link
 							href={CTA.tryFree.href}
+							onClick={() => track('download_click', { source: 'header', cta_text: CTA.tryFree.text, position: 'header_cta' })}
 							className="rounded-lg bg-cc-mint-bright px-4 py-2 text-sm font-medium text-cc-foundation transition-colors hover:brightness-95"
 						>
 							{CTA.tryFree.text}
@@ -99,7 +104,10 @@ export default function Header() {
 							<Link
 								key={link.href}
 								href={link.href}
-								onClick={closeMenu}
+								onClick={() => {
+									if (link.href === '/download') track('download_click', { source: 'header', cta_text: link.label, position: 'mobile_nav' })
+									closeMenu()
+								}}
 								className={`py-3 text-lg border-b border-cc-surface-border ${
 									isActive(link.href)
 										? 'text-white'
@@ -113,7 +121,10 @@ export default function Header() {
 						<div className="my-2 border-b border-cc-surface-border" />
 						<Link
 							href={BRAND.calendly}
-							onClick={closeMenu}
+							onClick={() => {
+								track('book_demo_click', { source: 'header', cta_text: 'Book a Demo', position: 'mobile_nav' })
+								closeMenu()
+							}}
 							className="py-3 text-lg text-cc-text-secondary"
 							style={{ minHeight: 48 }}
 						>

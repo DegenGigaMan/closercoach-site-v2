@@ -57,7 +57,7 @@ type RevealProps = {
 function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElement {
 	const prefersReducedMotion = useReducedMotion()
 	const ref = useRef<HTMLDivElement | null>(null)
-	const isInView = useInView(ref, { once: true, margin: '-10% 0px' })
+	const isInView = useInView(ref, { once: true, margin: '0px' })
 
 	return (
 		<motion.div
@@ -65,7 +65,7 @@ function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElem
 			className={className}
 			initial={{ opacity: 0, y: 18 }}
 			animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.9, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.55, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
 		>
 			{children}
 		</motion.div>
@@ -524,7 +524,7 @@ export default function SectionResults(): ReactElement {
 			 * as the contextual signifier). Wave Z.6 P2-E stagger preserved. */}
 			<div className='mx-auto mt-12 grid max-w-7xl grid-cols-1 gap-4 px-6 md:mt-16 md:grid-cols-3'>
 				{APP_STORE_REVIEWS.map((r, i) => (
-					<Reveal key={i} delay={i * 0.12}>
+					<Reveal key={i} delay={i * 0.06}>
 						<ReviewCard
 							title={r.title}
 							quote={r.quote}
@@ -576,7 +576,7 @@ export default function SectionResults(): ReactElement {
 							badge='Verified User'
 						/>
 					</Reveal>
-					<Reveal delay={0.08}>
+					<Reveal delay={0.05}>
 						<TierCard
 							portraitSrc='/images/case-studies/chris.jpg'
 							industryTag='Home Services'
@@ -587,7 +587,7 @@ export default function SectionResults(): ReactElement {
 							badge='Sales Manager'
 						/>
 					</Reveal>
-					<Reveal delay={0.16}>
+					<Reveal delay={0.1}>
 						<TierCard
 							portraitSrc='/images/case-studies/enterprise.jpg'
 							industryTag='Insurance Sales'

@@ -64,7 +64,7 @@ type RevealProps = {
 function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElement {
 	const prefersReducedMotion = useReducedMotion()
 	const ref = useRef<HTMLDivElement | null>(null)
-	const isInView = useInView(ref, { once: true, margin: '-10% 0px' })
+	const isInView = useInView(ref, { once: true, margin: '0px' })
 
 	return (
 		<motion.div
@@ -72,7 +72,7 @@ function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElem
 			className={className}
 			initial={{ opacity: 0, y: 18 }}
 			animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
-			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.9, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.55, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
 		>
 			{children}
 		</motion.div>
@@ -158,7 +158,7 @@ function AzInterstitial(): ReactElement {
 	return (
 		<div className='grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4'>
 			{AZ_FRAMES.map((frame, i) => (
-				<Reveal key={frame.label} delay={i * 0.2}>
+				<Reveal key={frame.label} delay={i * 0.08}>
 					<div
 						className='relative aspect-[3/4] overflow-hidden rounded-xl'
 						style={{

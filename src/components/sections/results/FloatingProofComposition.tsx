@@ -2,7 +2,9 @@
  * (recomposed master, Wave Q 2026-04-27; Wave Q.2 mobile pattern 2026-04-27).
  *
  * 7 designed proof components orbit the centered "Every call, scored. Every
- * rep, improving." billboard on a warm surface:
+ * no, is now a yes." billboard on a warm surface (AL-017 copy swap, Alim
+ * 2026-05-01 AM Slack — italic emphasis moves from "improving" to the
+ * closer's transformation moment):
  *
  *   1. Camil Reese profile card (top-left, w 240) — Recent Performance bars
  *      (Week 1 amber C, Week 8 emerald A with +2 trust badge), real headshot
@@ -63,7 +65,7 @@ type FloatProps = {
 function Float({ children, delay = 0, className = '', style }: FloatProps): ReactElement {
 	const reduced = useReducedMotion() ?? false
 	const ref = useRef<HTMLDivElement | null>(null)
-	const inView = useInView(ref, { once: true, margin: '-10% 0px' })
+	const inView = useInView(ref, { once: true, margin: '0px' })
 
 	return (
 		<motion.div
@@ -72,9 +74,10 @@ function Float({ children, delay = 0, className = '', style }: FloatProps): Reac
 			style={style}
 			initial={{ opacity: 0, y: 16 }}
 			animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
-			/* Wave Y.8 pacing pass: 0.6 -> 0.72 to align with the global
-			 * ScrollReveal cadence. */
-			transition={reduced ? { duration: 0 } : { duration: 0.72, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+			/* Phase 8 (2026-05-01): cut 0.72 -> 0.5 + tightened margin so the
+			 * floating proof cards reveal as the section enters viewport, not
+			 * after the user scrolls past. */
+			transition={reduced ? { duration: 0 } : { duration: 0.5, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
 		>
 			{children}
 		</motion.div>
@@ -646,8 +649,8 @@ function ResultsHeadline(): ReactElement {
 		<motion.h2
 			initial={{ opacity: 0, y: 30 }}
 			whileInView={{ opacity: 1, y: 0 }}
-			viewport={{ once: true }}
-			transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const }}
+			viewport={{ once: true, margin: '0px' }}
+			transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] as const }}
 			className='text-trim text-balance text-center text-cc-text-primary-warm'
 			style={{
 				fontFamily: 'var(--font-heading)',
@@ -659,12 +662,12 @@ function ResultsHeadline(): ReactElement {
 		>
 			Every call, scored.
 			<br />
-			Every rep,{' '}
+			Every no,{' '}
 			<em
 				className='italic font-bold'
 				style={{ color: EMERALD_AA, fontFamily: 'var(--font-heading)' }}
 			>
-				improving
+				is now a yes
 			</em>
 			.
 		</motion.h2>

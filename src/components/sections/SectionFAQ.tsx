@@ -28,6 +28,7 @@
 import { useState, useRef, useId, type ReactElement } from 'react'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'motion/react'
 import { CaretDown } from '@phosphor-icons/react'
+import { track } from '@/lib/analytics'
 
 /* ── FAQ content ── */
 
@@ -203,12 +204,43 @@ export default function SectionFAQ(): ReactElement {
 	const sectionRef = useRef<HTMLElement | null>(null)
 	const headerRef = useRef<HTMLDivElement | null>(null)
 	const listRef = useRef<HTMLDivElement | null>(null)
-	const headerInView = useInView(headerRef, { once: true, margin: '-15% 0px' })
-	const listInView = useInView(listRef, { once: true, margin: '-10% 0px' })
+	const headerInView = useInView(headerRef, { once: true, margin: '0px' })
+	const listInView = useInView(listRef, { once: true, margin: '0px' })
 	const prefersReducedMotion = useReducedMotion()
 
 	const handleToggle = (id: string): void => {
-		setOpenId((current) => (current === id ? null : id))
+		setOpenId((current) => {
+			const next = current === id ? null : id
+			/* Fire on open only (not close) — single-direction signal is cleaner
+			 * for funnel analytics. */
+			if (next !== null && next !== current) {
+				const index = FAQS.findIndex((f) => f.id === id)
+				const faq = FAQS[index]
+				track('faq_open', {
+					question_id: id,
+					question_index: index,
+					question_text: faq?.question,
+				})
+			}
+			return next
+		})
+	}
+
+	/* FAQPage JSON-LD for SERP rich-result eligibility. Mounts once per
+	   homepage render. Plain-text answers per Schema.org spec. Content is
+	   a static const literal serialized via JSON.stringify; no untrusted
+	   input flows into the script body. */
+	const faqJsonLd = {
+		'@context': 'https://schema.org',
+		'@type': 'FAQPage',
+		mainEntity: FAQS.map((faq) => ({
+			'@type': 'Question',
+			name: faq.question,
+			acceptedAnswer: {
+				'@type': 'Answer',
+				text: faq.answer,
+			},
+		})),
 	}
 
 	return (
@@ -218,6 +250,11 @@ export default function SectionFAQ(): ReactElement {
 			data-surface='dark-faq'
 			className='relative overflow-hidden bg-cc-foundation py-24 md:py-32'
 		>
+			<script
+				type='application/ld+json'
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+			/>
+
 			{/* Soft emerald haze per prior atmosphere spec — kept for dark-surface depth. */}
 			<div
 				aria-hidden='true'
@@ -242,7 +279,7 @@ export default function SectionFAQ(): ReactElement {
 					transition={
 						prefersReducedMotion
 							? { duration: 0 }
-							: { duration: 0.85, ease: [0.25, 0.46, 0.45, 0.94] }
+							: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }
 					}
 					/* Q17 Wave D1-8 (Andy 2026-04-29 #21): label → heading →
 					 * subhead gap was 15px which Andy flagged as too tight.
@@ -292,7 +329,7 @@ export default function SectionFAQ(): ReactElement {
 					transition={
 						prefersReducedMotion
 							? { duration: 0 }
-							: { duration: 0.9, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }
+							: { duration: 0.55, delay: 0.15, ease: [0.25, 0.46, 0.45, 0.94] }
 					}
 					className='flex w-full flex-col gap-3'
 				>
