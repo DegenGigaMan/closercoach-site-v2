@@ -67,7 +67,7 @@ function resolveSiteUrl(): string {
 
 const SITE_URL = resolveSiteUrl()
 const SITE_NAME = 'CloserCoach'
-const SITE_TITLE = 'CloserCoach - AI Sales Coach for B2C Sales Reps'
+const SITE_TITLE = 'CloserCoach - AI Sales Coach for B2B Sales Reps'
 const SITE_DESCRIPTION =
 	'Practice before every meeting, record real calls, and get scored by AI. 20,000+ closers train with CloserCoach. Try free for 3 days.'
 
