@@ -110,7 +110,7 @@ const FEATURES: readonly Feature[] = [
 		layout: 'split-visual-left',
 	},
 	{
-		title: '40+ Languages',
+		title: '10+ Languages',
 		body: 'Practice Spanish cold calls, French closings, Portuguese discovery. All from the same app.',
 		Icon: GlobeHemisphereWest,
 		layout: 'split-visual-right',

@@ -489,18 +489,23 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 			 *   Voice Memos (left), ChatGPT (middle), Phone (right). */}
 			{/* Q17 Wave D1-5 (Andy 2026-04-29 #14): card was stretching to
 			 * column width. Added w-fit + self-start to outer + inner card
-			 * so the icon strip hugs Voice Memos / ChatGPT / Phone content. */}
-			<div className="mt-8 flex w-fit max-w-xl flex-col gap-3 self-start">
+			 * so the icon strip hugs Voice Memos / ChatGPT / Phone content.
+			 *
+			 * 2026-05-02 (Andy): left-align the whole block with the body
+			 * paragraph above (self-start + items-start). The three icon
+			 * columns inside still use w-24 each so the icons themselves
+			 * line up cleanly relative to one another. */}
+			<div className="mt-8 flex w-fit max-w-xl flex-col items-start gap-3 self-start">
 				<span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.18em] text-cc-text-secondary">
 					CloserCoach replaces
 				</span>
 				<div
 					role="img"
 					aria-label="CloserCoach replaces Voice Memos, ChatGPT, and your Phone app"
-					className="flex w-fit items-center gap-8 rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 px-6 py-4"
+					className="flex w-fit items-center gap-8 rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 px-8 py-4"
 				>
 					{/* Voice Memos — white waveform on red gradient rounded square. */}
-					<div className="flex flex-col items-center gap-1.5">
+					<div className="flex w-24 flex-col items-center gap-1.5">
 						<svg
 							width={36}
 							height={36}
@@ -527,12 +532,12 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 								<rect x={30} y={14} width={2} height={8}  rx={1} />
 							</g>
 						</svg>
-						<span className="font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary">
+						<span className="whitespace-nowrap font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary">
 							Voice Memos
 						</span>
 					</div>
 					{/* ChatGPT — OpenAI 4-petal logomark on black rounded square. */}
-					<div className="flex flex-col items-center gap-1.5">
+					<div className="flex w-24 flex-col items-center gap-1.5">
 						<svg
 							width={36}
 							height={36}
@@ -549,12 +554,12 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 								/>
 							</g>
 						</svg>
-						<span className="font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary">
+						<span className="whitespace-nowrap font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary">
 							ChatGPT
 						</span>
 					</div>
 					{/* Phone — white handset on green gradient rounded square. */}
-					<div className="flex flex-col items-center gap-1.5">
+					<div className="flex w-24 flex-col items-center gap-1.5">
 						<svg
 							width={36}
 							height={36}
@@ -576,7 +581,7 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 								fill="#FFFFFF"
 							/>
 						</svg>
-						<span className="font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary">
+						<span className="whitespace-nowrap font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary">
 							Phone
 						</span>
 					</div>
