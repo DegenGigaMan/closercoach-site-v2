@@ -111,7 +111,7 @@ export const FOOTER_LINKS = {
 export const CTA = {
 	tryFree: { text: 'Try for Free', href: '/download' },
 	startFree: { text: 'Start For Free', href: '/download' },
-	contactSales: { text: 'Book a Demo', href: BRAND.calendly },
+	contactSales: { text: 'Book a Demo', href: '/sales' },
 	download: { text: 'Download', href: '/download' },
 } as const
 

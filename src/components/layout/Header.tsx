@@ -120,7 +120,7 @@ export default function Header() {
 						))}
 						<div className="my-2 border-b border-cc-surface-border" />
 						<Link
-							href={BRAND.calendly}
+							href='/sales'
 							onClick={() => {
 								track('book_demo_click', { source: 'header', cta_text: 'Book a Demo', position: 'mobile_nav' })
 								closeMenu()

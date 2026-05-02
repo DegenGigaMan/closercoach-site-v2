@@ -640,7 +640,7 @@ export default function PricingContent() {
 							<MotionCTA variant='primary' size='md' href={CTA.startFree.href}>
 								{CTA.startFree.text}
 							</MotionCTA>
-							<MotionCTA variant='ghost' size='sm' href={CTA.contactSales.href}>
+							<MotionCTA variant='secondary' size='md' href={CTA.contactSales.href}>
 								{CTA.contactSales.text}
 							</MotionCTA>
 						</div>

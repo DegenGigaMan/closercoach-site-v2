@@ -22,7 +22,6 @@
  */
 
 import type { Metadata, Viewport } from 'next'
-import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { lora, geistMono, inter, plusJakarta } from '@/lib/fonts'
@@ -251,22 +250,22 @@ export default function RootLayout({
 				>
 					Skip to main content
 				</a>
-				<Script
+				{/* JSON-LD structured data — plain <script> in a Server Component
+				    is the correct App Router pattern; next/script with
+				    beforeInteractive is not supported in the body in Next 16. */}
+				<script
 					id='ld-organization'
 					type='application/ld+json'
-					strategy='beforeInteractive'
 					dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_LD) }}
 				/>
-				<Script
+				<script
 					id='ld-software-app'
 					type='application/ld+json'
-					strategy='beforeInteractive'
 					dangerouslySetInnerHTML={{ __html: JSON.stringify(SOFTWARE_APP_LD) }}
 				/>
-				<Script
+				<script
 					id='ld-website'
 					type='application/ld+json'
-					strategy='beforeInteractive'
 					dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_LD) }}
 				/>
 				<PostHogProvider>

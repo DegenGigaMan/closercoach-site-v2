@@ -303,7 +303,10 @@ export default function SectionFeatures(): ReactElement {
 				</div>
 
 				{/* CTA */}
-				<div className='mt-12 text-center md:mt-16'>
+				<div className='mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row md:mt-16'>
+					<MotionCTA href={CTA.contactSales.href} variant='secondary' size='lg'>
+						{CTA.contactSales.text}
+					</MotionCTA>
 					<MotionCTA href={CTA.tryFree.href} variant='primary' size='lg'>
 						{CTA.tryFree.text}
 					</MotionCTA>

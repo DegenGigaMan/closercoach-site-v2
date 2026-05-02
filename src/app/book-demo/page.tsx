@@ -1,9 +1,8 @@
-/** @fileoverview Redirect to Calendly demo booking page. */
+/** @fileoverview Redirect /book-demo to /sales. */
 
 import { redirect } from 'next/navigation'
-import { BRAND } from '@/lib/constants'
 
 export default function BookDemo() {
-	redirect(BRAND.calendly)
+	redirect('/sales')
 }
 // wiejpoqjdqd

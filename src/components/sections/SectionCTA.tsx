@@ -191,9 +191,7 @@ export default function SectionCTA() {
 
 					{/* Secondary CTA -- Book a Demo for Teams */}
 					<Link
-						href={BRAND.calendly}
-						target='_blank'
-						rel='noopener noreferrer'
+						href='/sales'
 						className='text-sm text-cc-accent underline-offset-4 transition-colors hover:text-cc-accent-hover hover:underline focus-visible:outline-none focus-visible:underline'
 					>
 						Book a Demo for Teams

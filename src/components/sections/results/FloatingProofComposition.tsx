@@ -660,7 +660,7 @@ function ResultsHeadline(): ReactElement {
 				letterSpacing: '-0.015em',
 			}}
 		>
-			Every call, scored.
+			Every call, Scored.
 			<br />
 			Every no,{' '}
 			<em

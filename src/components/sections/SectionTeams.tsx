@@ -426,7 +426,7 @@ export default function SectionTeams(): ReactElement {
 						Want to scale your sales team training?
 					</p>
 					<div className='flex flex-col items-center gap-4 sm:flex-row sm:justify-center'>
-						<MotionCTA variant='primary' size='lg' href={BRAND.calendly} dataPrimaryCta>
+						<MotionCTA variant='primary' size='lg' href='/sales' dataPrimaryCta>
 							Book a Demo
 						</MotionCTA>
 						<MotionCTA variant='secondary' size='lg' href='/download' dataPrimaryCta>
