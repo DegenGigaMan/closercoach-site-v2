@@ -39,22 +39,28 @@ import './globals.css'
 
 /**
  * Resolve the site origin so OG image / canonical URLs always point at the
- * domain that's actually serving the response.
+ * domain that is actually serving the response. Self-healing across the DNS
+ * cutover: pre-cutover this resolves to closercoach-site-v2.vercel.app, post-
+ * cutover Vercel sets VERCEL_PROJECT_PRODUCTION_URL to the attached apex
+ * (closercoach.ai) automatically, no code change required.
  *
  *   1. NEXT_PUBLIC_SITE_URL — manual override (set in Vercel project env if
  *      we ever need to force a specific origin).
- *   2. Vercel production build — closercoach.ai. NOTE: until DNS cuts the
- *      apex over to this v2 deploy, closercoach.ai still 404s for assets
- *      like /og-image.png. Once cut, link previews on the apex work.
- *   3. Vercel preview build — use VERCEL_URL so social-preview crawlers
- *      hitting the *.vercel.app share URL fetch the OG image from the SAME
- *      deploy that's serving the page (otherwise crawler asks closercoach.ai
- *      for /og-image.png and gets a 404 from the legacy site).
+ *   2. Vercel production build — VERCEL_PROJECT_PRODUCTION_URL. This is the
+ *      project's primary production hostname. Pre-DNS-cutover that's
+ *      closercoach-site-v2.vercel.app; once we attach closercoach.ai as a
+ *      production domain, Vercel updates this var on the next deploy and
+ *      the OG image starts unfurling from the apex with zero diff.
+ *   3. Vercel preview build — VERCEL_URL is the per-deployment hostname so
+ *      social-preview crawlers hitting the share URL fetch the OG image
+ *      from the SAME deploy that's serving the page.
  *   4. Local dev — localhost:3000.
  */
 function resolveSiteUrl(): string {
 	if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL
-	if (process.env.VERCEL_ENV === 'production') return 'https://closercoach.ai'
+	if (process.env.VERCEL_ENV === 'production' && process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+		return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+	}
 	if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
 	return 'http://localhost:3000'
 }
