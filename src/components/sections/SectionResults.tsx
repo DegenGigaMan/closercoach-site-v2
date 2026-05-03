@@ -587,15 +587,18 @@ export default function SectionResults(): ReactElement {
 							badge='Sales Manager'
 						/>
 					</Reveal>
+					{/* T6 P0 (2026-05-02): real Enterprise testimonial from Taylor lands.
+					 * Replaces the G9 placeholder reframe. Verbatim-trimmed from her
+					 * two-paragraph submission, keeps the strongest financial-services
+					 * pivot, drops the "game-changer" line per slop discipline. */}
 					<Reveal delay={0.1}>
 						<TierCard
-							portraitSrc='/images/case-studies/enterprise.jpg'
-							industryTag='Insurance Sales'
-							metricHeadline={'22-seat team\nonboarding.'}
-							quote={'Enterprise sales teams are onboarding CloserCoach at scale. One of the fastest-growing teams on the platform has 22 active seats.'}
-							name='Enterprise Sales Team'
-							role='Anonymized'
-							badge='Platform Deal'
+							portraitSrc='/images/case-studies/taylor.jpg'
+							industryTag='Financial Services'
+							quote={'CloserCoach streamlined my discovery and made objection handling more fluid. Shifted my focus from selling a product to securing a client’s future.'}
+							name='Taylor'
+							role='Financial Security Advisor, Experior Financial Group'
+							badge='Verified User'
 						/>
 					</Reveal>
 				</div>
