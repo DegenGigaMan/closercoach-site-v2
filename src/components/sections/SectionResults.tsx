@@ -376,48 +376,11 @@ function ReviewCard({ title, quote, reviewer, date }: Review): ReactElement {
 				border: '1px solid rgba(0,0,0,0.08)',
 			}}
 		>
-			{/* App Store Review chip — source-of-proof badge sitting above the
-			 * title row. Replaces the dark surface band as the contextual
-			 * signifier per Andy 2026-05-01. Inline App Store icon + emerald
-			 * mono label on a translucent emerald background. */}
-			<div className='flex items-center justify-between gap-3'>
-				<span
-					className='inline-flex items-center gap-1.5 rounded-full px-2.5 py-1'
-					style={{
-						backgroundColor: 'rgba(16,185,129,0.10)',
-						border: `1px solid ${EMERALD_AA}33`,
-					}}
-				>
-					<Image
-						src='/images/app-store-logo.svg'
-						alt=''
-						width={14}
-						height={14}
-						className='h-3.5 w-3.5 shrink-0'
-					/>
-					<span
-						style={{
-							fontFamily: 'var(--font-mono)',
-							fontSize: '10px',
-							fontWeight: 600,
-							letterSpacing: '0.08em',
-							color: EMERALD_AA,
-							textTransform: 'uppercase',
-						}}
-					>
-						App Store Review
-					</span>
-				</span>
-				<span
-					className='shrink-0'
-					style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: '#8E8E93' }}
-				>
-					{date}
-				</span>
-			</div>
-
-			{/* Title row */}
-			<div>
+			{/* Title row + relative date — chip dropped 2026-05-02 per Andy.
+			 * The 5-star + handle + truncated-body grammar already reads as
+			 * an App Store review on its own; the explicit chip was belt-and-
+			 * suspenders. Mirrors lab Variant A structure. */}
+			<div className='flex items-start justify-between gap-3'>
 				<h4
 					className='leading-tight'
 					style={{
@@ -430,6 +393,12 @@ function ReviewCard({ title, quote, reviewer, date }: Review): ReactElement {
 				>
 					{title}
 				</h4>
+				<span
+					className='shrink-0'
+					style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: '#8E8E93' }}
+				>
+					{date}
+				</span>
 			</div>
 
 			{/* Stars (5 colored) + username right-aligned */}
