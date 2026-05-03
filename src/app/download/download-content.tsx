@@ -241,9 +241,14 @@ export default function DownloadContent() {
 						<ShieldCheck weight='regular' className='h-3.5 w-3.5' aria-hidden='true' />
 						<span className='font-mono uppercase tracking-wider'>GDPR</span>
 					</span>
-					<span className='text-xs text-cc-text-secondary'>
+					<a
+						href='https://hypepotamus.com/startup-news/prizepicks-alum-launches-closercoach-ai-sales-coaching-atlanta/'
+						target='_blank'
+						rel='noopener noreferrer'
+						className='text-xs text-cc-text-secondary underline-offset-4 transition-colors hover:text-white hover:underline'
+					>
 						Featured in Hypepotamus
-					</span>
+					</a>
 				</div>
 
 				{/* Wave K.2 (FIX-CC-02 P2, 2026-04-26): "60 second flow" mini-strip
@@ -276,7 +281,7 @@ export default function DownloadContent() {
 					].map(({ Icon, label, sub }) => (
 						<div
 							key={label}
-							className='flex flex-col items-start gap-3 rounded-2xl border border-cc-surface-border bg-cc-surface/40 p-6 text-left backdrop-blur-sm'
+							className='flex flex-col items-center gap-3 rounded-2xl border border-cc-surface-border bg-cc-surface/40 p-6 text-center backdrop-blur-sm'
 						>
 							<Icon
 								weight='regular'

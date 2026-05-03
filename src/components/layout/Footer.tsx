@@ -9,7 +9,15 @@ import { usePathname } from 'next/navigation'
 import { BRAND, FOOTER_LINKS } from '@/lib/constants'
 import { track } from '@/lib/analytics'
 
-const TRUST_BADGES = ['Featured in Hypepotamus', 'SOC2', 'GDPR'] as const
+/* Trust badges — "Featured in Hypepotamus" links to the article (new tab),
+ * SOC2 and GDPR stay as static labels. Per Alim 2026-05-02. */
+const HYPEPOTAMUS_URL =
+	'https://hypepotamus.com/startup-news/prizepicks-alum-launches-closercoach-ai-sales-coaching-atlanta/'
+const TRUST_BADGES = [
+	{ label: 'Featured in Hypepotamus', href: HYPEPOTAMUS_URL },
+	{ label: 'SOC2', href: null },
+	{ label: 'GDPR', href: null },
+] as const
 
 /* LS-006 (2026-05-01): drop the Live Chat placeholder (href='#') from the
  * Support column. Removing it at render time so the constants stay shared
@@ -81,12 +89,13 @@ export default function Footer() {
 								{col.links.map((link) => {
 									const isExternal = 'external' in link && link.external
 									/* TS narrows link.href to the literal union from FOOTER_LINKS
-									 * (as const). Only `/download` matches a tracked event in the
-									 * current footer. If a Book a Demo link is added later (href
-									 * = BRAND.calendly or '/book-demo'), extend this conditional. */
+									 * (as const). Tracks /download (download_click) and /sales
+									 * (book_demo_click). Other hrefs render without tracking. */
 									const onLinkClick = () => {
 										if (link.href === '/download') {
 											track('download_click', { source: 'footer', cta_text: link.label })
+										} else if (link.href === '/sales') {
+											track('book_demo_click', { source: 'footer', cta_text: link.label })
 										}
 									}
 									return (
@@ -121,12 +130,24 @@ export default function Footer() {
 				{/* Trust badges */}
 				<div className='mt-12 flex flex-wrap gap-3'>
 					{TRUST_BADGES.map((badge) => (
-						<span
-							key={badge}
-							className='rounded-full border border-cc-surface-border px-3 py-1 text-xs text-cc-text-secondary'
-						>
-							{badge}
-						</span>
+						badge.href ? (
+							<a
+								key={badge.label}
+								href={badge.href}
+								target='_blank'
+								rel='noopener noreferrer'
+								className='rounded-full border border-cc-surface-border px-3 py-1 text-xs text-cc-text-secondary transition-colors hover:border-cc-surface-border-hover hover:text-white'
+							>
+								{badge.label}
+							</a>
+						) : (
+							<span
+								key={badge.label}
+								className='rounded-full border border-cc-surface-border px-3 py-1 text-xs text-cc-text-secondary'
+							>
+								{badge.label}
+							</span>
+						)
 					))}
 				</div>
 

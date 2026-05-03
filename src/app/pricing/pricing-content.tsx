@@ -19,49 +19,34 @@ import { track } from '@/lib/analytics'
 
 /* ---------- Tier data ---------- */
 
+/* G-01 (2026-05-02): CLOSER ($12.99/mo individual) tier removed from /pricing
+ * per Alim feedback "remove the 12.99 box - dont like how we sell cheap so
+ * much". Underlying $12.99 individual subscription model still exists in the
+ * app post-trial; just no longer marketed on /pricing. /download free trial
+ * funnel + Try for Free CTAs site-wide unaffected. */
 const TIERS = [
-	{
-		key: 'closer',
-		label: 'CLOSER',
-		labelTone: 'emerald' as const,
-		badge: 'Most Popular',
-		subtitle: 'For individual closers',
-		highlighted: true,
-		getPrice: (yearly: boolean) => yearly
-			? { amount: `$${PRICING.individual.effectiveMonthly}`, period: '/mo', note: `Billed $${PRICING.individual.yearly}/yr` }
-			: { amount: `$${PRICING.individual.monthly}`, period: '/mo', note: 'Billed monthly' },
-		trial: `${STATS.trialDays} days free. Full access. No credit card required.`,
-		cta: { text: CTA.startFree.text, href: CTA.startFree.href },
-		ctaVariant: 'primary' as const,
-		features: [
-			'Unlimited AI roleplays',
-			'AI Suggested Roleplays (personalized daily)',
-			'Create custom roleplays from your product catalog',
-			'Practice any custom objection',
-			'In-depth call feedback (pages of coaching per session)',
-			'In-call AI annotations',
-			'Ridealong recording and AI scoring',
-			'Built-in dialer (your number on caller ID)',
-			'Skill progression tracking (7 dimensions)',
-			'Community leaderboard and daily challenges',
-			'All industries, 100+ scenarios',
-		],
-	},
 	{
 		key: 'teams',
 		label: 'TEAMS',
 		labelTone: 'amber' as const,
 		badge: 'Best for Teams',
 		subtitle: 'For sales teams of 5+',
-		highlighted: false,
+		highlighted: true,
 		getPrice: (yearly: boolean) => yearly
 			? { amount: `$${Math.round(PRICING.teams.monthly * (1 - PRICING.teams.annualDiscount))}`, period: '/user/mo', note: `${PRICING.teams.annualDiscount * 100}% off annual` }
 			: { amount: `$${PRICING.teams.monthly}`, period: '/user/mo', note: 'Billed monthly' },
 		trial: null,
 		cta: { text: CTA.contactSales.text, href: CTA.contactSales.href },
-		ctaVariant: 'secondary' as const,
+		ctaVariant: 'primary' as const,
 		features: [
-			'Everything in Closer, plus:',
+			'Unlimited AI roleplays',
+			'AI Suggested Roleplays (personalized daily)',
+			'Create custom roleplays from your product catalog',
+			'In-depth call feedback (pages of coaching per session)',
+			'In-call AI annotations',
+			'Ridealong recording and AI scoring',
+			'Built-in dialer (your number on caller ID)',
+			'Skill progression tracking (7 dimensions)',
 			'Manager web dashboard',
 			'Team analytics and performance tracking',
 			'Custom scorecards and talk tracks',
@@ -104,33 +89,35 @@ const TIERS = [
 
 /* ---------- Comparison table ---------- */
 
-type TierIncluded = [boolean, boolean, boolean]
+type TierIncluded = [boolean, boolean]
 
+/* G-01 (2026-05-02): tuples reduced from 3-tier [closer, teams, enterprise]
+ * to 2-tier [teams, enterprise] after removing CLOSER tier from display. */
 const COMPARISON_ROWS: { feature: string; tiers: TierIncluded }[] = [
-	{ feature: 'Unlimited AI roleplays', tiers: [true, true, true] },
-	{ feature: 'Custom roleplays from your product catalog', tiers: [true, true, true] },
-	{ feature: 'In-call AI coaching annotations', tiers: [true, true, true] },
-	{ feature: 'Ridealong recording + AI scoring', tiers: [true, true, true] },
-	{ feature: 'Built-in dialer', tiers: [true, true, true] },
-	{ feature: 'Pages of coaching per call', tiers: [true, true, true] },
-	{ feature: 'Skill progression tracking', tiers: [true, true, true] },
-	{ feature: 'Community leaderboard', tiers: [true, true, true] },
-	{ feature: 'Daily challenges and streaks', tiers: [true, true, true] },
-	{ feature: '100+ scenarios, all industries', tiers: [true, true, true] },
-	{ feature: 'Manager dashboard', tiers: [false, true, true] },
-	{ feature: 'Team performance analytics', tiers: [false, true, true] },
-	{ feature: 'Custom scorecards', tiers: [false, true, true] },
-	{ feature: 'AI team onboarding (from your website)', tiers: [false, true, true] },
-	{ feature: 'CRM connections', tiers: [false, true, true] },
-	{ feature: 'Priority support', tiers: [false, true, true] },
-	{ feature: 'White-glove setup', tiers: [false, true, true] },
-	{ feature: 'SSO / SAML', tiers: [false, false, true] },
-	{ feature: 'Admin controls and role-based permissions', tiers: [false, false, true] },
-	{ feature: 'Custom API access', tiers: [false, false, true] },
-	{ feature: 'Dedicated account manager', tiers: [false, false, true] },
-	{ feature: 'Custom integrations', tiers: [false, false, true] },
-	{ feature: 'Compliance and audit logging', tiers: [false, false, true] },
-	{ feature: 'Custom SLA', tiers: [false, false, true] },
+	{ feature: 'Unlimited AI roleplays', tiers: [true, true] },
+	{ feature: 'Custom roleplays from your product catalog', tiers: [true, true] },
+	{ feature: 'In-call AI coaching annotations', tiers: [true, true] },
+	{ feature: 'Ridealong recording + AI scoring', tiers: [true, true] },
+	{ feature: 'Built-in dialer', tiers: [true, true] },
+	{ feature: 'Pages of coaching per call', tiers: [true, true] },
+	{ feature: 'Skill progression tracking', tiers: [true, true] },
+	{ feature: 'Community leaderboard', tiers: [true, true] },
+	{ feature: 'Daily challenges and streaks', tiers: [true, true] },
+	{ feature: '100+ scenarios, all industries', tiers: [true, true] },
+	{ feature: 'Manager dashboard', tiers: [true, true] },
+	{ feature: 'Team performance analytics', tiers: [true, true] },
+	{ feature: 'Custom scorecards', tiers: [true, true] },
+	{ feature: 'AI team onboarding (from your website)', tiers: [true, true] },
+	{ feature: 'CRM connections', tiers: [true, true] },
+	{ feature: 'Priority support', tiers: [true, true] },
+	{ feature: 'White-glove setup', tiers: [true, true] },
+	{ feature: 'SSO / SAML', tiers: [false, true] },
+	{ feature: 'Admin controls and role-based permissions', tiers: [false, true] },
+	{ feature: 'Custom API access', tiers: [false, true] },
+	{ feature: 'Dedicated account manager', tiers: [false, true] },
+	{ feature: 'Custom integrations', tiers: [false, true] },
+	{ feature: 'Compliance and audit logging', tiers: [false, true] },
+	{ feature: 'Custom SLA', tiers: [false, true] },
 ]
 
 /* ---------- FAQ data (pricing-specific, 8 questions per brief) ---------- */
@@ -236,8 +223,8 @@ export default function PricingContent() {
 	const [openFaq, setOpenFaq] = useState(0)
 	/* Wave J.2 (FIX-02 P1): mobile compare tier switcher. Defaults to 'teams'
 	 * (the highlighted tier in the cards above) so the most relevant tier loads
-	 * first. Index maps to TIERS order: 0=closer, 1=teams, 2=enterprise. */
-	const [compareTier, setCompareTier] = useState<0 | 1 | 2>(1)
+	 * first. G-01 (2026-05-02): index maps to new TIERS order — 0=teams, 1=enterprise. */
+	const [compareTier, setCompareTier] = useState<0 | 1>(0)
 
 	return (
 		<div className='bg-cc-foundation'>
@@ -432,8 +419,7 @@ export default function PricingContent() {
 								>
 									<tr className='border-b border-cc-surface-border bg-cc-foundation'>
 										<th className='bg-cc-foundation pb-4 pr-4 pt-4 text-sm font-medium text-cc-text-secondary'>Feature</th>
-										<th className='bg-cc-foundation pb-4 pt-4 text-center text-sm font-medium text-cc-accent'>Closer</th>
-										<th className='bg-cc-foundation pb-4 pt-4 text-center text-sm font-medium text-cc-text-secondary'>Teams</th>
+										<th className='bg-cc-foundation pb-4 pt-4 text-center text-sm font-medium text-cc-accent'>Teams</th>
 										<th className='bg-cc-foundation pb-4 pt-4 text-center text-sm font-medium text-cc-text-secondary'>Enterprise</th>
 									</tr>
 								</thead>
@@ -468,10 +454,10 @@ export default function PricingContent() {
 							<div
 								role='tablist'
 								aria-label='Compare plan features by tier'
-								className='grid grid-cols-3 gap-1.5 rounded-full border border-cc-surface-border bg-cc-surface-card p-1.5'
+								className='grid grid-cols-2 gap-1.5 rounded-full border border-cc-surface-border bg-cc-surface-card p-1.5'
 							>
-								{(['Closer', 'Teams', 'Enterprise'] as const).map((tierName, tierIdx) => {
-									const idx = tierIdx as 0 | 1 | 2
+								{(['Teams', 'Enterprise'] as const).map((tierName, tierIdx) => {
+									const idx = tierIdx as 0 | 1
 									const active = compareTier === idx
 									return (
 										<button
@@ -574,7 +560,10 @@ export default function PricingContent() {
 									alt={logo.alt}
 									width={logo.w}
 									height={logo.h}
-									className='h-6 w-auto opacity-40 grayscale'
+									/* G-02 (2026-05-02): logos rendered as solid white silhouettes
+									 * per Alim "fix company logos, make white". brightness-0 collapses
+									 * source colors to black, invert flips to white; opacity softens. */
+									className='h-6 w-auto opacity-60 brightness-0 invert'
 								/>
 							))}
 						</div>

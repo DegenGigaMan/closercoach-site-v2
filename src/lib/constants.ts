@@ -81,6 +81,7 @@ export const SPACING = {
 export const NAV_LINKS = [
 	{ label: 'Product', href: '/#product' },
 	{ label: 'Pricing', href: '/pricing' },
+	{ label: 'Book a Demo', href: '/sales' },
 	{ label: 'Download', href: '/download' },
 ] as const
 
@@ -90,6 +91,7 @@ export const FOOTER_LINKS = {
 		{ label: 'Pricing', href: '/pricing' },
 		{ label: 'Teams', href: '/#teams' },
 		{ label: 'Download', href: '/download' },
+		{ label: 'Book a Demo', href: '/sales' },
 	],
 	legal: [
 		{ label: 'Privacy Policy', href: '/privacy' },

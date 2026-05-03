@@ -63,6 +63,7 @@ export default function Header() {
 								href={link.href}
 								onClick={() => {
 									if (link.href === '/download') track('download_click', { source: 'header', cta_text: link.label })
+									else if (link.href === '/sales') track('book_demo_click', { source: 'header', cta_text: link.label })
 								}}
 								className={`text-sm transition-colors ${
 									isActive(link.href)
@@ -106,6 +107,7 @@ export default function Header() {
 								href={link.href}
 								onClick={() => {
 									if (link.href === '/download') track('download_click', { source: 'header', cta_text: link.label, position: 'mobile_nav' })
+									else if (link.href === '/sales') track('book_demo_click', { source: 'header', cta_text: link.label, position: 'mobile_nav' })
 									closeMenu()
 								}}
 								className={`py-3 text-lg border-b border-cc-surface-border ${
@@ -118,18 +120,6 @@ export default function Header() {
 								{link.label}
 							</Link>
 						))}
-						<div className="my-2 border-b border-cc-surface-border" />
-						<Link
-							href='/sales'
-							onClick={() => {
-								track('book_demo_click', { source: 'header', cta_text: 'Book a Demo', position: 'mobile_nav' })
-								closeMenu()
-							}}
-							className="py-3 text-lg text-cc-text-secondary"
-							style={{ minHeight: 48 }}
-						>
-							Book a Demo
-						</Link>
 					</div>
 				</div>
 			)}
