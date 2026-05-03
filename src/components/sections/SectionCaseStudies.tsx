@@ -455,21 +455,20 @@ export default function SectionCaseStudies(): ReactElement {
 							badge='Sales Manager'
 						/>
 					</Reveal>
-					{/* PLACEHOLDER — real enterprise customer testimonial pending (T6). G9
-					    reframe used per section-blueprint Option A. */}
+					{/* T6 P0 (2026-05-02): real Enterprise testimonial from Taylor lands.
+					    Photo + verbatim-trimmed quote provided 2026-05-02. Replaces the
+					    G9 placeholder reframe. */}
 					<Reveal delay={0.16}>
 						<TierCard
 							tier='Enterprise'
 							tierAccent={SLATE_WARM}
-							portraitSrc='/images/placeholders/case-enterprise.jpg'
+							portraitSrc='/images/placeholders/case-taylor.jpg'
 							portraitAlt=''
-							metricHeadline='22-seat team onboarding.'
-							industryTag='Enterprise Sales Team'
-							quote={'Enterprise sales teams are onboarding CloserCoach at scale. One of the fastest-growing teams on the platform has 22 active seats.'}
-							name='Enterprise Sales Team'
-							role='Anonymized'
-							badge='Platform Deal'
-							isPlaceholder
+							industryTag='Financial Services'
+							quote={'CloserCoach streamlined my discovery and made objection handling more fluid. Shifted my focus from selling a product to securing a client’s future.'}
+							name='Taylor'
+							role='Financial Security Advisor, Experior Financial Group'
+							badge='Verified User'
 						/>
 					</Reveal>
 				</div>
