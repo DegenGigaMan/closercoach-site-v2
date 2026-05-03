@@ -258,16 +258,15 @@ export default function DownloadContent() {
 				 * Desktop (md+) had ~700-1000px empty rails per S+ Visual Auditor;
 				 * this 3-card row carries the same UI vocabulary already approved
 				 * on /thank-you (Install / Community / Follow). */}
-				{/* G-CARDS-CENTER (2026-05-02): the lg: breakout-positioning trick
-				 * was broken — `lg:-translate-x-1/2` produced `transform: none`
-				 * in compiled CSS, so `lg:left-1/2` shifted the cards right
-				 * without the compensating translate, leaving them visibly
-				 * left-shifted on desktop. Replaced with an arbitrary-value
-				 * transform (`lg:[transform:translateX(-50%)]`) which Tailwind
-				 * v4 emits literally, bypassing whatever class-conflict was
-				 * suppressing the standard utility. */}
+				{/* G-CARDS-CENTER (2026-05-02): dropped the lg: breakout-positioning
+				 * trick. The element lives inside a `mx-auto max-w-2xl flex
+				 * items-center` parent — `position: relative; left: 50%` is
+				 * computed against the parent's 624px content box, not the
+				 * viewport, so the math never lands at viewport center.
+				 * Cards now sit naturally inside the parent and inherit its
+				 * centering. */}
 				<div
-					className='mt-10 hidden w-full max-w-3xl grid-cols-3 gap-4 md:grid lg:relative lg:left-1/2 lg:max-w-none lg:[transform:translateX(-50%)] lg:[width:min(calc(100vw-3rem),900px)] 2xl:[width:min(calc(100vw-3rem),1100px)]'
+					className='mt-10 hidden w-full grid-cols-3 gap-4 md:grid'
 					aria-label='Sixty second flow'
 				>
 					{[
