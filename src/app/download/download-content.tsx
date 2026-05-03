@@ -251,22 +251,20 @@ export default function DownloadContent() {
 					</a>
 				</div>
 
-				{/* Wave K.2 (FIX-CC-02 P2, 2026-04-26): "60 second flow" mini-strip
-				 * supporting trust + clarity at md+ only. Mobile (<md) keeps the
-				 * dense single-column conversion path — auto-redirect to store
-				 * fires within 250ms there, so the strip would be invisible churn.
-				 * Desktop (md+) had ~700-1000px empty rails per S+ Visual Auditor;
-				 * this 3-card row carries the same UI vocabulary already approved
-				 * on /thank-you (Install / Community / Follow). */}
-				{/* G-CARDS-CENTER (2026-05-02): dropped the lg: breakout-positioning
-				 * trick. The element lives inside a `mx-auto max-w-2xl flex
-				 * items-center` parent — `position: relative; left: 50%` is
-				 * computed against the parent's 624px content box, not the
-				 * viewport, so the math never lands at viewport center.
-				 * Cards now sit naturally inside the parent and inherit its
-				 * centering. */}
+			</div>
+
+			{/* Wave K.2 (FIX-CC-02 P2, 2026-04-26 / restructured 2026-05-02):
+			 * "60 second flow" mini-strip supporting trust + clarity at md+
+			 * only. Mobile (<md) keeps the dense single-column conversion
+			 * path — auto-redirect to store fires within 250ms there, so the
+			 * strip would be invisible churn. Pulled out of the centered
+			 * max-w-2xl Content container into a sibling with its own wider
+			 * mx-auto max-w-5xl wrapper so the 3 cards can be wide enough
+			 * for one-line heading + subheading text and stay equal width
+			 * via grid-cols-3 with no overflow contortion. */}
+			<div className='relative z-10 mx-auto hidden w-full max-w-5xl px-6 pb-20 md:block md:pb-24'>
 				<div
-					className='mt-10 hidden w-full grid-cols-3 gap-4 md:grid'
+					className='grid grid-cols-3 gap-4'
 					aria-label='Sixty second flow'
 				>
 					{[
@@ -296,18 +294,18 @@ export default function DownloadContent() {
 								aria-hidden='true'
 							/>
 							<p
-								className='text-trim text-base text-white'
+								className='whitespace-nowrap text-trim text-base text-white'
 								style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, lineHeight: 1.25 }}
 							>
 								{label}
 							</p>
-							<p className='text-trim text-sm text-cc-text-secondary'>
+							<p className='whitespace-nowrap text-trim text-sm text-cc-text-secondary'>
 								{sub}
 							</p>
 						</div>
 					))}
 				</div>
-			</div>
+		</div>
 		</div>
 	)
 }
