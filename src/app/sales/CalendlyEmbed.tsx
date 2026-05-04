@@ -1,31 +1,35 @@
 'use client'
 
-/** @fileoverview Calendly raw iframe embed — client-only (no SSR).
- *  Imported via dynamic({ ssr: false }) in page.tsx to avoid hydration
- *  mismatch (server can't predict the iframe src hash). */
+/** @fileoverview Calendly InlineWidget — auto-sized via Calendly's postMessage
+ *  height events so the iframe never needs an internal scrollbar. Replaces the
+ *  raw iframe approach which had a fixed min-height (560px) that was too short
+ *  for the actual widget content and forced an inner scroll. Loaded client-only
+ *  via dynamic({ ssr: false }) in CalendlyWrapper to avoid hydration mismatch. */
 
-const CALENDLY_URL =
-	'https://calendly.com/taylor-closercoach/demo' +
-	'?embed_type=Inline' +
-	'&hide_landing_page_details=1&hide_gdpr_banner=1' +
-	'&hide_event_type_details=1' +
-	'&background_color=0d0f14&text_color=ffffff&primary_color=10b981'
+import { InlineWidget } from 'react-calendly'
+
+const CALENDLY_URL = 'https://calendly.com/taylor-closercoach/demo'
 
 export default function CalendlyEmbed() {
 	return (
-		<iframe
-			src={CALENDLY_URL}
-			width='100%'
-			height='100%'
-			frameBorder='0'
-			scrolling='yes'
-			title='Book a Demo with CloserCoach'
-			style={{
-				display: 'block',
-				border: 'none',
-				minWidth: 320,
-				minHeight: 560,
-				background: '#0d0f14',
+		<InlineWidget
+			url={CALENDLY_URL}
+			styles={{
+				/* Tall enough for the calendar grid + month nav + time picker
+				 * without ever scrolling on desktop. react-calendly listens
+				 * to Calendly's postMessage and resizes within this height
+				 * envelope — 1100px is the comfortable upper bound for the
+				 * default scheduling view. */
+				height: '1100px',
+				width: '100%',
+			}}
+			pageSettings={{
+				backgroundColor: '0d0f14',
+				primaryColor: '10b981',
+				textColor: 'ffffff',
+				hideEventTypeDetails: true,
+				hideLandingPageDetails: true,
+				hideGdprBanner: true,
 			}}
 		/>
 	)
