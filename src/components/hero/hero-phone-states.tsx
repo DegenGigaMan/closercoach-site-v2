@@ -11,10 +11,6 @@ import { motion } from 'motion/react'
 import {
 	Globe,
 	Check,
-	Microphone,
-	Phone as PhoneIcon,
-	Circle,
-	ChatCircle,
 	Warning,
 	CheckCircle,
 	Trophy,
@@ -339,7 +335,7 @@ export function HeroStateScore() {
 
 			{/* Grade ring */}
 			<div className="relative flex items-center justify-center">
-				<svg width="88" height="88" viewBox="0 0 88 88">
+				<svg width="88" height="88" viewBox="0 0 88 88" aria-hidden="true">
 					{/* Track */}
 					<circle cx="44" cy="44" r="36" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="4" />
 					{/* Filled arc */}

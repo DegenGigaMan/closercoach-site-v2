@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { HeroStateTraining, HeroStatePractice, HeroStateRecord, HeroStateScore } from './hero-phone-states'
 
@@ -134,10 +134,6 @@ export default function HeroPhone() {
 		}, CYCLE_MS)
 		return () => clearInterval(interval)
 	}, [reducedMotion])
-
-	const handleDotClick = useCallback((i: number) => {
-		setActiveIndex(i)
-	}, [])
 
 	return (
 		<div className="relative flex items-center justify-center px-36">

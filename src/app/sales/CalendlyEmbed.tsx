@@ -5,15 +5,14 @@
  *  client-only via dynamic({ ssr: false }) in CalendlyWrapper to avoid
  *  hydration mismatch.
  *
- *  H-05 v2 (2026-05-05): the previous wrapping div + ring approach left a
- *  visible white container around the iframe because react-calendly's
- *  internal `<div class="calendly-inline-widget">` ships with no background
- *  and the iframe's pre-load default is white. The CSS override in
- *  globals.css wasn't beating the inline style. Solution: render the
- *  InlineWidget completely flush — no outer wrapping, no ring. Force the
- *  iframe transparent via inline `colorScheme: dark` (browser hint to draw
- *  the iframe on the parent's bg) plus the globals.css `!important` rule
- *  on `.calendly-inline-widget iframe`. */
+ *  H-05 v3 (2026-05-05, audit option B): the white container persists
+ *  because Calendly renders a card with white margins INSIDE the iframe
+ *  (cross-origin, not styleable from parent). Mask it: wrap the iframe in
+ *  a cc-foundation-bg container with negative margin + matching padding so
+ *  the dark wrapper visually overlaps the iframe's white border. From the
+ *  user's perspective, the embed sits flush on the dark page surface with
+ *  rounded corners — the iframe's internal white edge is hidden behind the
+ *  wrapper. */
 
 import { InlineWidget } from 'react-calendly'
 
@@ -21,23 +20,27 @@ const CALENDLY_URL = 'https://calendly.com/taylor-closercoach/demo'
 
 export default function CalendlyEmbed() {
 	return (
-		<InlineWidget
-			url={CALENDLY_URL}
-			styles={{
-				height: '700px',
-				width: '100%',
-				minWidth: 0,
-				colorScheme: 'dark',
-				background: 'transparent',
-			}}
-			pageSettings={{
-				backgroundColor: '0d0f14',
-				primaryColor: '10b981',
-				textColor: 'ffffff',
-				hideEventTypeDetails: true,
-				hideLandingPageDetails: true,
-				hideGdprBanner: true,
-			}}
-		/>
+		<div className='overflow-hidden rounded-2xl bg-cc-foundation'>
+			<div className='-m-6 sm:-m-8'>
+				<InlineWidget
+					url={CALENDLY_URL}
+					styles={{
+						height: '760px',
+						width: '100%',
+						minWidth: 0,
+						colorScheme: 'dark',
+						background: 'transparent',
+					}}
+					pageSettings={{
+						backgroundColor: '0d0f14',
+						primaryColor: '10b981',
+						textColor: 'ffffff',
+						hideEventTypeDetails: true,
+						hideLandingPageDetails: true,
+						hideGdprBanner: true,
+					}}
+				/>
+			</div>
+		</div>
 	)
 }

@@ -22,10 +22,8 @@ import {
 	Warning,
 	WarningOctagon,
 	CheckCircle,
-	Trophy,
 	Microphone,
 	PhoneDisconnect,
-	Phone as PhoneIcon,
 	Users,
 	Timer,
 } from '@phosphor-icons/react'

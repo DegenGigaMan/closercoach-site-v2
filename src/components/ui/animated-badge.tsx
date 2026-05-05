@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { CaretRight } from "@phosphor-icons/react"
 import { motion } from "motion/react"
 
 type AnimatedBadgeProps = {

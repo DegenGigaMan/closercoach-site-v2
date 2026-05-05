@@ -49,9 +49,8 @@ import Image from 'next/image'
 import MotionCTA from '@/components/shared/motion-cta'
 import { CTA, SCORING_DATA } from '@/lib/constants'
 
-/* Use the cleaned 24KB wordmark at /cc-logo.png instead of the 1.5MB Figma
- * export under /images/closercoach-logo.svg — identical paths, no embedded
- * raster bloat. Saves ~1.5MB per render. */
+/* CC wordmark — points at the optimized 64KB PNG (was a 24KB SVG, swapped
+ * 2026-05-04). Same visual; PNG enables the new wordmark Andy provided. */
 const CC_LOGO = '/cc-logo.png'
 
 type Example = {
@@ -226,7 +225,7 @@ export default function StepFourReviewPhone() {
 				</div>
 				{/* Q17 Wave D1-1 spacing carries forward to this variant. */}
 				<h3 className='mt-6 text-3xl leading-[1.15] text-white md:mt-10 md:text-4xl lg:text-[2.75rem]'>
-					See <em className='text-cc-accent'>Exactly</em> What&rsquo;s Losing You Deals
+					See <em className='text-cc-accent'>Exactly</em>{' '}What&rsquo;s Losing You Deals
 				</h3>
 			</div>
 

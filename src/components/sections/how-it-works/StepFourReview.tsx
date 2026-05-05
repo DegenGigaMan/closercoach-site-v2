@@ -132,7 +132,7 @@ export default function StepFourReview() {
 				    headline gap matches the other 3 steps' bumped rhythm. mt-6
 				    → mt-6 md:mt-10 (24px → 40px on desktop). */}
 				<h3 className='mt-6 text-3xl leading-[1.15] text-white md:mt-10 md:text-4xl lg:text-[2.75rem]'>
-					See <em className='text-cc-accent'>Exactly</em> What&rsquo;s Losing You Deals
+					See <em className='text-cc-accent'>Exactly</em>{' '}What&rsquo;s Losing You Deals
 				</h3>
 			</div>
 

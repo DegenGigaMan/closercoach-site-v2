@@ -630,12 +630,11 @@ function CoachedVsUncoachedChart(): ReactElement {
 						strokeLinejoin='round'
 					/>
 				</svg>
-				{/* 2x badge — H-24 (2026-05-04): bumped from right-1 top-0 to
-				 * right-2 -top-3 so the label reads as a callout floating over the
-				 * coached curve's high-point endpoint instead of detached at the
-				 * chart's top-right corner. Slightly larger size + line-none for
-				 * tighter optical anchor. */}
+				{/* 2x badge — decorative annotation, aria-hidden so screen
+				 * readers don't say "two ex". The chart's labeled axis +
+				 * Coached/Uncoached legend already convey the meaning. */}
 				<span
+					aria-hidden='true'
 					className='absolute -top-3 right-2 text-[28px] font-bold leading-none text-black'
 					style={{ fontFamily: 'var(--font-heading)' }}
 				>
