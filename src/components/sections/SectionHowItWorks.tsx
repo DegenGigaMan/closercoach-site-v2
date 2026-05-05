@@ -80,14 +80,6 @@ const SPLIT_VARS: CSSProperties = {
  */
 export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean } = {}) {
 	const [activeStep, setActiveStep] = useState(1)
-	/* H-19 (2026-05-04): track per-room inView so the sticky right-column
-	 * visuals only START their timer chains when the matching StepRoom is
-	 * actually in viewport — not at first paint when activeStep defaults to 1
-	 * and the right-column ref is geometrically inside the just-mounted grid.
-	 * Without this, PlanVisual's 6.6s phase chain ran to completion while the
-	 * user was still on the section heading, leaving Step 1 fully animated by
-	 * the time the user actually scrolled to it. */
-	const [step1RoomInView, setStep1RoomInView] = useState(false)
 
 	/* Bidirectional step sync. Each StepRoom fires onEnter(index) every time
 	 * its 40%-in-view threshold flips TRUE, which happens on scroll-down (entering
@@ -158,7 +150,7 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 				 * Step 4 is no longer part of the pin-scroll -- it renders below this
 				 * grid as a standalone vertically-stacked section (StepFourReview). */}
 				<div className="flex flex-col">
-					<StepRoom index={1} onEnter={advanceTo} onInViewChange={setStep1RoomInView}>
+					<StepRoom index={1} onEnter={advanceTo}>
 						<Step1Plan devPin={devPin} />
 					</StepRoom>
 					<StepRoom index={2} onEnter={advanceTo}>
@@ -174,7 +166,6 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 					<div className="sticky top-[calc(50vh-300px)] h-[600px]">
 						<RightColumnVisual
 							activeStep={activeStep}
-							step1InView={step1RoomInView}
 							devPin={devPin}
 						/>
 					</div>
@@ -202,34 +193,20 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 function StepRoom({
 	index,
 	onEnter,
-	onInViewChange,
 	children,
 }: {
 	index: number
 	onEnter: (n: number) => void
-	onInViewChange?: (inView: boolean) => void
 	children: ReactNode
 }) {
 	const prefersReducedMotion = useReducedMotion()
 	const ref = useRef<HTMLDivElement>(null)
 	const isInView = useInView(ref, { amount: 0.4 })
-	/* H-19 v2 (2026-05-05): the PlanVisual / StepTwoVisual phase chains
-	 * should only kick off when the user is firmly on the step's content,
-	 * not when 40% of the step has merely entered viewport (which fires
-	 * while the user is still reading the section heading and leaves them
-	 * arriving at Step 1 mid-animation). 0.7 fires when the step's body
-	 * is centered in viewport. activeStep transitions still use the 0.4
-	 * threshold (above) so step labels swap promptly. */
-	const isFirmlyInView = useInView(ref, { amount: 0.7 })
 	const mounted = useMounted()
 
 	useEffect(() => {
 		if (mounted && isInView) onEnter(index)
 	}, [mounted, isInView, index, onEnter])
-
-	useEffect(() => {
-		if (mounted && onInViewChange) onInViewChange(isFirmlyInView)
-	}, [mounted, isFirmlyInView, onInViewChange])
 
 	return (
 		<motion.div
@@ -248,32 +225,13 @@ function StepRoom({
 
 /* ---------- Right column (sticky per-step visual) ---------- */
 
-function RightColumnVisual({
-	activeStep,
-	step1InView,
-	devPin,
-}: {
-	activeStep: number
-	step1InView: boolean
-	devPin: boolean
-}) {
+function RightColumnVisual({ activeStep, devPin }: { activeStep: number; devPin: boolean }) {
 	const prefersReducedMotion = useReducedMotion()
 
 	/* Single StepCanvas wraps all 4 step visuals. The canvas provides the
 	 * rounded-3xl surface + radial-gradient background + border. Inner content
 	 * swaps via AnimatePresence on activeStep. F39 hydration safety: stable
-	 * initials on motion.div; reduced-motion collapses duration to 0.
-	 *
-	 * H-25 REVERT (2026-05-05): mode="wait" broke the sticky pinning of the
-	 * S3 right column on desktop — during the wait gap the absolutely-sized
-	 * inner content unmounts before the next mounts, causing the StepCanvas
-	 * to collapse for a frame and breaking the parent grid's row height
-	 * which the sticky positioning depends on. Reverted to mode="popLayout"
-	 * which keeps the outgoing element in flow (position: absolute) during
-	 * the cross-fade so layout stays stable.
-	 *
-	 * H-19 (2026-05-04): step1InView is forwarded to PlanVisual so its phase
-	 * chain only starts when StepRoom 1 is actually in viewport. */
+	 * initials on motion.div; reduced-motion collapses duration to 0. */
 	return (
 		<StepCanvas>
 			<AnimatePresence mode="popLayout" initial={false}>
@@ -285,7 +243,7 @@ function RightColumnVisual({
 					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
 					className="flex h-full w-full items-center justify-center p-4"
 				>
-					{activeStep === 1 && <PlanVisual devPin={devPin} start={step1InView} />}
+					{activeStep === 1 && <PlanVisual devPin={devPin} />}
 					{activeStep === 2 && <StepTwoVisual devPin={devPin} />}
 					{activeStep >= 3 && <StepThreeVisual devPin={devPin} />}
 				</motion.div>

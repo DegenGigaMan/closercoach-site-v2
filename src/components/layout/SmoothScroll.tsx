@@ -1,22 +1,21 @@
 /** @fileoverview Lenis smooth scroll wrapper. Initializes smooth scrolling globally.
  *
- * G-FOOTER-SCROLL fix (2026-05-02):
- *   1. Disable the browser's automatic scrollRestoration so back/forward navigation
- *      and revisits to a cached URL don't replay an old scroll position.
- *   2. Listen for a custom `scroll-reset` event dispatched by ScrollToTop on
- *      every route change. When received, snap Lenis's internal target to 0 in
- *      lockstep with the native window scroll.
+ * G-FOOTER-SCROLL fix (2026-05-02): listens for a custom `scroll-reset` event
+ * dispatched by ScrollToTop on every route change. When received, snaps
+ * Lenis's internal target to 0 in lockstep with the native window scroll so
+ * footer Privacy → Terms → Privacy revisits land at the top.
  *
  * H-21 scroll-lock fix (2026-05-04):
- *   - Dropped `force: true` from the scrollTo call — it was overriding Lenis's
- *     user-input lock. When a path change fired mid-scroll, Lenis's targetScroll
- *     snapped to 0 while actualScroll was mid-page, so Lenis thought it was "at
- *     target" and stopped processing wheel events until refresh.
- *   - Added ref guard against double-init under Strict Mode (effect runs →
- *     cleanup → re-runs in dev; without the guard the listener could be on a
- *     destroyed Lenis instance).
- *   - Added 100ms debounce on `scroll-reset` so back-to-back path changes
- *     don't double-snap.
+ *   - Dropped `force: true` from the scrollTo call (was overriding Lenis's
+ *     user-input lock and causing intermittent desktop scroll lock).
+ *   - Ref guard against Strict Mode double-init.
+ *   - 100ms debounce on `scroll-reset`.
+ *
+ * Refresh restoration (2026-05-05): we no longer set
+ * `history.scrollRestoration = 'manual'` so the browser's native scroll
+ * restoration runs on hard refresh — user keeps their scroll position. The
+ * footer-revisit fix doesn't need manual restoration; ScrollToTop's
+ * pathname-change handler already covers client-side navigation.
  */
 
 'use client'
@@ -28,10 +27,6 @@ export default function SmoothScroll() {
 	const lenisRef = useRef<Lenis | null>(null)
 
 	useEffect(() => {
-		if ('scrollRestoration' in window.history) {
-			window.history.scrollRestoration = 'manual'
-		}
-
 		const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 		if (prefersReduced) return
 

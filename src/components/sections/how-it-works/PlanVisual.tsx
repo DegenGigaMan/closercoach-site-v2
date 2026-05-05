@@ -708,17 +708,12 @@ function CloneVisual({ reduced, filled, pulseFooter, isComplete, cardRevealed, c
 
 /* ─── Root ─── */
 
-export default function PlanVisual({ start = false }: { devPin?: boolean; start?: boolean } = {}) {
+export default function PlanVisual({}: { devPin?: boolean } = {}) {
 	const reduced = useReducedMotion() ?? false
 	const ref = useRef<HTMLDivElement>(null)
-	/* H-19 fix (2026-05-04): `start` is now driven by SectionHowItWorks via
-	 * StepRoom 1's inView callback. The prior local useInView fired when this
-	 * component's ref entered viewport, but the ref lives inside the sticky
-	 * right-column container which mounts as soon as the parent grid enters
-	 * viewport — meaning the 6.6s phase chain ran to completion while the user
-	 * was still on the section heading. Now: phase chain only starts when
-	 * StepRoom 1 actually crosses the 40% threshold. */
-	const inView = start
+	/* Re-trigger on viewport entry — `once: false` and amount: 0.4 means the
+	 * sequence replays each time the user scrolls back to it. */
+	const inView = useInView(ref, { amount: 0.4 })
 
 	const [filled, setFilled] = useState(reduced ? 7 : 0)
 	const [pulseFooter, setPulseFooter] = useState(reduced)
