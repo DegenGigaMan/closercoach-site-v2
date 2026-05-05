@@ -119,7 +119,7 @@ export default function StepFourReview() {
 	 * are the only navigation surface now. */
 
 	return (
-		<div className='mx-auto max-w-7xl px-6 pb-32 md:px-12 lg:px-16 lg:pb-40'>
+		<div className='mx-auto max-w-7xl px-6 pb-20 md:px-12 md:pb-32 lg:px-16 lg:pb-40'>
 			{/* Intro: kicker + headline + body */}
 			<div className='mx-auto max-w-3xl text-center'>
 				<div className='inline-flex items-center gap-2 rounded-full border border-cc-accent/25 bg-cc-accent/5 px-3 py-1'>

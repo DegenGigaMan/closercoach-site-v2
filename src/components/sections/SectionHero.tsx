@@ -368,26 +368,30 @@ export default function SectionHero() {
 							style={isDesktop && !prefersReducedMotion ? { y: phoneParallax } : undefined}
 						>
 							{/* Scale wrapper: down-scale on small viewports so the 640px composite
-							 * fits 390px mobile without overflow. lg+ renders at full scale.
-							 * Negative mb compensates for the scale-vs-layout gap (CSS scale does
-							 * not reduce the layout box, leaving dead space below at sub-lg scales).
-							 * Values: 655 * (1 - scale) per breakpoint, rounded. */}
-							<div className='origin-top scale-[0.58] sm:scale-[0.72] md:scale-[0.85] lg:scale-100 mb-[-275px] sm:mb-[-183px] md:mb-[-98px] lg:mb-0'>
+							 * fits 390px mobile without overflow. H-29 (2026-05-04) bumped
+							 * mobile/sm scales (was 0.58/0.72/0.85) so the hero phone reads
+							 * with more presence on mobile. body now has overflow-x: hidden
+							 * so any minor edge bleed gets clipped at the viewport. Negative
+							 * mb compensates for the scale-vs-layout gap. */}
+							<div className='origin-top scale-[0.68] sm:scale-[0.82] md:scale-[0.92] lg:scale-100 mb-[-205px] sm:mb-[-115px] md:mb-[-50px] lg:mb-0'>
 								<HeroPhoneV2 />
 							</div>
 						</motion.div>
 					</div>
 				</div>
 
-				{/* App Store + Google Play badges — beneath the phone composite. R-02:
-				 * 0px top margin (sits flush below phone), 16px gap between badges
-				 * (Figma 85:5887), tagline "60 seconds…" Inter 12 cc-text-secondary
-				 * below the badges (Figma 85:5940). */}
+				{/* App Store + Google Play badges — beneath the phone composite.
+				 * R-02 spec; H-29 (2026-05-04): bumped top margin from 0 to mt-6
+				 * sm:mt-8 md:mt-10 so the badges breathe under the larger mobile
+				 * phone scale, and switched the badge row from flex-col → flex-row
+				 * default so App Store + Google Play sit side-by-side on every
+				 * viewport (was previously vertically stacked at <sm). Both badges
+				 * (126 + 142 + 16 gap = 284px) fit at 320px+ viewports comfortably. */}
 				<motion.div
-					className='mt-0 flex flex-col items-center gap-4'
+					className='mt-6 flex flex-col items-center gap-4 sm:mt-8 md:mt-10'
 					{...enter(0.95, 8)}
 				>
-					<div className='flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4'>
+					<div className='flex flex-row items-center justify-center gap-3 sm:gap-4'>
 						<a
 							href={BRAND.appStore}
 							target='_blank'

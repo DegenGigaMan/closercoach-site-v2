@@ -388,7 +388,11 @@ export default function SectionTeams(): ReactElement {
 					>
 						Join 35+ sales teams scaling with CloserCoach.
 					</p>
-					<div className='flex w-full max-w-5xl flex-wrap items-center justify-center gap-x-10 gap-y-6 md:flex-nowrap md:justify-between md:gap-x-8'>
+					{/* H-36 (2026-05-04): mobile uses a 2-col grid with all logos
+					 * normalized to h-6 (24px) so the row reads as one consistent
+					 * brand wall instead of per-logo size noise. md+ restores the
+					 * Figma-locked per-logo heightClass + flex-nowrap row layout. */}
+					<div className='grid w-full max-w-5xl grid-cols-2 items-center justify-items-center gap-x-6 gap-y-8 md:flex md:flex-nowrap md:justify-between md:gap-x-8'>
 						{MANAGER_LOGOS.map((logo) => (
 							<Image
 								key={logo.alt}
@@ -396,7 +400,7 @@ export default function SectionTeams(): ReactElement {
 								alt={logo.alt}
 								width={logo.w}
 								height={logo.h}
-								className={`${logo.heightClass} w-auto opacity-60 transition-opacity duration-300 hover:opacity-95${logo.preWhite ? '' : ' brightness-0 invert'}`}
+								className={`h-6 ${logo.heightClass.replace('h-', 'md:h-')} w-auto opacity-60 transition-opacity duration-300 hover:opacity-95${logo.preWhite ? '' : ' brightness-0 invert'}`}
 							/>
 						))}
 					</div>

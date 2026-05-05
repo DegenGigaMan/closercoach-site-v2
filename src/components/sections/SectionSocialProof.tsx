@@ -169,13 +169,18 @@ export default function SectionSocialProof() {
 						aria-hidden='true'
 					/>
 
-					{/* Logo marquee — sm+ (≥640px). Wave K.3 (FIX-CC-03 P2,
-					 * 2026-04-26): below sm we swap to a horizontal snap-scroll so
-					 * logos render at proper recognition size instead of the
-					 * marquee compressing them to ~30-40px wide. */}
+					{/* Logo marquee — H-30 (2026-05-04): now runs on ALL viewports
+					 * (was sm+ only with a snap-scroll fallback below sm). Mobile
+					 * users see the logos auto-scrolling right-to-left like desktop.
+					 * Touch-pause via :active state (animation pauses while finger
+					 * is down on the strip; resumes on lift). The mobile snap-scroll
+					 * fallback was removed — single source of truth simplifies the
+					 * row and avoids conflicting layouts. Parent <section> already
+					 * has overflow-hidden (Wave 1) so the marquee width: max-content
+					 * never leaks horizontal scroll on the page. */}
 					<div
 						ref={trackContainerRef}
-						className='group relative hidden w-full overflow-hidden sm:block'
+						className='group relative w-full overflow-hidden'
 						role='marquee'
 						aria-label='Companies using CloserCoach'
 					>
@@ -190,48 +195,17 @@ export default function SectionSocialProof() {
 						/>
 						<div
 							data-marquee-track
-							className='flex w-max items-center md:group-hover:[animation-play-state:paused]'
+							className='flex w-max items-center [&:active]:[animation-play-state:paused] md:group-hover:[animation-play-state:paused]'
 							style={{
 								animation: duration > 0
 									? `marquee-scroll ${duration}s linear infinite`
 									: 'none',
+								touchAction: 'pan-y',
 							}}
 						>
 							<LogoPass />
 							<LogoPass ariaHidden />
 						</div>
-					</div>
-
-					{/* Mobile snap-scroll (<sm). Each logo is its own snap-start
-					 * container at proper heightClass so brand recognition holds.
-					 * Right-edge gradient fade signals "more →" without arrows.
-					 * Touch-scroll is native; no JS animation budget. */}
-					<div
-						className='relative w-full sm:hidden'
-						aria-label='Companies using CloserCoach'
-					>
-						<div className='flex snap-x snap-mandatory items-center gap-9 overflow-x-auto px-2 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'>
-							{LOGOS.map((logo) => (
-								<div
-									key={`mob-${logo.name}`}
-									className='inline-flex shrink-0 snap-start select-none items-center'
-									aria-label={logo.name}
-								>
-									<Image
-										src={logo.file}
-										alt={logo.name}
-										width={logo.width}
-										height={logo.height}
-										className={`${logo.heightClass} w-auto object-contain`}
-										loading='lazy'
-									/>
-								</div>
-							))}
-						</div>
-						<div
-							className='pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-cc-warm to-transparent'
-							aria-hidden='true'
-						/>
 					</div>
 				</div>
 			</div>

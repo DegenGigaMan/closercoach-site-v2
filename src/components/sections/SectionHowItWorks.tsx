@@ -115,7 +115,7 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 			 * Step 4 kicker post-rename (Review→Win). Swapped closer to
 			 * 'Compound.' so the opener ends on the cycle frame (compound
 			 * interest of skill) without pre-calling Step 4. */}
-			<div className="mx-auto max-w-7xl px-6 pt-24 pb-40 text-center md:px-12 lg:px-24 lg:pt-32 lg:pb-56">
+			<div className="mx-auto max-w-7xl px-6 pt-24 pb-20 text-center md:px-12 md:pb-40 lg:px-24 lg:pt-32 lg:pb-56">
 				<p className="font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.2em] text-cc-accent">
 					HOW IT WORKS
 				</p>
