@@ -110,7 +110,7 @@ export default function SectionSocialProof() {
 		<section
 			id='social-proof'
 			data-surface='warm'
-			className='relative bg-cc-warm py-14 md:py-16'
+			className='relative overflow-hidden bg-cc-warm py-14 md:py-16'
 		>
 			{/* Top transition: soft fade from dark S1 */}
 			<div

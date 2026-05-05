@@ -434,7 +434,7 @@ function ReviewCard({ title, quote, reviewer, date }: Review): ReactElement {
  */
 export default function SectionResults(): ReactElement {
 	return (
-		<section id='results' data-surface='warm' className='relative bg-cc-warm'>
+		<section id='results' data-surface='warm' className='relative overflow-hidden bg-cc-warm'>
 			{/* ── Billboard top: floating proof composition per Figma 81:4377 ──
 			 * Reworked 2026-04-27 (Wave P): replaces hub-spoke composition with
 			 * 6 designed proof components orbiting the centered headline:

@@ -19,15 +19,8 @@ import type { NextConfig } from 'next'
  * Security headers (2026-05-01):
  *   - X-Frame-Options, X-Content-Type-Options, Referrer-Policy,
  *     Permissions-Policy applied to every route.
- *
- * Turbopack:
- *   - root: __dirname silences the multi-lockfile workspace-root warning.
  */
 const nextConfig: NextConfig = {
-	turbopack: {
-		root: __dirname,
-	},
-
 	compress: true,
 	poweredByHeader: false,
 	productionBrowserSourceMaps: false,
@@ -43,7 +36,6 @@ const nextConfig: NextConfig = {
 	experimental: {
 		optimizePackageImports: [
 			'@phosphor-icons/react',
-			'lucide-react',
 			'motion',
 			'simple-icons',
 			'@number-flow/react',

@@ -153,9 +153,17 @@
 	}
 	body {
 		@apply bg-cc-foundation text-cc-text-primary;
+		/* H-20 (2026-05-04): prevent any rogue child width from leaking
+		 * horizontal scroll on the page. Belt-and-suspenders: individual
+		 * sections (Results, SocialProof, ProofConnectorA) also got
+		 * overflow-hidden, but body is the final guard. */
+		overflow-x: hidden;
 	}
 	html {
 		@apply font-sans;
+		/* Same guard as body — Safari iOS sometimes treats overflow-x
+		 * on body alone as a no-op when html doesn't also clamp. */
+		overflow-x: hidden;
 		/* Default; set dynamically by AnnouncementBanner when visible. */
 		--cc-banner-h: 0px;
 	}
