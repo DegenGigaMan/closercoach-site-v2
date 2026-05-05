@@ -12,7 +12,7 @@
 
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence, LayoutGroup, useReducedMotion } from 'motion/react'
 import Image from 'next/image'
 import { TypeAnimation } from 'react-type-animation'
@@ -145,159 +145,260 @@ function TrainState() {
 	const [subState, setSubState] = useState<'input' | 'processing' | 'ready'>('input')
 
 	useEffect(() => {
-		// Sub-state 1A: URL input visible, typing happens
-		// After typing completes (~1.8s), transition to processing
-		const t1 = setTimeout(() => setSubState('processing'), 1800)
+		// Sub-state 1A: browser preview + copy tooltip visible for 2.2s
+		const t1 = setTimeout(() => setSubState('processing'), 2200)
 		// Sub-state 1B: Processing plays for ~2.2s, then result
-		const t2 = setTimeout(() => setSubState('ready'), 4000)
+		const t2 = setTimeout(() => setSubState('ready'), 4400)
 		return () => { clearTimeout(t1); clearTimeout(t2) }
 	}, [])
 
 	return (
 		<div className="flex h-full flex-col px-4 pb-4 pt-1">
-			{/* Heading — Inter Medium 20px (override the global serif h2 rule) */}
-			<h2 className="mb-[23px] text-center font-sans text-[20px] font-medium text-white">
-				What do you sell?
-			</h2>
 
-			{/* URL Input Card — L1 recipe with dual shadow */}
-			<div className={`rounded-2xl border border-white/[0.14] bg-cc-surface-card p-3 ${CARD_SHADOW}`}>
-				<div className="text-[12px] text-white/50">Link to your website</div>
-				<div className="mt-2 flex items-center gap-2">
-					<Globe size={12} weight="bold" className="shrink-0 text-cc-accent" />
-					<div className="flex-1 font-[family-name:var(--font-mono)] text-[11px] text-[#D3DFF0]">
-						<TypeAnimation
-							sequence={['', 300, 'yoursite.com/product', 800]}
-							speed={55}
-							cursor={true}
-							repeat={0}
-						/>
+			{/* Single AnimatePresence — mode="wait" ensures only one frame is
+			    ever mounted. No split-screen during transitions. */}
+			<AnimatePresence mode="wait">
+			{subState === 'input' && (
+				<motion.div
+					key="input-frame"
+					className="flex h-full flex-col gap-0"
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0, y: -10 }}
+					transition={{ duration: 0.3 }}
+				>
+					{/* ── Webpage preview card (no chrome bar) ── */}
+					<div className="mb-0 overflow-hidden rounded-xl border border-white/[0.10] bg-[#18191F]">
+						{/* Placeholder text lines */}
+						<div className="px-3 pt-3">
+							<div className="mb-1.5 h-[9px] w-[55%] rounded-sm bg-white/[0.18]" />
+							<div className="mb-2.5 h-[7px] w-[75%] rounded-sm bg-white/[0.10]" />
+						</div>
+						{/* Image placeholder */}
+						<div className="mx-3 mb-3 flex h-[70px] items-center justify-center rounded-lg bg-white/[0.07]">
+							<svg width="22" height="22" viewBox="0 0 24 24" fill="none" opacity="0.35">
+								<rect x="3" y="3" width="18" height="18" rx="2" stroke="white" strokeWidth="1.5"/>
+								<circle cx="8.5" cy="8.5" r="1.5" stroke="white" strokeWidth="1.5"/>
+								<path d="M21 15l-5-5L5 21" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+							</svg>
+						</div>
 					</div>
-					<span className="text-[9px] font-medium text-cc-accent">Paste</span>
-				</div>
-			</div>
 
-			{/* Status block: enters with processing, stays through ready (progress bar + label persist) */}
-			{subState !== 'input' && (
-				<div className="mt-5 px-1">
-					{/* Status text: morphs in place between processing and ready */}
-					<AnimatePresence mode="wait">
-						{subState === 'processing' && (
-							<motion.div
-								key="learning-text"
-								className="mb-3 text-center text-[10px] text-cc-accent/[0.85]"
-								initial={{ opacity: 0, y: 3 }}
-								animate={{ opacity: 1, y: 0 }}
-								exit={{ opacity: 0, y: -3 }}
-								transition={{ duration: 0.25 }}
-							>
-								Learning your business...
-							</motion.div>
-						)}
-						{subState === 'ready' && (
-							<motion.div
-								key="ready-text"
-								className="mb-3 text-center text-[14px] text-cc-mint"
-								initial={{ opacity: 0, y: 3 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ duration: 0.25 }}
-							>
-								AI Clone Ready!
-							</motion.div>
-						)}
-					</AnimatePresence>
-
-					{/* Progress bar — persistent. Color shifts from working green → victory mint at ready */}
-					<div className="h-[6px] w-full overflow-hidden rounded-full bg-white/[0.05]">
+					{/* ── iOS Safari URL-copy overlay ── */}
+					<div className="relative">
+						{/* Copy tooltip — sits above the URL bar, centered */}
 						<motion.div
-							className="h-full rounded-full"
-							initial={{ width: '0%' }}
-							animate={{
-								width: subState === 'ready' ? '100%' : '30%',
-								backgroundColor: subState === 'ready' ? '#34E18E' : '#10B981',
-							}}
-							transition={{ duration: subState === 'ready' ? 1.0 : 4, ease: 'easeOut' }}
-						/>
-					</div>
-				</div>
-			)}
-
-			{/* Checklist: only visible during processing. 70% group opacity, slate-400 text. */}
-			<AnimatePresence>
-				{subState === 'processing' && (
-					<motion.div
-						key="checklist"
-						className="mt-4 flex flex-col gap-3 px-1 opacity-70"
-						initial={{ opacity: 0, y: 8 }}
-						animate={{ opacity: 0.7, y: 0 }}
-						exit={{ opacity: 0, y: -8 }}
-						transition={{ duration: 0.6 }}
-					>
-						{CHECKLIST_ITEMS.map((item, i) => (
-							<motion.div
-								key={item}
-								className="flex items-center gap-2"
-								initial={{ opacity: 0, x: -8 }}
-								animate={{ opacity: 1, x: 0 }}
-								transition={{ duration: 0.4, delay: 0.4 + i * 0.5 }}
-							>
-								<motion.div
-									initial={{ scale: 0 }}
-									animate={{ scale: 1 }}
-									transition={{ duration: 0.3, delay: 0.7 + i * 0.5 }}
-								>
-									<Check size={12} weight="bold" className="text-cc-accent" />
-								</motion.div>
-								<span className="text-[10px] text-[#94A3B8]">{item}</span>
-							</motion.div>
-						))}
-					</motion.div>
-				)}
-			</AnimatePresence>
-
-			{/* Prospect Card + Continue: only visible in ready state. Pinned to bottom of body. */}
-			<AnimatePresence>
-				{subState === 'ready' && (
-					<motion.div
-						key="result"
-						className="mt-auto flex flex-col gap-3"
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						transition={{ duration: 0.3, delay: 0.3 }}
-					>
-						<motion.div
-							className={`rounded-2xl border border-white/[0.14] bg-cc-surface-card p-3 ${CARD_SHADOW}`}
-							initial={{ opacity: 0, y: 20 }}
+							className="absolute -top-7 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center"
+							initial={{ opacity: 0, y: 4 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.8, delay: 0.8, ease: 'easeOut' }}
+							transition={{ delay: 0.4, duration: 0.25 }}
 						>
-							<div className="flex items-center gap-3">
-								<motion.div layoutId="prospect-avatar" className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full ring-1 ring-white/15">
-									<Image src={CAMIL_IMG} alt="Camil Reese" fill className="object-cover" sizes="40px" />
-								</motion.div>
-								<div>
-									<motion.div layoutId="prospect-name" className="text-[12px] font-semibold text-white">Camil Reese</motion.div>
-									<div className="text-[10px] text-white/50">Finance Director @ Oracle</div>
-								</div>
+							<div className="rounded-md bg-cc-accent px-3 py-[5px] text-[10px] font-semibold text-black shadow-md">
+								Copy
 							</div>
-							<div className="mt-3">
-								<span className="inline-flex items-center gap-1 rounded-full border border-cc-amber/10 bg-cc-amber/10 px-1.5 py-0.5 text-[8px] font-medium text-cc-amber">
-									<WarningOctagon size={8} weight="fill" />
-									Skeptical
-								</span>
-							</div>
-							<p className="mt-3 text-[16px] font-light leading-snug text-white">
-								&ldquo;How can I justify spending this much right now?&rdquo;
-							</p>
+							{/* Triangle pointer */}
+							<div className="h-0 w-0 border-x-[5px] border-t-[5px] border-x-transparent border-t-cc-accent" />
 						</motion.div>
 
+						{/* URL bar — dark pill with I-beam cursors either side */}
+						<div className="flex items-center gap-1.5 bg-[#1C1C1E] px-3 py-[9px]">
+							{/* Left I-beam */}
+							<svg width="7" height="16" viewBox="0 0 7 16" fill="none" className="shrink-0">
+								<path d="M1 0h5M3.5 0v16M1 16h5" stroke="#4A9EFF" strokeWidth="1.4" strokeLinecap="round"/>
+								<circle cx="3.5" cy="15.5" r="2" fill="#4A9EFF"/>
+							</svg>
+							<span className="flex-1 text-center text-[11px] font-medium text-white">yoursite.com/product</span>
+							{/* Right I-beam */}
+							<svg width="7" height="16" viewBox="0 0 7 16" fill="none" className="shrink-0">
+								<path d="M1 0h5M3.5 0v16M1 16h5" stroke="#4A9EFF" strokeWidth="1.4" strokeLinecap="round"/>
+								<circle cx="3.5" cy="15.5" r="2" fill="#4A9EFF"/>
+							</svg>
+						</div>
+
+						{/* Browser nav row */}
+						<div className="flex items-center justify-around bg-[#1C1C1E] px-4 pb-2 pt-1">
+							{/* Back */}
+							<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeOpacity="0.5"/></svg>
+							{/* Forward */}
+							<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeOpacity="0.25"/></svg>
+							{/* Share */}
+							<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M8 12V20h8v-8M12 3v10M9 6l3-3 3 3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.5"/></svg>
+							{/* Bookmarks */}
+							<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M4 4h16v16H4V4zM8 8h8M8 12h5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeOpacity="0.5"/></svg>
+							{/* Tabs */}
+							<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="white" strokeWidth="1.8" strokeOpacity="0.5"/><path d="M8 10h8M8 14h5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeOpacity="0.5"/></svg>
+						</div>
+
+						{/* Bottom handle */}
+						<div className="flex justify-center bg-[#1C1C1E] pb-2">
+							<div className="h-1 w-24 rounded-full bg-white/20" />
+						</div>
+					</div>
+
+					{/* ── App content ── */}
+					<div className="flex flex-1 flex-col px-1 pt-4">
+						<h2 className="mb-2 text-center font-sans text-[20px] font-bold text-white">
+							What do you sell?
+						</h2>
+						<p className="mb-4 text-center text-[10px] leading-relaxed text-white/50">
+							Our AI will research your business to build avatars and role play scenarios for you to practice against.
+						</p>
+
+						{/* URL input */}
+						<div className="mb-4 rounded-2xl border border-white/[0.12] bg-[#1E2130] px-4 py-3">
+							<div className="flex items-center justify-between">
+								<span className="text-[12px] text-white/30">Link to your website</span>
+								<span className="text-[11px] font-semibold text-cc-accent">Paste</span>
+							</div>
+						</div>
+
+						{/* Continue */}
+						<div className="mt-auto rounded-full bg-cc-mint py-3 text-center text-[14px] font-bold text-black">
+							Continue →
+						</div>
+					</div>
+				</motion.div>
+			)}
+
+			{subState === 'processing' && (
+					<motion.div
+						key="processing-frame"
+						className="flex h-full flex-col px-2 pt-2"
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -10 }}
+						transition={{ duration: 0.35 }}
+					>
+						{/* Big heading */}
+						<h2 className="mb-8 text-center font-sans text-[22px] font-bold leading-tight text-white">
+							Creating Your AI Customers
+						</h2>
+
+						{/* Status label */}
+						<p className="mb-2 text-center text-[14px] font-semibold text-cc-accent">
+							Learning your business...
+						</p>
+
+						{/* Progress bar */}
+						<div className="mx-auto mb-8 h-[5px] w-full overflow-hidden rounded-full bg-white/[0.08]">
+							<motion.div
+								className="h-full rounded-full bg-cc-accent"
+								initial={{ width: '0%' }}
+								animate={{ width: '65%' }}
+								transition={{ duration: 2.0, ease: 'easeOut' }}
+							/>
+						</div>
+
+						{/* Pill checklist */}
+						<div className="flex flex-col gap-3">
+							{([
+								{ icon: <Users size={16} weight="duotone" className="text-cc-accent" />, label: 'Analyzing Ideal Customer Profile' },
+								{ icon: <Timer size={16} weight="duotone" className="text-cc-accent" />, label: 'Designing AI Characters' },
+								{ icon: <Users size={16} weight="duotone" className="text-cc-accent" />, label: 'Configuring Realistic Voices' },
+								{ icon: <Users size={16} weight="duotone" className="text-cc-accent" />, label: 'Setting up Buyer Behaviour' },
+							] as { icon: React.ReactNode; label: string }[]).map(({ icon, label }, i) => (
+								<motion.div
+									key={label}
+									className="flex items-center gap-3 rounded-full bg-white/[0.06] px-4 py-3"
+									initial={{ opacity: 0, y: 8 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ duration: 0.4, delay: 0.15 + i * 0.18 }}
+								>
+									{icon}
+									<span className="text-[12px] font-medium text-white/80">{label}</span>
+								</motion.div>
+							))}
+						</div>
+					</motion.div>
+				)}
+			{subState === 'ready' && (
+					<motion.div
+						key="ready-frame"
+						className="flex h-full flex-col"
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0 }}
+						transition={{ duration: 0.35 }}
+					>
+						{/* Heading */}
+						<h2 className="mb-5 px-2 text-center font-sans text-[22px] font-bold leading-tight text-white">
+							3 Prospects to start training against.
+						</h2>
+
+						{/* "AI Customers Ready!" + full progress bar */}
+						<p className="mb-2 text-center text-[14px] font-semibold text-cc-accent">
+							AI Customers Ready!
+						</p>
+						<div className="mx-2 mb-5 h-[5px] overflow-hidden rounded-full bg-white/[0.08]">
+							<motion.div
+								className="h-full rounded-full bg-cc-accent"
+								initial={{ width: '65%' }}
+								animate={{ width: '100%' }}
+								transition={{ duration: 0.8, ease: 'easeOut' }}
+							/>
+						</div>
+
+						{/* Prospect carousel — center card fully visible, flanked by partial cards */}
+						<div className="relative mb-5 flex-1 overflow-hidden">
+							<div className="flex h-full items-stretch gap-3" style={{ marginLeft: '-22%', marginRight: '-22%' }}>
+								{/* Left card — dimmed, partial */}
+								<div className="relative w-full flex-shrink-0 overflow-hidden rounded-2xl opacity-40" style={{ filter: 'blur(1px)' }}>
+									<Image src={CAMIL_IMG} alt="" fill className="object-cover object-top" sizes="200px" />
+									<div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+									<div className="absolute bottom-0 left-0 right-0 p-3">
+										<p className="text-[11px] font-bold text-white">Ca...</p>
+										<p className="text-[9px] text-white/60">Fina...</p>
+									</div>
+								</div>
+
+								{/* Center card — active, emerald ring */}
+								<motion.div
+									className="relative w-full flex-shrink-0 overflow-hidden rounded-2xl ring-2 ring-cc-accent"
+									initial={{ opacity: 0, scale: 0.95 }}
+									animate={{ opacity: 1, scale: 1 }}
+									transition={{ duration: 0.5, delay: 0.2 }}
+								>
+									<Image src={CAMIL_IMG} alt="Camil Reese" fill className="object-cover object-top" sizes="300px" />
+									{/* Gradient overlay */}
+									<div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+									{/* Info */}
+									<div className="absolute bottom-0 left-0 right-0 p-4">
+										<p className="text-[14px] font-bold text-white">Camil Reese</p>
+										<p className="mb-2 text-[11px] text-white/60">Finance Director @ Oracle</p>
+										<span className="inline-flex items-center gap-1 rounded-full border border-cc-amber/20 bg-cc-amber/15 px-2 py-0.5 text-[9px] font-semibold text-cc-amber">
+											<WarningOctagon size={9} weight="fill" />
+											Skeptical
+										</span>
+										<p className="mt-2 text-[13px] font-light leading-snug text-white">
+											&ldquo;How can I justify spending this much right now?&rdquo;
+										</p>
+									</div>
+								</motion.div>
+
+								{/* Right card — dimmed, partial */}
+								<div className="relative w-full flex-shrink-0 overflow-hidden rounded-2xl opacity-40" style={{ filter: 'blur(1px)' }}>
+									<Image src={CAMIL_IMG} alt="" fill className="object-cover object-top" sizes="200px" />
+									<div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+									<div className="absolute bottom-0 left-0 right-0 p-3">
+										<p className="text-[11px] font-bold text-white">Ca...</p>
+										<p className="text-[9px] text-white/60">Fina...</p>
+										<div className="mt-1 flex h-4 w-4 items-center justify-center rounded-full border border-cc-amber/20 bg-cc-amber/15">
+											<WarningOctagon size={7} weight="fill" className="text-cc-amber" />
+										</div>
+										<p className="mt-1 text-[9px] text-white/70">&ldquo;H...</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						{/* CTA */}
 						<motion.div
-							className="flex items-center justify-center rounded-full bg-cc-mint py-2.5"
+							className="mx-0 rounded-full bg-cc-mint py-3 text-center text-[14px] font-bold text-black"
 							initial={{ opacity: 0, y: 8 }}
 							animate={{ opacity: 1, y: 0 }}
-							transition={{ delay: 1.4, duration: 0.6 }}
+							transition={{ delay: 0.6, duration: 0.4 }}
 						>
-							<span className="text-[14px] font-semibold text-black">Continue →</span>
+							Call Camil →
 						</motion.div>
 					</motion.div>
 				)}
