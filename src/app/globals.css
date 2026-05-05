@@ -181,12 +181,18 @@
 		scroll-margin-top: 100px;
 	}
 
-	/* H-05 (2026-05-04): kill the white flash on the Calendly iframe before
-	 * Calendly's dark theme loads. react-calendly attaches .calendly-inline-widget
-	 * to the wrapping div; force its iframe child to render on cc-foundation. */
+	/* H-05 v2 (2026-05-05): kill the white flash AND the white wrapper card
+	 * around the Calendly iframe. The InlineWidget renders an outer
+	 * `.calendly-inline-widget` div + an inner `iframe`; both can render
+	 * white before Calendly's dark theme paints. Force every layer dark with
+	 * `background` shorthand so any inline `background-color: white` from
+	 * react-calendly's defaults gets shadowed. */
 	.calendly-inline-widget,
+	.calendly-inline-widget > *,
 	.calendly-inline-widget iframe {
+		background: #0d0f14 !important;
 		background-color: #0d0f14 !important;
+		color-scheme: dark !important;
 	}
 }
 

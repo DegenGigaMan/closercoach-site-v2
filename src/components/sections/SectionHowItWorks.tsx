@@ -256,16 +256,19 @@ function RightColumnVisual({
 	 * swaps via AnimatePresence on activeStep. F39 hydration safety: stable
 	 * initials on motion.div; reduced-motion collapses duration to 0.
 	 *
-	 * H-25 (2026-05-04): mode swapped from "popLayout" → "wait" — popLayout
-	 * forces measurement passes that thrash layout for everything pinned in
-	 * the column on every step change. "wait" cross-fades cleanly without
-	 * measuring.
+	 * H-25 REVERT (2026-05-05): mode="wait" broke the sticky pinning of the
+	 * S3 right column on desktop — during the wait gap the absolutely-sized
+	 * inner content unmounts before the next mounts, causing the StepCanvas
+	 * to collapse for a frame and breaking the parent grid's row height
+	 * which the sticky positioning depends on. Reverted to mode="popLayout"
+	 * which keeps the outgoing element in flow (position: absolute) during
+	 * the cross-fade so layout stays stable.
 	 *
 	 * H-19 (2026-05-04): step1InView is forwarded to PlanVisual so its phase
 	 * chain only starts when StepRoom 1 is actually in viewport. */
 	return (
 		<StepCanvas>
-			<AnimatePresence mode="wait" initial={false}>
+			<AnimatePresence mode="popLayout" initial={false}>
 				<motion.div
 					key={activeStep}
 					initial={{ opacity: 0, y: 16 }}

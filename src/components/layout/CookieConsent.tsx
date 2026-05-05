@@ -134,9 +134,12 @@ export default function CookieConsent() {
 				</button>
 			</div>
 
-			{/* Desktop banner (md+) */}
-			<div className='mx-auto hidden max-w-xl items-center justify-between gap-4 rounded-xl border border-cc-surface-border bg-cc-surface/95 px-5 py-3.5 shadow-2xl backdrop-blur-md md:flex'>
-				<p className='text-sm text-cc-text-secondary'>
+			{/* Desktop banner (md+). H-07-FIX (2026-05-05): bumped max-width
+			 * xl→2xl and added whitespace-nowrap on the copy so the full
+			 * "We use cookies to improve your experience. Learn more" line
+			 * + Decline + Accept buttons all sit on a single row at md+. */}
+			<div className='mx-auto hidden max-w-2xl items-center justify-between gap-4 rounded-xl border border-cc-surface-border bg-cc-surface/95 px-5 py-3.5 shadow-2xl backdrop-blur-md md:flex'>
+				<p className='whitespace-nowrap text-sm text-cc-text-secondary'>
 					We use cookies to improve your experience.{' '}
 					<Link
 						href='/cookie-policy'
