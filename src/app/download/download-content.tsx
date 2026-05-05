@@ -96,7 +96,7 @@ export default function DownloadContent() {
 					aria-label='CloserCoach home'
 				>
 					{/* eslint-disable-next-line @next/next/no-img-element */}
-					<img src='/cc-logo.svg' alt={BRAND.name} width={117} height={24} className='h-8 w-auto md:h-10' />
+					<img src='/cc-logo.png' alt={BRAND.name} width={117} height={24} className='h-8 w-auto md:h-10' />
 				</Link>
 
 				{/* Headline */}

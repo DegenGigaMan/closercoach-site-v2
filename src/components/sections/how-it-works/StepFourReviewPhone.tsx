@@ -49,10 +49,10 @@ import Image from 'next/image'
 import MotionCTA from '@/components/shared/motion-cta'
 import { CTA, SCORING_DATA } from '@/lib/constants'
 
-/* Use the cleaned 24KB wordmark at /cc-logo.svg instead of the 1.5MB Figma
+/* Use the cleaned 24KB wordmark at /cc-logo.png instead of the 1.5MB Figma
  * export under /images/closercoach-logo.svg — identical paths, no embedded
  * raster bloat. Saves ~1.5MB per render. */
-const CC_LOGO = '/cc-logo.svg'
+const CC_LOGO = '/cc-logo.png'
 
 type Example = {
 	title: string

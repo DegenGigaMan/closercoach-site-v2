@@ -101,7 +101,7 @@ export default function HireBetterFasterVisual(): ReactElement {
 								}}
 							>
 								<Image
-									src='/images/cc-logomark-figma.png'
+									src='/images/cc-logomark.png'
 									alt=''
 									width={11}
 									height={11}

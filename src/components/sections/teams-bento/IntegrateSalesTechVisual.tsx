@@ -95,7 +95,7 @@ export default function IntegrateSalesTechVisual(): ReactElement {
 					}}
 				>
 					<Image
-						src='/images/cc-logomark-figma.png'
+						src='/images/cc-logomark.png'
 						alt='CloserCoach AI hub'
 						width={32}
 						height={32}

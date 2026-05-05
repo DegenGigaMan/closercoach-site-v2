@@ -95,7 +95,7 @@ export default function EnforceScriptingVisual(): ReactElement {
 					}}
 				>
 					<Image
-						src='/images/cc-logomark-figma.png'
+						src='/images/cc-logomark.png'
 						alt=''
 						width={24}
 						height={24}

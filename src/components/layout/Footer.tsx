@@ -48,7 +48,7 @@ export default function Footer() {
 				<div className='mx-auto max-w-7xl px-6 py-10'>
 					<div className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
 						{/* eslint-disable-next-line @next/next/no-img-element */}
-						<img src='/cc-logo.svg' alt={BRAND.name} width={117} height={24} className='h-8 w-auto md:h-10' />
+						<img src='/cc-logo.png' alt={BRAND.name} width={117} height={24} className='h-8 w-auto md:h-10' />
 						<ul className='flex flex-wrap gap-x-6 gap-y-2'>
 							{FOOTER_LINKS.legal.map((link) => (
 								<li key={link.href}>
@@ -76,7 +76,7 @@ export default function Footer() {
 				{/* Wordmark + tagline */}
 				<div className='mb-12'>
 					{/* eslint-disable-next-line @next/next/no-img-element */}
-					<img src='/cc-logo.svg' alt={BRAND.name} width={117} height={24} className='h-8 w-auto md:h-10' />
+					<img src='/cc-logo.png' alt={BRAND.name} width={117} height={24} className='h-8 w-auto md:h-10' />
 					<p className='mt-3 text-sm text-cc-text-secondary'>{BRAND.tagline}</p>
 				</div>
 

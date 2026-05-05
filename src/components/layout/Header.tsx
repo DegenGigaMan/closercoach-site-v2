@@ -52,7 +52,7 @@ export default function Header() {
 					{/* Wordmark */}
 					<Link href="/" className="flex items-center" aria-label={BRAND.name}>
 						{/* eslint-disable-next-line @next/next/no-img-element */}
-						<img src="/cc-logo.svg" alt={BRAND.name} width={117} height={24} className="h-6 w-auto md:h-8" />
+						<img src="/cc-logo.png" alt={BRAND.name} width={117} height={24} className="h-6 w-auto md:h-8" />
 					</Link>
 
 					{/* Desktop nav */}
