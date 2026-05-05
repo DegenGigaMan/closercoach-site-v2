@@ -158,18 +158,25 @@ function PhoneMockup() {
 					<div className='h-[22px] w-[100px] rounded-full bg-black' />
 				</div>
 
-				{/* Main column — Figma main: pt-24 px-16 pb-16 gap-16. */}
-				<div className='relative flex flex-1 flex-col items-center gap-4 px-4 pb-4 pt-6'>
-					<div className='flex w-full flex-col items-center gap-10 overflow-hidden'>
-						{/* Score block */}
-						<div className='flex flex-col items-center gap-3'>
+				{/* Main column. Three explicit spacing tiers (Andy 2026-05-05):
+				 *   1. Tight (within an element): score → 'Needs work' = 4px
+				 *   2. Moderate (within a group): title → subtitle = 15px,
+				 *      said → should = 24px, score-block → title-block = 32px
+				 *   3. Large (between groups): header → chat = 40px, chat →
+				 *      Practice = 48px
+				 * Uniform gap-10 in the prior version flattened the hierarchy. */}
+				<div className='relative flex flex-1 flex-col items-center px-4 pb-4 pt-4'>
+					{/* Header group: score block + title block. */}
+					<div className='flex w-full flex-col items-center gap-8 overflow-hidden'>
+						{/* Score block — ring tight to verdict label. */}
+						<div className='flex flex-col items-center gap-1'>
 							<ScoreRing score={PHONE_COPY.score} max={PHONE_COPY.max} />
 							<span className='font-sans text-[16px] font-semibold leading-normal text-[#E11D48]'>
 								{PHONE_COPY.verdict}
 							</span>
 						</div>
 
-						{/* Title block */}
+						{/* Title block — heading + subtitle. */}
 						<div className='flex w-full flex-col items-center gap-[15px] text-center'>
 							<h4 className='whitespace-nowrap font-sans text-[28px] font-semibold leading-normal tracking-tight text-white'>
 								{PHONE_COPY.title}
@@ -178,20 +185,24 @@ function PhoneMockup() {
 								{PHONE_COPY.subtitle}
 							</p>
 						</div>
+					</div>
 
-						{/* Said / Should chat pair */}
-						<div className='flex w-full flex-col gap-6'>
-							<SaidBubble body={PHONE_COPY.said} />
-							<ShouldBubble body={PHONE_COPY.shouldHaveSaid} />
-						</div>
+					{/* Chat group — Said + Should bubbles. mt-10 separates from
+					 * the header group as a distinct block. */}
+					<div className='mt-10 flex w-full flex-col gap-6 overflow-hidden'>
+						<SaidBubble body={PHONE_COPY.said} />
+						<ShouldBubble body={PHONE_COPY.shouldHaveSaid} />
 					</div>
 
 					{/* Practice Again button. Display only — phone mockup, not
-					 * an interactive surface. */}
+					 * an interactive surface. mt-12 separates from chat group as
+					 * a distinct block (Figma has gap-16 in main but Andy's
+					 * reference image shows the button breathing further from
+					 * the chat). */}
 					<div
 						role='img'
 						aria-label='Practice Again button'
-						className='flex h-12 w-full items-center justify-center gap-2.5 rounded-[27px] border border-white/20 pl-6 pr-[30px] font-sans text-[16px] font-medium text-white'
+						className='mt-12 flex h-12 w-full items-center justify-center gap-2.5 rounded-[27px] border border-white/20 pl-6 pr-[30px] font-sans text-[16px] font-medium text-white'
 					>
 						<ArrowsCounterClockwise size={16} weight='regular' aria-hidden='true' />
 						<span>Practice Again</span>
