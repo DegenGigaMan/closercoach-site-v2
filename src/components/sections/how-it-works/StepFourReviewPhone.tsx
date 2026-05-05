@@ -88,16 +88,13 @@ export default function StepFourReviewPhone() {
 				</h3>
 			</div>
 
-			{/* Phone mockup. Outer wrapper reserves layout space for the scaled
-			 * phone on desktop so the section subhead below flows correctly.
-			 * Mobile: phone renders at 306×~720 native. Desktop: scales 1.5×
-			 * to ~459×1080 visual. */}
+			{/* Phone mockup. Renders at native 340×~723 across all viewports
+			 * so it fits within typical 900-1080px desktop viewport heights
+			 * (Andy 2026-05-05: prior 1.5× scale at 510×1140 was taller than
+			 * the viewport on most desktop displays). Aspect ratio preserved
+			 * — sizing is uniformly native, not desktop-scaled. */}
 			<div className='mt-12 flex justify-center'>
-				<div className='relative w-[340px] origin-top lg:w-[510px] lg:[height:1140px]'>
-					<div className='left-0 top-0 origin-top-left lg:absolute lg:[transform:scale(1.5)]'>
-						<PhoneMockup />
-					</div>
-				</div>
+				<PhoneMockup />
 			</div>
 
 			{/* Subhead beneath the visual. */}
