@@ -171,20 +171,26 @@ function PhoneMockup() {
 					 * score block and title block. */}
 					<div className='flex w-full flex-col items-center gap-6 overflow-hidden'>
 						{/* Score block — Figma 166:612 gap-12 (gap-3) between
-						 * the ring and the 'Needs work' verdict. */}
+						 * the ring and the 'Needs work' verdict. text-trim
+						 * matches Figma's leading-[0] wrapper trick (cap-to-
+						 * baseline trim) so the gap-3 measures from glyph
+						 * edges, not line-box edges. */}
 						<div className='flex flex-col items-center gap-3'>
 							<ScoreRing score={PHONE_COPY.score} max={PHONE_COPY.max} />
-							<span className='font-sans text-[16px] font-semibold leading-normal text-[#E11D48]'>
+							<span className='text-trim font-sans text-[16px] font-semibold leading-normal text-[#E11D48]'>
 								{PHONE_COPY.verdict}
 							</span>
 						</div>
 
-						{/* Title block — heading + subtitle. */}
+						{/* Title block — heading + subtitle. text-trim on both
+						 * removes the browser's half-leading padding above/below
+						 * glyphs so the gap-15 between title and subtitle
+						 * matches Figma exactly. */}
 						<div className='flex w-full flex-col items-center gap-[15px] text-center'>
-							<h4 className='whitespace-nowrap font-sans text-[28px] font-semibold leading-normal tracking-tight text-white'>
+							<h4 className='text-trim whitespace-nowrap font-sans text-[28px] font-semibold leading-normal tracking-tight text-white'>
 								{PHONE_COPY.title}
 							</h4>
-							<p className='font-sans text-[14px] font-normal leading-[1.4] text-white/80'>
+							<p className='text-trim font-sans text-[14px] font-normal leading-[1.4] text-white/80'>
 								{PHONE_COPY.subtitle}
 							</p>
 						</div>
@@ -257,7 +263,7 @@ function ScoreRing({ score, max }: { score: number; max: number }) {
 				/>
 			</svg>
 			<span
-				className='relative font-sans text-[24px] font-semibold leading-normal'
+				className='text-trim relative font-sans text-[24px] font-semibold leading-normal'
 				style={{ color }}
 				aria-label={`Score ${score} out of ${max}`}
 			>
@@ -273,7 +279,7 @@ function SaidBubble({ body }: { body: string }) {
 	return (
 		<div className='flex w-full justify-end pl-8 pt-5'>
 			<div className='relative rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] border border-white/[0.06] bg-[#1E2230] p-3'>
-				<p className='font-sans text-[16px] font-normal leading-[1.4] text-white'>{body}</p>
+				<p className='text-trim font-sans text-[16px] font-normal leading-[1.4] text-white'>{body}</p>
 				<div className='absolute -left-2 -top-[23px] inline-flex items-center gap-1 rounded-full border border-white/[0.09] bg-[#1E2230] py-1.5 pl-1.5 pr-3 drop-shadow-[0_2px_2px_rgba(0,0,0,0.4)]'>
 					<XCircle
 						size={14}
@@ -281,7 +287,7 @@ function SaidBubble({ body }: { body: string }) {
 						style={{ color: '#FF6467' }}
 						aria-hidden='true'
 					/>
-					<span className='whitespace-nowrap font-sans text-[16px] font-medium leading-[1.2] text-[#FF6467]'>
+					<span className='text-trim whitespace-nowrap font-sans text-[16px] font-medium leading-[1.2] text-[#FF6467]'>
 						What you said
 					</span>
 				</div>
@@ -310,7 +316,7 @@ function ShouldBubble({ body }: { body: string }) {
 				/>
 			</div>
 			<div className='relative flex-1 rounded-tl-[12px] rounded-tr-[12px] rounded-br-[12px] border border-white/[0.06] bg-[#09F] p-3'>
-				<p className='font-sans text-[18px] font-normal leading-[1.4] text-white'>{body}</p>
+				<p className='text-trim font-sans text-[18px] font-normal leading-[1.4] text-white'>{body}</p>
 				<div className='absolute -left-2 -top-[21px] inline-flex items-center gap-1 rounded-full border border-white/[0.1] bg-[#1E2230] py-1.5 pl-1.5 pr-3 drop-shadow-[0_2px_2px_rgba(0,0,0,0.4)]'>
 					<Lightning
 						size={12}
@@ -318,7 +324,7 @@ function ShouldBubble({ body }: { body: string }) {
 						style={{ color: '#34E18E' }}
 						aria-hidden='true'
 					/>
-					<span className='whitespace-nowrap font-sans text-[16px] font-medium leading-[15px] text-[#34E18E]'>
+					<span className='text-trim whitespace-nowrap font-sans text-[16px] font-medium leading-[15px] text-[#34E18E]'>
 						What you should&rsquo;ve said
 					</span>
 				</div>
