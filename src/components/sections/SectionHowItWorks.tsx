@@ -213,6 +213,14 @@ function StepRoom({
 	const prefersReducedMotion = useReducedMotion()
 	const ref = useRef<HTMLDivElement>(null)
 	const isInView = useInView(ref, { amount: 0.4 })
+	/* H-19 v2 (2026-05-05): the PlanVisual / StepTwoVisual phase chains
+	 * should only kick off when the user is firmly on the step's content,
+	 * not when 40% of the step has merely entered viewport (which fires
+	 * while the user is still reading the section heading and leaves them
+	 * arriving at Step 1 mid-animation). 0.7 fires when the step's body
+	 * is centered in viewport. activeStep transitions still use the 0.4
+	 * threshold (above) so step labels swap promptly. */
+	const isFirmlyInView = useInView(ref, { amount: 0.7 })
 	const mounted = useMounted()
 
 	useEffect(() => {
@@ -220,8 +228,8 @@ function StepRoom({
 	}, [mounted, isInView, index, onEnter])
 
 	useEffect(() => {
-		if (mounted && onInViewChange) onInViewChange(isInView)
-	}, [mounted, isInView, onInViewChange])
+		if (mounted && onInViewChange) onInViewChange(isFirmlyInView)
+	}, [mounted, isFirmlyInView, onInViewChange])
 
 	return (
 		<motion.div
