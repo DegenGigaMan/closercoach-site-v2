@@ -166,10 +166,13 @@ function PhoneMockup() {
 				 *      Practice = 48px
 				 * Uniform gap-10 in the prior version flattened the hierarchy. */}
 				<div className='relative flex flex-1 flex-col items-center px-4 pb-4 pt-4'>
-					{/* Header group: score block + title block. */}
-					<div className='flex w-full flex-col items-center gap-8 overflow-hidden'>
-						{/* Score block — ring tight to verdict label. */}
-						<div className='flex flex-col items-center gap-1'>
+					{/* Header group: score block + title block. Spacing per
+					 * Figma node 166:611 exactly: outer gap-24 (gap-6) between
+					 * score block and title block. */}
+					<div className='flex w-full flex-col items-center gap-6 overflow-hidden'>
+						{/* Score block — Figma 166:612 gap-12 (gap-3) between
+						 * the ring and the 'Needs work' verdict. */}
+						<div className='flex flex-col items-center gap-3'>
 							<ScoreRing score={PHONE_COPY.score} max={PHONE_COPY.max} />
 							<span className='font-sans text-[16px] font-semibold leading-normal text-[#E11D48]'>
 								{PHONE_COPY.verdict}
