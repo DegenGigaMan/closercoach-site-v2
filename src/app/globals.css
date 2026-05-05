@@ -180,6 +180,14 @@
 	section[id] {
 		scroll-margin-top: 100px;
 	}
+
+	/* H-05 (2026-05-04): kill the white flash on the Calendly iframe before
+	 * Calendly's dark theme loads. react-calendly attaches .calendly-inline-widget
+	 * to the wrapping div; force its iframe child to render on cc-foundation. */
+	.calendly-inline-widget,
+	.calendly-inline-widget iframe {
+		background-color: #0d0f14 !important;
+	}
 }
 
 /* Typography scale -- VIS Section 2 (Lora Bold 700) */

@@ -257,10 +257,12 @@ export default function PricingContent() {
 							Less than a lunch. More reps closed.
 						</p>
 
-						{/* Billing toggle. Verified working 2026-05-01 LS-005 — `yearly`
-						 * state flips on click, all 3 tier cards derive prices from
-						 * `tier.getPrice(yearly)`. */}
-						<div className='mt-6 flex items-center gap-3'>
+						{/* Billing toggle. H-09 (2026-05-04): "Save 55%" badge is now
+						 * absolutely positioned to the right of "Yearly" so its
+						 * appearance on yearly-select doesn't shift the toggle row
+						 * leftward. Mobile keeps the badge but tucks it inline below
+						 * to avoid right-edge overflow at narrow viewports. */}
+						<div className='mt-6 flex items-center justify-center gap-3'>
 							<span className={`text-sm ${!yearly ? 'text-white' : 'text-cc-text-secondary'}`}>
 								Monthly
 							</span>
@@ -283,15 +285,26 @@ export default function PricingContent() {
 									className={`absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-white transition-transform ${yearly ? 'translate-x-5' : 'translate-x-0'}`}
 								/>
 							</button>
-							<span className={`text-sm ${yearly ? 'text-white' : 'text-cc-text-secondary'}`}>
-								Yearly
-							</span>
-							{yearly && (
-								<span className='rounded-full bg-cc-accent/10 px-2.5 py-0.5 text-xs font-medium text-cc-accent'>
+							<span className='relative'>
+								<span className={`text-sm ${yearly ? 'text-white' : 'text-cc-text-secondary'}`}>
+									Yearly
+								</span>
+								{/* Desktop: floating badge to the right of Yearly */}
+								<span
+									aria-hidden={!yearly}
+									className={`pointer-events-none absolute left-full top-1/2 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-full bg-cc-accent/10 px-2.5 py-0.5 text-xs font-medium text-cc-accent transition-opacity duration-200 sm:inline-block ${yearly ? 'opacity-100' : 'opacity-0'}`}
+								>
 									Save {PRICING.yearlySavingsPercent}%
 								</span>
-							)}
+							</span>
 						</div>
+						{/* Mobile: badge tucked below the toggle row, doesn't affect alignment */}
+						<span
+							aria-hidden={!yearly}
+							className={`mt-3 inline-block whitespace-nowrap rounded-full bg-cc-accent/10 px-2.5 py-0.5 text-xs font-medium text-cc-accent transition-opacity duration-200 sm:hidden ${yearly ? 'opacity-100' : 'opacity-0'}`}
+						>
+							Save {PRICING.yearlySavingsPercent}%
+						</span>
 					</ScrollReveal>
 				</div>
 			</section>
