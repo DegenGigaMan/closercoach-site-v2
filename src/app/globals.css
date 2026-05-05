@@ -153,17 +153,17 @@
 	}
 	body {
 		@apply bg-cc-foundation text-cc-text-primary;
-		/* H-20 (2026-05-04): prevent any rogue child width from leaking
-		 * horizontal scroll on the page. Belt-and-suspenders: individual
-		 * sections (Results, SocialProof, ProofConnectorA) also got
-		 * overflow-hidden, but body is the final guard. */
-		overflow-x: hidden;
+		/* H-20 (2026-05-04 → fixed 2026-05-05): use `overflow-x: clip` instead
+		 * of `overflow-x: hidden`. `hidden` creates a scroll container, which
+		 * makes `position: sticky` descendants stick to body instead of the
+		 * viewport — broke S3's sticky right-column pinning on desktop. `clip`
+		 * clips overflow at the same axis WITHOUT establishing a scroll
+		 * container, so sticky keeps working. */
+		overflow-x: clip;
 	}
 	html {
 		@apply font-sans;
-		/* Same guard as body — Safari iOS sometimes treats overflow-x
-		 * on body alone as a no-op when html doesn't also clamp. */
-		overflow-x: hidden;
+		overflow-x: clip;
 		/* Default; set dynamically by AnnouncementBanner when visible. */
 		--cc-banner-h: 0px;
 	}
