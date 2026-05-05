@@ -66,7 +66,7 @@ function resolveSiteUrl(): string {
 
 const SITE_URL = resolveSiteUrl()
 const SITE_NAME = 'CloserCoach'
-const SITE_TITLE = 'CloserCoach - AI Sales Coach for B2B Sales Reps'
+const SITE_TITLE = 'CloserCoach - AI Sales Coach for B2C Sales Reps'
 const SITE_DESCRIPTION =
 	'Practice before every meeting, record real calls, and get scored by AI. 20,000+ closers train with CloserCoach. Try free for 3 days.'
 
@@ -112,11 +112,11 @@ export const metadata: Metadata = {
 		locale: 'en_US',
 		images: [
 			{
-				url: '/og-image.png',
+				url: '/og-image.jpg',
 				width: 1200,
 				height: 630,
 				alt: 'CloserCoach - The AI Sales Coach That Lives in Your Pocket',
-				type: 'image/png',
+				type: 'image/jpeg',
 			},
 		],
 	},
@@ -124,7 +124,7 @@ export const metadata: Metadata = {
 		card: 'summary_large_image',
 		title: SITE_TITLE,
 		description: SITE_DESCRIPTION,
-		images: ['/og-image.png'],
+		images: ['/og-image.jpg'],
 		site: '@closercoach',
 		creator: '@closercoach',
 	},
@@ -198,7 +198,7 @@ const SOFTWARE_APP_LD = {
 	operatingSystem: 'iOS, Android',
 	applicationCategory: 'BusinessApplication',
 	description: SITE_DESCRIPTION,
-	image: `${SITE_URL}/og-image.png`,
+	image: `${SITE_URL}/og-image.jpg`,
 	url: SITE_URL,
 	offers: {
 		'@type': 'Offer',
@@ -236,7 +236,7 @@ export default function RootLayout({
 			className={`${lora.variable} ${geistMono.variable} ${inter.variable} ${plusJakarta.variable} h-full antialiased`}
 		>
 			<head>
-				<link rel='preload' href='/cc-logo.svg' as='image' type='image/svg+xml' />
+				<link rel='preload' href='/cc-logo.png' as='image' type='image/png' />
 				{/* DNS prefetch + preconnect for third-parties used above-the-fold or
 				 * shortly after — Calendly (book demo CTA), App Store/Play Store badge
 				 * destinations. preconnect opens the TCP+TLS handshake early. */}

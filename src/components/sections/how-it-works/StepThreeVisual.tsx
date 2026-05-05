@@ -58,7 +58,6 @@ import {
 	Phone as PhoneIcon,
 	Warning,
 } from '@phosphor-icons/react'
-import NumberFlow from '@number-flow/react'
 import { useSubStateMachine } from './_shared/use-sub-state-machine'
 /* CARD_SHADOW is intentionally NOT imported: the phone frame carries its own
  * deeper shadow recipe inline (the phone is a 3D object, not an L1 card). */
@@ -68,10 +67,9 @@ import {
 } from './_shared/step-visual-defaults'
 
 const SARAH_IMG = '/images/prospects/sarah-chen.png'
-/* Use the cleaned 24KB wordmark at /cc-logo.svg instead of the 1.5MB Figma
- * export under /images/closercoach-logo.svg — identical paths, no embedded
- * raster bloat. Saves ~1.5MB per render. */
-const CC_LOGO = '/cc-logo.svg'
+/* CC wordmark — points at the optimized 64KB PNG (was a 24KB SVG, swapped
+ * 2026-05-04). Same visual; PNG enables the new wordmark Andy provided. */
+const CC_LOGO = '/cc-logo.png'
 
 /* Sub-state timings (ms). Each value is the moment the state begins.
  *
@@ -393,7 +391,7 @@ function InterestMeter({ value = 98 }: { value?: number }) {
 	return (
 		<div className="flex flex-col items-center gap-0">
 			<div className="relative" style={{ width: 44, height: 24 }}>
-				<svg width="44" height="24" viewBox="0 0 44 24">
+				<svg width="44" height="24" viewBox="0 0 44 24" aria-hidden="true">
 					<defs>
 						<linearGradient id="s3-meter-grad" x1="0%" y1="0%" x2="100%" y2="0%">
 							<stop offset="0%" stopColor="#ef4444" />

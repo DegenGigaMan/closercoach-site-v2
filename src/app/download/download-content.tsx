@@ -96,7 +96,7 @@ export default function DownloadContent() {
 					aria-label='CloserCoach home'
 				>
 					{/* eslint-disable-next-line @next/next/no-img-element */}
-					<img src='/cc-logo.svg' alt={BRAND.name} width={117} height={24} className='h-8 w-auto md:h-10' />
+					<img src='/cc-logo.png' alt={BRAND.name} width={117} height={24} className='h-8 w-auto md:h-10' />
 				</Link>
 
 				{/* Headline */}
@@ -241,20 +241,30 @@ export default function DownloadContent() {
 						<ShieldCheck weight='regular' className='h-3.5 w-3.5' aria-hidden='true' />
 						<span className='font-mono uppercase tracking-wider'>GDPR</span>
 					</span>
-					<span className='text-xs text-cc-text-secondary'>
+					<a
+						href='https://hypepotamus.com/startup-news/prizepicks-alum-launches-closercoach-ai-sales-coaching-atlanta/'
+						target='_blank'
+						rel='noopener noreferrer'
+						className='text-xs text-cc-text-secondary underline-offset-4 transition-colors hover:text-white hover:underline'
+					>
 						Featured in Hypepotamus
-					</span>
+					</a>
 				</div>
 
-				{/* Wave K.2 (FIX-CC-02 P2, 2026-04-26): "60 second flow" mini-strip
-				 * supporting trust + clarity at md+ only. Mobile (<md) keeps the
-				 * dense single-column conversion path — auto-redirect to store
-				 * fires within 250ms there, so the strip would be invisible churn.
-				 * Desktop (md+) had ~700-1000px empty rails per S+ Visual Auditor;
-				 * this 3-card row carries the same UI vocabulary already approved
-				 * on /thank-you (Install / Community / Follow). */}
+			</div>
+
+			{/* Wave K.2 (FIX-CC-02 P2, 2026-04-26 / restructured 2026-05-02):
+			 * "60 second flow" mini-strip supporting trust + clarity at md+
+			 * only. Mobile (<md) keeps the dense single-column conversion
+			 * path — auto-redirect to store fires within 250ms there, so the
+			 * strip would be invisible churn. Pulled out of the centered
+			 * max-w-2xl Content container into a sibling with its own wider
+			 * mx-auto max-w-5xl wrapper so the 3 cards can be wide enough
+			 * for one-line heading + subheading text and stay equal width
+			 * via grid-cols-3 with no overflow contortion. */}
+			<div className='relative z-10 mx-auto hidden w-full max-w-5xl px-6 pb-20 md:block md:pb-24'>
 				<div
-					className='mt-10 hidden w-full max-w-3xl grid-cols-3 gap-4 md:grid lg:relative lg:left-1/2 lg:max-w-none lg:-translate-x-1/2 lg:[width:min(calc(100vw-3rem),900px)] 2xl:[width:min(calc(100vw-3rem),1100px)]'
+					className='grid grid-cols-3 gap-4'
 					aria-label='Sixty second flow'
 				>
 					{[
@@ -276,7 +286,7 @@ export default function DownloadContent() {
 					].map(({ Icon, label, sub }) => (
 						<div
 							key={label}
-							className='flex flex-col items-start gap-3 rounded-2xl border border-cc-surface-border bg-cc-surface/40 p-6 text-left backdrop-blur-sm'
+							className='flex flex-col items-center gap-3 rounded-2xl border border-cc-surface-border bg-cc-surface/40 p-6 text-center backdrop-blur-sm'
 						>
 							<Icon
 								weight='regular'
@@ -284,18 +294,18 @@ export default function DownloadContent() {
 								aria-hidden='true'
 							/>
 							<p
-								className='text-trim text-base text-white'
+								className='whitespace-nowrap text-trim text-base text-white'
 								style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, lineHeight: 1.25 }}
 							>
 								{label}
 							</p>
-							<p className='text-trim text-sm text-cc-text-secondary'>
+							<p className='whitespace-nowrap text-trim text-sm text-cc-text-secondary'>
 								{sub}
 							</p>
 						</div>
 					))}
 				</div>
-			</div>
+		</div>
 		</div>
 	)
 }

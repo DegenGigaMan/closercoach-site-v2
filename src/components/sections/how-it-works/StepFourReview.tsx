@@ -119,7 +119,7 @@ export default function StepFourReview() {
 	 * are the only navigation surface now. */
 
 	return (
-		<div className='mx-auto max-w-7xl px-6 pb-32 md:px-12 lg:px-16 lg:pb-40'>
+		<div className='mx-auto max-w-7xl px-6 pb-20 md:px-12 md:pb-32 lg:px-16 lg:pb-40'>
 			{/* Intro: kicker + headline + body */}
 			<div className='mx-auto max-w-3xl text-center'>
 				<div className='inline-flex items-center gap-2 rounded-full border border-cc-accent/25 bg-cc-accent/5 px-3 py-1'>
@@ -132,7 +132,7 @@ export default function StepFourReview() {
 				    headline gap matches the other 3 steps' bumped rhythm. mt-6
 				    → mt-6 md:mt-10 (24px → 40px on desktop). */}
 				<h3 className='mt-6 text-3xl leading-[1.15] text-white md:mt-10 md:text-4xl lg:text-[2.75rem]'>
-					See <em className='text-cc-accent'>Exactly</em> What&rsquo;s Losing You Deals
+					See <em className='text-cc-accent'>Exactly</em>{' '}What&rsquo;s Losing You Deals
 				</h3>
 			</div>
 

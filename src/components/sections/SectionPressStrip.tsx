@@ -8,11 +8,9 @@
  * sales." to the Hypepotamus article's framing angle. Alim shared the source
  * URL and suggested pulling the angle "Ex prizepicks engineer bringing
  * sports-like competition to sales" — that headline summary now anchors the
- * strip. This rewrite supersedes Wave X.5's REDUCTION CANDIDATE C (remove
- * SectionPressStrip): the prior "Duolingo for sales" line was flagged as
- * redundant with ProofConnectorB's App Store quote, but the Hypepotamus
- * angle is editorial press framing — not customer testimony — so the two
- * surfaces are no longer redundant.
+ * strip. (Wave X.5's REDUCTION CANDIDATE C — remove SectionPressStrip — is
+ * moot now that ProofConnectorB was deleted entirely 2026-05-01; the press
+ * angle is editorial framing, not customer testimony, so it stands alone.)
  *
  * Wave Z.1 P1-A (2026-04-28): attribution wrapped in source link to the
  * Hypepotamus article so the editorial press framing is verifiably

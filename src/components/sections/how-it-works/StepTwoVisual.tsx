@@ -601,7 +601,7 @@ function RoleplayChat({ inView, reduced }: { inView: boolean; reduced: boolean }
 
 /* devPin kept for signature parity with sibling step visuals; no sub-states
  * to pin in the new composition. */
-export default function StepTwoVisual({ devPin: _devPin = false }: { devPin?: boolean } = {}) {
+export default function StepTwoVisual({}: { devPin?: boolean } = {}) {
 	const reduced = useReducedMotion() ?? false
 	const rootRef = useRef<HTMLDivElement>(null)
 	const inView = useInView(rootRef, { amount: 0.3, once: true })

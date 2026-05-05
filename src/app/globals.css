@@ -153,9 +153,17 @@
 	}
 	body {
 		@apply bg-cc-foundation text-cc-text-primary;
+		/* H-20 (2026-05-04 → fixed 2026-05-05): use `overflow-x: clip` instead
+		 * of `overflow-x: hidden`. `hidden` creates a scroll container, which
+		 * makes `position: sticky` descendants stick to body instead of the
+		 * viewport — broke S3's sticky right-column pinning on desktop. `clip`
+		 * clips overflow at the same axis WITHOUT establishing a scroll
+		 * container, so sticky keeps working. */
+		overflow-x: clip;
 	}
 	html {
 		@apply font-sans;
+		overflow-x: clip;
 		/* Default; set dynamically by AnnouncementBanner when visible. */
 		--cc-banner-h: 0px;
 	}
@@ -171,6 +179,20 @@
 	 * with the section H2 hidden behind the sticky header. */
 	section[id] {
 		scroll-margin-top: 100px;
+	}
+
+	/* H-05 v2 (2026-05-05): kill the white flash AND the white wrapper card
+	 * around the Calendly iframe. The InlineWidget renders an outer
+	 * `.calendly-inline-widget` div + an inner `iframe`; both can render
+	 * white before Calendly's dark theme paints. Force every layer dark with
+	 * `background` shorthand so any inline `background-color: white` from
+	 * react-calendly's defaults gets shadowed. */
+	.calendly-inline-widget,
+	.calendly-inline-widget > *,
+	.calendly-inline-widget iframe {
+		background: #0d0f14 !important;
+		background-color: #0d0f14 !important;
+		color-scheme: dark !important;
 	}
 }
 

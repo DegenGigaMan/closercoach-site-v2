@@ -15,7 +15,7 @@ export default function SectionProofConnectorA(): ReactElement {
 			id='proof-connector-a'
 			data-surface='dark-connector'
 			aria-label='Proof connector'
-			className='relative flex items-center justify-center bg-cc-foundation h-[48px] md:h-[60px]'
+			className='relative flex items-center justify-center overflow-hidden bg-cc-foundation h-[48px] md:h-[60px]'
 		>
 			{/* Top hairline: emerald 10%, full-width edge-to-transparent-to-edge gradient */}
 			<div

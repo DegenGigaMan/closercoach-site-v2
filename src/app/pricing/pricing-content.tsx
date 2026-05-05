@@ -257,10 +257,12 @@ export default function PricingContent() {
 							Less than a lunch. More reps closed.
 						</p>
 
-						{/* Billing toggle. Verified working 2026-05-01 LS-005 — `yearly`
-						 * state flips on click, all 3 tier cards derive prices from
-						 * `tier.getPrice(yearly)`. */}
-						<div className='mt-6 flex items-center gap-3'>
+						{/* Billing toggle. H-09 (2026-05-04): "Save 55%" badge is now
+						 * absolutely positioned to the right of "Yearly" so its
+						 * appearance on yearly-select doesn't shift the toggle row
+						 * leftward. Mobile keeps the badge but tucks it inline below
+						 * to avoid right-edge overflow at narrow viewports. */}
+						<div className='mt-6 flex items-center justify-center gap-3'>
 							<span className={`text-sm ${!yearly ? 'text-white' : 'text-cc-text-secondary'}`}>
 								Monthly
 							</span>
@@ -283,15 +285,26 @@ export default function PricingContent() {
 									className={`absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-white transition-transform ${yearly ? 'translate-x-5' : 'translate-x-0'}`}
 								/>
 							</button>
-							<span className={`text-sm ${yearly ? 'text-white' : 'text-cc-text-secondary'}`}>
-								Yearly
-							</span>
-							{yearly && (
-								<span className='rounded-full bg-cc-accent/10 px-2.5 py-0.5 text-xs font-medium text-cc-accent'>
+							<span className='relative'>
+								<span className={`text-sm ${yearly ? 'text-white' : 'text-cc-text-secondary'}`}>
+									Yearly
+								</span>
+								{/* Desktop: floating badge to the right of Yearly */}
+								<span
+									aria-hidden={!yearly}
+									className={`pointer-events-none absolute left-full top-1/2 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-full bg-cc-accent/10 px-2.5 py-0.5 text-xs font-medium text-cc-accent transition-opacity duration-200 sm:inline-block ${yearly ? 'opacity-100' : 'opacity-0'}`}
+								>
 									Save {PRICING.yearlySavingsPercent}%
 								</span>
-							)}
+							</span>
 						</div>
+						{/* Mobile: badge tucked below the toggle row, doesn't affect alignment */}
+						<span
+							aria-hidden={!yearly}
+							className={`mt-3 inline-block whitespace-nowrap rounded-full bg-cc-accent/10 px-2.5 py-0.5 text-xs font-medium text-cc-accent transition-opacity duration-200 sm:hidden ${yearly ? 'opacity-100' : 'opacity-0'}`}
+						>
+							Save {PRICING.yearlySavingsPercent}%
+						</span>
 					</ScrollReveal>
 				</div>
 			</section>
@@ -524,34 +537,12 @@ export default function PricingContent() {
 				</div>
 			</section>
 
-			{/* ---- Section 4: Competitor Context Anchor ---- */}
-			<section className='pb-24 md:pb-32'>
-				<div className='mx-auto max-w-7xl px-6 2xl:max-w-[1440px]'>
-					<ScrollReveal>
-						<div className='rounded-xl border border-cc-surface-border bg-cc-surface-card p-8 md:p-12'>
-							<div className='flex flex-col items-center gap-4 text-center'>
-								<div className='flex items-baseline gap-4'>
-									<span
-										className='text-5xl font-bold text-cc-amber md:text-6xl'
-										style={{ fontFamily: 'var(--font-heading)' }}
-									>
-										${PRICING.individual.monthly}
-									</span>
-									<span
-										className='text-xl font-bold text-cc-text-muted line-through md:text-2xl'
-										style={{ fontFamily: 'var(--font-heading)' }}
-									>
-										$200+
-									</span>
-								</div>
-								<p className='max-w-2xl text-lg text-cc-text-secondary'>
-									15-27x cheaper than Rilla, Siro, Hyperbound. No minimums. No annual lock-in.
-								</p>
-							</div>
-						</div>
-					</ScrollReveal>
-				</div>
-			</section>
+			{/* ---- Section 4: Competitor Context Anchor ---- REMOVED 2026-05-02
+			 * per Alim feedback "remove the 12.99 box - dont like how we sell
+			 * cheap so much". The block displayed $12.99 vs $200+ strikethrough
+			 * with "15-27x cheaper than Rilla, Siro, Hyperbound." Same
+			 * comparison still lives in the FAQ entry "How is this different
+			 * from Rilla, Siro, and Hyperbound?" for users who want it. */}
 
 			{/* ---- Section 5: Trust Signals ---- */}
 			<section className='pb-24 md:pb-32'>
@@ -574,7 +565,10 @@ export default function PricingContent() {
 									alt={logo.alt}
 									width={logo.w}
 									height={logo.h}
-									className='h-6 w-auto opacity-40 grayscale'
+									/* G-02 (2026-05-02): logos rendered as solid white silhouettes
+									 * per Alim "fix company logos, make white". brightness-0 collapses
+									 * source colors to black, invert flips to white; opacity softens. */
+									className='h-6 w-auto opacity-60 brightness-0 invert'
 								/>
 							))}
 						</div>

@@ -376,48 +376,11 @@ function ReviewCard({ title, quote, reviewer, date }: Review): ReactElement {
 				border: '1px solid rgba(0,0,0,0.08)',
 			}}
 		>
-			{/* App Store Review chip — source-of-proof badge sitting above the
-			 * title row. Replaces the dark surface band as the contextual
-			 * signifier per Andy 2026-05-01. Inline App Store icon + emerald
-			 * mono label on a translucent emerald background. */}
-			<div className='flex items-center justify-between gap-3'>
-				<span
-					className='inline-flex items-center gap-1.5 rounded-full px-2.5 py-1'
-					style={{
-						backgroundColor: 'rgba(16,185,129,0.10)',
-						border: `1px solid ${EMERALD_AA}33`,
-					}}
-				>
-					<Image
-						src='/images/app-store-logo.svg'
-						alt=''
-						width={14}
-						height={14}
-						className='h-3.5 w-3.5 shrink-0'
-					/>
-					<span
-						style={{
-							fontFamily: 'var(--font-mono)',
-							fontSize: '10px',
-							fontWeight: 600,
-							letterSpacing: '0.08em',
-							color: EMERALD_AA,
-							textTransform: 'uppercase',
-						}}
-					>
-						App Store Review
-					</span>
-				</span>
-				<span
-					className='shrink-0'
-					style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: '#8E8E93' }}
-				>
-					{date}
-				</span>
-			</div>
-
-			{/* Title row */}
-			<div>
+			{/* Title row + relative date — chip dropped 2026-05-02 per Andy.
+			 * The 5-star + handle + truncated-body grammar already reads as
+			 * an App Store review on its own; the explicit chip was belt-and-
+			 * suspenders. Mirrors lab Variant A structure. */}
+			<div className='flex items-start justify-between gap-3'>
 				<h4
 					className='leading-tight'
 					style={{
@@ -430,6 +393,12 @@ function ReviewCard({ title, quote, reviewer, date }: Review): ReactElement {
 				>
 					{title}
 				</h4>
+				<span
+					className='shrink-0'
+					style={{ fontFamily: 'var(--font-sans)', fontSize: '12px', color: '#8E8E93' }}
+				>
+					{date}
+				</span>
 			</div>
 
 			{/* Stars (5 colored) + username right-aligned */}
@@ -465,7 +434,7 @@ function ReviewCard({ title, quote, reviewer, date }: Review): ReactElement {
  */
 export default function SectionResults(): ReactElement {
 	return (
-		<section id='results' data-surface='warm' className='relative bg-cc-warm'>
+		<section id='results' data-surface='warm' className='relative overflow-hidden bg-cc-warm'>
 			{/* ── Billboard top: floating proof composition per Figma 81:4377 ──
 			 * Reworked 2026-04-27 (Wave P): replaces hub-spoke composition with
 			 * 6 designed proof components orbiting the centered headline:
@@ -587,15 +556,18 @@ export default function SectionResults(): ReactElement {
 							badge='Sales Manager'
 						/>
 					</Reveal>
+					{/* T6 P0 (2026-05-02): real Enterprise testimonial from Taylor lands.
+					 * Replaces the G9 placeholder reframe. Verbatim-trimmed from her
+					 * two-paragraph submission, keeps the strongest financial-services
+					 * pivot, drops the "game-changer" line per slop discipline. */}
 					<Reveal delay={0.1}>
 						<TierCard
-							portraitSrc='/images/case-studies/enterprise.jpg'
-							industryTag='Insurance Sales'
-							metricHeadline={'22-seat team\nonboarding.'}
-							quote={'Enterprise sales teams are onboarding CloserCoach at scale. One of the fastest-growing teams on the platform has 22 active seats.'}
-							name='Enterprise Sales Team'
-							role='Anonymized'
-							badge='Platform Deal'
+							portraitSrc='/images/case-studies/taylor.jpg'
+							industryTag='Financial Services'
+							quote={'CloserCoach streamlined my discovery and made objection handling more fluid. Shifted my focus from selling a product to securing a client’s future.'}
+							name='Taylor'
+							role='Financial Security Advisor, Experior Financial Group'
+							badge='Verified User'
 						/>
 					</Reveal>
 				</div>

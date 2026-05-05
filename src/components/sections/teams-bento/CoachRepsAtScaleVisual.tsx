@@ -19,7 +19,7 @@
  *   ─ Bottom blur fade (Figma 93:16871, 137px tall) softens the lower hours
  *     into the card surface.
  *
- * CC logomark: /public/images/cc-logomark-figma.png (40×40 transparent PNG
+ * CC logomark: /public/images/cc-logomark.png (40×40 transparent PNG
  * sourced from Figma 94:18012 → image 98). Replaces the prior Sparkle icon
  * orb per Andy 2026-04-27 — the orb is the brand mark, not a generic icon. */
 
@@ -133,7 +133,7 @@ export default function CoachRepsAtScaleVisual(): ReactElement {
 					}}
 				>
 					<Image
-						src='/images/cc-logomark-figma.png'
+						src='/images/cc-logomark.png'
 						alt=''
 						width={15}
 						height={15}

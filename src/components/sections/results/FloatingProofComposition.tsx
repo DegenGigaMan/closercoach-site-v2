@@ -630,9 +630,12 @@ function CoachedVsUncoachedChart(): ReactElement {
 						strokeLinejoin='round'
 					/>
 				</svg>
-				{/* 2x badge */}
+				{/* 2x badge — decorative annotation, aria-hidden so screen
+				 * readers don't say "two ex". The chart's labeled axis +
+				 * Coached/Uncoached legend already convey the meaning. */}
 				<span
-					className='absolute right-1 top-0 text-[24px] font-bold leading-[20px] text-black'
+					aria-hidden='true'
+					className='absolute -top-3 right-2 text-[28px] font-bold leading-none text-black'
 					style={{ fontFamily: 'var(--font-heading)' }}
 				>
 					2x
@@ -771,7 +774,11 @@ export default function FloatingProofComposition(): ReactElement {
 						>
 							<SevenDimensionsRadar />
 						</Float>
-						<Float delay={0.36} className='absolute right-[3%] top-[420px] lg:right-0'>
+						{/* H-24 (2026-05-04): right-0 at lg+ collided visually with
+						 * IndustriesPill (also right-0). Bumped to lg:right-[5%] so
+						 * the card sits within the GradeUp/IndustriesPill spacing
+						 * convention and stops feeling crammed against the edge. */}
+						<Float delay={0.36} className='absolute right-[3%] top-[420px] lg:right-[5%]'>
 							<CoachedVsUncoachedChart />
 						</Float>
 					</div>

@@ -98,7 +98,14 @@ export default function FundingAnnouncementPage() {
 							&ldquo;The Duolingo for sales.&rdquo;
 						</p>
 						<footer className='mt-3 font-mono text-[11px] uppercase not-italic tracking-[0.18em] text-cc-text-tertiary-warm'>
-							Hypepotamus, March 2026
+							<a
+								href='https://hypepotamus.com/startup-news/prizepicks-alum-launches-closercoach-ai-sales-coaching-atlanta/'
+								target='_blank'
+								rel='noopener noreferrer'
+								className='underline-offset-4 transition-colors hover:text-cc-text-primary-warm hover:underline'
+							>
+								Hypepotamus, March 2026
+							</a>
 						</footer>
 					</blockquote>
 

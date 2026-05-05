@@ -22,10 +22,8 @@ import {
 	Warning,
 	WarningOctagon,
 	CheckCircle,
-	Trophy,
 	Microphone,
 	PhoneDisconnect,
-	Phone as PhoneIcon,
 	Users,
 	Timer,
 } from '@phosphor-icons/react'
@@ -36,10 +34,10 @@ import NumberFlow from '@number-flow/react'
 
 const CYCLE_MS = 5800
 const CAMIL_IMG = '/images/prospects/camil-reese.png'
-/* Use the cleaned 24KB wordmark at /cc-logo.svg instead of the 1.5MB Figma
+/* Use the cleaned 24KB wordmark at /cc-logo.png instead of the 1.5MB Figma
  * export under /images/closercoach-logo.svg — identical paths, no embedded
  * raster bloat. Saves ~1.5MB per render. */
-const CC_LOGO = '/cc-logo.svg'
+const CC_LOGO = '/cc-logo.png'
 
 /* ─── Dot Indicator ──────────────────────────────────────── */
 

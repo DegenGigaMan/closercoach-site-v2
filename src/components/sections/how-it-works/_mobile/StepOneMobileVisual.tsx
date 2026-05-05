@@ -179,26 +179,28 @@ function CloneHeader({ inView, reduced }: { inView: boolean; reduced: boolean })
 	)
 }
 
-/* Short field — used in 2-col grid for the 4 short B2C values. */
+/* Short field — used in 2-col grid for the 4 short B2C values.
+ * H-32 (2026-05-04): bumped value font from 12px to 13px for better readability. */
 function FieldShort({ label, value }: { label: string; value: string }) {
 	return (
 		<div className='flex min-w-0 flex-col gap-1'>
 			<span className='text-trim truncate font-[family-name:var(--font-mono)] text-[10px] uppercase leading-[12px] tracking-[0.05em] text-cc-text-secondary'>
 				{label}
 			</span>
-			<span className='text-trim truncate text-[12px] leading-[14px] text-white'>{value}</span>
+			<span className='text-trim truncate text-[13px] font-medium leading-[15px] text-white'>{value}</span>
 		</div>
 	)
 }
 
-/* Long field — full-width row for sentence-length values. */
+/* Long field — full-width row for sentence-length values.
+ * H-32 (2026-05-04): bumped value font from 11px to 13px with leading-relaxed. */
 function FieldLong({ label, value }: { label: string; value: string }) {
 	return (
 		<div className='flex flex-col gap-1'>
 			<span className='text-trim font-[family-name:var(--font-mono)] text-[10px] uppercase leading-[12px] tracking-[0.05em] text-cc-text-secondary'>
 				{label}
 			</span>
-			<span className='text-trim text-balance text-[11px] leading-[15px] text-white/95'>{value}</span>
+			<span className='text-trim text-balance text-[13px] leading-[18px] text-white/95'>{value}</span>
 		</div>
 	)
 }
@@ -216,7 +218,11 @@ function ProofBadge() {
 
 function CloneCard({ inView, reduced }: { inView: boolean; reduced: boolean }) {
 	const shortFields = CLONE_CARD.fields.filter((f) => f.span === 'short')
-	const longFields = CLONE_CARD.fields.filter((f) => f.span === 'long')
+	/* H-32 (2026-05-04): mobile shows only the first 2 long fields (Likely
+	 * Objection + How to Handle = problem + solution) instead of all 3. The
+	 * "7 LAYERS OF PERSONALIZATION" badge below the card already communicates
+	 * the deeper depth; on mobile, density is the enemy of comprehension. */
+	const longFields = CLONE_CARD.fields.filter((f) => f.span === 'long').slice(0, 2)
 	return (
 		<motion.div
 			className='relative w-full rounded-2xl border-[0.5px] border-cc-accent/60 bg-cc-surface-card px-3 pb-7 pt-3 shadow-[-6px_6px_12px_0_rgba(0,0,0,0.5),0_0_16px_0_rgba(16,185,129,0.08)]'

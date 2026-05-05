@@ -8,16 +8,17 @@
  * the page top regardless of where the user was scrolled.
  *
  * Behavior:
- *   - Skips the initial mount (browser handles fresh navigations natively;
- *     routing this would fight Lenis on first paint).
- *   - On every subsequent pathname change, calls window.scrollTo with
- *     behavior 'auto'. Using 'auto' over 'smooth' because the user just
- *     navigated and expects the new page header, not a slow scroll
- *     choreography. Lenis picks up the same target via the standard
- *     window.scrollTo API.
- *   - SmoothScroll's Lenis instance does not intercept programmatic
- *     window.scrollTo calls in lerp:0.1 mode, so the jump is instant and
- *     subsequent user wheel events resume Lenis-smoothed motion.
+ *   - Skips the initial mount (browser handles fresh navigations natively).
+ *   - On every subsequent pathname change, calls window.scrollTo to reset the
+ *     native scroll position AND dispatches a `scroll-reset` event so the
+ *     SmoothScroll/Lenis listener can snap Lenis's internal target to 0 with
+ *     immediate+force. This avoids the race where Lenis was lerping toward a
+ *     stale target (e.g. the bottom of the previous page's footer) and ended
+ *     up overriding the native scrollTo on repeat visits to the same URL.
+ *
+ * G-FOOTER-SCROLL fix (2026-05-02): added the scroll-reset event dispatch
+ * so revisits like footer Privacy → Terms → Privacy land at the top every
+ * time, not only on the first click.
  */
 
 'use client'
@@ -35,6 +36,7 @@ export default function ScrollToTop() {
 			return
 		}
 		window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+		window.dispatchEvent(new Event('scroll-reset'))
 	}, [pathname])
 
 	return null
