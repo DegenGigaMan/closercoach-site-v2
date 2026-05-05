@@ -529,17 +529,26 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 			 * paragraph above (self-start + items-start). The three icon
 			 * columns inside still use w-24 each so the icons themselves
 			 * line up cleanly relative to one another. */}
+			{/* H-34 (2026-05-04): stronger replacement messaging + mobile cut-off fix.
+			 * Eyebrow rewritten from "CloserCoach replaces" → "ONE APP. THREE TOOLS
+			 * GONE." Bumped from 10px mono to 12px Lora-bold uppercase so it commands
+			 * the strip. Icon labels carry a subtle red strikethrough so the
+			 * "replaced" narrative reads visually, not just from the eyebrow.
+			 * Mobile cut-off (was overflowing 390px viewport at 416px width):
+			 * gap-8 → gap-4 sm:gap-8, w-24 → w-20 sm:w-24, px-8 → px-4 sm:px-8. */}
 			<div className="mt-8 flex w-fit max-w-xl flex-col items-start gap-3 self-start">
-				<span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-[0.18em] text-cc-text-secondary">
-					CloserCoach replaces
+				<span
+					className="font-[family-name:var(--font-mono)] text-[12px] font-medium uppercase tracking-[0.18em] text-white/95"
+				>
+					One app. Three tools gone.
 				</span>
 				<div
 					role="img"
 					aria-label="CloserCoach replaces Voice Memos, ChatGPT, and your Phone app"
-					className="flex w-fit items-center gap-8 rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 px-8 py-4"
+					className="flex w-fit items-center gap-4 rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 px-4 py-4 sm:gap-8 sm:px-8"
 				>
 					{/* Voice Memos — white waveform on red gradient rounded square. */}
-					<div className="flex w-24 flex-col items-center gap-1.5">
+					<div className="flex w-20 flex-col items-center gap-1.5 sm:w-24">
 						<svg
 							width={36}
 							height={36}
@@ -566,12 +575,12 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 								<rect x={30} y={14} width={2} height={8}  rx={1} />
 							</g>
 						</svg>
-						<span className="whitespace-nowrap font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary">
+						<span className="whitespace-nowrap font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary line-through decoration-red-500/50 decoration-[1.5px] underline-offset-2">
 							Voice Memos
 						</span>
 					</div>
 					{/* ChatGPT — OpenAI 4-petal logomark on black rounded square. */}
-					<div className="flex w-24 flex-col items-center gap-1.5">
+					<div className="flex w-20 flex-col items-center gap-1.5 sm:w-24">
 						<svg
 							width={36}
 							height={36}
@@ -588,12 +597,12 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 								/>
 							</g>
 						</svg>
-						<span className="whitespace-nowrap font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary">
+						<span className="whitespace-nowrap font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary line-through decoration-red-500/50 decoration-[1.5px] underline-offset-2">
 							ChatGPT
 						</span>
 					</div>
 					{/* Phone — white handset on green gradient rounded square. */}
-					<div className="flex w-24 flex-col items-center gap-1.5">
+					<div className="flex w-20 flex-col items-center gap-1.5 sm:w-24">
 						<svg
 							width={36}
 							height={36}
@@ -615,7 +624,7 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 								fill="#FFFFFF"
 							/>
 						</svg>
-						<span className="whitespace-nowrap font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary">
+						<span className="whitespace-nowrap font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary line-through decoration-red-500/50 decoration-[1.5px] underline-offset-2">
 							Phone
 						</span>
 					</div>

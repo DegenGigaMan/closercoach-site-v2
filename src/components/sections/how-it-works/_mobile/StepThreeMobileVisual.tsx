@@ -50,12 +50,17 @@ export default function StepThreeMobileVisual() {
 	}, [mode])
 
 	return (
-		<div ref={ref} className="flex flex-col gap-2">
-			{/* Mode toggle row -- interactive. */}
+		<div ref={ref} className="flex flex-col gap-3">
+			{/* H-33 (2026-05-04): tabs redesigned as a SEGMENTED CONTROL pattern.
+			 * Container is a single rounded-full pill holding two buttons; active
+			 * fills emerald with foundation-colored text, inactive is transparent.
+			 * Now visually distinct from the coaching badges below (which stay as
+			 * informational pills). Min tap target 44pt per Apple HIG. Text bumped
+			 * 9px → 11px for readability. */}
 			<motion.div
 				role="tablist"
 				aria-label="Call mode"
-				className="flex items-center gap-1.5"
+				className="inline-flex w-fit items-center gap-1 self-start rounded-full border border-white/[0.08] bg-white/[0.03] p-1"
 				initial={{ opacity: 0, y: 8 }}
 				animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
 				transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, ease: THREAD_EASE }}
@@ -70,13 +75,13 @@ export default function StepThreeMobileVisual() {
 					tabIndex={mode === 'A' ? 0 : -1}
 					onClick={() => setMode('A')}
 					onKeyDown={handleKey}
-					className={`inline-flex cursor-pointer items-center gap-1 rounded-full border px-2.5 py-1 font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase tracking-[0.15em] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent/60 ${
+					className={`inline-flex min-h-[36px] cursor-pointer items-center gap-1.5 rounded-full px-4 py-2 font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent/60 ${
 						mode === 'A'
-							? 'border-cc-accent/40 bg-cc-accent/10 text-cc-accent'
-							: 'border-white/[0.08] bg-white/[0.02] text-cc-text-muted'
+							? 'bg-cc-accent text-cc-foundation shadow-[0_2px_8px_rgba(16,185,129,0.35)]'
+							: 'text-cc-text-secondary hover:text-white'
 					}`}
 				>
-					<PhoneIcon size={9} weight="fill" aria-hidden="true" />
+					<PhoneIcon size={12} weight="fill" aria-hidden="true" />
 					Phone Call
 				</button>
 				<button
@@ -89,13 +94,13 @@ export default function StepThreeMobileVisual() {
 					tabIndex={mode === 'B' ? 0 : -1}
 					onClick={() => setMode('B')}
 					onKeyDown={handleKey}
-					className={`inline-flex cursor-pointer items-center gap-1 rounded-full border px-2.5 py-1 font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase tracking-[0.15em] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent/60 ${
+					className={`inline-flex min-h-[36px] cursor-pointer items-center gap-1.5 rounded-full px-4 py-2 font-[family-name:var(--font-mono)] text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent/60 ${
 						mode === 'B'
-							? 'border-cc-accent/40 bg-cc-accent/10 text-cc-accent'
-							: 'border-white/[0.08] bg-white/[0.02] text-cc-text-muted'
+							? 'bg-cc-accent text-cc-foundation shadow-[0_2px_8px_rgba(16,185,129,0.35)]'
+							: 'text-cc-text-secondary hover:text-white'
 					}`}
 				>
-					<Microphone size={9} weight="fill" aria-hidden="true" />
+					<Microphone size={12} weight="fill" aria-hidden="true" />
 					Record
 				</button>
 			</motion.div>
@@ -143,7 +148,7 @@ function AiPhoneCallCard({ inView, prefersReducedMotion }: { inView: boolean, pr
 			role="tabpanel"
 			id="cc-s3-mobile-panel-a"
 			aria-labelledby="cc-s3-mobile-tab-a"
-			className={`flex flex-col gap-2 rounded-2xl border border-white/[0.08] bg-cc-surface-card/70 p-3 ${CARD_SHADOW}`}
+			className={`flex flex-col gap-3 rounded-xl border border-white/[0.08] bg-cc-surface-card/70 p-4 ${CARD_SHADOW}`}
 			initial={{ opacity: 0, y: 12 }}
 			animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
 			exit={{ opacity: 0, y: -8 }}
@@ -170,12 +175,12 @@ function AiPhoneCallCard({ inView, prefersReducedMotion }: { inView: boolean, pr
 			</div>
 
 			{/* Transcript stub: AI line + user line. */}
-			<div className="flex flex-col gap-1 rounded-xl border border-white/[0.05] bg-cc-foundation/60 p-2">
-				<p className="text-[11px] italic leading-[1.35] text-cc-text-secondary">
+			<div className="flex flex-col gap-2 rounded-lg border border-white/[0.05] bg-cc-foundation/60 p-3">
+				<p className="text-[13px] italic leading-relaxed text-cc-text-secondary">
 					<span className={`${KICKER_MONO_MUTED} text-[8px] mr-1 not-italic`}>SC</span>
 					{TRANSCRIPT_AI}
 				</p>
-				<p className="text-[11px] italic leading-[1.35] text-white">
+				<p className="text-[13px] italic leading-relaxed text-white">
 					<span className={`${KICKER_MONO_EMERALD} text-[8px] mr-1 not-italic`}>You</span>
 					{TRANSCRIPT_USER}
 				</p>
@@ -199,7 +204,7 @@ function RecordCard({ inView, prefersReducedMotion }: { inView: boolean, prefers
 			role="tabpanel"
 			id="cc-s3-mobile-panel-b"
 			aria-labelledby="cc-s3-mobile-tab-b"
-			className={`flex flex-col gap-2 rounded-2xl border border-white/[0.08] bg-cc-surface-card/70 p-3 ${CARD_SHADOW}`}
+			className={`flex flex-col gap-3 rounded-xl border border-white/[0.08] bg-cc-surface-card/70 p-4 ${CARD_SHADOW}`}
 			initial={{ opacity: 0, y: 12 }}
 			animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
 			exit={{ opacity: 0, y: -8 }}
