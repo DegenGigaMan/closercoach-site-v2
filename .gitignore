@@ -46,3 +46,4 @@ scratch/
 
 # drafts (pre-edit backups per workspace convention)
 drafts/
+.env*.local

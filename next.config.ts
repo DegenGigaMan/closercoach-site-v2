@@ -50,6 +50,37 @@ const nextConfig: NextConfig = {
 		]
 	},
 
+	/* PostHog reverse proxy (2026-05-05). Routes /ingest/* on our origin to
+	 * PostHog's US ingest cluster so direct calls to posthog.com are not
+	 * blocked by ad blockers (uBlock Origin, Brave, Firefox ETP, etc.) — the
+	 * primary cause of "no data captured" in PostHog Next.js setups.
+	 *
+	 * Pattern from posthog.com/docs/advice/proxy/nextjs. /static routes the
+	 * array.js + recorder bundles to us-assets; /flags supports the new flag
+	 * endpoint in posthog-js 1.227+. PostHogProvider sets api_host: '/ingest'
+	 * so the SDK targets these rewrites, not the public ingest URL. */
+	async rewrites() {
+		return [
+			{
+				source: '/ingest/static/:path*',
+				destination: 'https://us-assets.i.posthog.com/static/:path*',
+			},
+			{
+				source: '/ingest/flags',
+				destination: 'https://us.i.posthog.com/flags',
+			},
+			{
+				source: '/ingest/:path*',
+				destination: 'https://us.i.posthog.com/:path*',
+			},
+		]
+	},
+
+	/* Required when using rewrites that target external hosts: prevents
+	 * Next.js from auto-redirecting trailing slash variants and breaking the
+	 * ingest path. Per posthog.com/docs/advice/proxy/nextjs. */
+	skipTrailingSlashRedirect: true,
+
 	async headers() {
 		// Security headers apply to every route. Long-cache static images and
 		// fonts under /public are emitted via a separate matcher. Next.js
