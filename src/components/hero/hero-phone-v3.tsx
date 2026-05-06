@@ -34,6 +34,7 @@ import Image from 'next/image'
 import { TypeAnimation } from 'react-type-animation'
 import {
 	ArrowRight,
+	ArrowsCounterClockwise,
 	BookOpen,
 	Binoculars,
 	CaretLeft,
@@ -45,6 +46,7 @@ import {
 	Image as ImageIcon,
 	Lightning,
 	Microphone,
+	Trophy,
 	UserFocus,
 	UserSound,
 	XCircle,
@@ -549,6 +551,251 @@ function ProspectCard({
  * mount (no layoutId target), losing the "he answers" beat.
  * Surfacing this for Andy at commit; can flip to the logomark with a
  * one-line render swap if he prefers the Figma reading. */
+
+/* ─── State 6: Call Complete ────────────────────────────────────
+ * Figma 191:625. Verdict screen. Emerald gradient bg (handled by
+ * shell ScreenBackground when state===5), Top 15% trophy pill,
+ * 120px grade ring with "A" letter, AI Coach Suggests bubble,
+ * 3 scorecard cards (with bottom blur fade), Practice Again CTA.
+ *
+ * Per brief §6 sub-states 6A-6J. The "A" letter spring-bounce is
+ * THE delight moment of the loop — score-spring 300/18 with the
+ * heaviest stiffness/lowest damping in the system. Earn it. */
+
+const SPRING_SCORE = { type: 'spring' as const, stiffness: 300, damping: 18 }
+
+const STATE6_SCORECARDS: ReadonlyArray<{
+	title: string
+	desc: string
+}> = [
+	{ title: 'Executive-Level Framing', desc: 'Excellent' },
+	{
+		title: 'Clear Next Step Commitment',
+		desc: 'Repeatedly pushed for contract signing',
+	},
+	/* Figma 191:687 repeats card 1; preserved verbatim per brief §10 (Figma =
+	 * source of truth for end-state). Mostly hidden behind the blur fade. */
+	{ title: 'Executive-Level Framing', desc: 'Excellent' },
+]
+
+function ScorecardRow({
+	card,
+	enterDelay,
+	reducedMotion,
+}: {
+	card: { title: string, desc: string }
+	enterDelay: number
+	reducedMotion: boolean
+}) {
+	return (
+		<motion.div
+			className='flex w-full items-center gap-3 rounded-[16px] border border-[#353535] bg-black p-3'
+			initial={{ opacity: 0, y: 12 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={
+				reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: enterDelay }
+			}
+		>
+			{/* 5/5 ring — emerald stroke, fully drawn (5 of 5). */}
+			<div className='relative flex size-[44px] shrink-0 items-center justify-center'>
+				<svg
+					width='44'
+					height='44'
+					viewBox='0 0 44 44'
+					className='absolute inset-0 -rotate-90'
+				>
+					<circle cx='22' cy='22' r='19' fill='none' stroke='rgba(16,208,120,0.18)' strokeWidth='3' />
+					<motion.circle
+						cx='22'
+						cy='22'
+						r='19'
+						fill='none'
+						stroke='#10D078'
+						strokeWidth='3'
+						strokeLinecap='round'
+						strokeDasharray={`${2 * Math.PI * 19}`}
+						initial={{ strokeDashoffset: 2 * Math.PI * 19 }}
+						animate={{ strokeDashoffset: 0 }}
+						transition={
+							reducedMotion
+								? { duration: 0 }
+								: { duration: 0.7, ease: 'easeOut', delay: enterDelay + 0.2 }
+						}
+					/>
+				</svg>
+				<span className='relative z-10 text-trim text-[14px] font-semibold text-[#10D078] [font-family:var(--font-cta),system-ui,sans-serif]'>
+					5/5
+				</span>
+			</div>
+
+			<div className='flex min-w-0 flex-1 flex-col gap-1.5 py-0.5'>
+				<span className='text-trim font-sans text-[13px] font-semibold leading-none tracking-[-0.2px] text-[#efefef]'>
+					{card.title}
+				</span>
+				<span className='text-trim font-sans text-[11px] font-normal leading-[1.4] tracking-[-0.2px] text-[#919191]'>
+					{card.desc}
+				</span>
+				<span className='text-trim font-sans text-[10px] font-medium leading-none text-[#10D078]'>
+					Drill deeper →
+				</span>
+			</div>
+		</motion.div>
+	)
+}
+
+function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
+	const RING_R = 50
+	const RING_C = 2 * Math.PI * RING_R
+	return (
+		<div className='flex h-full flex-col items-center gap-4 px-4 pb-2 pt-3'>
+			{/* Top 15% trophy pill + grade ring stack. Pill overlaps ring at
+			 * top via negative margin per Figma 191:636 (mb -16). */}
+			<div className='flex w-full flex-col items-center'>
+				<motion.div
+					className='z-20 -mb-3 flex h-[24px] items-center gap-1 rounded-full border-[0.5px] border-[rgba(52,225,142,0.9)] bg-[#0d201f] px-2 py-1 shadow-[0_0_16px_rgba(52,225,142,0.3),0_8px_16px_rgba(0,0,0,0.6)]'
+					initial={{ opacity: 0, scale: 0.6, y: 6 }}
+					animate={
+						reducedMotion
+							? { opacity: 1, scale: 1, y: 0 }
+							: { opacity: 1, scale: 1, y: 0 }
+					}
+					transition={
+						reducedMotion ? { duration: 0 } : { ...SPRING_SCORE, delay: 0.15 }
+					}
+				>
+					<Trophy size={11} weight='fill' className='text-cc-mint' />
+					<motion.span
+						className='text-trim font-sans text-[11px] font-bold leading-none text-cc-mint'
+						animate={
+							reducedMotion ? { opacity: 1 } : { opacity: [1, 0.6, 1] }
+						}
+						transition={
+							reducedMotion
+								? { duration: 0 }
+								: { duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 2.5 }
+						}
+					>
+						Top 15%
+					</motion.span>
+				</motion.div>
+
+				{/* Grade ring 120px. Track + drawing arc + "A" letter. */}
+				<div className='relative flex size-[120px] items-center justify-center'>
+					<svg
+						width='120'
+						height='120'
+						viewBox='0 0 120 120'
+						className='absolute inset-0 -rotate-90'
+					>
+						<circle cx='60' cy='60' r={RING_R} fill='none' stroke='rgba(52,225,142,0.2)' strokeWidth='4' />
+						<motion.circle
+							cx='60'
+							cy='60'
+							r={RING_R}
+							fill='none'
+							stroke='#34E18E'
+							strokeWidth='4'
+							strokeLinecap='round'
+							strokeDasharray={`${RING_C}`}
+							initial={{ strokeDashoffset: RING_C }}
+							animate={{ strokeDashoffset: 0 }}
+							transition={
+								reducedMotion
+									? { duration: 0 }
+									: { duration: 1.0, ease: 'easeOut', delay: 0.45 }
+							}
+							style={{ filter: 'drop-shadow(0 0 6px rgba(52,225,142,0.6))' }}
+						/>
+					</svg>
+					<motion.span
+						className='relative text-[44px] leading-none text-cc-mint [font-family:var(--font-cta),system-ui,sans-serif] font-semibold'
+						initial={{ opacity: 0, scale: 0.4 }}
+						animate={{ opacity: 1, scale: 1 }}
+						transition={
+							reducedMotion ? { duration: 0 } : { ...SPRING_SCORE, delay: 1.0 }
+						}
+					>
+						A
+					</motion.span>
+				</div>
+			</div>
+
+			{/* AI Coach Suggests label + bubble. */}
+			<div className='flex w-full flex-col gap-2'>
+				<motion.span
+					className='text-trim font-sans text-[13px] font-semibold leading-[1.4] text-white'
+					initial={{ opacity: 0, y: 4 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={
+						reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 1.4 }
+					}
+				>
+					AI Coach Suggests..
+				</motion.span>
+				<motion.div
+					className='flex w-full items-start gap-2'
+					initial={{ opacity: 0, y: 8 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={
+						reducedMotion ? { duration: 0 } : { ...SPRING_CARD, delay: 1.6 }
+					}
+				>
+					<div className='relative size-[36px] shrink-0 overflow-hidden rounded-full border border-white/[0.05]'>
+						<Image
+							src='/images/prospects/camil-v3.png'
+							alt='AI Coach'
+							fill
+							sizes='36px'
+							className='object-cover'
+						/>
+					</div>
+					<div className='flex-1 rounded-[12px] rounded-tl-none border border-white/[0.06] bg-[#09f] p-2.5'>
+						<p className='font-sans text-[13px] font-medium leading-[1.4] text-white'>
+							You addressed risks clearly and secured next steps but could ask
+							more on their team’s concerns.
+						</p>
+					</div>
+				</motion.div>
+			</div>
+
+			{/* 3 scorecard cards with bottom blur fade. */}
+			<div className='relative flex w-full flex-1 flex-col gap-2 overflow-hidden'>
+				{STATE6_SCORECARDS.map((card, i) => (
+					<ScorecardRow
+						key={i}
+						card={card}
+						enterDelay={1.9 + i * 0.18}
+						reducedMotion={reducedMotion}
+					/>
+				))}
+				<div
+					aria-hidden
+					className='pointer-events-none absolute inset-x-0 bottom-0 h-[36px]'
+					style={{
+						background:
+							'linear-gradient(to bottom, rgba(8,10,9,0) 0%, #080a09 100%)',
+					}}
+				/>
+			</div>
+
+			{/* Practice Again CTA. */}
+			<motion.button
+				type='button'
+				className='flex h-[48px] w-full items-center justify-center gap-[10px] rounded-[27px] bg-cc-mint shadow-[0_8px_20px_rgba(52,225,142,0.18)]'
+				initial={{ opacity: 0, y: 14 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={
+					reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 2.7 }
+				}
+			>
+				<span className='text-trim text-[16px] font-bold text-[#313131] [font-family:var(--font-cta),system-ui,sans-serif]'>
+					Practice Again
+				</span>
+				<ArrowsCounterClockwise size={16} weight='bold' className='text-[#313131]' />
+			</motion.button>
+		</div>
+	)
+}
 
 /* ─── State 5: Live Call ────────────────────────────────────────
  * Figma 193:1798. Densest screen of the loop:
@@ -1143,6 +1390,8 @@ export default function HeroPhoneV3({
 									<State4CallConnecting reducedMotion={prefersReducedMotion} />
 								) : activeIndex === 4 ? (
 									<State5LiveCall reducedMotion={prefersReducedMotion} />
+								) : activeIndex === 5 ? (
+									<State6CallComplete reducedMotion={prefersReducedMotion} />
 								) : (
 									<PlaceholderBody state={activeIndex} />
 								)}
