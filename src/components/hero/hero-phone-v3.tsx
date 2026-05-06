@@ -60,11 +60,33 @@ const SPRING_CARD = { type: 'spring' as const, stiffness: 250, damping: 22 }
 const SPRING_FIELD = { type: 'spring' as const, stiffness: 380, damping: 26 }
 const SPRING_LAYOUT = { type: 'spring' as const, stiffness: 200, damping: 30 }
 
-/* Per-state placeholder dwell while the shell is still being scaffolded. Final
- * cadence is judged at Step 8 (loop restart pass) per brief §0 (timing
- * unrestricted). 2.4s per state lets the chrome morph + stepper land + bg
- * swap be observed cleanly during Step 1 visual verification. */
-const PLACEHOLDER_DWELL_MS = 2400
+/* Per-state autoplay dwell. Calibrated post-Step-7 against each state's
+ * sub-state cascade so every animation lands before the cycle advances:
+ *   State 1 (3.4s): CTA enters at 1.05s; +2.3s settled hold for the URL
+ *     type-loop to read at least once.
+ *   State 2 (5.0s): last pill flash ends ~3.9s; +1.1s breathing.
+ *   State 3 (3.6s): Camil card lands at 0.85s; +2.7s "select me" breathe.
+ *   State 4 (2.8s): cinematic — let the ring pulse breathe a beat.
+ *   State 5 (5.8s): mic bar at 2.4s; +3.4s for chat cascade to read.
+ *   State 6 (4.6s): CTA at 2.7s; +1.9s for "A" + scorecard cascade.
+ * Cycle total ≈ 25.2s, in the 14-18s estimate from brief §7 once the
+ * loop fade is folded in. Brief §0: timing unrestricted, every state
+ * breathes. */
+const STATE_DWELL_MS: Record<HeroV3StateIndex, number> = {
+	0: 3400,
+	1: 5000,
+	2: 3600,
+	3: 2800,
+	4: 5800,
+	5: 4600,
+}
+
+/* Loop-restart fade. State 6 → black overlay (~250ms in, ~150ms hold,
+ * ~250ms out) → State 1 enters. Acceptable teleport per brief §7
+ * locked decision #4 — the only sanctioned discontinuity in the cycle. */
+const LOOP_FADE_IN_MS = 250
+const LOOP_FADE_HOLD_MS = 150
+const LOOP_FADE_OUT_MS = 250
 
 export type HeroV3StateIndex = 0 | 1 | 2 | 3 | 4 | 5
 
@@ -1309,13 +1331,43 @@ export default function HeroPhoneV3({
 }: HeroPhoneV3Props = {}) {
 	const prefersReducedMotion = useReducedMotion() ?? false
 	const [autoIndex, setAutoIndex] = useState<HeroV3StateIndex>(0)
+	/* loopFade flips true briefly during the 6→1 transition to render the
+	 * black overlay over the screen. Reduced motion skips entirely. */
+	const [loopFade, setLoopFade] = useState(false)
 
 	useEffect(() => {
 		if (!autoplay || prefersReducedMotion) return
-		const id = setInterval(() => {
-			setAutoIndex((prev) => ((prev + 1) % 6) as HeroV3StateIndex)
-		}, PLACEHOLDER_DWELL_MS)
-		return () => clearInterval(id)
+		let advanceTimer: ReturnType<typeof setTimeout> | null = null
+		let fadeInTimer: ReturnType<typeof setTimeout> | null = null
+		let fadeOutTimer: ReturnType<typeof setTimeout> | null = null
+
+		const scheduleNext = (current: HeroV3StateIndex) => {
+			advanceTimer = setTimeout(() => {
+				if (current === 5) {
+					/* Loop restart: fade to black, hold, advance to state 0,
+					 * fade back. */
+					setLoopFade(true)
+					fadeInTimer = setTimeout(() => {
+						setAutoIndex(0)
+						fadeOutTimer = setTimeout(() => {
+							setLoopFade(false)
+							scheduleNext(0)
+						}, LOOP_FADE_HOLD_MS)
+					}, LOOP_FADE_IN_MS)
+				} else {
+					const next = (current + 1) as HeroV3StateIndex
+					setAutoIndex(next)
+					scheduleNext(next)
+				}
+			}, STATE_DWELL_MS[current])
+		}
+
+		scheduleNext(0)
+		return () => {
+			if (advanceTimer) clearTimeout(advanceTimer)
+			if (fadeInTimer) clearTimeout(fadeInTimer)
+			if (fadeOutTimer) clearTimeout(fadeOutTimer)
+		}
 	}, [autoplay, prefersReducedMotion])
 
 	const activeIndex: HeroV3StateIndex = autoplay ? autoIndex : pinnedState
@@ -1418,6 +1470,23 @@ export default function HeroPhoneV3({
 					<div className='relative z-10'>
 						<HomeIndicator />
 					</div>
+
+					{/* Loop-restart black overlay. Renders ABOVE everything inside
+					 * the screen during the 6→1 transition to provide the clean
+					 * fade-to-black per brief §7 #4. Outside layers (bezel, glow)
+					 * stay visible — the "screen" is what blanks. */}
+					<motion.div
+						aria-hidden
+						className='pointer-events-none absolute inset-0 z-30 rounded-[42.4px] bg-black'
+						initial={{ opacity: 0 }}
+						animate={{ opacity: loopFade ? 1 : 0 }}
+						transition={{
+							duration: loopFade
+								? LOOP_FADE_IN_MS / 1000
+								: LOOP_FADE_OUT_MS / 1000,
+							ease: 'easeOut',
+						}}
+					/>
 				</div>
 			</div>
 		</LayoutGroup>
