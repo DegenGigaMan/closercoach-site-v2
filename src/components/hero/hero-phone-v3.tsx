@@ -1,0 +1,321 @@
+/** @fileoverview Hero Phone V3 — 6-state Family Values composite.
+ *
+ * Architecture: one mounted component, LayoutGroup at the root, AnimatePresence
+ * for state body swaps. Persistent identity carried via layoutId across phase
+ * boundaries (cc-logo-header, phone-progress-bar, prospect-camil-avatar,
+ * prospect-camil-name, stepper-active-dot).
+ *
+ * Native size: 340 × 696 (locked per Hero V3 motion brief, 2026-05-05). No CSS
+ * scale-up on desktop. Mobile constrains via max-w-full.
+ *
+ * Phase chrome map (from Figma 191:698 / 191:729 / 192:1101 / 191:606 /
+ * 193:1798 / 191:625):
+ *   1 Onboarding, 2 Setup, 3 Selection, 5 Live Call, 6 Complete — show CC logo
+ *     header, stepper, home indicator
+ *   4 Call Connecting — hides logo header + stepper, ramps inset emerald glow,
+ *     uses solid #0d0f14 screen bg (no radial)
+ *   6 Call Complete — uses emerald gradient screen bg (#042013 → #080a09)
+ *
+ * Step 1 scope (this commit): chrome + state-switcher cycling 1..6 with
+ * placeholder body slots. State implementations drop in across Steps 2-7.
+ *
+ * Reduced motion: cycling pauses; phase 1 shows as static settled state. */
+
+'use client'
+
+import { useEffect, useState, type ReactNode } from 'react'
+import {
+	AnimatePresence,
+	LayoutGroup,
+	motion,
+	useReducedMotion,
+} from 'motion/react'
+import Image from 'next/image'
+
+const CC_LOGO = '/cc-logo.png'
+
+/* Per-state placeholder dwell while the shell is still being scaffolded. Final
+ * cadence is judged at Step 8 (loop restart pass) per brief §0 (timing
+ * unrestricted). 2.4s per state lets the chrome morph + stepper land + bg
+ * swap be observed cleanly during Step 1 visual verification. */
+const PLACEHOLDER_DWELL_MS = 2400
+
+export type HeroV3StateIndex = 0 | 1 | 2 | 3 | 4 | 5
+
+const STATE_NAMES = [
+	'Onboarding',
+	'Creating AI Customers',
+	'Start Training',
+	'Call Connecting',
+	'Live Call',
+	'Call Complete',
+] as const
+
+/* Phase grouping the stepper paints. Per brief §2:
+ *   1+2 → dot index 0 (Onboarding+Setup share a phase)
+ *   3   → dot index 1
+ *   4   → stepper hidden entirely
+ *   5   → dot index 2
+ *   6   → dot index 3 */
+function stepperDotForState(s: HeroV3StateIndex): number | null {
+	if (s === 0 || s === 1) return 0
+	if (s === 2) return 1
+	if (s === 3) return null
+	if (s === 4) return 2
+	return 3
+}
+
+const showsLogoHeader = (s: HeroV3StateIndex) => s !== 3
+
+/* ─── Chrome subcomponents ───────────────────────────────────────── */
+
+function CCLogoHeader() {
+	return (
+		<motion.div
+			layoutId='cc-logo-header'
+			className='flex items-center justify-center'
+			transition={{ type: 'spring', stiffness: 200, damping: 30 }}
+		>
+			{/* /cc-logo.png is the COMBINED logomark + "CloserCoach" wordmark
+			 * (800×164 source, ~4.88:1). At h-8 (32px) it lands at w-156, matching
+			 * Figma 191:704 (32×32 logomark + 8px gap + 116×14 wordmark = 156×32). */}
+			<Image
+				src={CC_LOGO}
+				alt='CloserCoach'
+				width={156}
+				height={32}
+				className='h-8 w-auto'
+				priority
+			/>
+		</motion.div>
+	)
+}
+
+function Stepper({ activeDot }: { activeDot: number | null }) {
+	return (
+		<div className='flex h-[18px] items-center justify-center gap-2 py-[6px]'>
+			{[0, 1, 2, 3].map((i) => {
+				const isActive = activeDot === i
+				return (
+					<motion.div
+						key={i}
+						className='rounded-full'
+						animate={{
+							width: isActive ? 16 : 6,
+							height: 6,
+							backgroundColor: isActive ? '#10B981' : 'rgba(255,255,255,0.12)',
+						}}
+						transition={{ type: 'spring', stiffness: 200, damping: 30 }}
+					/>
+				)
+			})}
+		</div>
+	)
+}
+
+function HomeIndicator() {
+	return (
+		<div className='flex h-[16px] shrink-0 items-start justify-center pb-[8px] pt-[4px]'>
+			<div className='h-[4px] w-[112px] rounded-full bg-white/20' />
+		</div>
+	)
+}
+
+/* ─── Per-state placeholder body (Step 1 only) ──────────────────── */
+
+function PlaceholderBody({ state }: { state: HeroV3StateIndex }) {
+	return (
+		<div className='flex flex-1 flex-col items-center justify-center gap-3 px-4 py-2 text-center'>
+			<span className='text-trim text-[12px] font-medium uppercase tracking-[0.18em] text-white/40'>
+				State {state + 1} of 6
+			</span>
+			<span className='text-trim text-[20px] font-semibold leading-tight text-white'>
+				{STATE_NAMES[state]}
+			</span>
+			<span className='text-trim text-[13px] leading-[1.5] text-white/50'>
+				Body lands in Step {state + 2}
+			</span>
+		</div>
+	)
+}
+
+/* ─── Phone screen chrome (per-state bg + bezel inset glow) ─────── */
+
+function ScreenBackground({ state }: { state: HeroV3StateIndex }) {
+	if (state === 5) {
+		/* State 6: emerald gradient (Figma 191:626) */
+		return (
+			<div
+				aria-hidden
+				className='pointer-events-none absolute inset-0 rounded-[42.4px]'
+				style={{
+					background:
+						'linear-gradient(180deg, #042013 0%, #080a09 46.154%, #080a09 100%)',
+				}}
+			/>
+		)
+	}
+
+	if (state === 3) {
+		/* State 4: solid foundation, no radial. Inset emerald glow added below. */
+		return (
+			<div
+				aria-hidden
+				className='pointer-events-none absolute inset-0 rounded-[42.4px] bg-cc-foundation'
+			/>
+		)
+	}
+
+	/* States 1, 2, 3, 5: radial atmospheric over foundation (Figma std). */
+	return (
+		<div
+			aria-hidden
+			className='pointer-events-none absolute inset-0 rounded-[42.4px]'
+			style={{
+				background:
+					'radial-gradient(15.879px 22.85px at 158.79px -70.5px, rgba(30,34,48,1) 0%, rgba(21,24,34,1) 50%, rgba(12,14,19,1) 100%), linear-gradient(90deg, #0d0f14 0%, #0d0f14 100%)',
+			}}
+		/>
+	)
+}
+
+function BezelInsetGlow({ state }: { state: HeroV3StateIndex }) {
+	const visible = state === 3
+	return (
+		<motion.div
+			aria-hidden
+			className='pointer-events-none absolute inset-0 rounded-[42.4px]'
+			animate={{
+				boxShadow: visible
+					? 'inset 0 0 40.4px rgba(16,185,129,0.58)'
+					: 'inset 0 0 0px rgba(16,185,129,0)',
+			}}
+			transition={{ duration: 0.6, ease: 'easeOut' }}
+		/>
+	)
+}
+
+/* ─── Main component ────────────────────────────────────────────── */
+
+export type HeroPhoneV3Props = {
+	/* When true (default), the shell auto-cycles 0→5→0. Set false from a
+	 * preview-driven UI to pin a single state. */
+	autoplay?: boolean
+	/* Pin to a specific state when autoplay is false. Defaults to 0. */
+	pinnedState?: HeroV3StateIndex
+	/* Slot for state body content. Falls back to PlaceholderBody for the
+	 * Step 1 scaffold. State implementations override per index. */
+	renderState?: (state: HeroV3StateIndex) => ReactNode
+}
+
+export default function HeroPhoneV3({
+	autoplay = true,
+	pinnedState = 0,
+	renderState,
+}: HeroPhoneV3Props = {}) {
+	const prefersReducedMotion = useReducedMotion() ?? false
+	const [activeIndex, setActiveIndex] = useState<HeroV3StateIndex>(
+		autoplay ? 0 : pinnedState,
+	)
+
+	useEffect(() => {
+		if (!autoplay) {
+			setActiveIndex(pinnedState)
+			return
+		}
+		if (prefersReducedMotion) return
+		const id = setInterval(() => {
+			setActiveIndex((prev) => ((prev + 1) % 6) as HeroV3StateIndex)
+		}, PLACEHOLDER_DWELL_MS)
+		return () => clearInterval(id)
+	}, [autoplay, pinnedState, prefersReducedMotion])
+
+	const dot = stepperDotForState(activeIndex)
+	const showLogo = showsLogoHeader(activeIndex)
+
+	return (
+		<LayoutGroup>
+			<div
+				className='relative h-[696px] w-[340px] shrink-0 rounded-[48px] border border-white/10 px-[7px] pb-px pt-[7px] shadow-[0_0_60px_rgba(16,185,129,0.1),0_20px_40px_rgba(0,0,0,0.4)]'
+				style={{
+					background:
+						'linear-gradient(180deg, #2a2d36 0%, #28293a 14.286%, #252831 28.571%, #23262f 42.857%, #21242d 57.143%, #1e212a 71.429%, #1c1f28 85.714%, #1a1d26 100%)',
+				}}
+			>
+				<div className='relative flex h-full w-full flex-col overflow-hidden rounded-[42.4px] border border-white/[0.05]'>
+					<ScreenBackground state={activeIndex} />
+					<BezelInsetGlow state={activeIndex} />
+
+					{/* Dynamic island */}
+					<div className='relative z-10 flex h-[32px] shrink-0 items-start justify-center pt-[10px]'>
+						<div className='h-[22px] w-[100px] rounded-full bg-black' />
+					</div>
+
+					{/* CC logo header. Hidden during State 4 (Call Connecting). */}
+					<AnimatePresence mode='wait'>
+						{showLogo && (
+							<motion.div
+								key='cc-logo-header-mount'
+								className='relative z-10 flex shrink-0 items-center justify-center pt-2'
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								exit={{ opacity: 0 }}
+								transition={{ duration: 0.25, ease: 'easeOut' }}
+							>
+								<CCLogoHeader />
+							</motion.div>
+						)}
+					</AnimatePresence>
+
+					{/* State body. AnimatePresence drives directional swaps once
+					 * state implementations land. Step 1 placeholder uses simple
+					 * fade so the chrome morph reads cleanly. */}
+					<div className='relative z-10 flex min-h-0 flex-1 flex-col'>
+						<AnimatePresence mode='wait'>
+							<motion.div
+								key={activeIndex}
+								className='flex flex-1 flex-col'
+								initial={{ opacity: 0, y: 12 }}
+								animate={{ opacity: 1, y: 0 }}
+								exit={{ opacity: 0, y: -12 }}
+								transition={
+									prefersReducedMotion
+										? { duration: 0 }
+										: {
+											type: 'spring',
+											stiffness: 250,
+											damping: 26,
+										}
+								}
+							>
+								{renderState
+									? renderState(activeIndex)
+									: <PlaceholderBody state={activeIndex} />}
+							</motion.div>
+						</AnimatePresence>
+					</div>
+
+					{/* Stepper. Hidden during State 4. */}
+					<AnimatePresence mode='wait'>
+						{dot !== null && (
+							<motion.div
+								key='stepper-mount'
+								className='relative z-10 shrink-0'
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								exit={{ opacity: 0 }}
+								transition={{ duration: 0.25, ease: 'easeOut' }}
+							>
+								<Stepper activeDot={dot} />
+							</motion.div>
+						)}
+					</AnimatePresence>
+
+					<div className='relative z-10'>
+						<HomeIndicator />
+					</div>
+				</div>
+			</div>
+		</LayoutGroup>
+	)
+}
