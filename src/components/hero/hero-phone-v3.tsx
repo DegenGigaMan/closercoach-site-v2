@@ -206,35 +206,127 @@ function PlaceholderBody({ state }: { state: HeroV3StateIndex }) {
  * URL bar type-animates "yoursite.com/product", Copy tooltip pops with
  * SPRING_CARD ~600ms after the type completes. */
 
+/* iOS Safari-style browser mock per Figma 191:698. Shows the
+ * "user copies their site URL" sequence:
+ *   T+0      — browser shell renders (image + placeholder bars)
+ *   T+0.2   — URL types into bottom URL bar ("yoursite.com/product")
+ *   T+1.6   — text selects (blue highlight + iOS handles wipe in)
+ *   T+2.0   — green Copy tooltip pops above with arrow pointing down
+ * NOT a macOS browser — no traffic-light dots. URL bar lives at the
+ * BOTTOM of the chrome (iOS pattern), not the top. */
 function BrowserMock({ reducedMotion }: { reducedMotion: boolean }) {
+	const [showSelection, setShowSelection] = useState(reducedMotion)
 	const [showCopy, setShowCopy] = useState(reducedMotion)
 
 	useEffect(() => {
 		if (reducedMotion) return
-		/* "yoursite.com/product" at speed 55 ≈ 1.4s. Pop the Copy tooltip
-		 * shortly after the URL settles. */
-		const id = setTimeout(() => setShowCopy(true), 1700)
-		return () => clearTimeout(id)
+		const t1 = setTimeout(() => setShowSelection(true), 1600)
+		const t2 = setTimeout(() => setShowCopy(true), 2000)
+		return () => {
+			clearTimeout(t1)
+			clearTimeout(t2)
+		}
 	}, [reducedMotion])
 
 	return (
 		<motion.div
-			className='relative h-[210px] w-[216px] shrink-0 overflow-hidden rounded-[10px] border border-white/[0.06] bg-cc-surface shadow-[0_8px_16px_rgba(0,0,0,0.45)]'
+			className='relative flex h-[244px] w-[252px] shrink-0 flex-col overflow-hidden rounded-[14px] border border-white/[0.08] bg-[#1a1d24] shadow-[0_8px_16px_rgba(0,0,0,0.45)]'
 			initial={{ opacity: 0, y: 14, scale: 0.96 }}
 			animate={{ opacity: 1, y: 0, scale: 1 }}
 			transition={reducedMotion ? { duration: 0 } : { ...SPRING_CARD, delay: 0.05 }}
 		>
-			{/* Browser top bar: traffic dots + URL pill. */}
-			<div className='flex items-center gap-2 border-b border-white/[0.05] bg-cc-foundation/60 px-2 py-2'>
-				<div className='flex shrink-0 items-center gap-[3px]'>
-					<span className='size-[6px] rounded-full bg-[#ff5f57]' />
-					<span className='size-[6px] rounded-full bg-[#febc2e]' />
-					<span className='size-[6px] rounded-full bg-[#28c840]' />
+			{/* Webpage content: header placeholder bars + image. Mirrors a
+			 * generic article/landing page (title block + body line + hero img). */}
+			<div className='flex flex-1 flex-col px-4 pt-4'>
+				<div className='flex flex-col gap-2'>
+					<div className='h-[18px] w-[64px] rounded-[4px] bg-white/15' />
+					<div className='h-[6px] w-[140px] rounded-[3px] bg-white/[0.09]' />
 				</div>
-				<div className='relative flex-1'>
-					{/* URL pill */}
-					<div className='flex h-[20px] items-center justify-center rounded-[6px] border border-white/[0.06] bg-cc-foundation px-2'>
-						<span className='text-trim font-[family-name:var(--font-mono)] text-[10px] leading-none text-white/85'>
+				<div className='flex flex-1 items-center justify-center'>
+					<div className='flex size-20 items-center justify-center rounded-[8px] bg-white/[0.05] ring-1 ring-inset ring-white/[0.06]'>
+						<ImageIcon size={28} weight='regular' className='text-white/30' />
+					</div>
+				</div>
+			</div>
+
+			{/* iOS Safari URL bar zone with Copy tooltip + selection handles. */}
+			<div className='relative px-3 pb-1.5'>
+				{/* Copy tooltip — green pill with arrow pointing DOWN at URL. */}
+				<AnimatePresence>
+					{showCopy && (
+						<motion.div
+							key='copy-tooltip'
+							className='pointer-events-none absolute -top-[36px] left-1/2 z-10 flex -translate-x-1/2 flex-col items-center'
+							initial={{ opacity: 0, y: 4, scale: 0.7 }}
+							animate={{ opacity: 1, y: 0, scale: 1 }}
+							exit={{ opacity: 0, y: -2, scale: 0.9 }}
+							transition={SPRING_CARD}
+						>
+							<div className='rounded-[7px] bg-[#22C55E] px-3 py-[6px] shadow-[0_6px_12px_rgba(0,0,0,0.5)]'>
+								<span className='text-trim text-[12px] font-semibold leading-none text-white'>
+									Copy
+								</span>
+							</div>
+							<span
+								aria-hidden
+								className='-mt-px size-0 border-x-[6px] border-t-[6px] border-x-transparent border-t-[#22C55E]'
+							/>
+						</motion.div>
+					)}
+				</AnimatePresence>
+
+				{/* URL bar */}
+				<div className='relative flex h-[32px] items-center justify-center rounded-[10px] bg-[#2c3038] px-3'>
+					<div className='relative inline-flex items-center'>
+						{/* Selection wash: blue translucent rectangle behind text. */}
+						<AnimatePresence>
+							{showSelection && (
+								<motion.span
+									key='selection'
+									aria-hidden
+									className='absolute -inset-x-1 -inset-y-[3px] rounded-[2px] bg-[#2D7FF9]/45'
+									style={{ transformOrigin: 'left' }}
+									initial={{ scaleX: 0, opacity: 0 }}
+									animate={{ scaleX: 1, opacity: 1 }}
+									exit={{ opacity: 0 }}
+									transition={{ duration: 0.28, ease: 'easeOut' }}
+								/>
+							)}
+						</AnimatePresence>
+
+						{/* iOS selection handles: blue line + dot at each end. */}
+						<AnimatePresence>
+							{showSelection && (
+								<>
+									<motion.span
+										key='handle-left'
+										aria-hidden
+										className='absolute -left-[6px] -top-[8px] z-10 flex flex-col items-center'
+										initial={{ opacity: 0, y: -2, scale: 0.6 }}
+										animate={{ opacity: 1, y: 0, scale: 1 }}
+										exit={{ opacity: 0 }}
+										transition={{ ...SPRING_FIELD, delay: 0.12 }}
+									>
+										<span className='size-[6px] rounded-full bg-[#2D7FF9]' />
+										<span className='h-[24px] w-[1.5px] -mt-[1px] bg-[#2D7FF9]' />
+									</motion.span>
+									<motion.span
+										key='handle-right'
+										aria-hidden
+										className='absolute -right-[6px] -bottom-[8px] z-10 flex flex-col items-center'
+										initial={{ opacity: 0, y: 2, scale: 0.6 }}
+										animate={{ opacity: 1, y: 0, scale: 1 }}
+										exit={{ opacity: 0 }}
+										transition={{ ...SPRING_FIELD, delay: 0.16 }}
+									>
+										<span className='h-[24px] w-[1.5px] -mb-[1px] bg-[#2D7FF9]' />
+										<span className='size-[6px] rounded-full bg-[#2D7FF9]' />
+									</motion.span>
+								</>
+							)}
+						</AnimatePresence>
+
+						<span className='relative z-[5] text-trim font-[family-name:var(--font-mono)] text-[12px] leading-none text-white/95'>
 							{reducedMotion ? (
 								'yoursite.com/product'
 							) : (
@@ -247,45 +339,16 @@ function BrowserMock({ reducedMotion }: { reducedMotion: boolean }) {
 							)}
 						</span>
 					</div>
-
-					{/* Copy tooltip — emerald pill that pops above the URL bar. */}
-					<AnimatePresence>
-						{showCopy && (
-							<motion.div
-								key='copy-tooltip'
-								className='pointer-events-none absolute -top-[22px] left-1/2 -translate-x-1/2 rounded-[4px] bg-cc-mint px-1.5 py-[3px] shadow-[0_4px_8px_rgba(0,0,0,0.35)]'
-								initial={{ opacity: 0, y: 6, scale: 0.7 }}
-								animate={{ opacity: 1, y: 0, scale: 1 }}
-								exit={{ opacity: 0, y: -4, scale: 0.9 }}
-								transition={SPRING_CARD}
-							>
-								<span className='text-trim text-[9px] font-bold leading-none text-black'>
-									Copy
-								</span>
-								<span
-									aria-hidden
-									className='absolute left-1/2 top-full size-0 -translate-x-1/2 border-x-[3px] border-t-[4px] border-x-transparent border-t-cc-mint'
-								/>
-							</motion.div>
-						)}
-					</AnimatePresence>
 				</div>
 			</div>
 
-			{/* Body: image placeholder centered behind a dim wash. */}
-			<div className='flex h-[140px] items-center justify-center bg-gradient-to-b from-white/[0.03] to-black/[0.4]'>
-				<div className='flex size-12 items-center justify-center rounded-md bg-white/[0.04] ring-1 ring-inset ring-white/[0.04]'>
-					<ImageIcon size={20} weight='regular' className='text-white/25' />
-				</div>
-			</div>
-
-			{/* Bottom nav strip. */}
-			<div className='flex items-center justify-between border-t border-white/[0.05] bg-cc-foundation/60 px-3 py-1.5'>
-				<CaretLeft size={11} weight='bold' className='text-white/35' />
-				<CaretRight size={11} weight='bold' className='text-white/35' />
-				<Export size={11} weight='regular' className='text-white/35' />
-				<BookOpen size={11} weight='regular' className='text-white/35' />
-				<Copy size={11} weight='regular' className='text-white/35' />
+			{/* iOS Safari action bar. */}
+			<div className='flex shrink-0 items-center justify-around px-3 pb-2.5 pt-1'>
+				<CaretLeft size={16} weight='regular' className='text-white/50' />
+				<CaretRight size={16} weight='regular' className='text-white/50' />
+				<Export size={16} weight='regular' className='text-white/50' />
+				<BookOpen size={16} weight='regular' className='text-white/50' />
+				<Copy size={16} weight='regular' className='text-white/50' />
 			</div>
 		</motion.div>
 	)
