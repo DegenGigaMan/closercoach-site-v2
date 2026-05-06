@@ -34,12 +34,17 @@ import Image from 'next/image'
 import { TypeAnimation } from 'react-type-animation'
 import {
 	ArrowRight,
+	BookOpen,
+	Binoculars,
 	CaretLeft,
 	CaretRight,
 	Copy,
-	Image as ImageIcon,
-	BookOpen,
 	Export,
+	HeadCircuit,
+	Image as ImageIcon,
+	UserFocus,
+	UserSound,
+	type Icon as PhosphorIcon,
 } from '@phosphor-icons/react'
 
 const CC_LOGO = '/cc-logo.png'
@@ -242,6 +247,118 @@ function BrowserMock({ reducedMotion }: { reducedMotion: boolean }) {
 				<Copy size={11} weight='regular' className='text-white/35' />
 			</div>
 		</motion.div>
+	)
+}
+
+/* ─── State 2: Creating AI Customers ──────────────────────────────
+ * Figma 191:729. Title block + mint loading label + progress bar +
+ * 4 task pills cascade. Per brief §6 sub-states 2A-2E:
+ *   2A: title morphs in from below
+ *   2B: mint label + progress bar reveal
+ *   2C: 4 pills cascade (FIELD spring, 200ms stagger)
+ *   2D: each pill emerald-flashes as it "completes" (subtle, post-entrance)
+ *   2E: settled
+ * Progress bar persists from State 1's URL field via layoutId
+ * "phone-progress-bar" (wired at Step 8 loop pass; standalone State 2
+ * just renders it at the State-2 position). */
+
+const STATE2_PILLS: ReadonlyArray<{ icon: PhosphorIcon, label: string }> = [
+	{ icon: Binoculars, label: 'Analyzing Ideal Customer Profile' },
+	{ icon: UserFocus, label: 'Designing AI Characters' },
+	{ icon: UserSound, label: 'Configuring Realistic Voices' },
+	{ icon: HeadCircuit, label: 'Setting up Buyer Behavior' },
+] as const
+
+function State2CreatingCustomers({ reducedMotion }: { reducedMotion: boolean }) {
+	return (
+		<div className='flex h-full flex-col items-center justify-center gap-10 px-4 pb-2 pt-4'>
+			{/* Title block. Two-line layout per Figma 191:741. */}
+			<motion.h2
+				className='text-trim w-full text-center font-sans text-[28px] font-semibold leading-[1.15] text-white'
+				initial={{ opacity: 0, y: 14 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={reducedMotion ? { duration: 0 } : { ...SPRING_CARD, delay: 0.05 }}
+			>
+				Creating Your<br />AI Customers
+			</motion.h2>
+
+			{/* Loading section: mint label + progress bar. */}
+			<div className='flex w-full flex-col items-center gap-4'>
+				<motion.span
+					className='text-trim font-sans text-[16px] font-semibold leading-[1] text-cc-mint'
+					initial={{ opacity: 0, y: 6 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 0.35 }}
+				>
+					Learning your business...
+				</motion.span>
+				<motion.div
+					layoutId='phone-progress-bar'
+					className='h-[4px] w-[272px] overflow-hidden rounded-full bg-[#1a1a1a]'
+					initial={false}
+					transition={SPRING_LAYOUT}
+				>
+					<motion.div
+						className='h-full rounded-full bg-cc-mint'
+						initial={{ width: '0%' }}
+						animate={{ width: '100%' }}
+						transition={
+							reducedMotion
+								? { duration: 0 }
+								: { duration: 1.4, ease: 'easeOut', delay: 0.55 }
+						}
+					/>
+				</motion.div>
+			</div>
+
+			{/* 4 task pills cascade. */}
+			<div className='flex w-full flex-col items-center gap-3'>
+				{STATE2_PILLS.map((pill, i) => {
+					const Icon = pill.icon
+					const enterDelay = 0.85 + i * 0.18
+					/* Pill emerald-flash 1.5s after entrance: a brief brightness
+					 * pulse on bg/border so each pill reads as "completed" without
+					 * adding new chrome. */
+					return (
+						<motion.div
+							key={pill.label}
+							className='flex h-[32px] items-center gap-1.5 rounded-[24px] border border-white/[0.06] bg-[rgba(30,34,48,0.8)] px-[13px] py-[9px] shadow-[0_8px_16px_rgba(0,0,0,0.4)]'
+							initial={{ opacity: 0, y: 8 }}
+							animate={
+								reducedMotion
+									? { opacity: 1, y: 0 }
+									: {
+										opacity: 1,
+										y: 0,
+										backgroundColor: [
+											'rgba(30,34,48,0.8)',
+											'rgba(16,185,129,0.18)',
+											'rgba(30,34,48,0.8)',
+										],
+									}
+							}
+							transition={
+								reducedMotion
+									? { duration: 0 }
+									: {
+										default: { ...SPRING_FIELD, delay: enterDelay },
+										backgroundColor: {
+											duration: 1.0,
+											ease: 'easeOut',
+											delay: enterDelay + 1.5,
+										},
+									}
+							}
+						>
+							<Icon size={14} weight='regular' className='shrink-0 text-cc-accent' />
+							<span className='text-trim whitespace-nowrap font-sans text-[14px] font-normal leading-[16px] text-white'>
+								{pill.label}
+							</span>
+						</motion.div>
+					)
+				})}
+			</div>
+		</div>
 	)
 }
 
@@ -448,6 +565,8 @@ export default function HeroPhoneV3({
 									renderState(activeIndex)
 								) : activeIndex === 0 ? (
 									<State1Onboarding reducedMotion={prefersReducedMotion} />
+								) : activeIndex === 1 ? (
+									<State2CreatingCustomers reducedMotion={prefersReducedMotion} />
 								) : (
 									<PlaceholderBody state={activeIndex} />
 								)}
