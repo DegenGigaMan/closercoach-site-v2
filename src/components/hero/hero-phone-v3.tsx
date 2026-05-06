@@ -467,15 +467,23 @@ function State2CreatingCustomers({ reducedMotion }: { reducedMotion: boolean }) 
 }
 
 /* ─── State 3: Start Training (carousel) ─────────────────────────
- * Figma 192:1101. Title block + 3-card prospect stack + Call Camil CTA.
+ * Figma 192:1101 + cards 200:196-200:237. Title block + 3-card prospect
+ * row with Camil center+taller as the focal hierarchy + Call Camil CTA.
  *
- * Card stack: Brandon (-3°, leftmost), Caleb (0°, middle), Camil (+3°,
- * rightmost forward). Cards overlap via negative right margins. Per
- * brief §6 sub-states 3A-3E, cards fly in outermost-first so Camil is
- * the LAST to settle and lands forward — that's the selection beat.
+ * Layout per Figma: 3 cards in a flex row, gap-16, no rotations. Each
+ * card 250px wide; Brandon/Caleb 320px tall, Camil 370px tall (the
+ * height bump is the visual hierarchy cue). Order: Brandon | Camil |
+ * Caleb so Camil sits center and the side cards become slivers when
+ * the parent overflow-clips.
  *
- * Camil's card carries layoutId="prospect-camil-avatar" + "prospect-camil-name"
- * which morph into State 4's brand circle and State 5's chat header. */
+ * Photo fills the entire card as a background; a blur-fade gradient
+ * sits above the photo at the bottom; name+role and quote+difficulty
+ * stack BELOW the fade with the card's `justify-end` pushing them to
+ * the bottom edge.
+ *
+ * Camil's card carries layoutId="prospect-camil-avatar" +
+ * "prospect-camil-name" which morph into State 4's brand circle and
+ * State 5's chat header. */
 
 type ProspectData = {
 	id: 'brandon' | 'caleb' | 'camil'
@@ -486,10 +494,11 @@ type ProspectData = {
 	difficulty: 'Easy' | 'Medium' | 'Hard'
 	difficultyColor: string
 	photo: string
-	rotation: number
-	zIndex: number
+	heightPx: number
 }
 
+/* Order matters: Brandon (left), Camil (center, taller), Caleb (right).
+ * Phone screen overflow-clips so Brandon and Caleb become edge slivers. */
 const STATE3_PROSPECTS: ReadonlyArray<ProspectData> = [
 	{
 		id: 'brandon',
@@ -500,20 +509,7 @@ const STATE3_PROSPECTS: ReadonlyArray<ProspectData> = [
 		difficulty: 'Easy',
 		difficultyColor: '#10B981',
 		photo: '/images/prospects/brandon.png',
-		rotation: -3,
-		zIndex: 1,
-	},
-	{
-		id: 'caleb',
-		name: 'Caleb',
-		age: 37,
-		role: 'CTO @ Everbank',
-		quote: '“We’re not fully aligned internally.”',
-		difficulty: 'Medium',
-		difficultyColor: '#F59E0B',
-		photo: '/images/prospects/caleb.png',
-		rotation: 0,
-		zIndex: 2,
+		heightPx: 320,
 	},
 	{
 		id: 'camil',
@@ -524,8 +520,18 @@ const STATE3_PROSPECTS: ReadonlyArray<ProspectData> = [
 		difficulty: 'Hard',
 		difficultyColor: '#FF5A5A',
 		photo: '/images/prospects/camil-v3.png',
-		rotation: 3,
-		zIndex: 3,
+		heightPx: 370,
+	},
+	{
+		id: 'caleb',
+		name: 'Caleb',
+		age: 37,
+		role: 'CTO @ Everbank',
+		quote: '“We’re not fully aligned internally.”',
+		difficulty: 'Medium',
+		difficultyColor: '#F59E0B',
+		photo: '/images/prospects/caleb.png',
+		heightPx: 320,
 	},
 ] as const
 
@@ -541,82 +547,82 @@ function ProspectCard({
 	isCamil: boolean
 }) {
 	const Icon = ChartBar
+	const fadeHeightPx = isCamil ? 209 : 174
 	return (
 		<motion.div
-			className='relative shrink-0'
-			style={{ zIndex: prospect.zIndex, marginRight: prospect.id === 'camil' ? 0 : -204 }}
-			initial={{ opacity: 0, y: 24, scale: 0.85, rotate: 0 }}
-			animate={{ opacity: 1, y: 0, scale: 1, rotate: prospect.rotation }}
+			className='relative flex w-[250px] shrink-0 flex-col items-start justify-end gap-6 overflow-clip rounded-[16px] border border-white/30 p-[13px] shadow-[0_8px_16px_rgba(0,0,0,0.6)]'
+			style={{ height: prospect.heightPx }}
+			initial={{ opacity: 0, y: 24, scale: 0.9 }}
+			animate={{ opacity: 1, y: 0, scale: 1 }}
 			transition={
 				reducedMotion
 					? { duration: 0 }
 					: { ...SPRING_CARD, delay: enterDelay }
 			}
 		>
-			<div className='flex w-[214px] flex-col gap-3 rounded-[16px] border border-white/[0.14] bg-cc-surface-card p-[10px] shadow-[-8px_8px_16px_rgba(0,0,0,0.6),0_0_20px_rgba(16,185,129,0.05)]'>
-				{/* Image area with name+role overlay at bottom. */}
-				<div className='relative flex h-[190px] items-end overflow-hidden rounded-[8px] border border-white/[0.05]'>
-					{isCamil ? (
-						<motion.div
-							layoutId='prospect-camil-avatar'
-							className='absolute inset-0'
-						>
-							<Image
-								src={prospect.photo}
-								alt={prospect.name}
-								fill
-								sizes='214px'
-								className='object-cover'
-								style={{ objectPosition: 'center top' }}
-								priority
-							/>
-						</motion.div>
-					) : (
-						<Image
-							src={prospect.photo}
-							alt={prospect.name}
-							fill
-							sizes='214px'
-							className='object-cover'
-							style={{ objectPosition: 'center top' }}
-						/>
-					)}
-					{/* Bottom blur fade gradient. */}
-					<div
-						aria-hidden
-						className='absolute inset-x-0 bottom-0 h-[60px]'
-						style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.85) 100%)' }}
+			{/* Photo background fills the entire card. Camil's image is wrapped
+			 * in a layoutId motion.div so it morphs into State 4's brand circle. */}
+			{isCamil ? (
+				<motion.div layoutId='prospect-camil-avatar' className='absolute inset-0'>
+					<Image
+						src={prospect.photo}
+						alt={prospect.name}
+						fill
+						sizes='250px'
+						className='object-cover'
+						style={{ objectPosition: 'center top' }}
+						priority
 					/>
-					{/* Name + role overlay. */}
-					<div className='relative z-10 flex w-full flex-col gap-1 px-3 pb-3'>
-						{isCamil ? (
-							<motion.span
-								layoutId='prospect-camil-name'
-								className='text-trim font-sans text-[15px] font-medium leading-none text-white'
-							>
-								{prospect.name}, {prospect.age}
-							</motion.span>
-						) : (
-							<span className='text-trim font-sans text-[15px] font-medium leading-none text-white'>
-								{prospect.name}, {prospect.age}
-							</span>
-						)}
-						<span className='text-trim whitespace-nowrap font-sans text-[11px] font-medium leading-none text-white/60'>
-							{prospect.role}
-						</span>
-					</div>
-				</div>
+				</motion.div>
+			) : (
+				<Image
+					src={prospect.photo}
+					alt={prospect.name}
+					fill
+					sizes='250px'
+					className='object-cover'
+					style={{ objectPosition: 'center top' }}
+				/>
+			)}
 
-				{/* Quote. */}
-				<p className='text-trim font-sans text-[18px] font-medium leading-[1.2] text-white'>
+			{/* Blur fade gradient sits above the photo, below the text. */}
+			<div
+				aria-hidden
+				className='pointer-events-none absolute inset-x-0 bottom-0 backdrop-blur-[6px]'
+				style={{
+					height: fadeHeightPx,
+					background: 'linear-gradient(to bottom, rgba(8,9,12,0) 0%, #08090c 88.94%)',
+				}}
+			/>
+
+			{/* Customer name + role. */}
+			<div className='relative flex flex-col gap-3'>
+				{isCamil ? (
+					<motion.p
+						layoutId='prospect-camil-name'
+						className='text-trim whitespace-nowrap font-sans text-[18px] font-semibold leading-[16px] text-white'
+					>
+						{prospect.name}, {prospect.age}
+					</motion.p>
+				) : (
+					<p className='text-trim whitespace-nowrap font-sans text-[18px] font-semibold leading-[16px] text-white'>
+						{prospect.name}, {prospect.age}
+					</p>
+				)}
+				<p className='text-trim whitespace-nowrap font-sans text-[14px] font-semibold leading-none text-white/60'>
+					{prospect.role}
+				</p>
+			</div>
+
+			{/* Quote + difficulty pill. */}
+			<div className='relative flex w-full flex-col gap-4'>
+				<p className='font-sans text-[24px] font-medium leading-[1.2] text-white'>
 					{prospect.quote}
 				</p>
-
-				{/* Difficulty pill. */}
-				<div className='flex items-center gap-1'>
-					<Icon size={14} weight='fill' style={{ color: prospect.difficultyColor }} />
+				<div className='flex items-center gap-2'>
+					<Icon size={16} weight='fill' style={{ color: prospect.difficultyColor }} />
 					<span
-						className='text-trim font-sans text-[13px] font-semibold leading-none'
+						className='text-trim font-sans text-[14px] font-semibold leading-[15px]'
 						style={{ color: prospect.difficultyColor }}
 					>
 						{prospect.difficulty}
@@ -658,18 +664,21 @@ function ProspectCard({
 
 const SPRING_SCORE = { type: 'spring' as const, stiffness: 300, damping: 18 }
 
+/* Per Figma 200:1191 (locked 2026-05-06 with Andy):
+ *   Card 1: Executive-Level Framing / Excellent
+ *   Card 2: Risk & ROI Exploration / Excellent       ← updated
+ *   Card 3: Clear Next Step Commitment / Repeatedly pushed for contract signing
+ * Card 3 is mostly hidden behind the bottom blur fade. */
 const STATE6_SCORECARDS: ReadonlyArray<{
 	title: string
 	desc: string
 }> = [
 	{ title: 'Executive-Level Framing', desc: 'Excellent' },
+	{ title: 'Risk & ROI Exploration', desc: 'Excellent' },
 	{
 		title: 'Clear Next Step Commitment',
 		desc: 'Repeatedly pushed for contract signing',
 	},
-	/* Figma 191:687 repeats card 1; preserved verbatim per brief §10 (Figma =
-	 * source of truth for end-state). Mostly hidden behind the blur fade. */
-	{ title: 'Executive-Level Framing', desc: 'Excellent' },
 ]
 
 function ScorecardRow({
@@ -690,25 +699,26 @@ function ScorecardRow({
 				reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: enterDelay }
 			}
 		>
-			{/* 5/5 ring — emerald stroke, fully drawn (5 of 5). */}
-			<div className='relative flex size-[44px] shrink-0 items-center justify-center'>
+			{/* 5/5 ring — emerald stroke, fully drawn (5 of 5). Per Figma 200:1230
+			 * sizes: 48px ring, 16px Plus Jakarta SemiBold "5/5". */}
+			<div className='relative flex size-[48px] shrink-0 items-center justify-center'>
 				<svg
-					width='44'
-					height='44'
-					viewBox='0 0 44 44'
+					width='48'
+					height='48'
+					viewBox='0 0 48 48'
 					className='absolute inset-0 -rotate-90'
 				>
-					<circle cx='22' cy='22' r='19' fill='none' stroke='rgba(16,208,120,0.18)' strokeWidth='3' />
+					<circle cx='24' cy='24' r='21' fill='none' stroke='rgba(16,208,120,0.18)' strokeWidth='3' />
 					<motion.circle
-						cx='22'
-						cy='22'
-						r='19'
+						cx='24'
+						cy='24'
+						r='21'
 						fill='none'
 						stroke='#10D078'
 						strokeWidth='3'
 						strokeLinecap='round'
-						strokeDasharray={`${2 * Math.PI * 19}`}
-						initial={{ strokeDashoffset: 2 * Math.PI * 19 }}
+						strokeDasharray={`${2 * Math.PI * 21}`}
+						initial={{ strokeDashoffset: 2 * Math.PI * 21 }}
 						animate={{ strokeDashoffset: 0 }}
 						transition={
 							reducedMotion
@@ -717,16 +727,16 @@ function ScorecardRow({
 						}
 					/>
 				</svg>
-				<span className='relative z-10 text-trim text-[14px] font-semibold text-[#10D078] [font-family:var(--font-cta),system-ui,sans-serif]'>
+				<span className='relative z-10 text-trim text-[16px] font-semibold text-[#10D078] [font-family:var(--font-cta),system-ui,sans-serif]'>
 					5/5
 				</span>
 			</div>
 
-			<div className='flex min-w-0 flex-1 flex-col gap-1.5 py-0.5'>
-				<span className='text-trim font-sans text-[13px] font-semibold leading-none tracking-[-0.2px] text-[#efefef]'>
+			<div className='flex min-w-0 flex-1 flex-col gap-2 py-1'>
+				<span className='text-trim font-sans text-[14px] font-semibold leading-none tracking-[-0.2px] text-[#efefef]'>
 					{card.title}
 				</span>
-				<span className='text-trim font-sans text-[11px] font-normal leading-[1.4] tracking-[-0.2px] text-[#919191]'>
+				<span className='text-trim font-sans text-[12px] font-normal leading-[1.4] tracking-[-0.2px] text-[#919191]'>
 					{card.desc}
 				</span>
 				<span className='text-trim font-sans text-[10px] font-medium leading-none text-[#10D078]'>
@@ -825,10 +835,11 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 				</div>
 			</div>
 
-			{/* AI Coach Suggests label + bubble. */}
-			<div className='flex w-full flex-col gap-2'>
+			{/* AI Coach Suggests label + bubble. Per Figma 200:1218: 40px avatar,
+			 * 14px label/bubble text, gap-3 between label and bubble. */}
+			<div className='flex w-full flex-col gap-3'>
 				<motion.span
-					className='text-trim font-sans text-[13px] font-semibold leading-[1.4] text-white'
+					className='text-trim font-sans text-[14px] font-semibold leading-[1.4] text-white'
 					initial={{ opacity: 0, y: 4 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={
@@ -845,18 +856,18 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 						reducedMotion ? { duration: 0 } : { ...SPRING_CARD, delay: 1.6 }
 					}
 				>
-					<div className='relative size-[36px] shrink-0 overflow-hidden rounded-full border border-white/[0.05]'>
+					<div className='relative size-[40px] shrink-0 overflow-hidden rounded-full border border-white/[0.05]'>
 						<Image
 							src='/images/prospects/camil-v3.png'
 							alt='AI Coach'
 							fill
-							sizes='36px'
+							sizes='40px'
 							className='object-cover'
 							style={{ objectPosition: 'center top' }}
 						/>
 					</div>
-					<div className='flex-1 rounded-[12px] rounded-tl-none border border-white/[0.06] bg-[#09f] p-2.5'>
-						<p className='text-trim font-sans text-[13px] font-medium leading-[1.4] text-white'>
+					<div className='flex-1 rounded-[12px] rounded-tl-none border border-white/[0.06] bg-[#09f] p-3'>
+						<p className='text-trim font-sans text-[14px] font-medium leading-[1.4] text-white'>
 							You addressed risks clearly and secured next steps but could ask
 							more on their team’s concerns.
 						</p>
@@ -1019,10 +1030,17 @@ function ChatBubbleRow({
 }) {
 	const isAI = bubble.side === 'ai'
 	const fromX = isAI ? -10 : 10
+	/* Per Figma 200:282/200:293: user-bubble rows always have pt-[20px] for
+	 * badge clearance (badge sticks 19px above the bubble). AI rows have
+	 * pr-[24px] to keep the avatar+bubble from kissing the right edge. */
 	return (
-		<div className={`flex w-full ${isAI ? 'justify-start' : 'justify-end'} ${bubble.badge ? 'pt-4' : ''}`}>
+		<div
+			className={`flex w-full ${
+				isAI ? 'justify-start pr-6' : 'justify-end pl-6 pt-5'
+			}`}
+		>
 			<motion.div
-				className={`flex max-w-[78%] items-end gap-1.5 ${isAI ? '' : 'flex-row-reverse'}`}
+				className={`flex max-w-[80%] items-end gap-2 ${isAI ? '' : 'flex-row-reverse'}`}
 				initial={{ opacity: 0, x: fromX, y: 4 }}
 				animate={{ opacity: 1, x: 0, y: 0 }}
 				transition={
@@ -1047,17 +1065,17 @@ function ChatBubbleRow({
 					<div
 						className={
 							isAI
-								? 'rounded-[12px] rounded-bl-none border border-white/[0.06] bg-cc-surface-card px-3 py-2.5'
-								: 'rounded-[12px] rounded-br-none border border-white/[0.06] bg-[#09f] px-3 py-2.5'
+								? 'rounded-[12px] rounded-bl-none border border-white/[0.06] bg-cc-surface-card p-3'
+								: 'rounded-[12px] rounded-br-none border border-white/[0.06] bg-[#09f] p-3'
 						}
 					>
-						<p className='text-trim font-sans text-[13px] font-normal leading-[1.4] text-white'>
+						<p className='text-trim font-sans text-[16px] font-normal leading-[1.4] text-white'>
 							{bubble.text}
 						</p>
 					</div>
 					{bubble.badge && (
 						<motion.div
-							className={`absolute -top-3 ${isAI ? 'right-2' : 'left-2'} flex shrink-0 items-center gap-1 rounded-full border border-white/[0.06] bg-cc-surface-card px-1.5 py-0.5 shadow-[0_2px_2px_rgba(0,0,0,0.4)]`}
+							className='absolute -left-[9px] -top-[19px] flex shrink-0 items-center gap-1 rounded-full border border-white/[0.06] bg-cc-surface-card pl-1.5 pr-3 py-1.5 shadow-[0_2px_2px_rgba(0,0,0,0.4)]'
 							initial={{ opacity: 0, scale: 0.8, y: 4 }}
 							animate={{ opacity: 1, scale: 1, y: 0 }}
 							transition={
@@ -1067,12 +1085,12 @@ function ChatBubbleRow({
 							}
 						>
 							{bubble.badge.kind === 'positive' ? (
-								<Lightning size={9} weight='fill' className='text-cc-mint' />
+								<Lightning size={10} weight='fill' className='text-cc-mint' />
 							) : (
-								<XCircle size={9} weight='fill' className='text-[#ff6467]' />
+								<XCircle size={10} weight='fill' className='text-[#ff6467]' />
 							)}
 							<span
-								className={`text-trim font-sans text-[11px] font-medium leading-none ${
+								className={`text-trim font-sans text-[14px] font-medium leading-[15px] ${
 									bubble.badge.kind === 'positive' ? 'text-cc-mint' : 'text-[#ff6467]'
 								}`}
 							>
@@ -1088,55 +1106,59 @@ function ChatBubbleRow({
 
 function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 	return (
-		<div className='flex h-full flex-col gap-3 px-4 pb-2 pt-3'>
+		<div className='flex h-full flex-col gap-6 px-4 pb-2 pt-2'>
 			{/* Header: Camil avatar (layoutId target from State 4 brand circle)
-			 * + name + REC dot + timer. Divider line beneath. */}
-			<div className='flex flex-col items-center gap-2 border-b border-white/[0.15] pb-3'>
-				<motion.div
-					layoutId='prospect-camil-avatar'
-					className='relative size-[48px] overflow-hidden rounded-full border border-white/[0.05]'
-				>
-					<Image
-						src='/images/prospects/camil-v3.png'
-						alt='Camil'
-						fill
-						sizes='48px'
-						className='object-cover'
-						style={{ objectPosition: 'center top' }}
-					/>
-				</motion.div>
-				<div className='flex items-center gap-2'>
-					<motion.span
-						layoutId='prospect-camil-name'
-						className='text-trim font-sans text-[16px] font-medium leading-none text-white'
+			 * + name + REC dot + timer. Divider line beneath. Per Figma 200:244
+			 * the header uses gap-6 (24px) between avatar group and divider. */}
+			<div className='flex flex-col items-center justify-center gap-6 border-b border-white/[0.15] pb-4'>
+				<div className='flex flex-col items-center gap-2'>
+					<motion.div
+						layoutId='prospect-camil-avatar'
+						className='relative size-[48px] overflow-hidden rounded-full border border-white/[0.05]'
 					>
-						Camil
-					</motion.span>
-					<motion.span
-						className='size-1 rounded-full bg-cc-score-red'
-						animate={
-							reducedMotion ? { opacity: 1 } : { opacity: [0.4, 1, 0.4] }
-						}
-						transition={
-							reducedMotion
-								? { duration: 0 }
-								: { duration: 1.4, repeat: Infinity, ease: 'easeInOut' }
-						}
-					/>
-					<span className='text-trim font-sans text-[13px] font-medium leading-none text-white/80 tabular-nums'>
-						00:34
-					</span>
-					<span className='text-trim font-sans text-[13px] font-medium leading-none text-white/50'>
-						/
-					</span>
-					<span className='text-trim font-sans text-[13px] font-medium leading-none text-white/50 tabular-nums'>
-						10:00
-					</span>
+						<Image
+							src='/images/prospects/camil-v3.png'
+							alt='Camil'
+							fill
+							sizes='48px'
+							className='object-cover'
+							style={{ objectPosition: 'center top' }}
+						/>
+					</motion.div>
+					<div className='flex items-center gap-2'>
+						<motion.span
+							layoutId='prospect-camil-name'
+							className='text-trim font-sans text-[16px] font-medium leading-[16px] text-white'
+						>
+							Camil
+						</motion.span>
+						<motion.span
+							className='size-1 rounded-full bg-cc-score-red'
+							animate={
+								reducedMotion ? { opacity: 1 } : { opacity: [0.4, 1, 0.4] }
+							}
+							transition={
+								reducedMotion
+									? { duration: 0 }
+									: { duration: 1.4, repeat: Infinity, ease: 'easeInOut' }
+							}
+						/>
+						<span className='text-trim font-sans text-[14px] font-medium leading-none text-white/80 tabular-nums'>
+							00:34
+						</span>
+						<span className='text-trim font-sans text-[14px] font-medium leading-none text-white/50'>
+							/
+						</span>
+						<span className='text-trim font-sans text-[14px] font-medium leading-none text-white/50 tabular-nums'>
+							10:00
+						</span>
+					</div>
 				</div>
 			</div>
 
-			{/* Chat area. Cascades 4 bubbles with badge stamps. */}
-			<div className='flex flex-1 flex-col gap-2 overflow-hidden'>
+			{/* Chat area. Cascades 4 bubbles with badge stamps. Per Figma
+			 * 200:277, gap-6 (24px) between rows. */}
+			<div className='flex flex-1 flex-col gap-6 overflow-hidden'>
 				{STATE5_BUBBLES.map((bubble) => (
 					<ChatBubbleRow
 						key={bubble.id}
@@ -1146,11 +1168,11 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 				))}
 			</div>
 
-			{/* Mic bar with active waveform. Enters with the screen as part of the
-			 * persistent recording UI, not mid-cascade — moved from 2.4s to 0.2s
-			 * 2026-05-05 so it doesn't compete with the chat bubbles. */}
+			{/* Mic bar with active waveform. Per Figma 200:304: 40px mic-icon
+			 * container, 24px Microphone icon, 14px label. Enters early at 0.2s
+			 * as persistent UI, not mid-cascade. */}
 			<motion.div
-				className='flex items-center gap-2 rounded-[24px] border border-cc-accent/60 bg-cc-accent/15 py-1 pl-1 pr-2.5 shadow-[0_0_20px_rgba(16,185,129,0.4)]'
+				className='flex items-center gap-2 rounded-[24px] border border-cc-accent/60 bg-cc-accent/15 py-[5px] pl-[5px] pr-[9px] shadow-[0_0_20px_rgba(16,185,129,0.4)]'
 				initial={{ opacity: 0, y: 8 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={
@@ -1159,10 +1181,10 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 						: { ...SPRING_FIELD, delay: 0.2 }
 				}
 			>
-				<div className='flex size-[36px] shrink-0 items-center justify-center rounded-full bg-cc-accent/25'>
-					<Microphone size={18} weight='fill' className='text-white' />
+				<div className='flex size-[40px] shrink-0 items-center justify-center rounded-full bg-cc-accent/25'>
+					<Microphone size={24} weight='fill' className='text-white' />
 				</div>
-				<span className='text-trim flex-1 truncate font-sans text-[12px] font-medium leading-none text-white/90'>
+				<span className='text-trim min-w-0 flex-1 truncate font-sans text-[14px] font-medium leading-none text-white/90'>
 					Record your response
 				</span>
 				<MicWaveform bars={22} reducedMotion={reducedMotion} />
@@ -1241,9 +1263,9 @@ function State4CallConnecting({ reducedMotion }: { reducedMotion: boolean }) {
 }
 
 function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
-	/* Cards land outermost-first per brief §5: Brandon (left, -3°) at 0.45s,
-	 * Caleb (middle, 0°) at 0.65s, Camil (right, +3°) at 0.85s — last to
-	 * settle, on top, signals "this is the one to call." */
+	/* Cards land outermost-first per brief §5: Brandon (left) at 0.45s,
+	 * Caleb (right) at 0.65s, Camil (center, taller) at 0.85s — last to
+	 * settle, focal point, signals "this is the one to call." */
 	const cardDelays = { brandon: 0.45, caleb: 0.65, camil: 0.85 }
 
 	/* Press the Call Camil CTA right before state advances to State 4. */
@@ -1271,19 +1293,23 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 				</p>
 			</motion.div>
 
-			{/* 3-card carousel: Brandon | Caleb | Camil with overlapping margins.
-			 * justify-center keeps the cluster visually centered with Camil
-			 * (rightmost, on top, +3°) sitting roughly at the phone center. */}
-			<div className='flex w-full flex-1 items-center justify-center overflow-visible py-2'>
-				{STATE3_PROSPECTS.map((prospect) => (
-					<ProspectCard
-						key={prospect.id}
-						prospect={prospect}
-						enterDelay={cardDelays[prospect.id]}
-						reducedMotion={reducedMotion}
-						isCamil={prospect.id === 'camil'}
-					/>
-				))}
+			{/* 3-card row: Brandon | Camil | Caleb. Cards are 250px each with
+			 * gap-4 (16px). Total row width 782px overflows the phone screen
+			 * (~294px inner width) — overflow-clip + flex justify-center
+			 * centers the row so Camil sits in the middle and the side cards
+			 * become edge slivers. */}
+			<div className='-mx-4 flex w-[calc(100%+2rem)] flex-1 items-center justify-center overflow-clip py-2'>
+				<div className='flex shrink-0 items-center gap-4'>
+					{STATE3_PROSPECTS.map((prospect) => (
+						<ProspectCard
+							key={prospect.id}
+							prospect={prospect}
+							enterDelay={cardDelays[prospect.id]}
+							reducedMotion={reducedMotion}
+							isCamil={prospect.id === 'camil'}
+						/>
+					))}
+				</div>
 			</div>
 
 			{/* Call Camil CTA. */}
@@ -1321,36 +1347,23 @@ function State1Onboarding({ reducedMotion }: { reducedMotion: boolean }) {
 			<div className='flex flex-1 w-full flex-col items-center justify-center gap-10'>
 				<BrowserMock reducedMotion={reducedMotion} />
 
-				<div className='flex w-full flex-col gap-6'>
-					<motion.div
-						className='flex w-full flex-col items-center gap-6 text-center'
-						initial={{ opacity: 0, y: 12 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 0.6 }}
-					>
-						<h2 className='text-trim font-sans text-[28px] font-semibold leading-tight text-white'>
-							What do you sell?
-						</h2>
-						<p className='text-trim w-full text-[16px] font-normal leading-[1.5] text-white/50'>
-							We research your business to build customers and role play
-							scenarios you can practice against.
-						</p>
-					</motion.div>
-
-					<motion.div
-						className='flex w-full items-center justify-between rounded-[8px] border border-white/[0.14] bg-[rgba(30,34,48,0.4)] p-[13px] shadow-[0_0_20px_rgba(16,185,129,0.15),0_8px_16px_rgba(0,0,0,0.6)]'
-						initial={{ opacity: 0, y: 12 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 0.85 }}
-					>
-						<span className='text-trim text-[12px] font-medium text-white/50'>
-							Link to your website
-						</span>
-						<span className='text-trim text-[12px] font-medium text-cc-accent'>
-							Paste
-						</span>
-					</motion.div>
-				</div>
+				{/* Paste input removed 2026-05-06 per Andy: redundant since the URL
+				 * is already highlighted as selected text in the browser visual
+				 * above the heading. The narrative beat reads cleanly without it. */}
+				<motion.div
+					className='flex w-full flex-col items-center gap-6 text-center'
+					initial={{ opacity: 0, y: 12 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 0.6 }}
+				>
+					<h2 className='text-trim font-sans text-[28px] font-semibold leading-tight text-white'>
+						What do you sell?
+					</h2>
+					<p className='text-trim w-full text-[16px] font-normal leading-[1.5] text-white/50'>
+						We research your business to build customers and role play
+						scenarios you can practice against.
+					</p>
+				</motion.div>
 			</div>
 
 			<motion.button
