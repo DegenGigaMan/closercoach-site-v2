@@ -538,11 +538,13 @@ const STATE3_PROSPECTS: ReadonlyArray<ProspectData> = [
 function ProspectCard({
 	prospect,
 	enterDelay,
+	enterFromX,
 	reducedMotion,
 	isCamil,
 }: {
 	prospect: ProspectData
 	enterDelay: number
+	enterFromX: number
 	reducedMotion: boolean
 	isCamil: boolean
 }) {
@@ -550,10 +552,10 @@ function ProspectCard({
 	const fadeHeightPx = isCamil ? 209 : 174
 	return (
 		<motion.div
-			className='relative flex w-[250px] shrink-0 flex-col items-start justify-end gap-6 overflow-clip rounded-[16px] border border-white/30 p-[13px] shadow-[0_8px_16px_rgba(0,0,0,0.6)]'
+			className='relative isolate flex w-[250px] shrink-0 flex-col items-start justify-end gap-6 overflow-hidden rounded-[16px] border border-white/30 p-[13px] shadow-[0_8px_16px_rgba(0,0,0,0.6)]'
 			style={{ height: prospect.heightPx }}
-			initial={{ opacity: 0, y: 24, scale: 0.9 }}
-			animate={{ opacity: 1, y: 0, scale: 1 }}
+			initial={{ opacity: 0, y: 24, x: enterFromX, scale: 0.94 }}
+			animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
 			transition={
 				reducedMotion
 					? { duration: 0 }
@@ -561,9 +563,14 @@ function ProspectCard({
 			}
 		>
 			{/* Photo background fills the entire card. Camil's image is wrapped
-			 * in a layoutId motion.div so it morphs into State 4's brand circle. */}
+			 * in a layoutId motion.div so it morphs into State 4's brand circle.
+			 * The wrapper inherits the card's rounded corners + overflow-hidden
+			 * so the photo can't leak past the rounded edges. */}
 			{isCamil ? (
-				<motion.div layoutId='prospect-camil-avatar' className='absolute inset-0'>
+				<motion.div
+					layoutId='prospect-camil-avatar'
+					className='absolute inset-0 overflow-hidden rounded-[inherit]'
+				>
 					<Image
 						src={prospect.photo}
 						alt={prospect.name}
@@ -575,25 +582,55 @@ function ProspectCard({
 					/>
 				</motion.div>
 			) : (
-				<Image
-					src={prospect.photo}
-					alt={prospect.name}
-					fill
-					sizes='250px'
-					className='object-cover'
-					style={{ objectPosition: 'center top' }}
-				/>
+				<div className='absolute inset-0 overflow-hidden rounded-[inherit]'>
+					<Image
+						src={prospect.photo}
+						alt={prospect.name}
+						fill
+						sizes='250px'
+						className='object-cover'
+						style={{ objectPosition: 'center top' }}
+					/>
+				</div>
 			)}
 
-			{/* Blur fade gradient sits above the photo, below the text. */}
+			{/* Progressive blur fade: stack of 3 backdrop-blur layers each masked
+			 * with a different gradient so the blur intensity ramps from 0 at
+			 * top to full at the bottom. The top of the blur frame blends into
+			 * the unblurred photo cleanly instead of slamming on a uniform blur. */}
 			<div
 				aria-hidden
-				className='pointer-events-none absolute inset-x-0 bottom-0 backdrop-blur-[6px]'
-				style={{
-					height: fadeHeightPx,
-					background: 'linear-gradient(to bottom, rgba(8,9,12,0) 0%, #08090c 88.94%)',
-				}}
-			/>
+				className='pointer-events-none absolute inset-x-0 bottom-0'
+				style={{ height: fadeHeightPx }}
+			>
+				<div
+					className='absolute inset-0 backdrop-blur-[1.5px]'
+					style={{
+						WebkitMaskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
+						maskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
+					}}
+				/>
+				<div
+					className='absolute inset-0 backdrop-blur-[4px]'
+					style={{
+						WebkitMaskImage: 'linear-gradient(to top, black 35%, transparent 80%)',
+						maskImage: 'linear-gradient(to top, black 35%, transparent 80%)',
+					}}
+				/>
+				<div
+					className='absolute inset-0 backdrop-blur-[8px]'
+					style={{
+						WebkitMaskImage: 'linear-gradient(to top, black 15%, transparent 55%)',
+						maskImage: 'linear-gradient(to top, black 15%, transparent 55%)',
+					}}
+				/>
+				<div
+					className='absolute inset-0'
+					style={{
+						background: 'linear-gradient(to bottom, rgba(8,9,12,0) 0%, #08090c 88.94%)',
+					}}
+				/>
+			</div>
 
 			{/* Customer name + role. */}
 			<div className='relative flex flex-col gap-3'>
@@ -762,39 +799,13 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 	}, [reducedMotion])
 
 	return (
-		<div className='flex h-full flex-col items-center gap-4 px-4 pb-2 pt-3'>
-			{/* Top 15% trophy pill + grade ring stack. Pill overlaps ring at
-			 * top via negative margin per Figma 191:636 (mb -16). */}
+		<div className='relative flex h-full flex-col items-center gap-4 overflow-hidden px-4 pb-2 pt-3'>
+			{/* Top 15% trophy pill + grade ring stack. Per Andy 2026-05-06 the
+			 * pill should sit ON the ring's top stroke (was floating above it
+			 * with a negative margin, now absolute-positioned over the ring
+			 * container so the pill's bottom edge aligns with the ring stroke
+			 * top — overlap per Figma reference Image #41). */}
 			<div className='flex w-full flex-col items-center'>
-				<motion.div
-					className='z-20 -mb-3 flex h-[24px] items-center gap-1 rounded-full border-[0.5px] border-[rgba(52,225,142,0.9)] bg-[#0d201f] px-2 py-1 shadow-[0_0_16px_rgba(52,225,142,0.3),0_8px_16px_rgba(0,0,0,0.6)]'
-					initial={{ opacity: 0, scale: 0.6, y: 6 }}
-					animate={
-						reducedMotion
-							? { opacity: 1, scale: 1, y: 0 }
-							: { opacity: 1, scale: 1, y: 0 }
-					}
-					transition={
-						reducedMotion ? { duration: 0 } : { ...SPRING_SCORE, delay: 0.15 }
-					}
-				>
-					<Trophy size={11} weight='fill' className='text-cc-mint' />
-					<motion.span
-						className='text-trim font-sans text-[11px] font-bold leading-none text-cc-mint'
-						animate={
-							reducedMotion ? { opacity: 1 } : { opacity: [1, 0.6, 1] }
-						}
-						transition={
-							reducedMotion
-								? { duration: 0 }
-								: { duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 2.5 }
-						}
-					>
-						Top 15%
-					</motion.span>
-				</motion.div>
-
-				{/* Grade ring 120px. Track + drawing arc + "A" letter. */}
 				<div className='relative flex size-[120px] items-center justify-center'>
 					<svg
 						width='120'
@@ -832,6 +843,31 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 					>
 						A
 					</motion.span>
+
+					{/* Top 15% pill — absolute over ring's top stroke. */}
+					<motion.div
+						className='absolute -top-[14px] left-1/2 z-20 flex h-[28px] -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full border-[0.5px] border-[rgba(52,225,142,0.9)] bg-[#0d201f] px-3 py-1 shadow-[0_0_16px_rgba(52,225,142,0.3),0_8px_16px_rgba(0,0,0,0.6)]'
+						initial={{ opacity: 0, scale: 0.6, y: 6 }}
+						animate={{ opacity: 1, scale: 1, y: 0 }}
+						transition={
+							reducedMotion ? { duration: 0 } : { ...SPRING_SCORE, delay: 0.15 }
+						}
+					>
+						<Trophy size={14} weight='fill' className='shrink-0 text-cc-mint' />
+						<motion.span
+							className='text-trim whitespace-nowrap font-sans text-[14px] font-bold leading-none text-cc-mint'
+							animate={
+								reducedMotion ? { opacity: 1 } : { opacity: [1, 0.6, 1] }
+							}
+							transition={
+								reducedMotion
+									? { duration: 0 }
+									: { duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 2.5 }
+							}
+						>
+							Top 15%
+						</motion.span>
+					</motion.div>
 				</div>
 			</div>
 
@@ -875,8 +911,13 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 				</motion.div>
 			</div>
 
-			{/* 3 scorecard cards with bottom blur fade. */}
-			<div className='relative flex w-full flex-1 flex-col gap-2 overflow-hidden'>
+			{/* 3 scorecard cards with bottom blur fade. flex-1 + min-h-0 lets
+			 * the container shrink below content size so card 3's bottom
+			 * portion gets clipped instead of pushing the Practice Again CTA
+			 * out of the phone frame. The 80px backdrop-blur fade visually
+			 * obscures card 3 so it reads as "more cards available, scroll
+			 * to see" instead of "broken layout". */}
+			<div className='relative flex w-full min-h-0 flex-1 flex-col gap-2 overflow-hidden'>
 				{STATE6_SCORECARDS.map((card, i) => (
 					<ScorecardRow
 						key={i}
@@ -887,10 +928,18 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 				))}
 				<div
 					aria-hidden
-					className='pointer-events-none absolute inset-x-0 bottom-0 h-[36px]'
+					className='pointer-events-none absolute inset-x-0 bottom-0 h-[80px] backdrop-blur-[3px]'
+					style={{
+						WebkitMaskImage: 'linear-gradient(to top, black 50%, transparent 100%)',
+						maskImage: 'linear-gradient(to top, black 50%, transparent 100%)',
+					}}
+				/>
+				<div
+					aria-hidden
+					className='pointer-events-none absolute inset-x-0 bottom-0 h-[80px]'
 					style={{
 						background:
-							'linear-gradient(to bottom, rgba(8,10,9,0) 0%, #080a09 100%)',
+							'linear-gradient(to bottom, rgba(8,10,9,0) 0%, rgba(8,10,9,0.85) 60%, #080a09 100%)',
 					}}
 				/>
 			</div>
@@ -1040,7 +1089,7 @@ function ChatBubbleRow({
 			}`}
 		>
 			<motion.div
-				className={`flex max-w-[80%] items-end gap-2 ${isAI ? '' : 'flex-row-reverse'}`}
+				className={`flex items-end gap-2 ${isAI ? '' : 'flex-row-reverse'}`}
 				initial={{ opacity: 0, x: fromX, y: 4 }}
 				animate={{ opacity: 1, x: 0, y: 0 }}
 				transition={
@@ -1061,7 +1110,11 @@ function ChatBubbleRow({
 						/>
 					</div>
 				)}
-				<div className='relative'>
+				{/* Bubble container caps at 260px so 1st/2nd/4th messages wrap
+				 * to 2 lines per Andy's reference (Image #39, 2026-05-06). The
+				 * 3rd bubble is the only one whose content forces 3 lines at
+				 * this width, which is the desired ratio. */}
+				<div className='relative max-w-[260px]'>
 					<div
 						className={
 							isAI
@@ -1263,10 +1316,18 @@ function State4CallConnecting({ reducedMotion }: { reducedMotion: boolean }) {
 }
 
 function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
-	/* Cards land outermost-first per brief §5: Brandon (left) at 0.45s,
-	 * Caleb (right) at 0.65s, Camil (center, taller) at 0.85s — last to
-	 * settle, focal point, signals "this is the one to call." */
-	const cardDelays = { brandon: 0.45, caleb: 0.65, camil: 0.85 }
+	/* Motion order updated 2026-05-06 per Andy: Camil leads (focal card
+	 * entering first establishes the lead), then Brandon and Caleb slide
+	 * in from off-screen to flank her. Reading priority Camil → sides
+	 * matches the visual hierarchy Camil-taller-+-centered already
+	 * communicates. Side cards enter with an x-translate from the
+	 * direction they sit, so the slivers feel like they're sliding into
+	 * frame instead of fading from nothing. */
+	const cardConfig = {
+		camil: { delay: 0.4, fromX: 0 },
+		brandon: { delay: 0.6, fromX: -40 },
+		caleb: { delay: 0.6, fromX: 40 },
+	} as const
 
 	/* Press the Call Camil CTA right before state advances to State 4. */
 	const [pressed, setPressed] = useState(false)
@@ -1304,7 +1365,8 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 						<ProspectCard
 							key={prospect.id}
 							prospect={prospect}
-							enterDelay={cardDelays[prospect.id]}
+							enterDelay={cardConfig[prospect.id].delay}
+							enterFromX={cardConfig[prospect.id].fromX}
 							reducedMotion={reducedMotion}
 							isCamil={prospect.id === 'camil'}
 						/>
@@ -1546,7 +1608,7 @@ export default function HeroPhoneV3({
 						<AnimatePresence mode='wait'>
 							<motion.div
 								key={activeIndex}
-								className='flex flex-1 flex-col'
+								className='flex min-h-0 flex-1 flex-col'
 								initial={{ opacity: 0, y: 12 }}
 								animate={{ opacity: 1, y: 0 }}
 								exit={{ opacity: 0, y: -12 }}
