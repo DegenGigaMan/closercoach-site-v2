@@ -799,7 +799,7 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 	}, [reducedMotion])
 
 	return (
-		<div className='relative flex h-full flex-col items-center gap-4 overflow-hidden px-4 pb-2 pt-3'>
+		<div className='relative flex h-full flex-col items-center gap-4 overflow-hidden px-4 pb-2 pt-8'>
 			{/* Top 15% trophy pill + grade ring stack. Per Andy 2026-05-06 the
 			 * pill should sit ON the ring's top stroke (was floating above it
 			 * with a negative margin, now absolute-positioned over the ring
