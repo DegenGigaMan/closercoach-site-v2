@@ -834,7 +834,7 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 						/>
 					</svg>
 					<motion.span
-						className='relative text-[44px] leading-none text-cc-mint [font-family:var(--font-cta),system-ui,sans-serif] font-semibold'
+						className='relative text-[48px] leading-[40px] text-cc-mint [font-family:var(--font-cta),system-ui,sans-serif] font-semibold'
 						initial={{ opacity: 0, scale: 0.4 }}
 						animate={{ opacity: 1, scale: 1 }}
 						transition={
@@ -1325,8 +1325,8 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 	 * frame instead of fading from nothing. */
 	const cardConfig = {
 		camil: { delay: 0.4, fromX: 0 },
-		brandon: { delay: 0.6, fromX: -40 },
-		caleb: { delay: 0.6, fromX: 40 },
+		brandon: { delay: 0.55, fromX: -40 },
+		caleb: { delay: 0.7, fromX: 40 },
 	} as const
 
 	/* Press the Call Camil CTA right before state advances to State 4. */
