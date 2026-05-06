@@ -38,6 +38,7 @@ import {
 	Binoculars,
 	CaretLeft,
 	CaretRight,
+	ChartBar,
 	Copy,
 	Export,
 	HeadCircuit,
@@ -362,6 +363,220 @@ function State2CreatingCustomers({ reducedMotion }: { reducedMotion: boolean }) 
 	)
 }
 
+/* ─── State 3: Start Training (carousel) ─────────────────────────
+ * Figma 192:1101. Title block + 3-card prospect stack + Call Camil CTA.
+ *
+ * Card stack: Brandon (-3°, leftmost), Caleb (0°, middle), Camil (+3°,
+ * rightmost forward). Cards overlap via negative right margins. Per
+ * brief §6 sub-states 3A-3E, cards fly in outermost-first so Camil is
+ * the LAST to settle and lands forward — that's the selection beat.
+ *
+ * Camil's card carries layoutId="prospect-camil-avatar" + "prospect-camil-name"
+ * which morph into State 4's brand circle and State 5's chat header. */
+
+type ProspectData = {
+	id: 'brandon' | 'caleb' | 'camil'
+	name: string
+	age: number
+	role: string
+	quote: string
+	difficulty: 'Easy' | 'Medium' | 'Hard'
+	difficultyColor: string
+	photo: string
+	rotation: number
+	zIndex: number
+}
+
+const STATE3_PROSPECTS: ReadonlyArray<ProspectData> = [
+	{
+		id: 'brandon',
+		name: 'Brandon',
+		age: 32,
+		role: 'Operations Lead @ Geico',
+		quote: '“I don’t have time for this right now.”',
+		difficulty: 'Easy',
+		difficultyColor: '#10B981',
+		photo: '/images/prospects/brandon.png',
+		rotation: -3,
+		zIndex: 1,
+	},
+	{
+		id: 'caleb',
+		name: 'Caleb',
+		age: 37,
+		role: 'CTO @ Everbank',
+		quote: '“We’re not fully aligned internally.”',
+		difficulty: 'Medium',
+		difficultyColor: '#F59E0B',
+		photo: '/images/prospects/caleb.png',
+		rotation: 0,
+		zIndex: 2,
+	},
+	{
+		id: 'camil',
+		name: 'Camil',
+		age: 42,
+		role: 'Finance Director @ Oracle',
+		quote: '“I’m not convinced the ROI is clear.”',
+		difficulty: 'Hard',
+		difficultyColor: '#FF5A5A',
+		photo: '/images/prospects/camil-v3.png',
+		rotation: 3,
+		zIndex: 3,
+	},
+] as const
+
+function ProspectCard({
+	prospect,
+	enterDelay,
+	reducedMotion,
+	isCamil,
+}: {
+	prospect: ProspectData
+	enterDelay: number
+	reducedMotion: boolean
+	isCamil: boolean
+}) {
+	const Icon = ChartBar
+	return (
+		<motion.div
+			className='relative shrink-0'
+			style={{ zIndex: prospect.zIndex, marginRight: prospect.id === 'camil' ? 0 : -204 }}
+			initial={{ opacity: 0, y: 24, scale: 0.85, rotate: 0 }}
+			animate={{ opacity: 1, y: 0, scale: 1, rotate: prospect.rotation }}
+			transition={
+				reducedMotion
+					? { duration: 0 }
+					: { ...SPRING_CARD, delay: enterDelay }
+			}
+		>
+			<div className='flex w-[214px] flex-col gap-3 rounded-[16px] border border-white/[0.14] bg-cc-surface-card p-[10px] shadow-[-8px_8px_16px_rgba(0,0,0,0.6),0_0_20px_rgba(16,185,129,0.05)]'>
+				{/* Image area with name+role overlay at bottom. */}
+				<div className='relative flex h-[190px] items-end overflow-hidden rounded-[8px] border border-white/[0.05]'>
+					{isCamil ? (
+						<motion.div
+							layoutId='prospect-camil-avatar'
+							className='absolute inset-0'
+						>
+							<Image
+								src={prospect.photo}
+								alt={prospect.name}
+								fill
+								sizes='214px'
+								className='object-cover'
+								priority
+							/>
+						</motion.div>
+					) : (
+						<Image
+							src={prospect.photo}
+							alt={prospect.name}
+							fill
+							sizes='214px'
+							className='object-cover'
+						/>
+					)}
+					{/* Bottom blur fade gradient. */}
+					<div
+						aria-hidden
+						className='absolute inset-x-0 bottom-0 h-[60px]'
+						style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.85) 100%)' }}
+					/>
+					{/* Name + role overlay. */}
+					<div className='relative z-10 flex w-full flex-col gap-1 px-3 pb-3'>
+						{isCamil ? (
+							<motion.span
+								layoutId='prospect-camil-name'
+								className='text-trim font-sans text-[15px] font-medium leading-none text-white'
+							>
+								{prospect.name}, {prospect.age}
+							</motion.span>
+						) : (
+							<span className='text-trim font-sans text-[15px] font-medium leading-none text-white'>
+								{prospect.name}, {prospect.age}
+							</span>
+						)}
+						<span className='text-trim whitespace-nowrap font-sans text-[11px] font-medium leading-none text-white/60'>
+							{prospect.role}
+						</span>
+					</div>
+				</div>
+
+				{/* Quote. */}
+				<p className='font-sans text-[18px] font-medium leading-[1.2] text-white'>
+					{prospect.quote}
+				</p>
+
+				{/* Difficulty pill. */}
+				<div className='flex items-center gap-1'>
+					<Icon size={14} weight='fill' style={{ color: prospect.difficultyColor }} />
+					<span
+						className='text-trim font-sans text-[13px] font-semibold leading-none'
+						style={{ color: prospect.difficultyColor }}
+					>
+						{prospect.difficulty}
+					</span>
+				</div>
+			</div>
+		</motion.div>
+	)
+}
+
+function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
+	/* Cards land outermost-first per brief §5: Brandon (left, -3°) at 0.45s,
+	 * Caleb (middle, 0°) at 0.65s, Camil (right, +3°) at 0.85s — last to
+	 * settle, on top, signals "this is the one to call." */
+	const cardDelays = { brandon: 0.45, caleb: 0.65, camil: 0.85 }
+
+	return (
+		<div className='flex h-full flex-col items-center justify-between gap-4 px-4 pb-2 pt-4'>
+			{/* Title block. */}
+			<motion.div
+				className='flex w-full flex-col items-center gap-6 text-center'
+				initial={{ opacity: 0, y: 12 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 0.05 }}
+			>
+				<h2 className='text-trim font-sans text-[28px] font-semibold leading-[1.15] text-white'>
+					Start training!
+				</h2>
+				<p className='text-trim font-sans text-[16px] font-normal leading-[1.6] text-white/50'>
+					Your AI Customers are ready.
+				</p>
+			</motion.div>
+
+			{/* 3-card carousel: Brandon | Caleb | Camil with overlapping margins.
+			 * justify-center keeps the cluster visually centered with Camil
+			 * (rightmost, on top, +3°) sitting roughly at the phone center. */}
+			<div className='flex w-full flex-1 items-center justify-center overflow-visible py-2'>
+				{STATE3_PROSPECTS.map((prospect) => (
+					<ProspectCard
+						key={prospect.id}
+						prospect={prospect}
+						enterDelay={cardDelays[prospect.id]}
+						reducedMotion={reducedMotion}
+						isCamil={prospect.id === 'camil'}
+					/>
+				))}
+			</div>
+
+			{/* Call Camil CTA. */}
+			<motion.button
+				type='button'
+				className='flex h-[48px] w-full items-center justify-center gap-[10px] rounded-[27px] bg-cc-mint shadow-[0_8px_20px_rgba(52,225,142,0.18)]'
+				initial={{ opacity: 0, y: 14 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 1.1 }}
+			>
+				<span className='text-trim text-[16px] font-bold text-black [font-family:var(--font-cta),system-ui,sans-serif]'>
+					Call Camil
+				</span>
+				<ArrowRight size={16} weight='bold' className='text-black' />
+			</motion.button>
+		</div>
+	)
+}
+
 function State1Onboarding({ reducedMotion }: { reducedMotion: boolean }) {
 	return (
 		<div className='flex h-full flex-col items-center justify-between px-4 pb-2 pt-2'>
@@ -567,6 +782,8 @@ export default function HeroPhoneV3({
 									<State1Onboarding reducedMotion={prefersReducedMotion} />
 								) : activeIndex === 1 ? (
 									<State2CreatingCustomers reducedMotion={prefersReducedMotion} />
+								) : activeIndex === 2 ? (
+									<State3StartTraining reducedMotion={prefersReducedMotion} />
 								) : (
 									<PlaceholderBody state={activeIndex} />
 								)}
