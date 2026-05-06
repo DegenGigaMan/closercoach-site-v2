@@ -59,6 +59,11 @@ const CC_LOGO = '/cc-logo.png'
 const SPRING_CARD = { type: 'spring' as const, stiffness: 250, damping: 22 }
 const SPRING_FIELD = { type: 'spring' as const, stiffness: 380, damping: 26 }
 const SPRING_LAYOUT = { type: 'spring' as const, stiffness: 200, damping: 30 }
+/* Snappy press feedback for state-driving CTAs. Higher stiffness, lower
+ * mass-feel so the "click" lands fast (no spongey overshoot). */
+const SPRING_PRESS = { type: 'spring' as const, stiffness: 600, damping: 28 }
+/* Lead-time before each state's dwell expires when CTA-press fires. */
+const PRESS_LEAD_MS = 320
 
 /* Per-state autoplay dwell. Calibrated post-Step-7 against each state's
  * sub-state cascade so every animation lands before the cycle advances:
@@ -67,9 +72,11 @@ const SPRING_LAYOUT = { type: 'spring' as const, stiffness: 200, damping: 30 }
  *   State 2 (5.0s): last pill flash ends ~3.9s; +1.1s breathing.
  *   State 3 (3.6s): Camil card lands at 0.85s; +2.7s "select me" breathe.
  *   State 4 (2.8s): cinematic — let the ring pulse breathe a beat.
- *   State 5 (5.8s): mic bar at 2.4s; +3.4s for chat cascade to read.
+ *   State 5 (6.8s): chat cascade ends ~4.05s (last badge); +2.75s for
+ *     viewer to read the final exchange (slower cascade per S+ pass
+ *     2026-05-05 so each bubble reads one-by-one).
  *   State 6 (4.6s): CTA at 2.7s; +1.9s for "A" + scorecard cascade.
- * Cycle total ≈ 25.2s, in the 14-18s estimate from brief §7 once the
+ * Cycle total ≈ 26.2s, in the 14-18s estimate from brief §7 once the
  * loop fade is folded in. Brief §0: timing unrestricted, every state
  * breathes. */
 const STATE_DWELL_MS: Record<HeroV3StateIndex, number> = {
@@ -77,7 +84,7 @@ const STATE_DWELL_MS: Record<HeroV3StateIndex, number> = {
 	1: 5000,
 	2: 3600,
 	3: 2800,
-	4: 5800,
+	4: 6800,
 	5: 4600,
 }
 
@@ -497,6 +504,7 @@ function ProspectCard({
 								fill
 								sizes='214px'
 								className='object-cover'
+								style={{ objectPosition: 'center top' }}
 								priority
 							/>
 						</motion.div>
@@ -507,6 +515,7 @@ function ProspectCard({
 							fill
 							sizes='214px'
 							className='object-cover'
+							style={{ objectPosition: 'center top' }}
 						/>
 					)}
 					{/* Bottom blur fade gradient. */}
@@ -536,7 +545,7 @@ function ProspectCard({
 				</div>
 
 				{/* Quote. */}
-				<p className='font-sans text-[18px] font-medium leading-[1.2] text-white'>
+				<p className='text-trim font-sans text-[18px] font-medium leading-[1.2] text-white'>
 					{prospect.quote}
 				</p>
 
@@ -668,6 +677,17 @@ function ScorecardRow({
 function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 	const RING_R = 50
 	const RING_C = 2 * Math.PI * RING_R
+
+	/* Press Practice Again right before the loop fade-to-black starts. This
+	 * is the "user kicks off another practice round" beat — without press
+	 * feedback the loop restart reads as a teleport. */
+	const [pressed, setPressed] = useState(false)
+	useEffect(() => {
+		if (reducedMotion) return
+		const t = setTimeout(() => setPressed(true), STATE_DWELL_MS[5] - PRESS_LEAD_MS)
+		return () => clearTimeout(t)
+	}, [reducedMotion])
+
 	return (
 		<div className='flex h-full flex-col items-center gap-4 px-4 pb-2 pt-3'>
 			{/* Top 15% trophy pill + grade ring stack. Pill overlaps ring at
@@ -769,10 +789,11 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 							fill
 							sizes='36px'
 							className='object-cover'
+							style={{ objectPosition: 'center top' }}
 						/>
 					</div>
 					<div className='flex-1 rounded-[12px] rounded-tl-none border border-white/[0.06] bg-[#09f] p-2.5'>
-						<p className='font-sans text-[13px] font-medium leading-[1.4] text-white'>
+						<p className='text-trim font-sans text-[13px] font-medium leading-[1.4] text-white'>
 							You addressed risks clearly and secured next steps but could ask
 							more on their team’s concerns.
 						</p>
@@ -805,10 +826,11 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 				type='button'
 				className='flex h-[48px] w-full items-center justify-center gap-[10px] rounded-[27px] bg-cc-mint shadow-[0_8px_20px_rgba(52,225,142,0.18)]'
 				initial={{ opacity: 0, y: 14 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={
-					reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 2.7 }
-				}
+				animate={{ opacity: 1, y: 0, scale: pressed ? 0.94 : 1 }}
+				transition={{
+					default: reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 2.7 },
+					scale: SPRING_PRESS,
+				}}
 			>
 				<span className='text-trim text-[16px] font-bold text-[#313131] [font-family:var(--font-cta),system-ui,sans-serif]'>
 					Practice Again
@@ -892,32 +914,36 @@ type ChatBubble = {
 	badge?: { kind: 'positive' | 'negative', label: string, delay: number }
 }
 
+/* Cascade timing tuned for readability (per Andy 2026-05-05 S+ pass): bubbles
+ * land ~1s apart so a viewer can follow each line one by one. Mic bar enters
+ * early (0.2s) as part of the screen UI, not mid-cascade. Badges stamp ~350ms
+ * after their parent bubble settles. Total cascade ≈ 4.0s + ~2s breathing. */
 const STATE5_BUBBLES: ReadonlyArray<ChatBubble> = [
 	{
 		id: 'ai-1',
 		side: 'ai',
 		text: 'Thanks, but we already have a solution in place.',
-		delay: 0.3,
+		delay: 0.5,
 	},
 	{
 		id: 'user-1',
 		side: 'user',
 		text: 'I hear you. What’s working well with your current setup?',
-		delay: 0.7,
-		badge: { kind: 'positive', label: 'Great Response', delay: 1.05 },
+		delay: 1.5,
+		badge: { kind: 'positive', label: 'Great Response', delay: 1.85 },
 	},
 	{
 		id: 'ai-2',
 		side: 'ai',
 		text: 'Our current vendor handles most of what you’re describing.',
-		delay: 1.3,
+		delay: 2.7,
 	},
 	{
 		id: 'user-2',
 		side: 'user',
 		text: 'I understand. Can I show you a 30-day ROI comparison?',
-		delay: 1.7,
-		badge: { kind: 'negative', label: 'Missed The Mark', delay: 2.05 },
+		delay: 3.7,
+		badge: { kind: 'negative', label: 'Missed The Mark', delay: 4.05 },
 	},
 ] as const
 
@@ -950,6 +976,7 @@ function ChatBubbleRow({
 							fill
 							sizes='20px'
 							className='object-cover'
+							style={{ objectPosition: 'center top' }}
 						/>
 					</div>
 				)}
@@ -967,7 +994,7 @@ function ChatBubbleRow({
 					</div>
 					{bubble.badge && (
 						<motion.div
-							className={`absolute -top-3 ${isAI ? 'left-2' : 'right-2'} flex shrink-0 items-center gap-1 rounded-full border border-white/[0.06] bg-cc-surface-card px-1.5 py-0.5 shadow-[0_2px_2px_rgba(0,0,0,0.4)]`}
+							className={`absolute -top-3 ${isAI ? 'right-2' : 'left-2'} flex shrink-0 items-center gap-1 rounded-full border border-white/[0.06] bg-cc-surface-card px-1.5 py-0.5 shadow-[0_2px_2px_rgba(0,0,0,0.4)]`}
 							initial={{ opacity: 0, scale: 0.8, y: 4 }}
 							animate={{ opacity: 1, scale: 1, y: 0 }}
 							transition={
@@ -1012,6 +1039,7 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 						fill
 						sizes='48px'
 						className='object-cover'
+						style={{ objectPosition: 'center top' }}
 					/>
 				</motion.div>
 				<div className='flex items-center gap-2'>
@@ -1055,7 +1083,9 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 				))}
 			</div>
 
-			{/* Mic bar with active waveform. */}
+			{/* Mic bar with active waveform. Enters with the screen as part of the
+			 * persistent recording UI, not mid-cascade — moved from 2.4s to 0.2s
+			 * 2026-05-05 so it doesn't compete with the chat bubbles. */}
 			<motion.div
 				className='flex items-center gap-2 rounded-[24px] border border-cc-accent/60 bg-cc-accent/15 py-1 pl-1 pr-2.5 shadow-[0_0_20px_rgba(16,185,129,0.4)]'
 				initial={{ opacity: 0, y: 8 }}
@@ -1063,7 +1093,7 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 				transition={
 					reducedMotion
 						? { duration: 0 }
-						: { ...SPRING_FIELD, delay: 2.4 }
+						: { ...SPRING_FIELD, delay: 0.2 }
 				}
 			>
 				<div className='flex size-[36px] shrink-0 items-center justify-center rounded-full bg-cc-accent/25'>
@@ -1109,6 +1139,7 @@ function State4CallConnecting({ reducedMotion }: { reducedMotion: boolean }) {
 						fill
 						sizes='133px'
 						className='object-cover'
+						style={{ objectPosition: 'center top' }}
 					/>
 				</motion.div>
 			</motion.div>
@@ -1152,6 +1183,14 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 	 * settle, on top, signals "this is the one to call." */
 	const cardDelays = { brandon: 0.45, caleb: 0.65, camil: 0.85 }
 
+	/* Press the Call Camil CTA right before state advances to State 4. */
+	const [pressed, setPressed] = useState(false)
+	useEffect(() => {
+		if (reducedMotion) return
+		const t = setTimeout(() => setPressed(true), STATE_DWELL_MS[2] - PRESS_LEAD_MS)
+		return () => clearTimeout(t)
+	}, [reducedMotion])
+
 	return (
 		<div className='flex h-full flex-col items-center justify-between gap-4 px-4 pb-2 pt-4'>
 			{/* Title block. */}
@@ -1189,8 +1228,11 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 				type='button'
 				className='flex h-[48px] w-full items-center justify-center gap-[10px] rounded-[27px] bg-cc-mint shadow-[0_8px_20px_rgba(52,225,142,0.18)]'
 				initial={{ opacity: 0, y: 14 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 1.1 }}
+				animate={{ opacity: 1, y: 0, scale: pressed ? 0.94 : 1 }}
+				transition={{
+					default: reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 1.1 },
+					scale: SPRING_PRESS,
+				}}
 			>
 				<span className='text-trim text-[16px] font-bold text-black [font-family:var(--font-cta),system-ui,sans-serif]'>
 					Call Camil
@@ -1202,6 +1244,15 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 }
 
 function State1Onboarding({ reducedMotion }: { reducedMotion: boolean }) {
+	/* Press the Continue CTA ~300ms before the state advances to provide
+	 * "click happened" feedback that justifies the transition to State 2. */
+	const [pressed, setPressed] = useState(false)
+	useEffect(() => {
+		if (reducedMotion) return
+		const t = setTimeout(() => setPressed(true), STATE_DWELL_MS[0] - PRESS_LEAD_MS)
+		return () => clearTimeout(t)
+	}, [reducedMotion])
+
 	return (
 		<div className='flex h-full flex-col items-center justify-between px-4 pb-2 pt-2'>
 			<div className='flex flex-1 w-full flex-col items-center justify-center gap-10'>
@@ -1243,8 +1294,11 @@ function State1Onboarding({ reducedMotion }: { reducedMotion: boolean }) {
 				type='button'
 				className='mt-4 flex h-[48px] w-full items-center justify-center gap-[10px] rounded-[27px] bg-cc-mint shadow-[0_8px_20px_rgba(52,225,142,0.18)]'
 				initial={{ opacity: 0, y: 14 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 1.05 }}
+				animate={{ opacity: 1, y: 0, scale: pressed ? 0.94 : 1 }}
+				transition={{
+					default: reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 1.05 },
+					scale: SPRING_PRESS,
+				}}
 			>
 				<span className='text-trim text-[16px] font-bold text-black [font-family:var(--font-cta),system-ui,sans-serif]'>
 					Continue
