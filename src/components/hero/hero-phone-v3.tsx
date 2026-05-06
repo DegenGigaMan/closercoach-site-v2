@@ -31,8 +31,23 @@ import {
 	useReducedMotion,
 } from 'motion/react'
 import Image from 'next/image'
+import { TypeAnimation } from 'react-type-animation'
+import {
+	ArrowRight,
+	CaretLeft,
+	CaretRight,
+	Copy,
+	Image as ImageIcon,
+	BookOpen,
+	Export,
+} from '@phosphor-icons/react'
 
 const CC_LOGO = '/cc-logo.png'
+
+/* ─── Motion vocabulary (per brief §3) ───────────────────────────── */
+const SPRING_CARD = { type: 'spring' as const, stiffness: 250, damping: 22 }
+const SPRING_FIELD = { type: 'spring' as const, stiffness: 380, damping: 26 }
+const SPRING_LAYOUT = { type: 'spring' as const, stiffness: 200, damping: 30 }
 
 /* Per-state placeholder dwell while the shell is still being scaffolded. Final
  * cadence is judged at Step 8 (loop restart pass) per brief §0 (timing
@@ -74,7 +89,7 @@ function CCLogoHeader() {
 		<motion.div
 			layoutId='cc-logo-header'
 			className='flex items-center justify-center'
-			transition={{ type: 'spring', stiffness: 200, damping: 30 }}
+			transition={SPRING_LAYOUT}
 		>
 			{/* /cc-logo.png is the COMBINED logomark + "CloserCoach" wordmark
 			 * (800×164 source, ~4.88:1). At h-8 (32px) it lands at w-156, matching
@@ -105,7 +120,7 @@ function Stepper({ activeDot }: { activeDot: number | null }) {
 							height: 6,
 							backgroundColor: isActive ? '#10B981' : 'rgba(255,255,255,0.12)',
 						}}
-						transition={{ type: 'spring', stiffness: 200, damping: 30 }}
+						transition={SPRING_LAYOUT}
 					/>
 				)
 			})}
@@ -135,6 +150,151 @@ function PlaceholderBody({ state }: { state: HeroV3StateIndex }) {
 			<span className='text-trim text-[13px] leading-[1.5] text-white/50'>
 				Body lands in Step {state + 2}
 			</span>
+		</div>
+	)
+}
+
+/* ─── State 1: Onboarding ────────────────────────────────────────
+ * Figma 191:698. Composed browser mock + heading + URL input + CTA.
+ * Browser mock is hand-built per locked decision #2 (CSS, not raw image),
+ * URL bar type-animates "yoursite.com/product", Copy tooltip pops with
+ * SPRING_CARD ~600ms after the type completes. */
+
+function BrowserMock({ reducedMotion }: { reducedMotion: boolean }) {
+	const [showCopy, setShowCopy] = useState(reducedMotion)
+
+	useEffect(() => {
+		if (reducedMotion) return
+		/* "yoursite.com/product" at speed 55 ≈ 1.4s. Pop the Copy tooltip
+		 * shortly after the URL settles. */
+		const id = setTimeout(() => setShowCopy(true), 1700)
+		return () => clearTimeout(id)
+	}, [reducedMotion])
+
+	return (
+		<motion.div
+			className='relative h-[210px] w-[216px] shrink-0 overflow-hidden rounded-[10px] border border-white/[0.06] bg-cc-surface shadow-[0_8px_16px_rgba(0,0,0,0.45)]'
+			initial={{ opacity: 0, y: 14, scale: 0.96 }}
+			animate={{ opacity: 1, y: 0, scale: 1 }}
+			transition={reducedMotion ? { duration: 0 } : { ...SPRING_CARD, delay: 0.05 }}
+		>
+			{/* Browser top bar: traffic dots + URL pill. */}
+			<div className='flex items-center gap-2 border-b border-white/[0.05] bg-cc-foundation/60 px-2 py-2'>
+				<div className='flex shrink-0 items-center gap-[3px]'>
+					<span className='size-[6px] rounded-full bg-[#ff5f57]' />
+					<span className='size-[6px] rounded-full bg-[#febc2e]' />
+					<span className='size-[6px] rounded-full bg-[#28c840]' />
+				</div>
+				<div className='relative flex-1'>
+					{/* URL pill */}
+					<div className='flex h-[20px] items-center justify-center rounded-[6px] border border-white/[0.06] bg-cc-foundation px-2'>
+						<span className='text-trim font-[family-name:var(--font-mono)] text-[10px] leading-none text-white/85'>
+							{reducedMotion ? (
+								'yoursite.com/product'
+							) : (
+								<TypeAnimation
+									sequence={['', 200, 'yoursite.com/product', 6000]}
+									speed={55}
+									cursor={false}
+									repeat={Infinity}
+								/>
+							)}
+						</span>
+					</div>
+
+					{/* Copy tooltip — emerald pill that pops above the URL bar. */}
+					<AnimatePresence>
+						{showCopy && (
+							<motion.div
+								key='copy-tooltip'
+								className='pointer-events-none absolute -top-[22px] left-1/2 -translate-x-1/2 rounded-[4px] bg-cc-mint px-1.5 py-[3px] shadow-[0_4px_8px_rgba(0,0,0,0.35)]'
+								initial={{ opacity: 0, y: 6, scale: 0.7 }}
+								animate={{ opacity: 1, y: 0, scale: 1 }}
+								exit={{ opacity: 0, y: -4, scale: 0.9 }}
+								transition={SPRING_CARD}
+							>
+								<span className='text-trim text-[9px] font-bold leading-none text-black'>
+									Copy
+								</span>
+								<span
+									aria-hidden
+									className='absolute left-1/2 top-full size-0 -translate-x-1/2 border-x-[3px] border-t-[4px] border-x-transparent border-t-cc-mint'
+								/>
+							</motion.div>
+						)}
+					</AnimatePresence>
+				</div>
+			</div>
+
+			{/* Body: image placeholder centered behind a dim wash. */}
+			<div className='flex h-[140px] items-center justify-center bg-gradient-to-b from-white/[0.03] to-black/[0.4]'>
+				<div className='flex size-12 items-center justify-center rounded-md bg-white/[0.04] ring-1 ring-inset ring-white/[0.04]'>
+					<ImageIcon size={20} weight='regular' className='text-white/25' />
+				</div>
+			</div>
+
+			{/* Bottom nav strip. */}
+			<div className='flex items-center justify-between border-t border-white/[0.05] bg-cc-foundation/60 px-3 py-1.5'>
+				<CaretLeft size={11} weight='bold' className='text-white/35' />
+				<CaretRight size={11} weight='bold' className='text-white/35' />
+				<Export size={11} weight='regular' className='text-white/35' />
+				<BookOpen size={11} weight='regular' className='text-white/35' />
+				<Copy size={11} weight='regular' className='text-white/35' />
+			</div>
+		</motion.div>
+	)
+}
+
+function State1Onboarding({ reducedMotion }: { reducedMotion: boolean }) {
+	return (
+		<div className='flex h-full flex-col items-center justify-between px-4 pb-2 pt-2'>
+			<div className='flex flex-1 w-full flex-col items-center justify-center gap-10'>
+				<BrowserMock reducedMotion={reducedMotion} />
+
+				<div className='flex w-full flex-col gap-6'>
+					<motion.div
+						className='flex w-full flex-col items-center gap-6 text-center'
+						initial={{ opacity: 0, y: 12 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 0.6 }}
+					>
+						<h2 className='text-trim font-sans text-[28px] font-semibold leading-tight text-white'>
+							What do you sell?
+						</h2>
+						<p className='text-trim w-full text-[16px] font-normal leading-[1.5] text-white/50'>
+							We research your business to build customers and role play
+							scenarios you can practice against.
+						</p>
+					</motion.div>
+
+					<motion.div
+						className='flex w-full items-center justify-between rounded-[8px] border border-white/[0.14] bg-[rgba(30,34,48,0.4)] p-[13px] shadow-[0_0_20px_rgba(16,185,129,0.15),0_8px_16px_rgba(0,0,0,0.6)]'
+						initial={{ opacity: 0, y: 12 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 0.85 }}
+					>
+						<span className='text-trim text-[12px] font-medium text-white/50'>
+							Link to your website
+						</span>
+						<span className='text-trim text-[12px] font-medium text-cc-accent'>
+							Paste
+						</span>
+					</motion.div>
+				</div>
+			</div>
+
+			<motion.button
+				type='button'
+				className='mt-4 flex h-[48px] w-full items-center justify-center gap-[10px] rounded-[27px] bg-cc-mint shadow-[0_8px_20px_rgba(52,225,142,0.18)]'
+				initial={{ opacity: 0, y: 14 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 1.05 }}
+			>
+				<span className='text-trim text-[16px] font-bold text-black [font-family:var(--font-cta),system-ui,sans-serif]'>
+					Continue
+				</span>
+				<ArrowRight size={16} weight='bold' className='text-black' />
+			</motion.button>
 		</div>
 	)
 }
@@ -214,21 +374,17 @@ export default function HeroPhoneV3({
 	renderState,
 }: HeroPhoneV3Props = {}) {
 	const prefersReducedMotion = useReducedMotion() ?? false
-	const [activeIndex, setActiveIndex] = useState<HeroV3StateIndex>(
-		autoplay ? 0 : pinnedState,
-	)
+	const [autoIndex, setAutoIndex] = useState<HeroV3StateIndex>(0)
 
 	useEffect(() => {
-		if (!autoplay) {
-			setActiveIndex(pinnedState)
-			return
-		}
-		if (prefersReducedMotion) return
+		if (!autoplay || prefersReducedMotion) return
 		const id = setInterval(() => {
-			setActiveIndex((prev) => ((prev + 1) % 6) as HeroV3StateIndex)
+			setAutoIndex((prev) => ((prev + 1) % 6) as HeroV3StateIndex)
 		}, PLACEHOLDER_DWELL_MS)
 		return () => clearInterval(id)
-	}, [autoplay, pinnedState, prefersReducedMotion])
+	}, [autoplay, prefersReducedMotion])
+
+	const activeIndex: HeroV3StateIndex = autoplay ? autoIndex : pinnedState
 
 	const dot = stepperDotForState(activeIndex)
 	const showLogo = showsLogoHeader(activeIndex)
@@ -288,9 +444,13 @@ export default function HeroPhoneV3({
 										}
 								}
 							>
-								{renderState
-									? renderState(activeIndex)
-									: <PlaceholderBody state={activeIndex} />}
+								{renderState ? (
+									renderState(activeIndex)
+								) : activeIndex === 0 ? (
+									<State1Onboarding reducedMotion={prefersReducedMotion} />
+								) : (
+									<PlaceholderBody state={activeIndex} />
+								)}
 							</motion.div>
 						</AnimatePresence>
 					</div>
