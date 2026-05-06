@@ -19,13 +19,13 @@
  * consumer refactor.
  *
  * Authority sources:
- *   - src/components/hero/hero-phone-v2.tsx (CARD_SHADOW + spring physics origin)
+ *   - src/components/hero/hero-phone-v3.tsx (CARD_SHADOW + spring physics origin)
  *   - vault/clients/closer-coach/design/motion-spec.md (Thread Emergence ease)
  *   - vault/clients/closer-coach/research/r7-visual-direction.md (emerald tokens)
  */
 
 /**
- * @description L1 elevated card dual shadow. Matches hero-phone-v2 CARD_SHADOW
+ * @description L1 elevated card dual shadow. Matches hero-phone-v3 CARD_SHADOW
  * recipe: mid-depth drop shadow + emerald bloom. Use on primary composition
  * cards (calendar widget, clone card, practice card, dashboard mock, etc.).
  */

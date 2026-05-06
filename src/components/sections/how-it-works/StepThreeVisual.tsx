@@ -29,7 +29,7 @@
  *   - Visual spec: vault/clients/closer-coach/design/section-blueprint.md §S3 Step 3 (222-235)
  *   - Copy spec:   vault/clients/closer-coach/copy/lp-copy-deck-v5.md §Section 3 Step 3 (v5.3)
  *   - Motion:      vault/clients/closer-coach/design/motion-spec.md (Thread Emergence + layoutId morph)
- *   - Vocabulary:  src/components/hero/hero-phone-v2.tsx (CoachingPill, Waveform, PhoneFrame, layoutId)
+ *   - Vocabulary:  src/components/hero/hero-phone-v3.tsx (CoachingPill, Waveform, PhoneFrame, layoutId)
  *   - Shared utils: ./_shared/use-sub-state-machine + ./_shared/step-visual-defaults
  *
  * Phone is appearance #2 on the page (S1 Hero is #1). D3 phone allocation rule:
@@ -280,7 +280,7 @@ const ModeToggle = forwardRef<HTMLButtonElement, ModeToggleProps>(function ModeT
 
 /* ─── Phone Frame (shared shell) ───────────────────────────── */
 
-/* Static outer shell. Bezel + Dynamic Island match hero-phone-v2 vocabulary.
+/* Static outer shell. Bezel + Dynamic Island match hero-phone-v3 vocabulary.
  * Interior is passed as children; the interior is the layoutId morph target,
  * not the shell (so the shell doesn't jitter during mode swap). */
 function PhoneFrame({ children, mode }: { children: React.ReactNode, mode: 'A' | 'B' }) {
