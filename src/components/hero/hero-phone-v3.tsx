@@ -43,8 +43,11 @@ import {
 	Export,
 	HeadCircuit,
 	Image as ImageIcon,
+	Lightning,
+	Microphone,
 	UserFocus,
 	UserSound,
+	XCircle,
 	type Icon as PhosphorIcon,
 } from '@phosphor-icons/react'
 
@@ -86,7 +89,13 @@ function stepperDotForState(s: HeroV3StateIndex): number | null {
 	return 3
 }
 
-const showsLogoHeader = (s: HeroV3StateIndex) => s !== 3
+/* CC logo header is hidden during State 4 (Call Connecting cinematic) AND
+ * State 5 (Live Call — Figma 193:1798 puts the Camil header at the top
+ * with no CC logo). The brief §4 persistence-map originally chained CC
+ * logo through 5→6, but the Figma end-state for 5 has the Camil header
+ * occupying that slot. Following Figma per brief §10 (Figma = source of
+ * truth for end-state). */
+const showsLogoHeader = (s: HeroV3StateIndex) => s !== 3 && s !== 4
 
 /* ─── Chrome subcomponents ───────────────────────────────────────── */
 
@@ -541,6 +550,265 @@ function ProspectCard({
  * Surfacing this for Andy at commit; can flip to the logomark with a
  * one-line render swap if he prefers the Figma reading. */
 
+/* ─── State 5: Live Call ────────────────────────────────────────
+ * Figma 193:1798. Densest screen of the loop:
+ *   - Header: Camil avatar (48px, layoutId="prospect-camil-avatar"
+ *     morphs from State 4's 133px brand circle), name + REC dot +
+ *     timer, divider line at bottom.
+ *   - 4 chat bubbles in alternating left (AI w/ 20px Camil avatar)
+ *     / right (user, blue #09f). User bubbles carry stamped badges:
+ *     "Great Response" emerald (lightning) on bubble #1, "Missed The
+ *     Mark" red (X-circle) on bubble #2.
+ *   - Mic bar at bottom: emerald-tinted shell, mic icon, label,
+ *     small waveform.
+ * Per brief §6 sub-states 5A-5J, body cascades with chat bubbles
+ * landing ~400-600ms apart and badges stamping after their parent
+ * bubble settles. Reduced motion = settled instantly. */
+
+/* Static-ish waveform: deterministic heights from a sin/cos pattern,
+ * subtle breathing on opacity if pulse enabled. Used in State 5 mic bar. */
+function MicWaveform({
+	bars = 25,
+	pulse = true,
+	reducedMotion,
+}: {
+	bars?: number
+	pulse?: boolean
+	reducedMotion: boolean
+}) {
+	const data = Array.from({ length: bars }).map((_, i) => {
+		const t = i / bars
+		const wave = Math.sin(t * Math.PI * 4) * 0.5 + 0.5
+		const noise = Math.sin(i * 1.7) * 0.3 + Math.cos(i * 2.3) * 0.2
+		const h = Math.max(2, Math.round((wave + noise) * 14))
+		const opacity = 0.3 + (h / 16) * 0.55
+		return { h, opacity, phase: i * 0.12 }
+	})
+	const animate = pulse && !reducedMotion
+	return (
+		<div className='flex items-center gap-px'>
+			{data.map((bar, i) => (
+				<motion.span
+					key={i}
+					className='block w-[2px] rounded-full bg-cc-accent'
+					animate={
+						animate
+							? {
+								height: [`${bar.h}px`, `${Math.max(2, bar.h - 3)}px`, `${bar.h}px`],
+								opacity: [bar.opacity, bar.opacity * 0.6, bar.opacity],
+							}
+							: { height: `${bar.h}px`, opacity: bar.opacity }
+					}
+					transition={
+						animate
+							? {
+								duration: 1.4,
+								repeat: Infinity,
+								ease: 'easeInOut',
+								delay: bar.phase,
+							}
+							: { duration: 0 }
+					}
+				/>
+			))}
+		</div>
+	)
+}
+
+type ChatBubble = {
+	id: string
+	side: 'ai' | 'user'
+	text: string
+	delay: number
+	badge?: { kind: 'positive' | 'negative', label: string, delay: number }
+}
+
+const STATE5_BUBBLES: ReadonlyArray<ChatBubble> = [
+	{
+		id: 'ai-1',
+		side: 'ai',
+		text: 'Thanks, but we already have a solution in place.',
+		delay: 0.3,
+	},
+	{
+		id: 'user-1',
+		side: 'user',
+		text: 'I hear you. What’s working well with your current setup?',
+		delay: 0.7,
+		badge: { kind: 'positive', label: 'Great Response', delay: 1.05 },
+	},
+	{
+		id: 'ai-2',
+		side: 'ai',
+		text: 'Our current vendor handles most of what you’re describing.',
+		delay: 1.3,
+	},
+	{
+		id: 'user-2',
+		side: 'user',
+		text: 'I understand. Can I show you a 30-day ROI comparison?',
+		delay: 1.7,
+		badge: { kind: 'negative', label: 'Missed The Mark', delay: 2.05 },
+	},
+] as const
+
+function ChatBubbleRow({
+	bubble,
+	reducedMotion,
+}: {
+	bubble: ChatBubble
+	reducedMotion: boolean
+}) {
+	const isAI = bubble.side === 'ai'
+	const fromX = isAI ? -10 : 10
+	return (
+		<div className={`flex w-full ${isAI ? 'justify-start' : 'justify-end'} ${bubble.badge ? 'pt-4' : ''}`}>
+			<motion.div
+				className={`flex max-w-[78%] items-end gap-1.5 ${isAI ? '' : 'flex-row-reverse'}`}
+				initial={{ opacity: 0, x: fromX, y: 4 }}
+				animate={{ opacity: 1, x: 0, y: 0 }}
+				transition={
+					reducedMotion
+						? { duration: 0 }
+						: { ...SPRING_FIELD, delay: bubble.delay }
+				}
+			>
+				{isAI && (
+					<div className='relative size-[20px] shrink-0 overflow-hidden rounded-full border border-white/[0.05]'>
+						<Image
+							src='/images/prospects/camil-v3.png'
+							alt=''
+							fill
+							sizes='20px'
+							className='object-cover'
+						/>
+					</div>
+				)}
+				<div className='relative'>
+					<div
+						className={
+							isAI
+								? 'rounded-[12px] rounded-bl-none border border-white/[0.06] bg-cc-surface-card px-3 py-2.5'
+								: 'rounded-[12px] rounded-br-none border border-white/[0.06] bg-[#09f] px-3 py-2.5'
+						}
+					>
+						<p className='text-trim font-sans text-[13px] font-normal leading-[1.4] text-white'>
+							{bubble.text}
+						</p>
+					</div>
+					{bubble.badge && (
+						<motion.div
+							className={`absolute -top-3 ${isAI ? 'left-2' : 'right-2'} flex shrink-0 items-center gap-1 rounded-full border border-white/[0.06] bg-cc-surface-card px-1.5 py-0.5 shadow-[0_2px_2px_rgba(0,0,0,0.4)]`}
+							initial={{ opacity: 0, scale: 0.8, y: 4 }}
+							animate={{ opacity: 1, scale: 1, y: 0 }}
+							transition={
+								reducedMotion
+									? { duration: 0 }
+									: { ...SPRING_CARD, delay: bubble.badge.delay }
+							}
+						>
+							{bubble.badge.kind === 'positive' ? (
+								<Lightning size={9} weight='fill' className='text-cc-mint' />
+							) : (
+								<XCircle size={9} weight='fill' className='text-[#ff6467]' />
+							)}
+							<span
+								className={`text-trim font-sans text-[11px] font-medium leading-none ${
+									bubble.badge.kind === 'positive' ? 'text-cc-mint' : 'text-[#ff6467]'
+								}`}
+							>
+								{bubble.badge.label}
+							</span>
+						</motion.div>
+					)}
+				</div>
+			</motion.div>
+		</div>
+	)
+}
+
+function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
+	return (
+		<div className='flex h-full flex-col gap-3 px-4 pb-2 pt-3'>
+			{/* Header: Camil avatar (layoutId target from State 4 brand circle)
+			 * + name + REC dot + timer. Divider line beneath. */}
+			<div className='flex flex-col items-center gap-2 border-b border-white/[0.15] pb-3'>
+				<motion.div
+					layoutId='prospect-camil-avatar'
+					className='relative size-[48px] overflow-hidden rounded-full border border-white/[0.05]'
+				>
+					<Image
+						src='/images/prospects/camil-v3.png'
+						alt='Camil'
+						fill
+						sizes='48px'
+						className='object-cover'
+					/>
+				</motion.div>
+				<div className='flex items-center gap-2'>
+					<motion.span
+						layoutId='prospect-camil-name'
+						className='text-trim font-sans text-[16px] font-medium leading-none text-white'
+					>
+						Camil
+					</motion.span>
+					<motion.span
+						className='size-1 rounded-full bg-cc-score-red'
+						animate={
+							reducedMotion ? { opacity: 1 } : { opacity: [0.4, 1, 0.4] }
+						}
+						transition={
+							reducedMotion
+								? { duration: 0 }
+								: { duration: 1.4, repeat: Infinity, ease: 'easeInOut' }
+						}
+					/>
+					<span className='text-trim font-sans text-[13px] font-medium leading-none text-white/80 tabular-nums'>
+						00:34
+					</span>
+					<span className='text-trim font-sans text-[13px] font-medium leading-none text-white/50'>
+						/
+					</span>
+					<span className='text-trim font-sans text-[13px] font-medium leading-none text-white/50 tabular-nums'>
+						10:00
+					</span>
+				</div>
+			</div>
+
+			{/* Chat area. Cascades 4 bubbles with badge stamps. */}
+			<div className='flex flex-1 flex-col gap-2 overflow-hidden'>
+				{STATE5_BUBBLES.map((bubble) => (
+					<ChatBubbleRow
+						key={bubble.id}
+						bubble={bubble}
+						reducedMotion={reducedMotion}
+					/>
+				))}
+			</div>
+
+			{/* Mic bar with active waveform. */}
+			<motion.div
+				className='flex items-center gap-2 rounded-[24px] border border-cc-accent/60 bg-cc-accent/15 py-1 pl-1 pr-2.5 shadow-[0_0_20px_rgba(16,185,129,0.4)]'
+				initial={{ opacity: 0, y: 8 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={
+					reducedMotion
+						? { duration: 0 }
+						: { ...SPRING_FIELD, delay: 2.4 }
+				}
+			>
+				<div className='flex size-[36px] shrink-0 items-center justify-center rounded-full bg-cc-accent/25'>
+					<Microphone size={18} weight='fill' className='text-white' />
+				</div>
+				<span className='text-trim flex-1 truncate font-sans text-[12px] font-medium leading-none text-white/90'>
+					Record your response
+				</span>
+				<MicWaveform bars={22} reducedMotion={reducedMotion} />
+			</motion.div>
+		</div>
+	)
+}
+
 function State4CallConnecting({ reducedMotion }: { reducedMotion: boolean }) {
 	return (
 		<div className='flex h-full flex-col items-center justify-center gap-7 px-4'>
@@ -873,6 +1141,8 @@ export default function HeroPhoneV3({
 									<State3StartTraining reducedMotion={prefersReducedMotion} />
 								) : activeIndex === 3 ? (
 									<State4CallConnecting reducedMotion={prefersReducedMotion} />
+								) : activeIndex === 4 ? (
+									<State5LiveCall reducedMotion={prefersReducedMotion} />
 								) : (
 									<PlaceholderBody state={activeIndex} />
 								)}
