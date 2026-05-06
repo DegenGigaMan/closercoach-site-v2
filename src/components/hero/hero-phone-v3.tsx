@@ -522,6 +522,93 @@ function ProspectCard({
 	)
 }
 
+/* ─── State 4: Call Connecting ─────────────────────────────────────
+ * Figma 191:606. Cinematic beat — phone bezel inset emerald glow
+ * (handled by shell's BezelInsetGlow when state === 3), CC header +
+ * stepper hidden, brand circle 133x133 centered, "Call Connecting..."
+ * label below.
+ *
+ * STRUCTURAL DEVIATION FROM FIGMA: the Figma frame renders the CC
+ * logomark inside the brand circle. The motion brief (§4 Persistence
+ * Map, locked 2026-05-05) places Camil's avatar inside the circle so
+ * the prospect-camil-avatar layoutId chain morphs cleanly across
+ * States 3 -> 4 -> 5. Following the brief because (a) the Camil-face
+ * persistence is the load-bearing motion grammar, (b) "you're calling
+ * Camil — his face appears as the call connects" is a stronger
+ * narrative beat than swapping to the app brand, (c) breaking
+ * persistence at State 4 would force State 5's header avatar to fresh-
+ * mount (no layoutId target), losing the "he answers" beat.
+ * Surfacing this for Andy at commit; can flip to the logomark with a
+ * one-line render swap if he prefers the Figma reading. */
+
+function State4CallConnecting({ reducedMotion }: { reducedMotion: boolean }) {
+	return (
+		<div className='flex h-full flex-col items-center justify-center gap-7 px-4'>
+			{/* Brand circle with Camil avatar inside. layoutId carries the
+			 * morph from State 3's carousel center card. */}
+			<motion.div
+				className='relative size-[133px] overflow-hidden rounded-full border-[1.5px] border-[#00e486] shadow-[0_0_20px_rgba(16,185,129,0.05),0_8px_16px_rgba(0,0,0,0.6)]'
+				animate={
+					reducedMotion
+						? { boxShadow: '0 0 20px rgba(16,185,129,0.05), 0 8px 16px rgba(0,0,0,0.6)' }
+						: {
+							boxShadow: [
+								'0 0 20px rgba(16,185,129,0.10), 0 8px 16px rgba(0,0,0,0.6)',
+								'0 0 32px rgba(16,185,129,0.30), 0 8px 16px rgba(0,0,0,0.6)',
+								'0 0 20px rgba(16,185,129,0.10), 0 8px 16px rgba(0,0,0,0.6)',
+							],
+						}
+				}
+				transition={
+					reducedMotion
+						? { duration: 0 }
+						: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }
+				}
+			>
+				<motion.div layoutId='prospect-camil-avatar' className='absolute inset-0'>
+					<Image
+						src='/images/prospects/camil-v3.png'
+						alt='Camil'
+						fill
+						sizes='133px'
+						className='object-cover'
+					/>
+				</motion.div>
+			</motion.div>
+
+			{/* Label + animated ellipsis. */}
+			<div className='flex items-baseline justify-center gap-[2px]'>
+				<span className='text-trim font-sans text-[20px] font-medium leading-none text-white'>
+					Call Connecting
+				</span>
+				{[0, 1, 2].map((i) => (
+					<motion.span
+						key={i}
+						className='text-trim font-sans text-[20px] font-medium leading-none text-white'
+						animate={
+							reducedMotion
+								? { opacity: 1 }
+								: { opacity: [0.3, 1, 0.3] }
+						}
+						transition={
+							reducedMotion
+								? { duration: 0 }
+								: {
+									duration: 1.4,
+									repeat: Infinity,
+									ease: 'easeInOut',
+									delay: i * 0.18,
+								}
+						}
+					>
+						.
+					</motion.span>
+				))}
+			</div>
+		</div>
+	)
+}
+
 function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 	/* Cards land outermost-first per brief §5: Brandon (left, -3°) at 0.45s,
 	 * Caleb (middle, 0°) at 0.65s, Camil (right, +3°) at 0.85s — last to
@@ -784,6 +871,8 @@ export default function HeroPhoneV3({
 									<State2CreatingCustomers reducedMotion={prefersReducedMotion} />
 								) : activeIndex === 2 ? (
 									<State3StartTraining reducedMotion={prefersReducedMotion} />
+								) : activeIndex === 3 ? (
+									<State4CallConnecting reducedMotion={prefersReducedMotion} />
 								) : (
 									<PlaceholderBody state={activeIndex} />
 								)}
