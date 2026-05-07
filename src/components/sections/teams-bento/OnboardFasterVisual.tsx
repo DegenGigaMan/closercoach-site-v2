@@ -71,7 +71,7 @@ export default function OnboardFasterVisual(): ReactElement {
 				<div className='flex items-center gap-2.5'>
 					{/* CC logomark chip — emerald-glow tile per Figma 95:18331 vocab. */}
 					<div
-						className='relative flex h-[20px] w-[22px] shrink-0 items-center justify-center rounded-[6px] shadow-[0_0_18px_rgba(16,208,120,0.45),0_0_44px_rgba(16,208,120,0.18)]'
+						className='relative flex h-[34px] w-[36px] shrink-0 items-center justify-center rounded-[8px] shadow-[0_0_18px_rgba(16,208,120,0.45),0_0_44px_rgba(16,208,120,0.18)]'
 						style={{
 							background: 'radial-gradient(ellipse at center, rgba(8,40,4,1) 30%, rgba(4,20,2,1) 65%, rgba(2,10,1,1) 82%, rgba(0,0,0,1) 100%)',
 						}}
@@ -79,14 +79,14 @@ export default function OnboardFasterVisual(): ReactElement {
 						<Image
 							src='/images/cc-logomark.png'
 							alt=''
-							width={11}
-							height={11}
-							sizes='11px'
-							className='h-[11px] w-[11px] object-contain'
+							width={17}
+							height={17}
+							sizes='17px'
+							className='h-[17px] w-[17px] object-contain'
 							unoptimized
 						/>
 					</div>
-					<div className='relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]'>
+					<div className='relative h-2.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]'>
 						<div className='h-full w-[91%] rounded-full bg-gradient-to-r from-[#2dc87e] to-[#3ae09b] shadow-[0_0_10px_rgba(52,225,142,0.45)]' />
 					</div>
 					<div className='relative h-6 w-6 shrink-0 overflow-hidden rounded-full ring-2 ring-cc-foundation shadow-[0_0_0_1px_rgba(16,185,129,0.35)]'>
@@ -97,12 +97,12 @@ export default function OnboardFasterVisual(): ReactElement {
 				{/* Track 2: average rep at ~44% */}
 				<div className='flex items-center gap-2.5'>
 					<span
-						className='text-trim w-[19px] shrink-0 text-right text-[9px] font-medium uppercase tracking-[0.18em] text-white/35'
+						className='text-trim w-[33px] shrink-0 text-right text-[9px] font-medium uppercase tracking-[0.18em] text-white/35'
 						style={{ fontFamily: 'var(--font-mono)' }}
 					>
 						Avg
 					</span>
-					<div className='relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]'>
+					<div className='relative h-2.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]'>
 						<div className='h-full w-[44%] rounded-full bg-white/25' />
 					</div>
 					<div className='relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/[0.06] ring-1 ring-white/10'>

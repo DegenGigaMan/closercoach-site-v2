@@ -35,7 +35,6 @@ import StepThreeVisual from './how-it-works/StepThreeVisual'
 import StepFourReview from './how-it-works/StepFourReviewPhone'
 import StepOneMobileVisual from './how-it-works/_mobile/StepOneMobileVisual'
 import StepTwoMobileVisual from './how-it-works/_mobile/StepTwoMobileVisual'
-import StepThreeMobileVisual from './how-it-works/_mobile/StepThreeMobileVisual'
 
 /* SSR-safe mount flag. useSyncExternalStore returns the SSR snapshot (false) on
  * the server AND on the first client render, then switches to the client
@@ -430,13 +429,12 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 				Dial directly from CloserCoach for AI-powered phone calls, or record any in-person meeting. Every word captured, every missed moment flagged, every objection coached: whether you&rsquo;re at the door or on the phone.
 			</StepBody>
 
-			{/* Mobile visual: mode toggle + live call card + 2 annotation chips.
-			 * Phone frame dropped at mobile scale (the phone motif carries on
-			 * desktop only). Replacement badge stays below; mobile visual echoes
-			 * the SELL moment without recreating the signature annotations-spring-
-			 * out choreography. Hidden at lg+. */}
-			<div className="mt-8 lg:hidden">
-				<StepThreeMobileVisual />
+			{/* Mobile visual: full phone mockup, same as desktop. Annotation pills
+			 * are clipped by overflow-hidden inside StepThreeVisual at < lg so
+			 * they don't overflow narrow screens. Hidden at lg+ (desktop uses the
+			 * sticky right-column instance). */}
+			<div className="mt-8 flex justify-center lg:hidden">
+				<StepThreeVisual />
 			</div>
 
 			{devPin && null}

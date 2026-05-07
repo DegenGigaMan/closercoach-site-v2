@@ -29,7 +29,7 @@
 
 'use client'
 
-import { useRef, useState, type ReactElement } from 'react'
+import { useRef, type ReactElement } from 'react'
 import { motion, useInView, useReducedMotion } from 'motion/react'
 import Image from 'next/image'
 import MotionCTA from '@/components/shared/motion-cta'
@@ -334,35 +334,14 @@ const APP_STORE_REVIEWS: ReadonlyArray<Review> = [
 const STAR_COLOR = '#FF9500' // iOS orange (Variant A lock)
 
 function TruncatedBody({ body }: { body: string }): ReactElement {
-	const [expanded, setExpanded] = useState(false)
 	return (
 		<div>
 			<p
-				className={expanded ? '' : 'line-clamp-3'}
-				style={{
-					fontFamily: 'var(--font-sans)',
-					fontSize: '13px',
-					lineHeight: '18px',
-					color: '#1C1C1E',
-				}}
+				className='line-clamp-3'
+				style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', lineHeight: '18px', color: '#1C1C1E' }}
 			>
 				{body}
 			</p>
-			{!expanded && (
-				<button
-					type='button'
-					onClick={() => setExpanded(true)}
-					className='mt-1 inline-block text-left'
-					style={{
-						fontFamily: 'var(--font-sans)',
-						fontSize: '13px',
-						lineHeight: '18px',
-						color: '#007AFF',
-					}}
-				>
-					more
-				</button>
-			)}
 		</div>
 	)
 }

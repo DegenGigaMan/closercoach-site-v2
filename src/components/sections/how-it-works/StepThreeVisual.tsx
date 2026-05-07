@@ -1006,7 +1006,7 @@ export default function StepThreeVisual({ devPin = false }: { devPin?: boolean }
 			 * to the dark surface surrounding the phone. The inner motion.div
 			 * contains just the phone + room-blur. */}
 			<LayoutGroup>
-				<div className="relative w-full">
+				<div className="relative w-full overflow-hidden lg:overflow-visible">
 					<motion.div
 						className="relative mx-auto flex w-fit justify-center"
 						/* F39: stable initial. Reduced-motion snaps via duration: 0. */
