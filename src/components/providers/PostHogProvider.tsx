@@ -1,6 +1,6 @@
 /** @fileoverview PostHog initialization + SPA pageview capture.
  *
- *  Mount strategy (rewritten 2026-05-05):
+ *  Mount strategy (refined 2026-05-06 — adopted modern defaults preset):
  *    - Init PostHog ALWAYS on first client render (regardless of cookie
  *      consent state). Pre-consent persistence is `memory` so no cookies
  *      are written until the user accepts. On accept, persistence is
@@ -13,15 +13,21 @@
  *      PostHog cluster to target. The SDK itself uses '/ingest' relative
  *      to our origin so ad blockers cannot block the request without
  *      blocking the entire site.
- *    - SPA pageview capture is enabled via capture_pageview: 'history_change'
- *      so $pageview fires on initial load AND on App Router navigations
+ *    - `defaults: '2026-01-30'` adopts PostHog's modern preset, which
+ *      enables $pageview + $pageleave + scroll depth + web vitals. This
+ *      is what fills the 3 checks PostHog's dashboard "improve your
+ *      setup" panel scans for. Explicit options below take precedence.
+ *    - SPA pageview capture is set explicitly to 'history_change' so
+ *      $pageview fires on initial load AND on App Router navigations
  *      (history.pushState/replaceState). No need for a separate
  *      SuspendedPostHogPageView component.
+ *    - capture_pageleave: true is explicit (preset would default to
+ *      'if_capture_pageview' but we want it on regardless).
  *    - Autocapture stays disabled — the LP uses an explicit event taxonomy
- *      (src/lib/analytics.ts) for click/conversion events. Pageviews are
- *      the only auto-captured event.
+ *      (src/lib/analytics.ts) for click/conversion events. Pageviews +
+ *      pageleaves + scroll + web vitals are auto-captured via the preset.
  *    - Session recording + surveys remain disabled (privacy-conservative
- *      defaults, not in cookie-policy scope).
+ *      overrides, not in cookie-policy scope).
  *
  *  Env requirements (all NEXT_PUBLIC_*, set in Vercel + .env.local):
  *    - NEXT_PUBLIC_POSTHOG_KEY  — project API key (phc_*)
@@ -67,19 +73,30 @@ export const PostHogProvider = ({ children }: Props) => {
 			api_host: '/ingest',
 			ui_host: 'https://us.posthog.com',
 
-			/* Capture $pageview on initial load AND on history.pushState /
-			 * replaceState (App Router SPA navigation). This is the single
-			 * config that fixed the "no data captured" issue — the prior
-			 * setup used capture_pageview: false with no manual pageview
-			 * emitter, so zero $pageview events ever fired. */
+			/* Adopt PostHog's modern defaults preset (2026-01-30 release).
+			 * Bundle enables $pageview, $pageleave, scroll depth, and
+			 * web vitals capture — the three checks the PostHog dashboard
+			 * "improve your setup" panel looks for. Our explicit overrides
+			 * below take precedence over anything the preset enables. */
+			defaults: '2026-01-30',
+
+			/* Explicit so SPA history.pushState path is unambiguous (App
+			 * Router navigation). The defaults preset already sets this
+			 * to history_change; explicit value documents the intent and
+			 * survives future preset bumps. */
 			capture_pageview: 'history_change',
+
+			/* Explicit pageleave capture so bounce rate + session duration
+			 * report accurately. */
+			capture_pageleave: true,
 
 			/* Autocapture disabled — explicit event taxonomy in
 			 * src/lib/analytics.ts handles clicks + conversions. Keeps
-			 * event volume predictable + the dashboard signal-clean. */
+			 * event volume predictable + the dashboard signal-clean.
+			 * Overrides the defaults preset's autocapture setting. */
 			autocapture: false,
 
-			/* Privacy-conservative defaults. */
+			/* Privacy-conservative overrides on top of the defaults preset. */
 			disable_session_recording: true,
 			disable_surveys: true,
 			person_profiles: 'identified_only',
