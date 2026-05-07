@@ -65,7 +65,7 @@ const PHONE_COPY = {
 	tone: 'red' as const,
 	verdict: 'Needs work',
 	title: 'Objection Handling',
-	subtitle: "You acknowledged the concern, but didn’t isolate the true objection.",
+	subtitle: "You acknowledged the concern, but didn't isolate the true objection.",
 	said: 'Does the policy seem like it could work for you?',
 	shouldHaveSaid:
 		'What specifically feels concerning to you? Is it the coverage, the price, or something else?',
@@ -99,9 +99,9 @@ export default function StepFourReviewPhone() {
 				Every call gets scored A through F, with industry-tailored scorecards and word-for-word talk-tracks showing you exactly what you should have said.
 			</p>
 
-			{/* Bottom CTA. */}
+			{/* Bottom CTA — full-width stacked pair matching hero grammar. */}
 			<div className='mt-8 flex flex-col items-center gap-4'>
-				<MotionCTA variant='primary' size='lg' href={CTA.tryFree.href}>
+				<MotionCTA variant='primary' size='lg' href={CTA.tryFree.href} className='w-full max-w-[420px] sm:w-auto'>
 					{CTA.tryFree.text}
 				</MotionCTA>
 				<div className='flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center font-sans text-sm text-cc-text-muted'>

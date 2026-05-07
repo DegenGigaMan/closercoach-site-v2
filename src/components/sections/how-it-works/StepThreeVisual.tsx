@@ -207,7 +207,7 @@ function DualModeToggles({
 		<div
 			role="tablist"
 			aria-label="Call mode"
-			className="flex items-center justify-center gap-2"
+			className="relative inline-flex items-center rounded-lg border border-white/[0.08] bg-white/[0.03] p-[3px]"
 		>
 			<ModeToggle
 				ref={(el) => { tabRefs.current[0] = el }}
@@ -261,16 +261,13 @@ const ModeToggle = forwardRef<HTMLButtonElement, ModeToggleProps>(function ModeT
 			tabIndex={active ? 0 : -1}
 			onClick={onClick}
 			onKeyDown={onKeyDown}
-			className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.15em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent/60"
-			/* F39: stable initial. Reduced-motion snaps via duration: 0. */
+			className="relative inline-flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.15em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent/60"
 			initial={{ opacity: 1 }}
 			animate={{
-				opacity: 1,
-				borderColor: active ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.08)',
-				backgroundColor: active ? 'rgba(16,185,129,0.10)' : 'rgba(255,255,255,0.02)',
-				color: active ? '#10B981' : 'rgba(148,163,184,0.85)',
+				backgroundColor: active ? 'rgba(16,185,129,0.12)' : 'rgba(255,255,255,0)',
+				color: active ? '#10B981' : 'rgba(148,163,184,0.6)',
 			}}
-			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.45, ease: THREAD_EASE }}
+			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3, ease: THREAD_EASE }}
 		>
 			{icon}
 			{label}
@@ -298,7 +295,7 @@ function PhoneFrame({ children, mode }: { children: React.ReactNode, mode: 'A' |
 						<div className="flex items-center gap-1">
 							<div className={`h-1.5 w-1.5 rounded-full ${mode === 'B' ? 'bg-cc-score-red' : 'bg-cc-accent'}`} />
 							<span className="font-[family-name:var(--font-mono)] text-[8px] uppercase tracking-[0.15em] text-cc-text-muted">
-								{mode === 'A' ? 'Phone Call' : 'Recording'}
+								{mode === 'A' ? 'Phone Call' : 'In-Person'}
 							</span>
 						</div>
 					</div>
@@ -710,19 +707,16 @@ function ModeBInterior({ subState, prefersReducedMotion }: { subState: SubState,
 					<span className="font-[family-name:var(--font-mono)] text-[10px] font-semibold tracking-[0.04em] text-red-400">REC</span>
 					<span className="font-[family-name:var(--font-mono)] text-[10px] text-cc-text-muted tabular-nums">03:04</span>
 				</div>
-				<span className="font-[family-name:var(--font-mono)] text-[8.5px] uppercase tracking-[0.15em] text-cc-text-muted">
-					In-Person
-				</span>
 			</div>
 			{/* Ambient waveform (center) */}
 			<div className="flex flex-1 items-center justify-center py-2">
 				<AmbientWaveform prefersReducedMotion={prefersReducedMotion} />
 			</div>
-			{/* Footer copy */}
+			{/* Footer pill: mic indicator only */}
 			<div className="flex items-center justify-center gap-1.5 rounded-xl border border-white/[0.05] bg-cc-surface/40 py-1.5">
 				<Microphone size={11} weight="fill" className="text-cc-accent" aria-hidden="true" />
 				<span className="font-[family-name:var(--font-mono)] text-[9px] uppercase tracking-[0.15em] text-cc-text-secondary">
-					Recording meeting
+					Live Session
 				</span>
 			</div>
 			{/* Annotation trails are drawn in the outer component so they can extend
@@ -837,13 +831,13 @@ function AnnotationPill({ spec, visible, isSettled, index, prefersReducedMotion 
 			initial={{ opacity: 0, scale: 0.7, x: startDX, y: startDY }}
 			animate={visible
 				? settledAnimate
-				: { opacity: 0, scale: 0.7, x: startDX, y: startDY }
+				: { opacity: 0, scale: 0.95, x: 0, y: 0 }
 			}
 			transition={visible
 				? settledTransition
 				: prefersReducedMotion
 					? { duration: 0 }
-					: { type: 'spring', stiffness: 260, damping: 22, delay: 0.15 * index, mass: 0.9 }
+					: { duration: 0.35, ease: [0.4, 0, 1, 1] }
 			}
 		>
 			{/* Glow trail behind the pill. Only active during spring-out, fades after

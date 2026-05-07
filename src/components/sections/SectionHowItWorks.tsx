@@ -21,7 +21,7 @@
 import { createContext, useContext, useRef, useState, useEffect, useCallback, useSyncExternalStore, type CSSProperties, type ReactNode } from 'react'
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'motion/react'
 import Image from 'next/image'
-import { Star } from '@phosphor-icons/react'
+import { Star, XCircle } from '@phosphor-icons/react'
 import StepIndicator from './how-it-works/StepIndicator'
 import StepCanvas from './how-it-works/StepCanvas'
 import PlanVisual from './how-it-works/PlanVisual'
@@ -503,27 +503,23 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 			 * "replaced" narrative reads visually, not just from the eyebrow.
 			 * Mobile cut-off (was overflowing 390px viewport at 416px width):
 			 * gap-8 → gap-4 sm:gap-8, w-24 → w-20 sm:w-24, px-8 → px-4 sm:px-8. */}
-			<div className="mt-8 flex w-fit max-w-xl flex-col items-start gap-3 self-start">
-				<span
-					className="font-[family-name:var(--font-mono)] text-[12px] font-medium uppercase tracking-[0.18em] text-white/95"
-				>
-					One app. Three tools gone.
-				</span>
+			<div className="relative mt-8 w-fit self-center pt-[14px]">
+				{/* Badge — floats above the container, centered. */}
+				<div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-red-500/30 bg-[#1a0808] px-3 py-1.5 shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
+					<XCircle size={12} weight="fill" className="shrink-0 text-red-400" />
+					<span className="text-trim whitespace-nowrap font-[family-name:var(--font-sans)] text-[12px] font-semibold leading-none text-red-400">
+						One App. Three Gone.
+					</span>
+				</div>
+
 				<div
 					role="img"
 					aria-label="CloserCoach replaces Voice Memos, ChatGPT, and your Phone app"
-					className="flex w-fit items-center gap-4 rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 px-4 py-4 sm:gap-8 sm:px-8"
+					className="flex w-fit items-center gap-4 rounded-2xl border border-red-500/25 bg-red-950/20 px-4 py-4 sm:gap-8 sm:px-8"
 				>
-					{/* Voice Memos — white waveform on red gradient rounded square. */}
+					{/* Voice Memos */}
 					<div className="flex w-20 flex-col items-center gap-1.5 sm:w-24">
-						<svg
-							width={36}
-							height={36}
-							viewBox="0 0 36 36"
-							role="img"
-							aria-label="Voice Memos"
-							className="shrink-0"
-						>
+						<svg width={36} height={36} viewBox="0 0 36 36" role="img" aria-label="Voice Memos" className="shrink-0">
 							<defs>
 								<linearGradient id="cc-voice-memos-bg" x1="0" y1="0" x2="0" y2="1">
 									<stop offset="0%" stopColor="#FF453A" />
@@ -531,7 +527,6 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 								</linearGradient>
 							</defs>
 							<rect width={36} height={36} rx={8} fill="url(#cc-voice-memos-bg)" />
-							{/* Waveform: 7 vertical bars, varied heights, white. */}
 							<g fill="#FFFFFF">
 								<rect x={6}  y={15} width={2} height={6}  rx={1} />
 								<rect x={10} y={12} width={2} height={12} rx={1} />
@@ -542,42 +537,25 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 								<rect x={30} y={14} width={2} height={8}  rx={1} />
 							</g>
 						</svg>
-						<span className="whitespace-nowrap font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary line-through decoration-red-500/50 decoration-[1.5px] underline-offset-2">
+						<span className="whitespace-nowrap font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-white/40">
 							Voice Memos
 						</span>
 					</div>
-					{/* ChatGPT — OpenAI 4-petal logomark on black rounded square. */}
+					{/* ChatGPT */}
 					<div className="flex w-20 flex-col items-center gap-1.5 sm:w-24">
-						<svg
-							width={36}
-							height={36}
-							viewBox="0 0 36 36"
-							role="img"
-							aria-label="ChatGPT"
-							className="shrink-0"
-						>
+						<svg width={36} height={36} viewBox="0 0 36 36" role="img" aria-label="ChatGPT" className="shrink-0">
 							<rect width={36} height={36} rx={8} fill="#000000" />
 							<g transform="translate(7 7) scale(0.91)">
-								<path
-									d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365 2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z"
-									fill="#FFFFFF"
-								/>
+								<path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.9 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.9 6.056 6.056 0 0 0-.747-7.073zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023-.141-.085-4.774-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zm-12.64 4.135-2.02-1.164a.08.08 0 0 1-.038-.057V6.075a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365 2.602-1.5 2.607 1.5v2.999l-2.597 1.5-2.607-1.5z" fill="#FFFFFF" />
 							</g>
 						</svg>
-						<span className="whitespace-nowrap font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary line-through decoration-red-500/50 decoration-[1.5px] underline-offset-2">
+						<span className="whitespace-nowrap font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-white/40">
 							ChatGPT
 						</span>
 					</div>
-					{/* Phone — white handset on green gradient rounded square. */}
+					{/* Phone */}
 					<div className="flex w-20 flex-col items-center gap-1.5 sm:w-24">
-						<svg
-							width={36}
-							height={36}
-							viewBox="0 0 36 36"
-							role="img"
-							aria-label="Phone"
-							className="shrink-0"
-						>
+						<svg width={36} height={36} viewBox="0 0 36 36" role="img" aria-label="Phone" className="shrink-0">
 							<defs>
 								<linearGradient id="cc-phone-bg" x1="0" y1="0" x2="0" y2="1">
 									<stop offset="0%" stopColor="#4CD964" />
@@ -585,13 +563,9 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 								</linearGradient>
 							</defs>
 							<rect width={36} height={36} rx={8} fill="url(#cc-phone-bg)" />
-							{/* Handset glyph: rotated phone receiver, white. */}
-							<path
-								d="M24.7 22.3c0 .5-.1 1.1-.3 1.6-.2.5-.5.9-.8 1.3-.5.6-1.1.9-1.7 1-.6.1-1.3.1-2-.1-.7-.2-1.5-.5-2.3-1-.8-.4-1.6-1-2.4-1.7-.8-.7-1.6-1.4-2.3-2.2-.7-.8-1.3-1.6-1.8-2.4-.5-.8-.9-1.6-1.2-2.4-.3-.8-.4-1.5-.4-2.2 0-.5.1-.9.2-1.4.2-.4.4-.8.8-1.1.4-.4.9-.6 1.4-.6.2 0 .4 0 .5.1.2.1.3.2.4.4l1.7 2.4c.1.2.2.3.3.5 0 .1.1.3.1.4 0 .2-.1.3-.2.5-.1.1-.2.3-.4.4l-.5.5c-.1.1-.1.2-.1.3 0 .1 0 .1.1.2 0 .1.1.1.1.2.1.2.4.5.7.9.4.4.7.8 1.1 1.2.4.4.8.7 1.2 1 .4.3.7.5.9.7l.2.1c.1 0 .1.1.2.1.1 0 .2 0 .3-.1l.5-.5c.2-.1.3-.3.5-.4.1-.1.3-.1.5-.1.1 0 .3 0 .4.1.2 0 .3.1.5.2l2.5 1.7c.2.1.3.2.4.4 0 .1.1.3.1.5z"
-								fill="#FFFFFF"
-							/>
+							<path d="M24.7 22.3c0 .5-.1 1.1-.3 1.6-.2.5-.5.9-.8 1.3-.5.6-1.1.9-1.7 1-.6.1-1.3.1-2-.1-.7-.2-1.5-.5-2.3-1-.8-.4-1.6-1-2.4-1.7-.8-.7-1.6-1.4-2.3-2.2-.7-.8-1.3-1.6-1.8-2.4-.5-.8-.9-1.6-1.2-2.4-.3-.8-.4-1.5-.4-2.2 0-.5.1-.9.2-1.4.2-.4.4-.8.8-1.1.4-.4.9-.6 1.4-.6.2 0 .4 0 .5.1.2.1.3.2.4.4l1.7 2.4c.1.2.2.3.3.5 0 .1.1.3.1.4 0 .2-.1.3-.2.5-.1.1-.2.3-.4.4l-.5.5c-.1.1-.1.2-.1.3 0 .1 0 .1.1.2 0 .1.1.1.1.2.1.2.4.5.7.9.4.4.7.8 1.1 1.2.4.4.8.7 1.2 1 .4.3.7.5.9.7l.2.1c.1 0 .1.1.2.1.1 0 .2 0 .3-.1l.5-.5c.2-.1.3-.3.5-.4.1-.1.3-.1.5-.1.1 0 .3 0 .4.1.2 0 .3.1.5.2l2.5 1.7c.2.1.3.2.4.4 0 .1.1.3.1.5z" fill="#FFFFFF" />
 						</svg>
-						<span className="whitespace-nowrap font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-cc-text-secondary line-through decoration-red-500/50 decoration-[1.5px] underline-offset-2">
+						<span className="whitespace-nowrap font-[family-name:var(--font-sans)] text-[10px] uppercase tracking-[0.1em] text-white/40">
 							Phone
 						</span>
 					</div>

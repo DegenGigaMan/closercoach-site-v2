@@ -69,7 +69,7 @@ const PRESS_LEAD_MS = 320
  * sub-state cascade so every animation lands before the cycle advances:
  *   State 1 (3.4s): CTA enters at 1.05s; +2.3s settled hold for the URL
  *     type-loop to read at least once.
- *   State 2 (5.0s): last pill flash ends ~3.9s; +1.1s breathing.
+ *   State 2 (5.8s): pills cascade 0.75s apart; last flash ends ~4.3s; +1.5s breathing.
  *   State 3 (3.6s): Camil card lands at 0.85s; +2.7s "select me" breathe.
  *   State 4 (2.8s): cinematic — let the ring pulse breathe a beat.
  *   State 5 (6.8s): chat cascade ends ~4.05s (last badge); +2.75s for
@@ -81,7 +81,7 @@ const PRESS_LEAD_MS = 320
  * breathes. */
 const STATE_DWELL_MS: Record<HeroV3StateIndex, number> = {
 	0: 3400,
-	1: 5000,
+	1: 5800,
 	2: 3600,
 	3: 2800,
 	4: 6800,
@@ -126,31 +126,7 @@ function stepperDotForState(s: HeroV3StateIndex): number | null {
  * logo through 5→6, but the Figma end-state for 5 has the Camil header
  * occupying that slot. Following Figma per brief §10 (Figma = source of
  * truth for end-state). */
-const showsLogoHeader = (s: HeroV3StateIndex) => s !== 3 && s !== 4
-
 /* ─── Chrome subcomponents ───────────────────────────────────────── */
-
-function CCLogoHeader() {
-	return (
-		<motion.div
-			layoutId='cc-logo-header'
-			className='flex items-center justify-center'
-			transition={SPRING_LAYOUT}
-		>
-			{/* /cc-logo.png is the COMBINED logomark + "CloserCoach" wordmark
-			 * (800×164 source, ~4.88:1). At h-8 (32px) it lands at w-156, matching
-			 * Figma 191:704 (32×32 logomark + 8px gap + 116×14 wordmark = 156×32). */}
-			<Image
-				src={CC_LOGO}
-				alt='CloserCoach'
-				width={156}
-				height={32}
-				className='h-8 w-auto'
-				priority
-			/>
-		</motion.div>
-	)
-}
 
 function Stepper({ activeDot }: { activeDot: number | null }) {
 	return (
@@ -328,10 +304,10 @@ function BrowserMock({ reducedMotion }: { reducedMotion: boolean }) {
 
 						<span className='relative z-[5] text-trim font-[family-name:var(--font-mono)] text-[12px] leading-none text-white/95'>
 							{reducedMotion ? (
-								'yoursite.com/product'
+								'quickcashoffer.com'
 							) : (
 								<TypeAnimation
-									sequence={['', 200, 'yoursite.com/product', 6000]}
+									sequence={['', 200, 'quickcashoffer.com', 6000]}
 									speed={55}
 									cursor={false}
 									repeat={Infinity}
@@ -415,43 +391,21 @@ function State2CreatingCustomers({ reducedMotion }: { reducedMotion: boolean }) 
 				</motion.div>
 			</div>
 
-			{/* 4 task pills cascade. */}
+			{/* Pills build up one at a time — each enters with a 0.9s stagger
+			 * and stays visible so the list accumulates naturally. */}
 			<div className='flex w-full flex-col items-center gap-3'>
 				{STATE2_PILLS.map((pill, i) => {
 					const Icon = pill.icon
-					const enterDelay = 0.85 + i * 0.18
-					/* Pill emerald-flash 1.5s after entrance: a brief brightness
-					 * pulse on bg/border so each pill reads as "completed" without
-					 * adding new chrome. */
 					return (
 						<motion.div
 							key={pill.label}
 							className='flex h-[32px] items-center gap-1.5 rounded-[24px] border border-white/[0.06] bg-[rgba(30,34,48,0.8)] px-[13px] py-[9px] shadow-[0_8px_16px_rgba(0,0,0,0.4)]'
-							initial={{ opacity: 0, y: 8 }}
-							animate={
-								reducedMotion
-									? { opacity: 1, y: 0 }
-									: {
-										opacity: 1,
-										y: 0,
-										backgroundColor: [
-											'rgba(30,34,48,0.8)',
-											'rgba(16,185,129,0.18)',
-											'rgba(30,34,48,0.8)',
-										],
-									}
-							}
+							initial={{ opacity: 0, y: 10 }}
+							animate={{ opacity: 1, y: 0 }}
 							transition={
 								reducedMotion
 									? { duration: 0 }
-									: {
-										default: { ...SPRING_FIELD, delay: enterDelay },
-										backgroundColor: {
-											duration: 1.0,
-											ease: 'easeOut',
-											delay: enterDelay + 1.5,
-										},
-									}
+									: { ...SPRING_FIELD, delay: 0.85 + i * 0.9 }
 							}
 						>
 							<Icon size={14} weight='regular' className='shrink-0 text-cc-accent' />
@@ -468,7 +422,7 @@ function State2CreatingCustomers({ reducedMotion }: { reducedMotion: boolean }) 
 
 /* ─── State 3: Start Training (carousel) ─────────────────────────
  * Figma 192:1101 + cards 200:196-200:237. Title block + 3-card prospect
- * row with Camil center+taller as the focal hierarchy + Call Camil CTA.
+ * row with Camil center+taller as the focal hierarchy + Call Jose CTA.
  *
  * Layout per Figma: 3 cards in a flex row, gap-16, no rotations. Each
  * card 250px wide; Brandon/Caleb 320px tall, Camil 370px tall (the
@@ -502,10 +456,10 @@ type ProspectData = {
 const STATE3_PROSPECTS: ReadonlyArray<ProspectData> = [
 	{
 		id: 'brandon',
-		name: 'Brandon',
-		age: 32,
-		role: 'Operations Lead @ Geico',
-		quote: '“I don’t have time for this right now.”',
+		name: 'David',
+		age: 44,
+		role: 'Homeowner • Houston, TX',
+		quote: '“We’re still figuring things out.”',
 		difficulty: 'Easy',
 		difficultyColor: '#10B981',
 		photo: '/images/prospects/brandon.png',
@@ -513,10 +467,10 @@ const STATE3_PROSPECTS: ReadonlyArray<ProspectData> = [
 	},
 	{
 		id: 'camil',
-		name: 'Camil',
+		name: 'Jose',
 		age: 42,
-		role: 'Finance Director @ Oracle',
-		quote: '“I’m not convinced the ROI is clear.”',
+		role: 'Homeowner • Phoenix, AZ',
+		quote: '“We don’t want to sell the house.”',
 		difficulty: 'Hard',
 		difficultyColor: '#FF5A5A',
 		photo: '/images/prospects/camil-v3.png',
@@ -524,10 +478,10 @@ const STATE3_PROSPECTS: ReadonlyArray<ProspectData> = [
 	},
 	{
 		id: 'caleb',
-		name: 'Caleb',
-		age: 37,
-		role: 'CTO @ Everbank',
-		quote: '“We’re not fully aligned internally.”',
+		name: 'Sandra',
+		age: 38,
+		role: 'Homeowner • Dallas, TX',
+		quote: '“What’s your best offer?”',
 		difficulty: 'Medium',
 		difficultyColor: '#F59E0B',
 		photo: '/images/prospects/caleb.png',
@@ -552,7 +506,7 @@ function ProspectCard({
 	const fadeHeightPx = isCamil ? 209 : 174
 	return (
 		<motion.div
-			className='relative isolate flex w-[250px] shrink-0 flex-col items-start justify-end gap-6 overflow-hidden rounded-[16px] border border-white/30 p-[13px] shadow-[0_8px_16px_rgba(0,0,0,0.6)]'
+			className='relative flex w-[250px] shrink-0 flex-col items-start justify-end gap-6 overflow-hidden rounded-[16px] border border-white/30 p-[13px] shadow-[0_8px_16px_rgba(0,0,0,0.6)]'
 			style={{ height: prospect.heightPx }}
 			initial={{ opacity: 0, y: 24, x: enterFromX, scale: 0.94 }}
 			animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
@@ -562,14 +516,10 @@ function ProspectCard({
 					: { ...SPRING_CARD, delay: enterDelay }
 			}
 		>
-			{/* Photo background fills the entire card. Camil's image is wrapped
-			 * in a layoutId motion.div so it morphs into State 4's brand circle.
-			 * The wrapper inherits the card's rounded corners + overflow-hidden
-			 * so the photo can't leak past the rounded edges. */}
 			{isCamil ? (
 				<motion.div
 					layoutId='prospect-camil-avatar'
-					className='absolute inset-0 overflow-hidden rounded-[inherit]'
+					className='absolute inset-0'
 				>
 					<Image
 						src={prospect.photo}
@@ -582,7 +532,7 @@ function ProspectCard({
 					/>
 				</motion.div>
 			) : (
-				<div className='absolute inset-0 overflow-hidden rounded-[inherit]'>
+				<div className='absolute inset-0'>
 					<Image
 						src={prospect.photo}
 						alt={prospect.name}
@@ -601,36 +551,11 @@ function ProspectCard({
 			<div
 				aria-hidden
 				className='pointer-events-none absolute inset-x-0 bottom-0'
-				style={{ height: fadeHeightPx }}
-			>
-				<div
-					className='absolute inset-0 backdrop-blur-[1.5px]'
-					style={{
-						WebkitMaskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
-						maskImage: 'linear-gradient(to top, black 60%, transparent 100%)',
-					}}
-				/>
-				<div
-					className='absolute inset-0 backdrop-blur-[4px]'
-					style={{
-						WebkitMaskImage: 'linear-gradient(to top, black 35%, transparent 80%)',
-						maskImage: 'linear-gradient(to top, black 35%, transparent 80%)',
-					}}
-				/>
-				<div
-					className='absolute inset-0 backdrop-blur-[8px]'
-					style={{
-						WebkitMaskImage: 'linear-gradient(to top, black 15%, transparent 55%)',
-						maskImage: 'linear-gradient(to top, black 15%, transparent 55%)',
-					}}
-				/>
-				<div
-					className='absolute inset-0'
-					style={{
-						background: 'linear-gradient(to bottom, rgba(8,9,12,0) 0%, #08090c 88.94%)',
-					}}
-				/>
-			</div>
+				style={{
+					height: fadeHeightPx,
+					background: 'linear-gradient(to bottom, rgba(8,9,12,0) 0%, #08090c 88.94%)',
+				}}
+			/>
 
 			{/* Customer name + role. */}
 			<div className='relative flex flex-col gap-3'>
@@ -709,12 +634,30 @@ const SPRING_SCORE = { type: 'spring' as const, stiffness: 300, damping: 18 }
 const STATE6_SCORECARDS: ReadonlyArray<{
 	title: string
 	desc: string
+	grade: string
+	ringFill: number
+	ringColor: string
 }> = [
-	{ title: 'Executive-Level Framing', desc: 'Excellent' },
-	{ title: 'Risk & ROI Exploration', desc: 'Excellent' },
 	{
-		title: 'Clear Next Step Commitment',
-		desc: 'Repeatedly pushed for contract signing',
+		title: 'Building Rapport',
+		desc: 'You made Jose feel heard right away.',
+		grade: 'A',
+		ringFill: 1.0,
+		ringColor: '#10D078',
+	},
+	{
+		title: 'Handling Objections',
+		desc: 'Good instincts, missed the insurance angle.',
+		grade: 'B',
+		ringFill: 0.75,
+		ringColor: '#F59E0B',
+	},
+	{
+		title: 'Closing the Appointment',
+		desc: "Didn't ask for a face-to-face walkthrough.",
+		grade: 'C',
+		ringFill: 0.5,
+		ringColor: '#FF5A5A',
 	},
 ]
 
@@ -723,10 +666,11 @@ function ScorecardRow({
 	enterDelay,
 	reducedMotion,
 }: {
-	card: { title: string, desc: string }
+	card: { title: string, desc: string, grade: string, ringFill: number, ringColor: string }
 	enterDelay: number
 	reducedMotion: boolean
 }) {
+	const RING_C = 2 * Math.PI * 21
 	return (
 		<motion.div
 			className='flex w-full items-center gap-3 rounded-[16px] border border-[#353535] bg-black p-3'
@@ -736,8 +680,6 @@ function ScorecardRow({
 				reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: enterDelay }
 			}
 		>
-			{/* 5/5 ring — emerald stroke, fully drawn (5 of 5). Per Figma 200:1230
-			 * sizes: 48px ring, 16px Plus Jakarta SemiBold "5/5". */}
 			<div className='relative flex size-[48px] shrink-0 items-center justify-center'>
 				<svg
 					width='48'
@@ -745,18 +687,18 @@ function ScorecardRow({
 					viewBox='0 0 48 48'
 					className='absolute inset-0 -rotate-90'
 				>
-					<circle cx='24' cy='24' r='21' fill='none' stroke='rgba(16,208,120,0.18)' strokeWidth='3' />
+					<circle cx='24' cy='24' r='21' fill='none' stroke='rgba(255,255,255,0.08)' strokeWidth='3' />
 					<motion.circle
 						cx='24'
 						cy='24'
 						r='21'
 						fill='none'
-						stroke='#10D078'
+						stroke={card.ringColor}
 						strokeWidth='3'
 						strokeLinecap='round'
-						strokeDasharray={`${2 * Math.PI * 21}`}
-						initial={{ strokeDashoffset: 2 * Math.PI * 21 }}
-						animate={{ strokeDashoffset: 0 }}
+						strokeDasharray={`${RING_C}`}
+						initial={{ strokeDashoffset: RING_C }}
+						animate={{ strokeDashoffset: RING_C * (1 - card.ringFill) }}
 						transition={
 							reducedMotion
 								? { duration: 0 }
@@ -764,8 +706,11 @@ function ScorecardRow({
 						}
 					/>
 				</svg>
-				<span className='relative z-10 text-trim text-[16px] font-semibold text-[#10D078] [font-family:var(--font-cta),system-ui,sans-serif]'>
-					5/5
+				<span
+					className='relative z-10 text-trim text-[16px] font-semibold [font-family:var(--font-cta),system-ui,sans-serif]'
+					style={{ color: card.ringColor }}
+				>
+					{card.grade}
 				</span>
 			</div>
 
@@ -775,9 +720,6 @@ function ScorecardRow({
 				</span>
 				<span className='text-trim font-sans text-[12px] font-normal leading-[1.4] tracking-[-0.2px] text-[#919191]'>
 					{card.desc}
-				</span>
-				<span className='text-trim font-sans text-[10px] font-medium leading-none text-[#10D078]'>
-					Drill deeper →
 				</span>
 			</div>
 		</motion.div>
@@ -841,10 +783,10 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 							reducedMotion ? { duration: 0 } : { ...SPRING_SCORE, delay: 1.0 }
 						}
 					>
-						A
+						B
 					</motion.span>
 
-					{/* Top 15% pill — absolute over ring's top stroke. */}
+					{/* Top 35% pill — absolute over ring's top stroke. */}
 					<motion.div
 						className='absolute -top-[14px] left-1/2 z-20 flex h-[28px] -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full border-[0.5px] border-[rgba(52,225,142,0.9)] bg-[#0d201f] px-3 py-1 shadow-[0_0_16px_rgba(52,225,142,0.3),0_8px_16px_rgba(0,0,0,0.6)]'
 						initial={{ opacity: 0, scale: 0.6, y: 6 }}
@@ -865,7 +807,7 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 									: { duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 2.5 }
 							}
 						>
-							Top 15%
+							Top 35%
 						</motion.span>
 					</motion.div>
 				</div>
@@ -904,8 +846,7 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 					</div>
 					<div className='flex-1 rounded-[12px] rounded-tl-none border border-white/[0.06] bg-[#09f] p-3'>
 						<p className='text-trim font-sans text-[14px] font-medium leading-[1.4] text-white'>
-							You addressed risks clearly and secured next steps but could ask
-							more on their team’s concerns.
+							Good opener. Next time, lead with the cash offer benefit earlier — Jose needs to hear speed and certainty upfront.
 						</p>
 					</div>
 				</motion.div>
@@ -1045,26 +986,26 @@ const STATE5_BUBBLES: ReadonlyArray<ChatBubble> = [
 	{
 		id: 'ai-1',
 		side: 'ai',
-		text: 'Thanks, but we already have a solution in place.',
+		text: "We’re not really looking to sell right now.",
 		delay: 0.5,
 	},
 	{
 		id: 'user-1',
 		side: 'user',
-		text: 'I hear you. What’s working well with your current setup?',
+		text: "I get it. What’s keeping you from exploring your options?",
 		delay: 1.5,
 		badge: { kind: 'positive', label: 'Great Response', delay: 1.85 },
 	},
 	{
 		id: 'ai-2',
 		side: 'ai',
-		text: 'Our current vendor handles most of what you’re describing.',
+		text: "We’ve got a situation with the mortgage and insurance.",
 		delay: 2.7,
 	},
 	{
 		id: 'user-2',
 		side: 'user',
-		text: 'I understand. Can I show you a 30-day ROI comparison?',
+		text: "How much is left on the mortgage? We buy as-is, all cash, fast close.",
 		delay: 3.7,
 		badge: { kind: 'negative', label: 'Missed The Mark', delay: 4.05 },
 	},
@@ -1171,7 +1112,7 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 					>
 						<Image
 							src='/images/prospects/camil-v3.png'
-							alt='Camil'
+							alt='Jose'
 							fill
 							sizes='48px'
 							className='object-cover'
@@ -1183,7 +1124,7 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 							layoutId='prospect-camil-name'
 							className='text-trim font-sans text-[16px] font-medium leading-[16px] text-white'
 						>
-							Camil
+							Jose
 						</motion.span>
 						<motion.span
 							className='size-1 rounded-full bg-cc-score-red'
@@ -1273,7 +1214,7 @@ function State4CallConnecting({ reducedMotion }: { reducedMotion: boolean }) {
 				<motion.div layoutId='prospect-camil-avatar' className='absolute inset-0'>
 					<Image
 						src='/images/prospects/camil-v3.png'
-						alt='Camil'
+						alt='Jose'
 						fill
 						sizes='133px'
 						className='object-cover'
@@ -1329,7 +1270,7 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 		caleb: { delay: 0.7, fromX: 40 },
 	} as const
 
-	/* Press the Call Camil CTA right before state advances to State 4. */
+	/* Press the Call Jose CTA right before state advances to State 4. */
 	const [pressed, setPressed] = useState(false)
 	useEffect(() => {
 		if (reducedMotion) return
@@ -1374,7 +1315,7 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 				</div>
 			</div>
 
-			{/* Call Camil CTA. */}
+			{/* Call Jose CTA. */}
 			<motion.button
 				type='button'
 				className='flex h-[48px] w-full items-center justify-center gap-[10px] rounded-[27px] bg-cc-mint shadow-[0_8px_20px_rgba(52,225,142,0.18)]'
@@ -1386,7 +1327,7 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 				}}
 			>
 				<span className='text-trim text-[16px] font-bold text-black [font-family:var(--font-cta),system-ui,sans-serif]'>
-					Call Camil
+					Call Jose
 				</span>
 				<ArrowRight size={16} weight='bold' className='text-black' />
 			</motion.button>
@@ -1419,7 +1360,7 @@ function State1Onboarding({ reducedMotion }: { reducedMotion: boolean }) {
 					transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 0.6 }}
 				>
 					<h2 className='text-trim font-sans text-[28px] font-semibold leading-tight text-white'>
-						What do you sell?
+						Train your CloserCoach
 					</h2>
 					<p className='text-trim w-full text-[16px] font-normal leading-[1.5] text-white/50'>
 						We research your business to build customers and role play
@@ -1565,8 +1506,6 @@ export default function HeroPhoneV3({
 	const activeIndex: HeroV3StateIndex = autoplay ? autoIndex : pinnedState
 
 	const dot = stepperDotForState(activeIndex)
-	const showLogo = showsLogoHeader(activeIndex)
-
 	return (
 		<LayoutGroup>
 			<div
@@ -1585,21 +1524,6 @@ export default function HeroPhoneV3({
 						<div className='h-[22px] w-[100px] rounded-full bg-black' />
 					</div>
 
-					{/* CC logo header. Hidden during State 4 (Call Connecting). */}
-					<AnimatePresence mode='wait'>
-						{showLogo && (
-							<motion.div
-								key='cc-logo-header-mount'
-								className='relative z-10 flex shrink-0 items-center justify-center pt-2'
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								exit={{ opacity: 0 }}
-								transition={{ duration: 0.25, ease: 'easeOut' }}
-							>
-								<CCLogoHeader />
-							</motion.div>
-						)}
-					</AnimatePresence>
 
 					{/* State body. AnimatePresence drives directional swaps once
 					 * state implementations land. Step 1 placeholder uses simple

@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 const LINKEDIN_URL = 'https://linkedin.com/company/closercoach'
 
 const HERO_POST = {
-	href: '/blog/closercoach-raises-1m',
+	href: '/blog/closercoach-raises-1m-for-duolingo-for-sales',
 	kicker: 'Announcement',
 	titlePre: 'CloserCoach raises ',
 	titleEm: '$1M',
