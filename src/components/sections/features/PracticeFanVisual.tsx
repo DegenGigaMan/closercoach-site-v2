@@ -243,11 +243,11 @@ export default function PracticeFanVisual(): ReactElement {
 			role='img'
 			aria-label='Three AI customer persona cards: Brenda the skeptical prospect, Bobby the price-sensitive buyer, and Marcus the technical evaluator.'
 		>
-			<div className='flex items-start justify-center sm:scale-[0.82] md:scale-[0.9] lg:scale-100'>
-				<div className='relative z-0 -mr-[210px] lg:-mr-[130px]'>
+			<div className='flex items-start justify-center transition-transform duration-300 ease-out sm:scale-[0.82] sm:group-hover:scale-[0.88] md:scale-[0.9] md:group-hover:scale-[0.96] lg:scale-100 lg:group-hover:scale-[1.06]'>
+				<div className='relative z-0 -mr-[210px] transition-[margin] duration-300 ease-out group-hover:-mr-[150px] lg:-mr-[130px] lg:group-hover:-mr-[70px]'>
 					<PersonaCard persona={PERSONAS[0]} />
 				</div>
-				<div className='relative z-10 -mr-[210px] lg:-mr-[130px]'>
+				<div className='relative z-10 -mr-[210px] transition-[margin] duration-300 ease-out group-hover:-mr-[150px] lg:-mr-[130px] lg:group-hover:-mr-[70px]'>
 					<PersonaCard persona={PERSONAS[1]} />
 				</div>
 				<div className='relative z-20'>

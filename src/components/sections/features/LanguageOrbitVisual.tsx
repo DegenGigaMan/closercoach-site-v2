@@ -14,6 +14,17 @@
 import type { ReactElement } from 'react'
 import { Microphone } from '@phosphor-icons/react'
 
+const floatKeyframes = `
+@keyframes flagFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+}
+@keyframes flagFloatCenter {
+  0%, 100% { transform: translateX(-50%) translateY(0px); }
+  50% { transform: translateX(-50%) translateY(-15px); }
+}
+`
+
 /**
  * @description Mirrored waveform strip. 18 bars per side, 3 zones (inner
  * hot green, mid green, outer dim white). Heights mirror Figma to within
@@ -97,7 +108,7 @@ function MicButton(): ReactElement {
 						'0 0 0 2px rgba(16,208,120,0.3), 0 0 32px rgba(16,208,120,0.4), 0 0 80px rgba(16,208,120,0.15)',
 				}}
 			>
-				<Microphone size={28} weight='fill' className='text-white' aria-hidden='true' />
+				<Microphone size={28} weight='fill' className='text-black' aria-hidden='true' />
 			</div>
 		</div>
 	)
@@ -107,10 +118,12 @@ function FlagCircle({
 	flag,
 	size,
 	style,
+	animStyle,
 }: {
 	flag: string
 	size: number
 	style: React.CSSProperties
+	animStyle?: React.CSSProperties
 }): ReactElement {
 	return (
 		<div
@@ -122,6 +135,7 @@ function FlagCircle({
 				boxShadow:
 					'0px 12px 40px 0px rgba(0,0,0,0.6), inset 0px 1px 0px 0px rgba(255,255,255,0.07)',
 				...style,
+				...animStyle,
 			}}
 			aria-hidden='true'
 		>
@@ -149,6 +163,7 @@ export default function LanguageOrbitVisual(): ReactElement {
 			role='img'
 			aria-label='A microphone button glowing emerald at the center, flanked by sound waves, with five country flag badges floating around it representing the US, Brazil, Japan, China, and Mexico.'
 		>
+			<style>{floatKeyframes}</style>
 			{/* Stage -- width clamped so the layout stays balanced inside the card. */}
 			<div
 				className='relative flex items-center justify-center'
@@ -166,11 +181,11 @@ export default function LanguageOrbitVisual(): ReactElement {
 				</div>
 
 				{/* Flag orbits -- percent anchors relative to stage */}
-				<FlagCircle flag='🇺🇸' size={54} style={{ left: '4%', top: '6%' }} />
-				<FlagCircle flag='🇧🇷' size={54} style={{ right: '4%', top: '6%' }} />
-				<FlagCircle flag='🇯🇵' size={40} style={{ left: '14%', bottom: '6%' }} />
-				<FlagCircle flag='🇨🇳' size={44} style={{ left: '50%', transform: 'translateX(-50%)', bottom: '-4%' }} />
-				<FlagCircle flag='🇲🇽' size={48} style={{ right: '10%', bottom: '6%' }} />
+				<FlagCircle flag='🇺🇸' size={54} style={{ left: '4%', top: '6%' }} animStyle={{ animation: 'flagFloat 3.2s ease-in-out infinite' }} />
+				<FlagCircle flag='🇧🇷' size={54} style={{ right: '4%', top: '6%' }} animStyle={{ animation: 'flagFloat 3.8s ease-in-out infinite 0.6s' }} />
+				<FlagCircle flag='🇯🇵' size={40} style={{ left: '14%', bottom: '6%' }} animStyle={{ animation: 'flagFloat 3.5s ease-in-out infinite 1.2s' }} />
+				<FlagCircle flag='🇨🇳' size={44} style={{ left: '50%', bottom: '-4%' }} animStyle={{ animation: 'flagFloatCenter 4.0s ease-in-out infinite 0.4s' }} />
+				<FlagCircle flag='🇲🇽' size={48} style={{ right: '10%', bottom: '6%' }} animStyle={{ animation: 'flagFloat 3.6s ease-in-out infinite 0.9s' }} />
 			</div>
 		</div>
 	)

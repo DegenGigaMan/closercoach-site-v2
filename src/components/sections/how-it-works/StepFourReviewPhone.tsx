@@ -29,16 +29,19 @@
  *      50% → rgba(12,14,19) 100%) over an emerald linear gradient (rgb(4,32,
  *      19) 0% → rgb(8,10,9) 46%). Inset red shadow grounds the bottom.
  *
- * Render scale: phone HTML renders at 306×~700 native (matching Figma
- * canvas 1:1). On lg+ viewports it scales 1.5x via CSS transform with an
- * outer height-reservation wrapper so layout flow stays correct. Mobile
- * shows the native 1x render to fit small viewports.
+ * Render scale: phone HTML renders at 340px native.
+ *
+ * Animation: `onViewportEnter` fires on the outer phone wrapper (which is
+ * outside any overflow:hidden ancestor). Child elements animate via local
+ * `visible` state. whileInView/useInView can't observe elements clipped by
+ * the phone screen's overflow:hidden — this pattern avoids that limitation.
  *
  * Phone allocation post-2026-05-05: S1 Hero, S3 Step 2 (StepThreeVisual),
  * S4 Step 4 (this file). Per R7 v3 D3 lock 2026-04-29 (Q17 Wave E). */
 
 'use client'
 
+import { useState, useRef, useEffect } from 'react'
 import {
 	XCircle,
 	Lightning,
@@ -48,31 +51,29 @@ import {
 	Globe,
 } from '@phosphor-icons/react'
 import Image from 'next/image'
+import { motion, useReducedMotion } from 'motion/react'
 import MotionCTA from '@/components/shared/motion-cta'
 import { CTA } from '@/lib/constants'
 
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]
+
 const COACH_AVATAR = '/images/cc-step4-avatar.png'
 
-/* Hardcoded Figma example copy (node 166:605). Matches Andy's reference
- * 2026-05-05. Title + dimension match the dimension being scored. */
 const PHONE_COPY = {
 	score: 3,
 	max: 5,
 	tone: 'red' as const,
 	verdict: 'Needs work',
 	title: 'Objection Handling',
-	subtitle: 'You acknowledged the concern, but didn’t isolate the true objection.',
+	subtitle: "You acknowledged the concern, but didn’t isolate the true objection.",
 	said: 'Does the policy seem like it could work for you?',
 	shouldHaveSaid:
 		'What specifically feels concerning to you? Is it the coverage, the price, or something else?',
 }
 
-/**
- * @description S3 Step 4 Review — phone-mockup variant matching Figma 166:605.
- * Renders the section header (kicker + headline) + the static phone asset +
- * the section subhead + the bottom CTA stack. Phone interior is static.
- */
 export default function StepFourReviewPhone() {
+	const reduced = useReducedMotion() ?? false
+
 	return (
 		<div className='mx-auto max-w-7xl px-6 pb-32 md:px-12 lg:px-16 lg:pb-40'>
 			{/* Intro: kicker + headline */}
@@ -88,13 +89,9 @@ export default function StepFourReviewPhone() {
 				</h3>
 			</div>
 
-			{/* Phone mockup. Renders at native 340×~723 across all viewports
-			 * so it fits within typical 900-1080px desktop viewport heights
-			 * (Andy 2026-05-05: prior 1.5× scale at 510×1140 was taller than
-			 * the viewport on most desktop displays). Aspect ratio preserved
-			 * — sizing is uniformly native, not desktop-scaled. */}
+			{/* Phone mockup */}
 			<div className='mt-12 flex justify-center'>
-				<PhoneMockup />
+				<PhoneMockup reduced={reduced} />
 			</div>
 
 			{/* Subhead beneath the visual. */}
@@ -128,11 +125,32 @@ export default function StepFourReviewPhone() {
 	)
 }
 
-/* Phone shell — outer cool-metal gradient + inner red-radial × emerald-linear
- * background composition. Width 306px matches Figma node 166:605. */
-function PhoneMockup() {
+/* Native IntersectionObserver on the outer phone shell (not inside any
+ * overflow:hidden ancestor). All child animations driven by `visible`. */
+function PhoneMockup({ reduced }: { reduced: boolean }) {
+	const [visible, setVisible] = useState(false)
+	const phoneRef = useRef<HTMLDivElement>(null)
+	const t = (d: number) => (reduced ? { duration: 0 } : { duration: 0.5, ease: EASE, delay: d })
+
+	useEffect(() => {
+		const el = phoneRef.current
+		if (!el) return
+		const io = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) {
+					setVisible(true)
+					io.disconnect()
+				}
+			},
+			{ threshold: 0.15 },
+		)
+		io.observe(el)
+		return () => io.disconnect()
+	}, [])
+
 	return (
 		<div
+			ref={phoneRef}
 			className='w-[340px] rounded-[48px] border border-white/10 p-[7px] shadow-[0_0_60px_rgba(16,185,129,0.1),0_20px_40px_rgba(0,0,0,0.4)]'
 			style={{
 				backgroundImage:
@@ -158,64 +176,94 @@ function PhoneMockup() {
 					<div className='h-[22px] w-[100px] rounded-full bg-black' />
 				</div>
 
-				{/* Main column. Three explicit spacing tiers (Andy 2026-05-05):
-				 *   1. Tight (within an element): score → 'Needs work' = 4px
-				 *   2. Moderate (within a group): title → subtitle = 15px,
-				 *      said → should = 24px, score-block → title-block = 32px
-				 *   3. Large (between groups): header → chat = 40px, chat →
-				 *      Practice = 48px
-				 * Uniform gap-10 in the prior version flattened the hierarchy. */}
 				<div className='relative flex flex-1 flex-col items-center px-4 pb-4 pt-4'>
-					{/* Header group: score block + title block. Spacing per
-					 * Figma node 166:611 exactly: outer gap-24 (gap-6) between
-					 * score block and title block. */}
 					<div className='flex w-full flex-col items-center gap-6 overflow-hidden'>
-						{/* Score block — Figma 166:612 gap-12 (gap-3) between
-						 * the ring and the 'Needs work' verdict. text-trim
-						 * matches Figma's leading-[0] wrapper trick (cap-to-
-						 * baseline trim) so the gap-3 measures from glyph
-						 * edges, not line-box edges. */}
+						{/* Score block */}
 						<div className='flex flex-col items-center gap-3'>
-							<ScoreRing score={PHONE_COPY.score} max={PHONE_COPY.max} />
-							<span className='text-trim font-sans text-[16px] font-semibold leading-normal text-[#E11D48]'>
+							<ScoreRing score={PHONE_COPY.score} max={PHONE_COPY.max} visible={visible} reduced={reduced} />
+							<motion.span
+								className='text-trim font-sans text-[16px] font-semibold leading-normal text-[#E11D48]'
+								initial={{ opacity: 0, y: 6 }}
+								animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 6 }}
+								transition={t(0.9)}
+							>
 								{PHONE_COPY.verdict}
-							</span>
+							</motion.span>
 						</div>
 
-						{/* Title block — heading + subtitle. text-trim on both
-						 * removes the browser's half-leading padding above/below
-						 * glyphs so the gap-15 between title and subtitle
-						 * matches Figma exactly. */}
+						{/* Title block */}
 						<div className='flex w-full flex-col items-center gap-[15px] text-center'>
-							<h4 className='text-trim whitespace-nowrap font-sans text-[28px] font-semibold leading-normal tracking-tight text-white'>
+							<motion.h4
+								className='text-trim whitespace-nowrap font-sans text-[28px] font-semibold leading-normal tracking-tight text-white'
+								initial={{ opacity: 0, y: 8 }}
+								animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+								transition={t(1.1)}
+							>
 								{PHONE_COPY.title}
-							</h4>
-							<p className='text-trim font-sans text-[14px] font-normal leading-[1.4] text-white/80'>
+							</motion.h4>
+							<motion.p
+								className='text-trim font-sans text-[14px] font-normal leading-[1.4] text-white/80'
+								initial={{ opacity: 0, y: 8 }}
+								animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+								transition={t(1.3)}
+							>
 								{PHONE_COPY.subtitle}
-							</p>
+							</motion.p>
 						</div>
 					</div>
 
-					{/* Chat group — Said + Should bubbles. mt-10 separates from
-					 * the header group as a distinct block. */}
+					{/* Chat group */}
 					<div className='mt-10 flex w-full flex-col gap-6 overflow-hidden'>
-						<SaidBubble body={PHONE_COPY.said} />
-						<ShouldBubble body={PHONE_COPY.shouldHaveSaid} />
+						<motion.div
+							className='flex w-full justify-end pl-8 pt-5'
+							initial={{ opacity: 0, x: 20 }}
+							animate={visible ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
+							transition={t(1.7)}
+						>
+							<div className='relative rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] border border-white/[0.06] bg-[#1E2230] p-3'>
+								<p className='text-trim font-sans text-[16px] font-normal leading-[1.4] text-white'>{PHONE_COPY.said}</p>
+								<div className='absolute -left-2 -top-[23px] inline-flex items-center gap-1 rounded-full border border-white/[0.09] bg-[#1E2230] py-1.5 pl-1.5 pr-3 drop-shadow-[0_2px_2px_rgba(0,0,0,0.4)]'>
+									<XCircle size={14} weight='fill' style={{ color: '#FF6467' }} aria-hidden='true' />
+									<span className='text-trim whitespace-nowrap font-sans text-[16px] font-medium leading-[1.2] text-[#FF6467]'>
+										What you said
+									</span>
+								</div>
+							</div>
+						</motion.div>
+
+						<motion.div
+							className='flex w-full items-end gap-2.5 pr-4 pt-5'
+							initial={{ opacity: 0, y: 16 }}
+							animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+							transition={t(2.1)}
+						>
+							<div className='relative h-5 w-5 shrink-0 overflow-hidden rounded-full border border-white/[0.05]' aria-hidden='true'>
+								<Image src={COACH_AVATAR} alt='' fill sizes='20px' className='object-cover' />
+							</div>
+							<div className='relative flex-1 rounded-tl-[12px] rounded-tr-[12px] rounded-br-[12px] border border-white/[0.06] bg-[#09F] p-3'>
+								<p className='text-trim font-sans text-[18px] font-normal leading-[1.4] text-white'>{PHONE_COPY.shouldHaveSaid}</p>
+								<div className='absolute -left-2 -top-[21px] inline-flex items-center gap-1 rounded-full border border-white/[0.1] bg-[#1E2230] py-1.5 pl-1.5 pr-3 drop-shadow-[0_2px_2px_rgba(0,0,0,0.4)]'>
+									<Lightning size={12} weight='fill' style={{ color: '#34E18E' }} aria-hidden='true' />
+									<span className='text-trim whitespace-nowrap font-sans text-[16px] font-medium leading-[15px] text-[#34E18E]'>
+										What you should&rsquo;ve said
+									</span>
+								</div>
+							</div>
+						</motion.div>
 					</div>
 
-					{/* Practice Again button. Display only — phone mockup, not
-					 * an interactive surface. mt-12 separates from chat group as
-					 * a distinct block (Figma has gap-16 in main but Andy's
-					 * reference image shows the button breathing further from
-					 * the chat). */}
-					<div
+					{/* Practice Again button */}
+					<motion.div
 						role='img'
 						aria-label='Practice Again button'
 						className='mt-12 flex h-12 w-full items-center justify-center gap-2.5 rounded-[27px] border border-white/20 pl-6 pr-[30px] font-sans text-[16px] font-medium text-white'
+						initial={{ opacity: 0, y: 10 }}
+						animate={visible ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+						transition={t(2.6)}
 					>
 						<ArrowsCounterClockwise size={16} weight='regular' aria-hidden='true' />
 						<span>Practice Again</span>
-					</div>
+					</motion.div>
 				</div>
 
 				{/* Home indicator */}
@@ -227,108 +275,44 @@ function PhoneMockup() {
 	)
 }
 
-/* Score ring — 80×80, red 82% open arc, "3/5" centered. Inter SemiBold 24px
- * (Figma calls Plus Jakarta Sans SemiBold; Inter is the loaded fallback). */
-function ScoreRing({ score, max }: { score: number; max: number }) {
+function ScoreRing({ score, max, visible, reduced }: { score: number; max: number; visible: boolean; reduced: boolean }) {
 	const color = '#E11D48'
 	const radius = 36
 	const circumference = 2 * Math.PI * radius
 	const arcFraction = 0.82
 	const fill = (score / max) * arcFraction
+	const fillLength = circumference * fill
 	return (
 		<div className='relative flex h-[80px] w-[80px] items-center justify-center'>
 			<svg viewBox='0 0 80 80' className='absolute inset-0 h-full w-full' aria-hidden='true'>
+				{/* Faint track arc */}
 				<circle
-					cx={40}
-					cy={40}
-					r={radius}
-					fill='none'
-					stroke={color}
-					strokeOpacity={0.18}
-					strokeWidth={4}
-					strokeLinecap='round'
+					cx={40} cy={40} r={radius}
+					fill='none' stroke={color} strokeOpacity={0.18} strokeWidth={4} strokeLinecap='round'
 					strokeDasharray={`${circumference * arcFraction} ${circumference}`}
 					transform='rotate(-90 40 40)'
 				/>
-				<circle
-					cx={40}
-					cy={40}
-					r={radius}
-					fill='none'
-					stroke={color}
-					strokeWidth={4}
-					strokeLinecap='round'
-					strokeDasharray={`${circumference * fill} ${circumference}`}
+				{/* Animated fill arc via strokeDashoffset */}
+				<motion.circle
+					cx={40} cy={40} r={radius}
+					fill='none' stroke={color} strokeWidth={4} strokeLinecap='round'
+					strokeDasharray={`${fillLength} ${circumference}`}
 					transform='rotate(-90 40 40)'
+					initial={{ strokeDashoffset: fillLength }}
+					animate={{ strokeDashoffset: visible ? 0 : fillLength }}
+					transition={reduced ? { duration: 0 } : { duration: 1.0, ease: EASE, delay: 0.3 }}
 				/>
 			</svg>
-			<span
+			<motion.span
 				className='text-trim relative font-sans text-[24px] font-semibold leading-normal'
 				style={{ color }}
 				aria-label={`Score ${score} out of ${max}`}
+				initial={{ opacity: 0 }}
+				animate={{ opacity: visible ? 1 : 0 }}
+				transition={reduced ? { duration: 0 } : { duration: 0.4, delay: 0.8 }}
 			>
 				{score}/{max}
-			</span>
-		</div>
-	)
-}
-
-/* "What you said" bubble — right-aligned gray (#1E2230). Bubble text 16px
- * Inter Regular white. Badge: 16px Inter Medium #FF6467 with X-circle. */
-function SaidBubble({ body }: { body: string }) {
-	return (
-		<div className='flex w-full justify-end pl-8 pt-5'>
-			<div className='relative rounded-tl-[12px] rounded-tr-[12px] rounded-bl-[12px] border border-white/[0.06] bg-[#1E2230] p-3'>
-				<p className='text-trim font-sans text-[16px] font-normal leading-[1.4] text-white'>{body}</p>
-				<div className='absolute -left-2 -top-[23px] inline-flex items-center gap-1 rounded-full border border-white/[0.09] bg-[#1E2230] py-1.5 pl-1.5 pr-3 drop-shadow-[0_2px_2px_rgba(0,0,0,0.4)]'>
-					<XCircle
-						size={14}
-						weight='fill'
-						style={{ color: '#FF6467' }}
-						aria-hidden='true'
-					/>
-					<span className='text-trim whitespace-nowrap font-sans text-[16px] font-medium leading-[1.2] text-[#FF6467]'>
-						What you said
-					</span>
-				</div>
-			</div>
-		</div>
-	)
-}
-
-/* "What you should've said" bubble — left-padded blue (#09F) with avatar on
- * the bottom-left. Bubble text 18px Inter Regular white. Badge: 16px Inter
- * Medium #34E18E with green lightning bolt (matches Figma SSRBase glyph).
- * Avatar: 20px circle with white/5 border holding the coach photo. */
-function ShouldBubble({ body }: { body: string }) {
-	return (
-		<div className='flex w-full items-end gap-2.5 pr-4 pt-5'>
-			<div
-				className='relative h-5 w-5 shrink-0 overflow-hidden rounded-full border border-white/[0.05]'
-				aria-hidden='true'
-			>
-				<Image
-					src={COACH_AVATAR}
-					alt=''
-					fill
-					sizes='20px'
-					className='object-cover'
-				/>
-			</div>
-			<div className='relative flex-1 rounded-tl-[12px] rounded-tr-[12px] rounded-br-[12px] border border-white/[0.06] bg-[#09F] p-3'>
-				<p className='text-trim font-sans text-[18px] font-normal leading-[1.4] text-white'>{body}</p>
-				<div className='absolute -left-2 -top-[21px] inline-flex items-center gap-1 rounded-full border border-white/[0.1] bg-[#1E2230] py-1.5 pl-1.5 pr-3 drop-shadow-[0_2px_2px_rgba(0,0,0,0.4)]'>
-					<Lightning
-						size={12}
-						weight='fill'
-						style={{ color: '#34E18E' }}
-						aria-hidden='true'
-					/>
-					<span className='text-trim whitespace-nowrap font-sans text-[16px] font-medium leading-[15px] text-[#34E18E]'>
-						What you should&rsquo;ve said
-					</span>
-				</div>
-			</div>
+			</motion.span>
 		</div>
 	)
 }
