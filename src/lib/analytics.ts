@@ -6,6 +6,10 @@ import type { PostHog } from 'posthog-js'
 /**
  * @description Canonical event taxonomy for the CC LP. Adding a new event?
  * Add it here first so all callers are type-checked.
+ *
+ * Note: $pageview is PostHog's built-in event — fired automatically by
+ * capture_pageview: 'history_change' in PostHogProvider. Don't add a
+ * custom 'route_view' here; the built-in is what dashboards expect.
  */
 export type EventName =
 	| 'hero_cta_click'
@@ -18,7 +22,6 @@ export type EventName =
 	| 'scroll_depth_75'
 	| 'scroll_depth_100'
 	| 'cookie_consent_choice'
-	| 'route_view'
 
 declare global {
 	interface Window {

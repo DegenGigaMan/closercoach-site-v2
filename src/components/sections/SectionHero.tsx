@@ -1,10 +1,9 @@
-/** @fileoverview S1 Hero -- centered composition (v1 port with hero phone V2 slot).
+/** @fileoverview S1 Hero -- centered composition (v1 port with hero phone V3 slot).
  * Atmosphere: L1 dual radial gradient (emerald, centered), L2 noise, L3 particles (desktop only),
  * H11 bottom progressive blur.
  * Stack: AnimatedBadge -> H1 -> subhead -> CTAs -> reassurance -> stars -> app badges -> phone.
- * Phone is HeroPhoneV2 (self-cycling 4-state composite) wrapped in three-layer emerald glow.
- * Perimeter is clean -- no external chips. HeroPhoneV2's internal coaching pills are
- * the only chip moments in the section.
+ * Phone is HeroPhoneV3 (self-cycling 6-state composite) wrapped in three-layer emerald glow.
+ * Perimeter is clean. HeroPhoneV3's internal product UI is the only chrome inside the frame.
  * Entrance choreography: motion/react translation of v1's GSAP+SplitText timeline.
  * Copy: lp-copy-deck-v5 Section 1 (verbatim). */
 
@@ -19,7 +18,7 @@ import { track } from '@/lib/analytics'
 import MotionCTA from '@/components/shared/motion-cta'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
 import AnimatedBadge from '@/components/ui/animated-badge'
-import HeroPhoneV2 from '@/components/hero/hero-phone-v2'
+import HeroPhoneV3 from '@/components/hero/hero-phone-v3'
 
 const EASE = [0.25, 0.46, 0.45, 0.94] as const
 
@@ -355,9 +354,9 @@ export default function SectionHero() {
 						/>
 					</motion.div>
 
-					{/* Phone frame wrapper. HeroPhoneV2 ships a 320px phone inside px-40 gutters
+					{/* Phone frame wrapper. HeroPhoneV3 ships a 320px phone inside px-40 gutters
 					 * (640px outer footprint). No external chips -- the phone stands alone,
-					 * with its internal coaching pills carrying all chip moments. */}
+					 * with its internal product UI carrying all chrome. */}
 					<div className='relative'>
 						{/* Phone -- parallax on desktop, enters from below with subtle scale. */}
 						<motion.div
@@ -374,7 +373,7 @@ export default function SectionHero() {
 							 * so any minor edge bleed gets clipped at the viewport. Negative
 							 * mb compensates for the scale-vs-layout gap. */}
 							<div className='origin-top scale-[0.68] sm:scale-[0.82] md:scale-[0.92] lg:scale-100 mb-[-205px] sm:mb-[-115px] md:mb-[-50px] lg:mb-0'>
-								<HeroPhoneV2 />
+								<HeroPhoneV3 />
 							</div>
 						</motion.div>
 					</div>

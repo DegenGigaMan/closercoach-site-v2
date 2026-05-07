@@ -28,7 +28,7 @@
  *   - Visual spec: vault/clients/closer-coach/design/section-blueprint.md §S3 Step 4 (236-250)
  *   - Copy spec:   vault/clients/closer-coach/copy/lp-copy-deck-v5.md §Section 3 Step 4 (v5.3)
  *   - Motion:      vault/clients/closer-coach/design/motion-spec.md (Thread Emergence arrow draw)
- *   - Vocabulary:  src/components/hero/hero-phone-v2.tsx (ScoreState grade-reveal spring),
+ *   - Vocabulary:  src/components/hero/hero-phone-v3.tsx (ScoreState grade-reveal spring),
  *                  src/components/sections/_lab/how-it-works/StepThreeVisual.tsx (kicker grammar)
  *   - Shared utils: ./_shared/use-sub-state-machine + ./_shared/step-visual-defaults
  *
