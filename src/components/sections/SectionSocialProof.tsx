@@ -155,7 +155,7 @@ export default function SectionSocialProof() {
 									lineHeight: 'normal',
 								}}
 							>
-								19,997+
+								36,000+
 							</span>
 							<span className='text-trim text-xs leading-[16px] text-cc-text-secondary-warm'>
 								sales closers

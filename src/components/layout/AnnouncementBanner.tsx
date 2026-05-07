@@ -18,7 +18,7 @@ type AnnouncementBannerProps = {
 
 export default function AnnouncementBanner({
 	message = 'CloserCoach raises $1M to build Duolingo for sales',
-	href = '/blog/closercoach-raises-1m',
+	href = '/blog/closercoach-raises-1m-for-duolingo-for-sales',
 	linkLabel = 'Read more',
 }: AnnouncementBannerProps) {
 	// SSR-safe initial: render nothing until client hydrates.

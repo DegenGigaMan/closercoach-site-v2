@@ -559,7 +559,7 @@ export default function SectionResults(): ReactElement {
 
 				{/* CTA */}
 				<Reveal className='mt-16 flex justify-center md:mt-24' delay={0.05}>
-					<MotionCTA variant='primary' size='lg' href={CTA.tryFree.href} warmSurface>
+					<MotionCTA variant='primary' size='lg' href={CTA.tryFree.href} warmSurface className='w-full sm:w-auto'>
 						{CTA.tryFree.text}
 					</MotionCTA>
 				</Reveal>

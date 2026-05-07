@@ -1,4 +1,4 @@
-/** @fileoverview /blog/closercoach-raises-1m — funding announcement post.
+/** @fileoverview /blog/closercoach-raises-1m-for-duolingo-for-sales — funding announcement post.
  * Linked from the top AnnouncementBanner. Placeholder body copy until the
  * announcement copy lands; structure + typography are launch-grade. */
 
@@ -17,11 +17,11 @@ const DESCRIPTION =
 export const metadata: Metadata = {
 	title: TITLE,
 	description: DESCRIPTION,
-	alternates: { canonical: '/blog/closercoach-raises-1m' },
+	alternates: { canonical: '/blog/closercoach-raises-1m-for-duolingo-for-sales' },
 	openGraph: {
 		title: TITLE,
 		description: DESCRIPTION,
-		url: '/blog/closercoach-raises-1m',
+		url: '/blog/closercoach-raises-1m-for-duolingo-for-sales',
 		type: 'article',
 		publishedTime: '2026-03-15T00:00:00.000Z',
 		authors: ['CloserCoach'],
