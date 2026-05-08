@@ -47,6 +47,17 @@ export default function TextType({
 	const [charIndex, setCharIndex] = useState(reduced ? text.length : 0)
 	const startedRef = useRef(false)
 
+	/* Reset internal state when start goes false so a subsequent start=true
+	 * always types from the beginning (guards against the start:true→false→true
+	 * cycle that caused the JOB field to stay empty). */
+	useEffect(() => {
+		if (!start && !reduced) {
+			setDisplayed('')
+			setCharIndex(0)
+			startedRef.current = false
+		}
+	}, [start, reduced])
+
 	useEffect(() => {
 		if (reduced) {
 			// eslint-disable-next-line react-hooks/set-state-in-effect -- prefers-reduced-motion short-circuit fast-forwards typewriter to settled; intentional one-shot batch update
@@ -55,7 +66,6 @@ export default function TextType({
 			return
 		}
 		if (!start) return
-		if (startedRef.current && charIndex === 0 && displayed === '') return
 		startedRef.current = true
 
 		if (charIndex >= text.length) return

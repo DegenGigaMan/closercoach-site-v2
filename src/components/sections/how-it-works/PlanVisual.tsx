@@ -45,7 +45,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { AnimatePresence, motion, useInView, useReducedMotion } from 'motion/react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { Calendar, Check, Checks, Sparkle, SpinnerGap } from '@phosphor-icons/react'
 import { CLONE_CARD } from '@/lib/constants'
 import TextType from '@/components/ui/text-type'
@@ -173,7 +173,7 @@ function RailLine({ inView, reduced, delay }: {
 			aria-hidden='true'
 			className='min-h-full w-px flex-1 origin-top bg-gradient-to-b from-cc-accent/60 via-cc-accent/30 to-cc-accent/10'
 			initial={{ scaleY: 0, opacity: 0 }}
-			animate={inView ? { scaleY: 1, opacity: 1 } : undefined}
+			animate={inView ? { scaleY: 1, opacity: 1 } : { scaleY: 0, opacity: 0 }}
 			transition={{ duration: 0.5, ease: EASE, delay }}
 		/>
 	)
@@ -184,7 +184,7 @@ function RailLine({ inView, reduced, delay }: {
 function IntegrationsPill({ inView, reduced }: { inView: boolean, reduced: boolean }) {
 	const enter = (delay: number) => ({
 		initial: { opacity: 0, scale: 0.6 },
-		animate: inView ? { opacity: 1, scale: 1 } : undefined,
+		animate: inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.6 },
 		transition: reduced
 			? { duration: 0 }
 			: { type: 'spring' as const, stiffness: 380, damping: 26, delay: PHASE.integrationCascade + 0.05 + delay },
@@ -195,7 +195,7 @@ function IntegrationsPill({ inView, reduced }: { inView: boolean, reduced: boole
 			className='inline-flex items-center gap-2 rounded-[12px] border border-white/[0.06] bg-cc-surface-card/60 px-2 py-1 shadow-[0_4px_12px_rgba(0,0,0,0.4),0_0_20px_rgba(16,185,129,0.05)] backdrop-blur-sm'
 			aria-label='Connected to Google Meet, Microsoft Teams, and Salesforce'
 			initial={{ opacity: 0, y: 4 }}
-			animate={inView ? { opacity: 1, y: 0 } : undefined}
+			animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 4 }}
 			transition={reduced
 				? { duration: 0 }
 				: { duration: 0.35, ease: EASE, delay: PHASE.integrationCascade }
@@ -227,7 +227,7 @@ function MeetingCard({ name, time, avatarSrc, active = false, inView, reduced, d
 				active ? '' : 'border-white/[0.14]',
 			].join(' ').trim()}
 			initial={{ opacity: 0, x: -8 }}
-			animate={inView ? { opacity: active ? 1 : 0.28, x: 0 } : undefined}
+			animate={inView ? { opacity: active ? 1 : 0.28, x: 0 } : { opacity: 0, x: -8 }}
 			transition={reduced ? { duration: 0 } : { duration: 0.45, ease: EASE, delay: PHASE.sarahCard + delay }}
 		>
 			{active && (
@@ -265,7 +265,7 @@ function IconBoxStaged({ children, inView, reduced, delay }: {
 			className='flex shrink-0 items-center justify-center rounded-[4px] bg-cc-accent/10 p-1'
 			aria-hidden='true'
 			initial={{ opacity: 0, scale: 0.7 }}
-			animate={inView ? { opacity: 1, scale: 1 } : undefined}
+			animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.7 }}
 			transition={reduced
 				? { duration: 0 }
 				: { type: 'spring' as const, stiffness: 380, damping: 26, delay }
@@ -293,7 +293,7 @@ function LeftVisual({ inView, reduced }: { inView: boolean, reduced: boolean }) 
 					<motion.span
 						className='text-trim font-[family-name:var(--font-mono)] text-[12px] font-medium uppercase leading-none tracking-[0.1em] text-cc-accent'
 						initial={{ opacity: 0 }}
-						animate={inView ? { opacity: 1 } : undefined}
+						animate={inView ? { opacity: 1 } : { opacity: 0 }}
 						transition={reduced ? { duration: 0 } : { duration: 0.4, delay: PHASE.connectedCaption, ease: EASE }}
 					>
 						Connected
@@ -317,7 +317,7 @@ function LeftVisual({ inView, reduced }: { inView: boolean, reduced: boolean }) 
 					<motion.span
 						className='text-trim font-[family-name:var(--font-mono)] text-[12px] font-medium uppercase leading-none tracking-[0.06em] text-white/80'
 						initial={{ opacity: 0 }}
-						animate={inView ? { opacity: 1 } : undefined}
+						animate={inView ? { opacity: 1 } : { opacity: 0 }}
 						transition={reduced ? { duration: 0 } : { duration: 0.4, delay: PHASE.calendarCaption + 0.05, ease: EASE }}
 					>
 						Today&apos;s Meetings
@@ -647,20 +647,20 @@ function Connector({ inView, reduced, delay }: {
 			<motion.circle
 				cx='3' cy='3' r='3' fill={EMERALD}
 				initial={animated && !reduced ? { opacity: 0 } : false}
-				animate={animated ? (inView ? { opacity: 1 } : undefined) : undefined}
+				animate={animated ? (inView ? { opacity: 1 } : { opacity: 0 }) : undefined}
 				transition={animated && !reduced ? { duration: 0.25, delay } : undefined}
 			/>
 			<motion.rect
 				x='3' y='2' width='76' height='2' rx='1' fill='url(#cc-plan-link)'
 				style={{ transformOrigin: 'left center' }}
 				initial={animated && !reduced ? { scaleX: 0, opacity: 0 } : false}
-				animate={animated ? (inView ? { scaleX: 1, opacity: 1 } : undefined) : undefined}
+				animate={animated ? (inView ? { scaleX: 1, opacity: 1 } : { scaleX: 0, opacity: 0 }) : undefined}
 				transition={animated && !reduced ? { duration: 0.4, ease: EASE, delay: delay + 0.1 } : undefined}
 			/>
 			<motion.circle
 				cx='79' cy='3' r='3' fill={EMERALD}
 				initial={animated && !reduced ? { opacity: 0 } : false}
-				animate={animated ? (inView ? { opacity: 1 } : undefined) : undefined}
+				animate={animated ? (inView ? { opacity: 1 } : { opacity: 0 }) : undefined}
 				transition={animated && !reduced ? { duration: 0.25, delay: delay + 0.45 } : undefined}
 			/>
 		</svg>
@@ -711,9 +711,26 @@ function CloneVisual({ reduced, filled, pulseFooter, isComplete, cardRevealed, c
 export default function PlanVisual({}: { devPin?: boolean } = {}) {
 	const reduced = useReducedMotion() ?? false
 	const ref = useRef<HTMLDivElement>(null)
-	/* Re-trigger on viewport entry — `once: false` and amount: 0.4 means the
-	 * sequence replays each time the user scrolls back to it. */
-	const inView = useInView(ref, { amount: 0.4 })
+	const [inView, setInView] = useState(false)
+	useEffect(() => {
+		const el = ref.current
+		if (!el) return
+		const io = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) {
+					setInView(true)
+					io.disconnect()
+				}
+			},
+			{ threshold: 0 },
+		)
+		io.observe(el)
+		const fallback = setTimeout(() => {
+			const rect = el.getBoundingClientRect()
+			if (rect.top < window.innerHeight && rect.bottom > 0) setInView(true)
+		}, 500)
+		return () => { io.disconnect(); clearTimeout(fallback) }
+	}, [])
 
 	const [filled, setFilled] = useState(reduced ? 7 : 0)
 	const [pulseFooter, setPulseFooter] = useState(reduced)
@@ -735,15 +752,7 @@ export default function PlanVisual({}: { devPin?: boolean } = {}) {
 			setFieldStarts(Object.fromEntries(CLONE_CARD.fields.map((f) => [f.label, true])))
 			return
 		}
-		if (!inView) {
-			setFilled(0)
-			setPulseFooter(false)
-			setIsComplete(false)
-			setCardRevealed(false)
-			setCloningStarted(false)
-			setFieldStarts(Object.fromEntries(CLONE_CARD.fields.map((f) => [f.label, false])))
-			return
-		}
+		if (!inView) return
 		/* Wave AA.3: schedule cloning column reveal at PHASE.cloningStart, then
 		 * progress bar segment fills, card snap-in at PHASE.cardReveal, footer
 		 * pulse beat. Right column is hidden via opacity until cloning starts.

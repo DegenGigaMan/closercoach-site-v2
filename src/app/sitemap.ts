@@ -39,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 			priority: 0.7,
 		},
 		{
-			url: `${SITE_URL}/blog/closercoach-raises-1m`,
+			url: `${SITE_URL}/blog/closercoach-raises-1m-for-duolingo-for-sales`,
 			lastModified,
 			changeFrequency: 'yearly',
 			priority: 0.6,

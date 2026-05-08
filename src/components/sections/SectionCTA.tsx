@@ -16,6 +16,7 @@ import { ChatCircleDots } from '@phosphor-icons/react'
 import ScrollReveal from '@/components/shared/scroll-reveal'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
 import { BRAND } from '@/lib/constants'
+import MotionCTA from '@/components/shared/motion-cta'
 
 /* QR destination -- absolute URL so scans resolve from print/screenshots too.
  * Points at the /download page for platform detection and store routing. */
@@ -83,6 +84,11 @@ export default function SectionCTA() {
 					 * The QR museum exhibit + scan label below already frame the
 					 * download moment without a confidence boilerplate. The headline
 					 * + subhead carry the close. */}
+
+					{/* Primary CTA -- Book a Demo for Teams */}
+					<MotionCTA href='/sales' variant='primary' size='lg' className='w-full sm:w-auto'>
+						Book a Demo for Teams
+					</MotionCTA>
 
 					{/* QR museum exhibit (AD) -- concentric rings behind, emerald frame, corner registration */}
 					<div className='relative mt-4 flex flex-col items-center gap-3'>
@@ -167,7 +173,7 @@ export default function SectionCTA() {
 						className='group inline-flex items-center gap-2 rounded-full border border-cc-accent/30 bg-cc-accent/5 px-4 py-2 text-sm text-cc-text-secondary transition-colors hover:border-cc-accent/60 hover:bg-cc-accent/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
 					>
 						<ChatCircleDots weight='bold' className='h-4 w-4 text-cc-accent' aria-hidden='true' />
-						<span>
+						<span className='whitespace-nowrap'>
 							Join <span className='text-white'>500+ closers</span> in our WhatsApp community.
 						</span>
 					</Link>
@@ -189,13 +195,6 @@ export default function SectionCTA() {
 						</span>
 					</div>
 
-					{/* Secondary CTA -- Book a Demo for Teams */}
-					<Link
-						href='/sales'
-						className='text-sm text-cc-accent underline-offset-4 transition-colors hover:text-cc-accent-hover hover:underline focus-visible:outline-none focus-visible:underline'
-					>
-						Book a Demo for Teams
-					</Link>
 				</ScrollReveal>
 			</div>
 		</section>

@@ -219,7 +219,7 @@ const roleVisualHeight: Record<FeatureRole, string> = {
 	 * The flow-visual elements are tuned compact (sm rails, 24px manager
 	 * badge, 36px app icon, 32px avatars) so the assignment flow still
 	 * reads cleanly inside the 250px visual area. */
-	'equal-flow': 'h-[230px] md:h-[250px]',
+	'equal-flow': 'h-[300px] md:h-[340px]',
 	tall: 'flex-1',
 	'split-full': 'h-[280px] md:h-[300px]',
 }
@@ -428,7 +428,7 @@ export default function SectionTeams(): ReactElement {
 					<p className='text-center text-base text-cc-text-secondary md:text-lg'>
 						Want to scale your sales team training?
 					</p>
-					<div className='flex flex-col items-center gap-4 sm:flex-row sm:justify-center'>
+					<div className='flex flex-row flex-wrap items-center justify-center gap-4'>
 						<MotionCTA variant='primary' size='lg' href='/sales' dataPrimaryCta>
 							Book a Demo
 						</MotionCTA>
