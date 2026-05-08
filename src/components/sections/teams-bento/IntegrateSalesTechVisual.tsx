@@ -1,22 +1,3 @@
-/** @fileoverview S6 Card 6 visual — "Integrate Your Existing Sales Technology".
- *
- * Composition (per Figma 81-4702, full col-span-3 row 3 on lg+):
- *   ─ Center: CC logomark hub orb with emerald glow.
- *   ─ Left satellite: generic user/contact icon (representing the rep team).
- *   ─ Right column satellites stacked: Salesforce (top), HubSpot (mid),
- *     GoHighLevel (bottom) — all 3 authentic single-color brand marks so the
- *     hub-and-spoke composition reads as real integrations rather than mixed
- *     authentic/abstracted glyphs.
- *   ─ AnimatedBeam connectors flow from each satellite to the CC hub.
- *
- * Mobile (<lg): satellites collapse into a single horizontal row with the
- * hub orb in the centre, beams hidden (animation budget).
- *
- * Wave N (FIX-02): replaced fabricated rising-bars HIGHLEVEL_ICON with an
- * authentic GoHighLevel brandmark — coral-orange (#FF7A00) filled circle
- * with white "G" letterform. Pairs visually with Salesforce cloud +
- * HubSpot sprocket as 3 single-color brand marks. */
-
 'use client'
 
 import Image from 'next/image'
@@ -30,10 +11,6 @@ const HUBSPOT_ICON = (
 	</svg>
 )
 
-/* Authentic GoHighLevel brandmark — coral-orange filled circle with white
- * "G" letterform. Matches GHL's actual brand identity (coral/orange primary
- * across gohighlevel.com). Single brand color matches the SF cloud + HS
- * sprocket pattern so all 3 satellite icons read as real brand marks. */
 const HIGHLEVEL_ICON = (
 	<svg viewBox='0 0 24 24' className='h-5 w-5' aria-hidden='true'>
 		<circle cx='12' cy='12' r='11' fill='#FF7A00' />
@@ -47,14 +24,17 @@ const HIGHLEVEL_ICON = (
 function SatelliteOrb({
 	innerRef,
 	children,
+	size = 'md',
 }: {
 	innerRef: RefObject<HTMLDivElement | null>
 	children: ReactElement
+	size?: 'sm' | 'md'
 }): ReactElement {
+	const dim = size === 'sm' ? 'h-10 w-10' : 'h-12 w-12'
 	return (
 		<div
 			ref={innerRef}
-			className='relative z-10 flex h-12 w-12 items-center justify-center rounded-full border border-cc-surface-border bg-cc-surface-card shadow-[0_4px_12px_rgba(0,0,0,0.35)]'
+			className={`relative z-10 flex ${dim} items-center justify-center rounded-full border border-cc-surface-border bg-cc-surface-card shadow-[0_4px_12px_rgba(0,0,0,0.35)]`}
 		>
 			{children}
 		</div>
@@ -72,24 +52,21 @@ export default function IntegrateSalesTechVisual(): ReactElement {
 	return (
 		<div
 			ref={containerRef}
-			className='relative h-full w-full overflow-hidden px-6 py-8 md:px-10'
+			className='relative h-full w-full overflow-hidden px-5 py-6 md:px-8 md:py-8'
 		>
-			{/* Composition layout: 3-column horizontal grid with the CC hub centred.
-			 * On lg+ the right satellites form a vertical column; on smaller widths
-			 * everything reflows into a single horizontal row. */}
-			<div className='relative flex h-full items-center justify-between'>
-				{/* Left satellite: generic user icon */}
-				<SatelliteOrb innerRef={userRef}>
-					<User size={20} weight='regular' className='text-cc-text-secondary' />
+			{/* Mobile layout: centred horizontal row, all 5 nodes in one line.
+			    Desktop (lg+): same justify-between but right satellites go vertical. */}
+			<div className='relative flex h-full items-center justify-between gap-2'>
+
+				{/* Left satellite: user icon */}
+				<SatelliteOrb innerRef={userRef} size='sm'>
+					<User size={18} weight='regular' className='text-cc-text-secondary' />
 				</SatelliteOrb>
 
-				{/* Centre hub: actual CC logomark (Wave V). Replaces the prior
-				 * Sparkle vocabulary so the brand mark anchors the integration
-				 * composition. Triple-layer emerald glow + radial-gradient
-				 * interior matches the chip recipe used in Card 1 + Card 3. */}
+				{/* Centre hub */}
 				<div
 					ref={hubRef}
-					className='relative z-20 flex h-16 w-16 items-center justify-center rounded-full shadow-[0_0_0_2px_rgba(16,208,120,0.3),0_0_32px_rgba(16,208,120,0.55),0_0_80px_rgba(16,208,120,0.2)]'
+					className='relative z-20 flex h-14 w-14 shrink-0 items-center justify-center rounded-full shadow-[0_0_0_2px_rgba(16,208,120,0.3),0_0_32px_rgba(16,208,120,0.55),0_0_80px_rgba(16,208,120,0.2)]'
 					style={{
 						background: 'radial-gradient(ellipse at center, rgba(8,40,4,1) 30%, rgba(4,20,2,1) 65%, rgba(2,10,1,1) 82%, rgba(0,0,0,1) 100%)',
 					}}
@@ -97,33 +74,33 @@ export default function IntegrateSalesTechVisual(): ReactElement {
 					<Image
 						src='/images/cc-logomark.png'
 						alt='CloserCoach AI hub'
-						width={32}
-						height={32}
-						sizes='32px'
-						className='h-8 w-8 object-contain'
+						width={30}
+						height={30}
+						sizes='30px'
+						className='h-[30px] w-[30px] object-contain'
 						unoptimized
 					/>
 				</div>
 
-				{/* Right satellites: stacked vertically on lg+, horizontal on sm */}
-				<div className='flex flex-row items-center gap-3 sm:flex-col'>
-					<SatelliteOrb innerRef={sfRef}>
+				{/* Right satellites — vertical column on all screen sizes */}
+				<div className='flex flex-col items-center gap-3'>
+					<SatelliteOrb innerRef={sfRef} size='sm'>
 						<Image
 							src='/images/step1/logo-salesforce.svg'
 							alt='Salesforce'
-							width={24}
-							height={24}
-							className='h-6 w-6 object-contain'
+							width={22}
+							height={22}
+							className='h-[22px] w-[22px] object-contain'
 							unoptimized
 						/>
 					</SatelliteOrb>
-					<SatelliteOrb innerRef={hsRef}>{HUBSPOT_ICON}</SatelliteOrb>
-					<SatelliteOrb innerRef={ghlRef}>{HIGHLEVEL_ICON}</SatelliteOrb>
+					<SatelliteOrb innerRef={hsRef} size='sm'>{HUBSPOT_ICON}</SatelliteOrb>
+					<SatelliteOrb innerRef={ghlRef} size='sm'>{HIGHLEVEL_ICON}</SatelliteOrb>
 				</div>
 			</div>
 
-			{/* Connecting beams (lg+ only — narrow widths skip beams for clarity) */}
-			<div className='pointer-events-none absolute inset-0 hidden lg:block'>
+			{/* Animated beams — visible on all screen sizes */}
+			<div className='pointer-events-none absolute inset-0'>
 				<AnimatedBeam
 					containerRef={containerRef}
 					fromRef={userRef}

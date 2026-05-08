@@ -219,7 +219,7 @@ const roleVisualHeight: Record<FeatureRole, string> = {
 	 * The flow-visual elements are tuned compact (sm rails, 24px manager
 	 * badge, 36px app icon, 32px avatars) so the assignment flow still
 	 * reads cleanly inside the 250px visual area. */
-	'equal-flow': 'h-[230px] md:h-[250px]',
+	'equal-flow': 'h-[300px] md:h-[340px]',
 	tall: 'flex-1',
 	'split-full': 'h-[280px] md:h-[300px]',
 }
