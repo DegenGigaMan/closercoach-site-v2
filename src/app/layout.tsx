@@ -13,17 +13,21 @@
  *   - JSON-LD Organization + SoftwareApplication + WebSite injected so Google
  *     rich results can surface app rating / pricing in search SERPs.
  *
- * Observability (2026-05-01):
+ * Observability (refined 2026-05-09):
  *   - Vercel Analytics + Speed Insights mounted at body end.
  *   - PostHogProvider wraps the entire app shell so client events fire from
  *     any nested component via the analytics helper at @/lib/analytics.
  *   - ScrollDepthTracker reports 25/50/75/100% depth events.
+ *   - GoogleAnalytics (@next/third-parties/google) loads gtag.js post-
+ *     hydration, gaId G-M5XZXKLHLJ. Alim mandate 2026-05-09. Pageviews
+ *     auto-tracked via GA4 Enhanced Measurement on history state changes.
  *   - Skip-nav anchor as the first body child for keyboard a11y.
  */
 
 import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import { lora, geistMono, inter, plusJakarta } from '@/lib/fonts'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
@@ -258,6 +262,13 @@ export default function RootLayout({
 				</PostHogProvider>
 				<Analytics />
 				<SpeedInsights />
+				{/* Google Analytics 4 (gaId: G-M5XZXKLHLJ) — Alim mandate
+				 * 2026-05-09. Loaded via @next/third-parties/google which
+				 * fetches gtag.js after hydration so it stays off the LCP
+				 * critical path. Pageviews fire automatically on App Router
+				 * navigations because GA4 Enhanced Measurement listens to
+				 * history state changes (no manual sendGAEvent needed). */}
+				<GoogleAnalytics gaId='G-M5XZXKLHLJ' />
 			</body>
 		</html>
 	)
