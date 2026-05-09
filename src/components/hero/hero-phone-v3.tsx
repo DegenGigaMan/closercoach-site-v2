@@ -462,7 +462,7 @@ const STATE3_PROSPECTS: ReadonlyArray<ProspectData> = [
 		quote: '“We’re still figuring things out.”',
 		difficulty: 'Easy',
 		difficultyColor: '#10B981',
-		photo: '/images/prospects/brandon.png',
+		photo: '/images/prospects/brandon.webp',
 		heightPx: 320,
 	},
 	{
@@ -473,7 +473,7 @@ const STATE3_PROSPECTS: ReadonlyArray<ProspectData> = [
 		quote: '“We don’t want to sell the house.”',
 		difficulty: 'Hard',
 		difficultyColor: '#FF5A5A',
-		photo: '/images/prospects/camil-v3.png',
+		photo: '/images/prospects/camil-v3.webp',
 		heightPx: 370,
 	},
 	{
@@ -484,7 +484,7 @@ const STATE3_PROSPECTS: ReadonlyArray<ProspectData> = [
 		quote: '“What’s your best offer?”',
 		difficulty: 'Medium',
 		difficultyColor: '#F59E0B',
-		photo: '/images/prospects/caleb.png',
+		photo: '/images/prospects/caleb.webp',
 		heightPx: 320,
 	},
 ] as const
@@ -836,7 +836,7 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 				>
 					<div className='relative size-[40px] shrink-0 overflow-hidden rounded-full border border-white/[0.05]'>
 						<Image
-							src='/images/prospects/camil-v3.png'
+							src='/images/prospects/camil-v3.webp'
 							alt='AI Coach'
 							fill
 							sizes='40px'
@@ -1042,7 +1042,7 @@ function ChatBubbleRow({
 				{isAI && (
 					<div className='relative size-[20px] shrink-0 overflow-hidden rounded-full border border-white/[0.05]'>
 						<Image
-							src='/images/prospects/camil-v3.png'
+							src='/images/prospects/camil-v3.webp'
 							alt=''
 							fill
 							sizes='20px'
@@ -1111,7 +1111,7 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 						className='relative size-[48px] overflow-hidden rounded-full border border-white/[0.05]'
 					>
 						<Image
-							src='/images/prospects/camil-v3.png'
+							src='/images/prospects/camil-v3.webp'
 							alt='Camil'
 							fill
 							sizes='48px'
@@ -1213,7 +1213,7 @@ function State4CallConnecting({ reducedMotion }: { reducedMotion: boolean }) {
 			>
 				<motion.div layoutId='prospect-camil-avatar' className='absolute inset-0'>
 					<Image
-						src='/images/prospects/camil-v3.png'
+						src='/images/prospects/camil-v3.webp'
 						alt='Camil'
 						fill
 						sizes='133px'
