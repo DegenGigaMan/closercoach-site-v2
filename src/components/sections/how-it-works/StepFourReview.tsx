@@ -248,7 +248,7 @@ export default function StepFourReview() {
 					<div className='relative flex min-w-0 flex-1 flex-col items-start gap-2 self-stretch'>
 						{/* Title row: example title on the left, grade ring on the right */}
 						<div className='flex w-full items-center justify-between'>
-							<h4 className='font-[family-name:var(--font-heading)] text-[18px] font-semibold leading-none' style={{ color: '#EFEFEF' }}>
+							<h4 className='font-[family-name:var(--font-heading)] text-[18px] font-bold leading-none' style={{ color: '#EFEFEF' }}>
 								{active.title}
 							</h4>
 							<GradeRing grade={active.grade} tone={activeGrade} />
@@ -346,7 +346,7 @@ function GradeRing({ grade, tone }: { grade: string; tone: GradeTone }) {
 				/>
 			</svg>
 			<span
-				className='relative font-[family-name:var(--font-heading)] text-[24px] font-semibold leading-none'
+				className='relative font-[family-name:var(--font-heading)] text-[24px] font-bold leading-none'
 				style={{ color }}
 			>
 				{grade}
