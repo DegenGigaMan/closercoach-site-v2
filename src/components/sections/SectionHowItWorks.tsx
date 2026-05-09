@@ -118,7 +118,13 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 				<h2 className="display-lg mx-auto mt-6 max-w-4xl text-white md:text-5xl lg:text-6xl">
 					Practice. Train. Close. <em className="italic font-bold text-cc-accent">Win.</em>
 				</h2>
-				<p className="mx-auto mt-6 max-w-2xl text-lg text-cc-text-secondary md:text-xl">
+				{/* L-04 + L-05 (2026-05-09): subhead linebreak tuning. Desktop
+				 * (>=1280px): one line via max-w-4xl + lg:text-lg (downsized from
+				 * xl) + lg:whitespace-nowrap so the 85-char string never wraps at
+				 * ≥1280px. Mobile (390px): two lines via max-w-[340px] + text-base
+				 * landing the natural break near "you/" between the second and
+				 * third sentence. Tablet keeps max-w-2xl + text-xl. */}
+				<p className="mx-auto mt-6 max-w-[340px] text-base text-cc-text-secondary md:max-w-2xl md:text-xl lg:max-w-4xl lg:whitespace-nowrap lg:text-lg">
 					Train before the call. Find out where you lost it. Fix it before it costs you again.
 				</p>
 			</div>
