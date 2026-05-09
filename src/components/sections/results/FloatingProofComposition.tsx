@@ -8,7 +8,7 @@
  *
  *   1. Camil Reese profile card (top-left, w 240) — Recent Performance bars
  *      (Week 1 amber C, Week 8 emerald A with +2 trust badge), real headshot
- *      from /images/prospects/camil-reese.png
+ *      from /images/prospects/camil-reese.webp
  *   2. Performance Gains stats (top-center) — 7% Close Rate / 50% Faster Ramp
  *      / 30% More Deals
  *   3. C+ → A grade-up badge card (top-right) — +2 grades indicator
@@ -51,7 +51,7 @@ const CARD_BG = '#F2EDE5'        // Figma master card surface
 const CARD_BORDER = 'rgba(0,0,0,0.05)'
 const CARD_SHADOW = '0px 0px 20px 0px rgba(16,185,129,0.05)'
 
-const CAMIL_AVATAR = '/images/prospects/camil-reese.png'
+const CAMIL_AVATAR = '/images/prospects/camil-reese.webp'
 
 /* ─── Float wrapper: handles entrance motion + reduced-motion fallback ─── */
 
