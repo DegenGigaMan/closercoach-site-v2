@@ -2,9 +2,9 @@
  * Linked from the top AnnouncementBanner. Placeholder body copy until the
  * announcement copy lands; structure + typography are launch-grade. */
 
-import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft } from '@phosphor-icons/react/dist/ssr'
+import { buildPageMetadata } from '@/lib/seo'
 import ScrollTopOnMount from './ScrollTopOnMount'
 
 const TITLE = 'CloserCoach raises $1M to build Duolingo for sales'
@@ -14,22 +14,20 @@ const READ_TIME = '3 min read'
 const DESCRIPTION =
 	'CloserCoach raises $1M seed round to scale AI-powered sales coaching for the 36,000+ closers training inside the app every day.'
 
-export const metadata: Metadata = {
+const baseMetadata = buildPageMetadata({
 	title: TITLE,
 	description: DESCRIPTION,
-	alternates: { canonical: '/blog/closercoach-raises-1m-for-duolingo-for-sales' },
+	ogTitle: TITLE,
+	path: '/blog/closercoach-raises-1m-for-duolingo-for-sales',
+	ogType: 'article',
+})
+
+export const metadata = {
+	...baseMetadata,
 	openGraph: {
-		title: TITLE,
-		description: DESCRIPTION,
-		url: '/blog/closercoach-raises-1m-for-duolingo-for-sales',
-		type: 'article',
+		...baseMetadata.openGraph,
 		publishedTime: '2026-03-15T00:00:00.000Z',
 		authors: ['CloserCoach'],
-	},
-	twitter: {
-		card: 'summary_large_image',
-		title: TITLE,
-		description: DESCRIPTION,
 	},
 }
 

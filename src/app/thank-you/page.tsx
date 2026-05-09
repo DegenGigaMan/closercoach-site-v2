@@ -2,14 +2,15 @@
  * Celebration header + Download/WhatsApp/Social step cards + minimal footer (triggered via pathname in Footer.tsx).
  * Reads invitee name from Calendly redirect query params for personalized headline. Dark surface. noindex. */
 
-import type { Metadata } from 'next'
+import { buildPageMetadata } from '@/lib/seo'
 import ThankYouContent from './thank-you-content'
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
 	title: 'Your demo is booked.',
 	description: 'Your CloserCoach demo is on the calendar. Check your inbox for the invite and start exploring the app while you wait.',
-	robots: { index: false, follow: false },
-}
+	path: '/thank-you',
+	indexable: false,
+})
 
 /** Pull a clean first name out of Calendly query params. Supports several common
  * key shapes the user might wire into Calendly's redirect URL template. Returns

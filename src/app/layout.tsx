@@ -34,38 +34,9 @@ import AnnouncementBanner from '@/components/layout/AnnouncementBanner'
 import { PostHogProvider } from '@/components/providers/PostHogProvider'
 import { ScrollDepthTracker } from '@/components/providers/ScrollDepthTracker'
 import { BRAND, STATS, PRICING } from '@/lib/constants'
+import { SITE_URL, SITE_NAME, OG_IMAGE, TWITTER_HANDLE } from '@/lib/seo'
 import './globals.css'
 
-/**
- * Resolve the site origin so OG image / canonical URLs always point at the
- * domain that is actually serving the response. Self-healing across the DNS
- * cutover: pre-cutover this resolves to closercoach-site-v2.vercel.app, post-
- * cutover Vercel sets VERCEL_PROJECT_PRODUCTION_URL to the attached apex
- * (closercoach.ai) automatically, no code change required.
- *
- *   1. NEXT_PUBLIC_SITE_URL — manual override (set in Vercel project env if
- *      we ever need to force a specific origin).
- *   2. Vercel production build — VERCEL_PROJECT_PRODUCTION_URL. This is the
- *      project's primary production hostname. Pre-DNS-cutover that's
- *      closercoach-site-v2.vercel.app; once we attach closercoach.ai as a
- *      production domain, Vercel updates this var on the next deploy and
- *      the OG image starts unfurling from the apex with zero diff.
- *   3. Vercel preview build — VERCEL_URL is the per-deployment hostname so
- *      social-preview crawlers hitting the share URL fetch the OG image
- *      from the SAME deploy that's serving the page.
- *   4. Local dev — localhost:3000.
- */
-function resolveSiteUrl(): string {
-	if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL
-	if (process.env.VERCEL_ENV === 'production' && process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-		return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-	}
-	if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
-	return 'http://localhost:3000'
-}
-
-const SITE_URL = resolveSiteUrl()
-const SITE_NAME = 'CloserCoach'
 const SITE_TITLE = 'CloserCoach - AI Sales Coach for B2C Sales Reps'
 const SITE_DESCRIPTION =
 	'Practice before every meeting, record real calls, and get scored by AI. 36,000+ closers train with CloserCoach. Try free for 3 days.'
@@ -110,23 +81,15 @@ export const metadata: Metadata = {
 		url: SITE_URL,
 		type: 'website',
 		locale: 'en_US',
-		images: [
-			{
-				url: '/og-image.jpg',
-				width: 1200,
-				height: 630,
-				alt: 'CloserCoach - The AI Sales Coach That Lives in Your Pocket',
-				type: 'image/jpeg',
-			},
-		],
+		images: [OG_IMAGE],
 	},
 	twitter: {
 		card: 'summary_large_image',
 		title: SITE_TITLE,
 		description: SITE_DESCRIPTION,
-		images: ['/og-image.jpg'],
-		site: '@closercoach',
-		creator: '@closercoach',
+		images: [OG_IMAGE.url],
+		site: TWITTER_HANDLE,
+		creator: TWITTER_HANDLE,
 	},
 	robots: {
 		index: true,
@@ -198,7 +161,7 @@ const SOFTWARE_APP_LD = {
 	operatingSystem: 'iOS, Android',
 	applicationCategory: 'BusinessApplication',
 	description: SITE_DESCRIPTION,
-	image: `${SITE_URL}/og-image.jpg`,
+	image: `${SITE_URL}${OG_IMAGE.url}`,
 	url: SITE_URL,
 	offers: {
 		'@type': 'Offer',

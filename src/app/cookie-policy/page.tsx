@@ -1,23 +1,16 @@
 /** @fileoverview Cookie Policy page. Warm editorial surface, cookie types tables, third-party disclosures, preference management. */
 
-import type { Metadata } from 'next'
 import LegalPageLayout from '@/components/layout/LegalPageLayout'
 import { Section, BulletList, Strong } from '@/components/layout/LegalContent'
 import { BRAND } from '@/lib/constants'
+import { buildPageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
 	title: 'Cookie Policy',
-	description:
-		'How CloserCoach uses cookies, the types of cookies we use, and how to manage your preferences.',
-	alternates: { canonical: '/cookie-policy' },
-	openGraph: {
-		title: 'Cookie Policy | CloserCoach',
-		description:
-			'How CloserCoach uses cookies and how to manage your preferences.',
-		url: '/cookie-policy',
-		type: 'website',
-	},
-}
+	description: 'How CloserCoach uses cookies, the types of cookies we use, and how to manage your preferences.',
+	ogDescription: 'How CloserCoach uses cookies and how to manage your preferences.',
+	path: '/cookie-policy',
+})
 
 const LAST_UPDATED = 'April 21, 2026'
 

@@ -2,31 +2,17 @@
  * post as a hero card above the placeholder grid so the AnnouncementBanner CTA has a
  * visible destination on the index. Wave R FIX-01. */
 
-import type { Metadata } from 'next'
 import Link from 'next/link'
 import { BookOpen, ArrowRight, LinkedinLogo } from '@phosphor-icons/react/dist/ssr'
+import { buildPageMetadata } from '@/lib/seo'
 
-const TITLE = 'Blog'
-const DESCRIPTION =
-	'Sales training insights, playbooks, and field notes from the CloserCoach team. First posts dropping soon.'
-
-export const metadata: Metadata = {
-	title: TITLE,
-	description: DESCRIPTION,
-	alternates: { canonical: '/blog' },
-	openGraph: {
-		title: 'CloserCoach Blog',
-		description:
-			'Sales training insights, playbooks, and field notes from the CloserCoach team.',
-		url: '/blog',
-		type: 'website',
-	},
-	twitter: {
-		card: 'summary_large_image',
-		title: 'CloserCoach Blog',
-		description: DESCRIPTION,
-	},
-}
+export const metadata = buildPageMetadata({
+	title: 'Blog',
+	description: 'Sales training insights, playbooks, and field notes from the CloserCoach team. First posts dropping soon.',
+	ogTitle: 'CloserCoach Blog',
+	ogDescription: 'Sales training insights, playbooks, and field notes from the CloserCoach team.',
+	path: '/blog',
+})
 
 const LINKEDIN_URL = 'https://linkedin.com/company/closercoach'
 
