@@ -1,8 +1,10 @@
 /** @fileoverview Pricing page client component with billing toggle, 3 tier cards
- * (Closer / Teams / Enterprise), feature comparison table, competitor context anchor,
+ * (Closer / Business / Enterprise White Label), feature comparison table,
  * trust signals, FAQ accordion, and bottom CTA with store badges.
- * Tier naming per section-blueprint v2 /pricing section + site-map.md.
- * Copy reconciled from vault/clients/closer-coach/copy/pages/pricing.md + section-blueprint.md.
+ * Tier naming per Alim Slack 2026-05-08 23:43 (L-12): Closer unchanged,
+ * Teams -> Business at flat $49.99/mo (was per-user), Enterprise -> Enterprise
+ * White Label. Locked-spec features pinned at the top of each tier; existing
+ * supplementary bullets preserved where they don't contradict the spec.
  */
 
 'use client'
@@ -19,6 +21,15 @@ import { track } from '@/lib/analytics'
 
 /* ---------- Tier data ---------- */
 
+/* L-12 (2026-05-09): tier features start with the locked Alim spec at the
+ * top, then keep the existing supplementary bullets that add depth without
+ * contradicting the spec. Closer adds "100 minutes of usage" + "3 AI
+ * Customers" up top. Business renames from Teams (flat $49.99/mo, no
+ * per-user) and pins Unlimited usage / Unlimited AI Customers / Advanced AI
+ * Model Training / Built In Dialer first. Enterprise renames to Enterprise
+ * White Label and pins White Label Branding / Remove All CloserCoach Logos /
+ * Forward Deployed Engineer / Custom RAG Model Training / Dedicated Account
+ * Manager first. */
 const TIERS = [
 	{
 		key: 'closer',
@@ -34,34 +45,37 @@ const TIERS = [
 		cta: { text: CTA.startFree.text, href: CTA.startFree.href },
 		ctaVariant: 'primary' as const,
 		features: [
-			'Unlimited AI roleplays',
+			'100 minutes of usage',
+			'3 AI Customers',
 			'AI Suggested Roleplays (personalized daily)',
 			'Create custom roleplays from your product catalog',
 			'Practice any custom objection',
 			'In-depth call feedback (pages of coaching per session)',
 			'In-call AI annotations',
 			'Ridealong recording and AI scoring',
-			'Built-in dialer (your number on caller ID)',
 			'Skill progression tracking (7 dimensions)',
 			'Community leaderboard and daily challenges',
 			'All industries, 100+ scenarios',
 		],
 	},
 	{
-		key: 'teams',
-		label: 'TEAMS',
+		key: 'business',
+		label: 'BUSINESS',
 		labelTone: 'amber' as const,
 		badge: 'Best for Teams',
 		subtitle: 'For sales teams of 5+',
 		highlighted: false,
 		getPrice: (yearly: boolean) => yearly
-			? { amount: `$${Math.round(PRICING.teams.monthly * (1 - PRICING.teams.annualDiscount))}`, period: '/user/mo', note: `${PRICING.teams.annualDiscount * 100}% off annual` }
-			: { amount: `$${PRICING.teams.monthly}`, period: '/user/mo', note: 'Billed monthly' },
+			? { amount: `$${(PRICING.business.monthly * (1 - PRICING.business.annualDiscount)).toFixed(2)}`, period: '/mo', note: `${PRICING.business.annualDiscount * 100}% off annual` }
+			: { amount: `$${PRICING.business.monthly}`, period: '/mo', note: 'Billed monthly' },
 		trial: null,
 		cta: { text: CTA.contactSales.text, href: CTA.contactSales.href },
 		ctaVariant: 'secondary' as const,
 		features: [
-			'Everything in Closer, plus:',
+			'Unlimited usage',
+			'Unlimited AI Customers',
+			'Advanced AI Model Training',
+			'Built In Dialer',
 			'Manager web dashboard',
 			'Team analytics and performance tracking',
 			'Custom scorecards and talk tracks',
@@ -73,7 +87,7 @@ const TIERS = [
 	},
 	{
 		key: 'enterprise',
-		label: 'ENTERPRISE',
+		label: 'ENTERPRISE WHITE LABEL',
 		labelTone: 'slate' as const,
 		badge: 'For Large Organizations',
 		subtitle: 'For large organizations',
@@ -82,16 +96,19 @@ const TIERS = [
 		trial: null,
 		cta: { text: CTA.contactSales.text, href: CTA.contactSales.href },
 		/* Wave R FIX-04 (2026-04-27): swap ghost → secondary so Enterprise gets
-		 * the same bordered-outline emerald CTA as Teams (was bare-text "Book a
-		 * Demo" with no padding/styling, looked orphaned next to bordered Closer
-		 * + Teams cards). */
+		 * the same bordered-outline emerald CTA as Business (was bare-text "Book
+		 * a Demo" with no padding/styling, looked orphaned next to the bordered
+		 * Closer + Business cards). */
 		ctaVariant: 'secondary' as const,
 		features: [
-			'Everything in Teams, plus:',
+			'White Label Branding',
+			'Remove All CloserCoach Logos',
+			'Forward Deployed Engineer',
+			'Custom RAG Model Training',
+			'Dedicated Account Manager',
 			'Single sign-on (SSO / SAML)',
 			'Admin controls and role-based permissions',
 			'Custom API access',
-			'Dedicated account manager',
 			'Custom integrations',
 			'Advanced reporting and analytics exports',
 			'Compliance and audit logging',
@@ -149,20 +166,20 @@ const FAQ_ITEMS = [
 		answer: 'Everything. Full access to all Closer features: create your own roleplays, full coaching breakdowns for every call, every industry, every scenario. No features locked during the trial.',
 	},
 	{
-		question: 'How does team pricing work?',
-		answer: `$${PRICING.teams.monthly}/mo per user billed monthly. ${PRICING.teams.annualDiscount * 100}% off when you pay annually. Add or remove reps anytime. Your team gets everything in Closer plus the manager dashboard and analytics.`,
+		question: 'How does Business pricing work?',
+		answer: `$${PRICING.business.monthly}/mo flat billed monthly. ${PRICING.business.annualDiscount * 100}% off when you pay annually. Your team gets unlimited usage, unlimited AI customers, advanced AI model training, the built-in dialer, plus the manager dashboard and analytics.`,
 	},
 	{
-		question: 'Is there a minimum for Teams?',
-		answer: 'No minimums. Start with 2 reps or 200. No annual contracts required.',
+		question: 'Is there a minimum for Business?',
+		answer: 'No minimums. The Business plan is a flat monthly price for the whole team. No per-user fees. No annual contracts required.',
 	},
 	{
-		question: 'Does Enterprise include SSO and audit logs?',
-		answer: 'Yes. Enterprise adds single sign-on (SSO / SAML), role-based admin controls, compliance and audit logging, custom SLA, and enterprise-grade security on top of everything in Teams. Book a demo for volume pricing and a custom integration scope.',
+		question: 'Does Enterprise White Label include SSO and audit logs?',
+		answer: 'Yes. Enterprise White Label adds white label branding, removal of CloserCoach logos, a forward deployed engineer, custom RAG model training, a dedicated account manager, single sign-on (SSO / SAML), role-based admin controls, compliance and audit logging, custom SLA, and enterprise-grade security on top of everything in Business. Book a demo for volume pricing and a custom integration scope.',
 	},
 	{
 		question: 'How is the yearly discount calculated?',
-		answer: `Closer yearly billing is $${PRICING.individual.yearly}/yr, which works out to $${PRICING.individual.effectiveMonthly}/mo -- a ${PRICING.yearlySavingsPercent}% savings vs monthly billing. Teams annual is ${PRICING.teams.annualDiscount * 100}% off the $${PRICING.teams.monthly}/user/mo rate.`,
+		answer: `Closer yearly billing is $${PRICING.individual.yearly}/yr, which works out to $${PRICING.individual.effectiveMonthly}/mo, a ${PRICING.yearlySavingsPercent}% savings vs monthly billing. Business annual is ${PRICING.business.annualDiscount * 100}% off the $${PRICING.business.monthly}/mo rate.`,
 	},
 	{
 		question: 'How is this different from Rilla, Siro, and Hyperbound?',
@@ -227,16 +244,17 @@ function FAQItem({ item, isOpen, onToggle }: { item: typeof FAQ_ITEMS[number]; i
 /* ---------- Main content ---------- */
 
 /**
- * @description Full pricing page content with Closer/Teams/Enterprise tier cards,
- * monthly/yearly toggle, feature comparison, competitor context, trust strip,
- * FAQ accordion, and bottom CTA with store badges.
+ * @description Full pricing page content with Closer / Business / Enterprise
+ * White Label tier cards, monthly/yearly toggle, feature comparison, trust
+ * strip, FAQ accordion, and bottom CTA with store badges.
  */
 export default function PricingContent() {
 	const [yearly, setYearly] = useState(false)
 	const [openFaq, setOpenFaq] = useState(0)
-	/* Wave J.2 (FIX-02 P1): mobile compare tier switcher. Defaults to 'teams'
-	 * (the highlighted tier in the cards above) so the most relevant tier loads
-	 * first. Index maps to TIERS order: 0=closer, 1=teams, 2=enterprise. */
+	/* Wave J.2 (FIX-02 P1): mobile compare tier switcher. Defaults to
+	 * 'business' (the highlighted tier in the cards above) so the most
+	 * relevant tier loads first. Index maps to TIERS order:
+	 * 0=closer, 1=business, 2=enterprise white label. */
 	const [compareTier, setCompareTier] = useState<0 | 1 | 2>(1)
 
 	return (
@@ -446,8 +464,8 @@ export default function PricingContent() {
 									<tr className='border-b border-cc-surface-border bg-cc-foundation'>
 										<th className='bg-cc-foundation pb-4 pr-4 pt-4 text-sm font-medium text-cc-text-secondary'>Feature</th>
 										<th className='bg-cc-foundation pb-4 pt-4 text-center text-sm font-medium text-cc-accent'>Closer</th>
-										<th className='bg-cc-foundation pb-4 pt-4 text-center text-sm font-medium text-cc-text-secondary'>Teams</th>
-										<th className='bg-cc-foundation pb-4 pt-4 text-center text-sm font-medium text-cc-text-secondary'>Enterprise</th>
+										<th className='bg-cc-foundation pb-4 pt-4 text-center text-sm font-medium text-cc-text-secondary'>Business</th>
+										<th className='bg-cc-foundation pb-4 pt-4 text-center text-sm font-medium text-cc-text-secondary'>Enterprise White Label</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -483,7 +501,7 @@ export default function PricingContent() {
 								aria-label='Compare plan features by tier'
 								className='grid grid-cols-3 gap-1.5 rounded-full border border-cc-surface-border bg-cc-surface-card p-1.5'
 							>
-								{(['Closer', 'Teams', 'Enterprise'] as const).map((tierName, tierIdx) => {
+								{(['Closer', 'Business', 'Enterprise'] as const).map((tierName, tierIdx) => {
 									const idx = tierIdx as 0 | 1 | 2
 									const active = compareTier === idx
 									return (

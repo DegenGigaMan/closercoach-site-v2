@@ -33,7 +33,7 @@ const TOC = [
 ] as const
 
 export default function TermsPage() {
-	const annualDiscountPct = Math.round(PRICING.teams.annualDiscount * 100)
+	const annualDiscountPct = Math.round(PRICING.business.annualDiscount * 100)
 
 	return (
 		<LegalPageLayout
@@ -96,8 +96,9 @@ export default function TermsPage() {
 								/month or ${PRICING.individual.yearly}/year.
 							</>,
 							<>
-								<Strong>Teams plan:</Strong> ${PRICING.teams.monthly}/month per
-								user, with {annualDiscountPct}% off when billed annually.
+								<Strong>Business plan:</Strong> ${PRICING.business.monthly}/month
+								flat for the team, with {annualDiscountPct}% off when billed
+								annually.
 							</>,
 							<>
 								<Strong>Free trial:</Strong> a {STATS.trialDays}-day trial is

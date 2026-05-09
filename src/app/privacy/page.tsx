@@ -124,9 +124,9 @@ export default function PrivacyPage() {
 							</>,
 							<>
 								<Strong>Access:</Strong> On individual plans, only you can access
-								your recordings. On Teams plans, designated managers may view
-								recordings for coaching purposes based on role-based access
-								controls.
+								your recordings. On Business and Enterprise White Label plans,
+								designated managers may view recordings for coaching purposes
+								based on role-based access controls.
 							</>,
 							<>
 								<Strong>Retention:</Strong> Recordings remain in your account
