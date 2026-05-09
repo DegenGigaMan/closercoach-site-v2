@@ -151,15 +151,17 @@ export const PostHogProvider = ({ children }: Props) => {
 				network_timing: true,
 			},
 
-			/* Autocapture disabled — explicit event taxonomy in
-			 * src/lib/analytics.ts handles clicks + conversions. Andy
-			 * locked this 2026-04 to keep event volume predictable. The
-			 * PostHog dashboard "scroll depth not configured" warning
-			 * is a false-positive: scroll depth captures fire as $pageview
-			 * properties ($prev_pageview_max_scroll_percentage etc.) and
-			 * are gated by `disable_scroll_properties` (default false),
-			 * NOT by autocapture. Verified in posthog-js v1.372.6 source. */
-			autocapture: false,
+			/* Autocapture enabled (2026-05-09 launch-day flip). On a fresh
+			 * marketing LP, autocapture buys click heatmaps, button frequency,
+			 * flow analysis, and form interaction signal we'd never get from
+			 * an explicit-only event taxonomy. src/lib/analytics.ts still
+			 * handles named conversion events on top — autocapture layers
+			 * background coverage underneath. Cost is more event volume +
+			 * some noise (recoverable via dashboard filters); benefit is no
+			 * blind spots on a product whose user behavior is still being
+			 * learned. Scroll depth fires as $pageview properties regardless
+			 * (gated by `disable_scroll_properties`, default false). */
+			autocapture: true,
 
 			/* Privacy-conservative overrides on top of the defaults preset. */
 			disable_session_recording: true,
