@@ -1,32 +1,35 @@
 /** @fileoverview Cookie consent banner.
- *  Wave I FIX-01 (P0) + Wave J.1 (FIX-01 P1, 2026-04-26) + H-07 (2026-05-04):
- *  - Mobile (<md): full-width bottom-CENTER slim bar (~52px), 44px tap targets.
- *  - Desktop (md+): wide center-aligned banner at bottom (max-w-xl, longer copy).
- *    Reverts the Wave I/J.1 bottom-right corner pill which felt awkward on
- *    desktop (Andy 2026-05-04) — the wider bar reads as a deliberate notice
- *    rather than a tiny dismissable pill.
- *  - Hidden by default. Shows ONLY when ALL of:
- *      (a) user has scrolled past hero (>= 200px scrollY)
- *      (b) >= 4s elapsed since mount (clean first impression)
- *      (c) NO element with [data-primary-cta] is currently in viewport
- *  - Persisted to localStorage. */
+ *
+ *  L-01 (2026-05-09): visibility now anchored on a SINGLE IntersectionObserver
+ *  watching `#press-strip` (the third major LP section after Hero + SocialProof).
+ *  Once press-strip enters the viewport for the first time, the banner is
+ *  shown and the latch stays open — scrolling back up does NOT hide it. This
+ *  replaces the prior multi-trigger logic (scroll threshold + delay + primary
+ *  CTA observer) which produced the bug Andy flagged: the banner flashed
+ *  briefly while the user was still in or just past the hero (because the
+ *  hero's primary CTA temporarily left the viewport), vanished, then
+ *  reappeared persistently at section 3. The new logic shows it ONCE at the
+ *  intended moment and persists.
+ *
+ *  Mobile (<md): full-width bottom-CENTER slim bar (~52px), 44px tap targets.
+ *  Desktop (md+): wide center-aligned banner at bottom (max-w-2xl, longer copy).
+ *  Persisted choice in localStorage suppresses the banner permanently.
+ *
+ *  Falls back to the old `#how-it-works` anchor (section 4) if `#press-strip`
+ *  is not present in the DOM, so subpages that don't render the press strip
+ *  still get a deterministic show point. */
 
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { track } from '@/lib/analytics'
 
 const STORAGE_KEY = 'cookie-consent'
-const SCROLL_THRESHOLD = 200
-const MIN_DELAY_MS = 4000
 
 export default function CookieConsent() {
 	const [allowedToShow, setAllowedToShow] = useState(false)
-	const [primaryCtaVisible, setPrimaryCtaVisible] = useState(false)
 	const [dismissed, setDismissed] = useState(false)
-	const scrollPassedRef = useRef(false)
-	const delayPassedRef = useRef(false)
 
 	useEffect(() => {
 		const stored = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null
@@ -36,52 +39,52 @@ export default function CookieConsent() {
 			return
 		}
 
-		const checkAllowed = () => {
-			if (scrollPassedRef.current && delayPassedRef.current) {
-				setAllowedToShow(true)
-			}
-		}
+		/* Section 3 anchor: PressStrip is the third major LP section (Hero,
+		 * SocialProof, PressStrip). Falls back to How It Works on subpages
+		 * that don't render PressStrip. If neither anchor exists (legal pages,
+		 * /pricing, etc.), the body fallback fires once the page is scrolled
+		 * past 800px, so the banner still appears on long pages. */
+		const anchor =
+			document.querySelector('#press-strip') ||
+			document.querySelector('#how-it-works') ||
+			null
 
-		const onScroll = () => {
-			if (!scrollPassedRef.current && window.scrollY >= SCROLL_THRESHOLD) {
-				scrollPassedRef.current = true
-				checkAllowed()
-			}
-		}
+		let observer: IntersectionObserver | null = null
+		let onScroll: (() => void) | null = null
+		const reveal = () => setAllowedToShow(true)
 
-		const delayTimer = setTimeout(() => {
-			delayPassedRef.current = true
-			checkAllowed()
-		}, MIN_DELAY_MS)
-
-		window.addEventListener('scroll', onScroll, { passive: true })
-		onScroll()
-
-		const visibleSet = new Set<Element>()
-		const observer = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					if (entry.isIntersecting) {
-						visibleSet.add(entry.target)
-					} else {
-						visibleSet.delete(entry.target)
+		if (anchor) {
+			observer = new IntersectionObserver(
+				(entries) => {
+					for (const entry of entries) {
+						if (entry.isIntersecting) {
+							reveal()
+							observer?.disconnect()
+							observer = null
+							break
+						}
+					}
+				},
+				{ threshold: 0.1 },
+			)
+			observer.observe(anchor)
+		} else {
+			onScroll = () => {
+				if (window.scrollY >= 800) {
+					reveal()
+					if (onScroll) {
+						window.removeEventListener('scroll', onScroll)
+						onScroll = null
 					}
 				}
-				setPrimaryCtaVisible(visibleSet.size > 0)
-			},
-			{ threshold: 0.1 }
-		)
-
-		const attachTimer = setTimeout(() => {
-			const targets = document.querySelectorAll('[data-primary-cta]')
-			targets.forEach((el) => observer.observe(el))
-		}, 100)
+			}
+			window.addEventListener('scroll', onScroll, { passive: true })
+			onScroll()
+		}
 
 		return () => {
-			clearTimeout(delayTimer)
-			clearTimeout(attachTimer)
-			window.removeEventListener('scroll', onScroll)
-			observer.disconnect()
+			observer?.disconnect()
+			if (onScroll) window.removeEventListener('scroll', onScroll)
 		}
 	}, [])
 
@@ -92,7 +95,7 @@ export default function CookieConsent() {
 		setDismissed(true)
 	}
 
-	if (dismissed || !allowedToShow || primaryCtaVisible) return null
+	if (dismissed || !allowedToShow) return null
 
 	/* H-07 (2026-05-04):
 	 *   - Mobile (<md): full-width bottom bar from Wave J.1, 44px tap targets,
