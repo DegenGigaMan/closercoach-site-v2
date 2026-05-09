@@ -71,9 +71,9 @@ const FAQS: readonly FAQItem[] = [
 	},
 	{
 		id: 'pricing-moat',
-		question: 'Why $12.99 and $49 when competitors charge 10x more?',
+		question: 'Why $12.99 and $49.99 when competitors charge 10x more?',
 		answer:
-			'Rilla starts at $199-349 per rep per month on annual contracts with 5-user minimums. Siro is $3,000+ per user per year. Hyperbound is $15,000+ per year. CloserCoach Closer is $12.99/mo, Teams is $49/user/mo month-to-month. Same 7-layer personalization depth. Priced for teams, not enterprises.',
+			'Rilla starts at $199-349 per rep per month on annual contracts with 5-user minimums. Siro is $3,000+ per user per year. Hyperbound is $15,000+ per year. CloserCoach Closer is $12.99/mo, Business is $49.99/mo flat month-to-month. Same 7-layer personalization depth. Priced for teams, not enterprises.',
 	},
 	{
 		id: 'trial',
@@ -97,7 +97,7 @@ const FAQS: readonly FAQItem[] = [
 		id: 'cancel',
 		question: 'Can I cancel anytime?',
 		answer:
-			'Yes, anytime from app settings. No annual contracts. No cancellation fees. Teams is billed month-to-month with no seat minimums. You stay in full control.',
+			'Yes, anytime from app settings. No annual contracts. No cancellation fees. Business is billed month-to-month with no seat minimums. You stay in full control.',
 	},
 	{
 		id: 'mobile',
