@@ -422,7 +422,7 @@ function State2CreatingCustomers({ reducedMotion }: { reducedMotion: boolean }) 
 
 /* ─── State 3: Start Training (carousel) ─────────────────────────
  * Figma 192:1101 + cards 200:196-200:237. Title block + 3-card prospect
- * row with Camil center+taller as the focal hierarchy + Call Jose CTA.
+ * row with Camil center+taller as the focal hierarchy + Call Camil CTA.
  *
  * Layout per Figma: 3 cards in a flex row, gap-16, no rotations. Each
  * card 250px wide; Brandon/Caleb 320px tall, Camil 370px tall (the
@@ -467,7 +467,7 @@ const STATE3_PROSPECTS: ReadonlyArray<ProspectData> = [
 	},
 	{
 		id: 'camil',
-		name: 'Jose',
+		name: 'Camil',
 		age: 42,
 		role: 'Homeowner • Phoenix, AZ',
 		quote: '“We don’t want to sell the house.”',
@@ -616,7 +616,7 @@ function ProspectCard({
 
 /* ─── State 6: Call Complete ────────────────────────────────────
  * Figma 191:625. Verdict screen. Emerald gradient bg (handled by
- * shell ScreenBackground when state===5), Top 15% trophy pill,
+ * shell ScreenBackground when state===5), Top 35% trophy pill,
  * 120px grade ring with "A" letter, AI Coach Suggests bubble,
  * 3 scorecard cards (with bottom blur fade), Practice Again CTA.
  *
@@ -640,7 +640,7 @@ const STATE6_SCORECARDS: ReadonlyArray<{
 }> = [
 	{
 		title: 'Building Rapport',
-		desc: 'You made Jose feel heard right away.',
+		desc: 'You made Camil feel heard right away.',
 		grade: 'A',
 		ringFill: 1.0,
 		ringColor: '#10D078',
@@ -742,7 +742,7 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 
 	return (
 		<div className='relative flex h-full flex-col items-center gap-4 overflow-hidden px-4 pb-2 pt-8'>
-			{/* Top 15% trophy pill + grade ring stack. Per Andy 2026-05-06 the
+			{/* Top 35% trophy pill + grade ring stack. Per Andy 2026-05-06 the
 			 * pill should sit ON the ring's top stroke (was floating above it
 			 * with a negative margin, now absolute-positioned over the ring
 			 * container so the pill's bottom edge aligns with the ring stroke
@@ -846,7 +846,7 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 					</div>
 					<div className='flex-1 rounded-[12px] rounded-tl-none border border-white/[0.06] bg-[#09f] p-3'>
 						<p className='text-trim font-sans text-[14px] font-medium leading-[1.4] text-white'>
-							Good opener. Next time, lead with the cash offer benefit earlier — Jose needs to hear speed and certainty upfront.
+							Good opener. Next time, lead with the cash offer benefit earlier — Camil needs to hear speed and certainty upfront.
 						</p>
 					</div>
 				</motion.div>
@@ -1112,7 +1112,7 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 					>
 						<Image
 							src='/images/prospects/camil-v3.png'
-							alt='Jose'
+							alt='Camil'
 							fill
 							sizes='48px'
 							className='object-cover'
@@ -1124,7 +1124,7 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 							layoutId='prospect-camil-name'
 							className='text-trim font-sans text-[16px] font-medium leading-[16px] text-white'
 						>
-							Jose
+							Camil
 						</motion.span>
 						<motion.span
 							className='size-1 rounded-full bg-cc-score-red'
@@ -1214,7 +1214,7 @@ function State4CallConnecting({ reducedMotion }: { reducedMotion: boolean }) {
 				<motion.div layoutId='prospect-camil-avatar' className='absolute inset-0'>
 					<Image
 						src='/images/prospects/camil-v3.png'
-						alt='Jose'
+						alt='Camil'
 						fill
 						sizes='133px'
 						className='object-cover'
@@ -1270,7 +1270,7 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 		caleb: { delay: 0.7, fromX: 40 },
 	} as const
 
-	/* Press the Call Jose CTA right before state advances to State 4. */
+	/* Press the Call Camil CTA right before state advances to State 4. */
 	const [pressed, setPressed] = useState(false)
 	useEffect(() => {
 		if (reducedMotion) return
@@ -1315,7 +1315,7 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 				</div>
 			</div>
 
-			{/* Call Jose CTA. */}
+			{/* Call Camil CTA. */}
 			<motion.button
 				type='button'
 				className='flex h-[48px] w-full items-center justify-center gap-[10px] rounded-[27px] bg-cc-mint shadow-[0_8px_20px_rgba(52,225,142,0.18)]'
@@ -1327,7 +1327,7 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 				}}
 			>
 				<span className='text-trim text-[16px] font-bold text-black [font-family:var(--font-cta),system-ui,sans-serif]'>
-					Call Jose
+					Call Camil
 				</span>
 				<ArrowRight size={16} weight='bold' className='text-black' />
 			</motion.button>
