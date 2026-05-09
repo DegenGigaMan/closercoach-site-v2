@@ -26,7 +26,7 @@ import { motion, useInView, useReducedMotion } from 'motion/react'
 import { Calendar, Sparkle, SpinnerGap } from '@phosphor-icons/react'
 
 const SARAH_AVATAR = '/images/step1/avatar-sarah-face1.png'
-const MARCUS_AVATAR = '/images/step1/avatar-marcus-face.png'
+const MARCUS_AVATAR = '/images/step1/avatar-marcus-face.webp'
 const LOGO_GOOGLE_MEET = '/images/step1/logo-google-meet.svg'
 const LOGO_TEAMS = '/images/step1/logo-teams.png'
 const LOGO_SALESFORCE = '/images/step1/logo-salesforce.svg'

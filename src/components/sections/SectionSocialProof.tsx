@@ -17,8 +17,8 @@ import Image from 'next/image'
  * sourced from Figma per R-04. PNGs (Figma exported raster). */
 const AVATARS = [
 	{ src: '/images/avatars/closer-1.png', alt: '' },
-	{ src: '/images/avatars/closer-2.png', alt: '' },
-	{ src: '/images/avatars/closer-3.png', alt: '' },
+	{ src: '/images/avatars/closer-2.webp', alt: '' },
+	{ src: '/images/avatars/closer-3.webp', alt: '' },
 ] as const
 
 /* Per-logo heightClass per Figma 36:110. Each brand carries a different stroke

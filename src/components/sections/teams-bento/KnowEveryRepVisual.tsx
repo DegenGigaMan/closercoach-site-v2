@@ -33,11 +33,11 @@ type Rep = { rank: number; deltaPct: number; name: string; avatar: string; inset
 /* Inset progression per Figma: card 1 (top) wrapper px-40 = narrowest inner;
  * card 6 (focal, bottom) wrapper px-0 = widest. Gives the receding-stack feel. */
 const REPS: readonly Rep[] = [
-	{ rank: 22, deltaPct: 9, name: 'Sarah Chen', avatar: '/images/step1/avatar-sarah-v2.png', insetPx: 40 },
-	{ rank: 22, deltaPct: 9, name: 'Jordan Kim', avatar: '/images/avatars/closer-3.png', insetPx: 32, mobileHidden: true },
-	{ rank: 22, deltaPct: 9, name: 'Tom Walsh', avatar: '/images/avatars/closer-2.png', insetPx: 24, mobileHidden: true },
+	{ rank: 22, deltaPct: 9, name: 'Sarah Chen', avatar: '/images/step1/avatar-sarah-v2.webp', insetPx: 40 },
+	{ rank: 22, deltaPct: 9, name: 'Jordan Kim', avatar: '/images/avatars/closer-3.webp', insetPx: 32, mobileHidden: true },
+	{ rank: 22, deltaPct: 9, name: 'Tom Walsh', avatar: '/images/avatars/closer-2.webp', insetPx: 24, mobileHidden: true },
 	{ rank: 23, deltaPct: 13, name: 'Mikayla Brown', avatar: '/images/avatars/closer-1.png', insetPx: 16, hasTopShadow: true, mobileHidden: true },
-	{ rank: 24, deltaPct: 18, name: 'Marcus Rivera', avatar: '/images/step1/avatar-marcus-face.png', insetPx: 8, hasTopShadow: true },
+	{ rank: 24, deltaPct: 18, name: 'Marcus Rivera', avatar: '/images/step1/avatar-marcus-face.webp', insetPx: 8, hasTopShadow: true },
 	{ rank: 25, deltaPct: 22, name: 'Priya Patel', avatar: '/images/avatars/closer-1.png', insetPx: 0, isFocal: true, hasTopShadow: true },
 ] as const
 

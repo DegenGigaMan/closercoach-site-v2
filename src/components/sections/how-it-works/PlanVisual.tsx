@@ -50,8 +50,8 @@ import { Calendar, Check, Checks, Sparkle, SpinnerGap } from '@phosphor-icons/re
 import { CLONE_CARD } from '@/lib/constants'
 import TextType from '@/components/ui/text-type'
 
-const SARAH_AVATAR = '/images/step1/avatar-sarah-v2.png'
-const MARCUS_AVATAR = '/images/step1/avatar-marcus-face.png'
+const SARAH_AVATAR = '/images/step1/avatar-sarah-v2.webp'
+const MARCUS_AVATAR = '/images/step1/avatar-marcus-face.webp'
 const LOGO_GOOGLE_MEET = '/images/step1/logo-google-meet.svg'
 const LOGO_TEAMS = '/images/step1/logo-teams.png'
 const LOGO_SALESFORCE = '/images/step1/logo-salesforce.svg'

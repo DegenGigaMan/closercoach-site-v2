@@ -31,13 +31,13 @@ type Verdict = 'strong-hire' | 'good-hire' | 'good-fit' | 'pass'
 type Row = { name: string; avatar: string; verdict: Verdict; emphasised?: boolean }
 
 const ROWS: readonly Row[] = [
-	{ name: 'Sarah Chen', avatar: '/images/step1/avatar-sarah-v2.png', verdict: 'strong-hire', emphasised: true },
-	{ name: 'Marcus Rivera', avatar: '/images/step1/avatar-marcus-face.png', verdict: 'strong-hire' },
+	{ name: 'Sarah Chen', avatar: '/images/step1/avatar-sarah-v2.webp', verdict: 'strong-hire', emphasised: true },
+	{ name: 'Marcus Rivera', avatar: '/images/step1/avatar-marcus-face.webp', verdict: 'strong-hire' },
 	
-	{ name: 'Tom Walsh', avatar: '/images/avatars/closer-2.png', verdict: 'good-fit' },
-	{ name: 'Devon Nguyen', avatar: '/images/avatars/closer-2.png', verdict: 'good-fit' },
-	{ name: 'Jordan Kim', avatar: '/images/avatars/closer-3.png', verdict: 'pass' },
-	{ name: 'Alex Pierce', avatar: '/images/avatars/closer-3.png', verdict: 'pass' },
+	{ name: 'Tom Walsh', avatar: '/images/avatars/closer-2.webp', verdict: 'good-fit' },
+	{ name: 'Devon Nguyen', avatar: '/images/avatars/closer-2.webp', verdict: 'good-fit' },
+	{ name: 'Jordan Kim', avatar: '/images/avatars/closer-3.webp', verdict: 'pass' },
+	{ name: 'Alex Pierce', avatar: '/images/avatars/closer-3.webp', verdict: 'pass' },
 ] as const
 
 const VERDICT_MAP: Record<Verdict, { label: string; border: string; text: string; weight: 'bold' | 'medium' }> = {
