@@ -84,7 +84,7 @@ const BADGE_TONES: Record<Persona['badgeTone'], { bg: string; border: string; te
 const PERSONAS: readonly Persona[] = [
 	{
 		name: 'Brenda, 28',
-		photo: '/images/features/card1-avatar-brenda.png',
+		photo: '/images/features/card1-avatar-brenda.webp',
 		badgeLabel: 'Skeptical Prospect',
 		badgeTone: 'orange',
 		BadgeIcon: WarningOctagon,
@@ -98,7 +98,7 @@ const PERSONAS: readonly Persona[] = [
 	},
 	{
 		name: 'Bobby, 35',
-		photo: '/images/features/card1-avatar-bobby.png',
+		photo: '/images/features/card1-avatar-bobby.webp',
 		badgeLabel: 'Price-sensitive Buyer',
 		badgeTone: 'emerald',
 		BadgeIcon: PiggyBank,
@@ -112,7 +112,7 @@ const PERSONAS: readonly Persona[] = [
 	},
 	{
 		name: 'Marcus, 47',
-		photo: '/images/features/card1-avatar-marcus.png',
+		photo: '/images/features/card1-avatar-marcus.webp',
 		badgeLabel: 'Technical Evaluator',
 		badgeTone: 'cyan',
 		BadgeIcon: HeadCircuit,

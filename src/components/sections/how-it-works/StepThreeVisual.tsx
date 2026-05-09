@@ -66,7 +66,7 @@ import {
 	THREAD_EASE,
 } from './_shared/step-visual-defaults'
 
-const SARAH_IMG = '/images/prospects/sarah-chen.png'
+const SARAH_IMG = '/images/prospects/sarah-chen.webp'
 /* CC wordmark — points at the optimized 64KB PNG (was a 24KB SVG, swapped
  * 2026-05-04). Same visual; PNG enables the new wordmark Andy provided. */
 const CC_LOGO = '/cc-logo.png'

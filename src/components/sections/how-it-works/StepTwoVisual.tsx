@@ -38,7 +38,7 @@ import {
 	XCircle,
 } from '@phosphor-icons/react'
 
-const SARAH_AVATAR = '/images/step2/avatar-sarah.png'
+const SARAH_AVATAR = '/images/step2/avatar-sarah.webp'
 
 /* Audio waveform bar ladder. Heights and opacities mirror the Figma pattern
  * at node 40:1211, visually approximating an active voice capture. */
