@@ -241,7 +241,7 @@ export default function SectionFeatures(): ReactElement {
 					>
 						Built to{' '}
 						<em className='italic font-bold text-cc-accent'>
-							win more deals.
+							win more deals. 
 						</em>
 					</h2>
 
@@ -305,7 +305,7 @@ export default function SectionFeatures(): ReactElement {
 				</div>
 
 				{/* CTA */}
-				<div className='mt-12 flex w-full max-w-xl flex-col gap-3 sm:flex-row sm:w-auto md:mt-16'>
+				<div className='mt-12 flex items-center justify-center w-full  flex-col gap-3 sm:flex-row sm:w-auto md:mt-16'>
 					<MotionCTA href={CTA.contactSales.href} variant='secondary' size='lg' className='w-full sm:w-auto'>
 						{CTA.contactSales.text}
 					</MotionCTA>

@@ -428,7 +428,7 @@ export default function SectionTeams(): ReactElement {
 					<p className='text-center text-base text-cc-text-secondary md:text-lg'>
 						Want to scale your sales team training?
 					</p>
-					<div className='flex flex-col items-center gap-4 sm:flex-row sm:justify-center'>
+					<div className='flex flex-row flex-wrap items-center justify-center gap-4'>
 						<MotionCTA variant='primary' size='lg' href='/sales' dataPrimaryCta>
 							Book a Demo
 						</MotionCTA>

@@ -85,8 +85,8 @@ export default function SectionCTA() {
 					 * download moment without a confidence boilerplate. The headline
 					 * + subhead carry the close. */}
 
-					{/* Secondary CTA -- Book a Demo for Teams */}
-					<MotionCTA href='/sales' variant='secondary' size='lg' className='w-full sm:w-auto'>
+					{/* Primary CTA -- Book a Demo for Teams */}
+					<MotionCTA href='/sales' variant='primary' size='lg' className='w-full sm:w-auto'>
 						Book a Demo for Teams
 					</MotionCTA>
 
@@ -173,7 +173,7 @@ export default function SectionCTA() {
 						className='group inline-flex items-center gap-2 rounded-full border border-cc-accent/30 bg-cc-accent/5 px-4 py-2 text-sm text-cc-text-secondary transition-colors hover:border-cc-accent/60 hover:bg-cc-accent/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent focus-visible:ring-offset-2 focus-visible:ring-offset-cc-foundation'
 					>
 						<ChatCircleDots weight='bold' className='h-4 w-4 text-cc-accent' aria-hidden='true' />
-						<span>
+						<span className='whitespace-nowrap'>
 							Join <span className='text-white'>500+ closers</span> in our WhatsApp community.
 						</span>
 					</Link>

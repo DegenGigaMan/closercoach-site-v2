@@ -33,8 +33,7 @@ type Row = { name: string; avatar: string; verdict: Verdict; emphasised?: boolea
 const ROWS: readonly Row[] = [
 	{ name: 'Sarah Chen', avatar: '/images/step1/avatar-sarah-v2.png', verdict: 'strong-hire', emphasised: true },
 	{ name: 'Marcus Rivera', avatar: '/images/step1/avatar-marcus-face.png', verdict: 'strong-hire' },
-	{ name: 'Priya Patel', avatar: '/images/avatars/closer-1.png', verdict: 'good-hire' },
-	{ name: 'Mikayla Brown', avatar: '/images/avatars/closer-1.png', verdict: 'good-hire' },
+	
 	{ name: 'Tom Walsh', avatar: '/images/avatars/closer-2.png', verdict: 'good-fit' },
 	{ name: 'Devon Nguyen', avatar: '/images/avatars/closer-2.png', verdict: 'good-fit' },
 	{ name: 'Jordan Kim', avatar: '/images/avatars/closer-3.png', verdict: 'pass' },
@@ -79,7 +78,7 @@ export default function HireBetterFasterVisual(): ReactElement {
 
 	return (
 		<div className='relative h-full w-full overflow-hidden px-4 py-5 md:px-6 md:py-7'>
-			<div className='flex h-full w-full flex-col items-end'>
+			<div className='flex h-full w-full flex-col items-center justify-center'>
 				{/* Inner stack container — Figma 95:18325. Border on top/right/
 				 * bottom only (no LEFT), rounded-r only, max-w-[314px], aligned
 				 * to the right edge of the visual area so the elevated AI-pick
