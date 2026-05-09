@@ -657,7 +657,7 @@ const STATE6_SCORECARDS: ReadonlyArray<{
 		desc: "Didn't ask for a face-to-face walkthrough.",
 		grade: 'C',
 		ringFill: 0.5,
-		ringColor: '#FF5A5A',
+		ringColor: '#EF4444',
 	},
 ]
 
