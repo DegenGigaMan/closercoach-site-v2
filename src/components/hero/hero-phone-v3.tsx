@@ -23,11 +23,12 @@
 
 'use client'
 
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import {
 	AnimatePresence,
 	LayoutGroup,
 	motion,
+	useInView,
 	useReducedMotion,
 } from 'motion/react'
 import Image from 'next/image'
@@ -1468,8 +1469,20 @@ export default function HeroPhoneV3({
 	 * black overlay over the screen. Reduced motion skips entirely. */
 	const [loopFade, setLoopFade] = useState(false)
 
+	/* Visibility gate: pause the state cycle when the phone scrolls out of
+	 * view, resume from the last active state when it scrolls back in.
+	 * `amount: 0.3` = active when at least 30% of the phone is in viewport.
+	 * autoIndexRef lets the resume path read the latest autoIndex without
+	 * making the effect re-fire on every state advance. */
+	const containerRef = useRef<HTMLDivElement>(null)
+	const inView = useInView(containerRef, { amount: 0.3 })
+	const autoIndexRef = useRef<HeroV3StateIndex>(0)
 	useEffect(() => {
-		if (!autoplay || prefersReducedMotion) return
+		autoIndexRef.current = autoIndex
+	}, [autoIndex])
+
+	useEffect(() => {
+		if (!autoplay || prefersReducedMotion || !inView) return
 		let advanceTimer: ReturnType<typeof setTimeout> | null = null
 		let fadeInTimer: ReturnType<typeof setTimeout> | null = null
 		let fadeOutTimer: ReturnType<typeof setTimeout> | null = null
@@ -1495,13 +1508,13 @@ export default function HeroPhoneV3({
 			}, STATE_DWELL_MS[current])
 		}
 
-		scheduleNext(0)
+		scheduleNext(autoIndexRef.current)
 		return () => {
 			if (advanceTimer) clearTimeout(advanceTimer)
 			if (fadeInTimer) clearTimeout(fadeInTimer)
 			if (fadeOutTimer) clearTimeout(fadeOutTimer)
 		}
-	}, [autoplay, prefersReducedMotion])
+	}, [autoplay, prefersReducedMotion, inView])
 
 	const activeIndex: HeroV3StateIndex = autoplay ? autoIndex : pinnedState
 
@@ -1509,6 +1522,7 @@ export default function HeroPhoneV3({
 	return (
 		<LayoutGroup>
 			<div
+				ref={containerRef}
 				className='relative h-[696px] w-[340px] shrink-0 rounded-[48px] border border-white/10 px-[7px] pb-px pt-[7px] shadow-[0_0_60px_rgba(16,185,129,0.1),0_20px_40px_rgba(0,0,0,0.4)]'
 				style={{
 					background:
