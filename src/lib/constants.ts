@@ -1,7 +1,7 @@
 /** @fileoverview Locked brand data, pricing, stats, and design tokens for CloserCoach site. */
 
 export const STATS = {
-	userCount: '20,000+',
+	userCount: '36,000+',
 	appStoreRating: '4.7',
 	appStoreReviews: '378+',
 	trialDays: 3,

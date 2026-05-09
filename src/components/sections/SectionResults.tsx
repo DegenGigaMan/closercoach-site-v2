@@ -10,7 +10,7 @@
  *     staggered opacity + translate animation, landing at 0.88 opacity so
  *     the headline reads at 100%.
  *   - Mobile collapses to a vertical stack below the centered headline.
- *   - Cards: Profile anchor, 20,000+ closers, 4.7/5 App Store, 3,000+ calls
+ *   - Cards: Profile anchor, 36,000+ closers, 4.7/5 App Store, 3,000+ calls
  *     per day, 16+ industries, 7-dimension radar, 76% coached weekly, and
  *     a 7/50/30 performance gains strip.
  *

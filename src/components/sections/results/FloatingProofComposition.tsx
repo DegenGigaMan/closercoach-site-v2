@@ -13,7 +13,7 @@
  *      / 30% More Deals
  *   3. C+ → A grade-up badge card (top-right) — +2 grades indicator
  *   4. 16+ Industries pill (right mid)
- *   5. 20,000+ closers + 3,000+ calls/day stack (left mid)
+ *   5. 36,000+ closers + 3,000+ calls/day stack (left mid)
  *   6. 7-Dimensions Scored radar (center bottom) — Discovery / Pitch /
  *      Objection Handling / Closing / Tonality / Pace / Clarity heptagon
  *   7. Coached vs Uncoached area chart (bottom-right) — 2x outcome delta
@@ -382,7 +382,7 @@ function IndustriesPill(): ReactElement {
 	)
 }
 
-/* ─── 5a. Single stat card (used for 20,000+ + 3,000+ stack) ─── */
+/* ─── 5a. Single stat card (used for 36,000+ + 3,000+ stack) ─── */
 
 type StatCardProps = {
 	value: string
@@ -760,7 +760,7 @@ export default function FloatingProofComposition(): ReactElement {
 						</Float>
 						<Float delay={0.22} className='absolute left-[3%] top-[320px] lg:left-[-1%]'>
 							<div className='flex flex-col items-start gap-4'>
-								<StatCard value='20,000+' label='Sales closers' />
+								<StatCard value='36,000+' label='Sales closers' />
 								<div className='pl-12'>
 									<StatCard value='3,000+' label='Calls / day' />
 								</div>

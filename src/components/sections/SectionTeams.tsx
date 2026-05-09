@@ -374,7 +374,7 @@ export default function SectionTeams(): ReactElement {
 						<em className='text-cc-accent'>Teams.</em>
 					</h2>
 					<p className='max-w-2xl text-lg text-cc-text-secondary md:text-xl'>
-						Over 20,000 closers already use CloserCoach individually. Now give your
+						Over 36,000 closers already use CloserCoach individually. Now give your
 						whole team the same edge.
 					</p>
 				</Reveal>

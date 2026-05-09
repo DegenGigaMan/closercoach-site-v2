@@ -73,7 +73,7 @@ export default function BlogPage() {
 						<span className='italic text-cc-accent-hover'>CloserCoach</span> team.
 					</h1>
 					<p className='mt-5 max-w-2xl text-base text-cc-text-secondary-warm md:text-lg'>
-						Short reads for people who close for a living. Frameworks you can use on your next call, teardowns of real roleplays, and lessons from the 20,000+ closers training inside the app.
+						Short reads for people who close for a living. Frameworks you can use on your next call, teardowns of real roleplays, and lessons from the 36,000+ closers training inside the app.
 					</p>
 
 					{/* LinkedIn follow row */}

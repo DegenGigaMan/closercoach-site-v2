@@ -12,7 +12,7 @@ const PUBLISHED = 'March 2026'
 const READ_TIME = '3 min read'
 
 const DESCRIPTION =
-	'CloserCoach raises $1M seed round to scale AI-powered sales coaching for the 20,000+ closers training inside the app every day.'
+	'CloserCoach raises $1M seed round to scale AI-powered sales coaching for the 36,000+ closers training inside the app every day.'
 
 export const metadata: Metadata = {
 	title: TITLE,
@@ -121,7 +121,7 @@ export default function FundingAnnouncementPage() {
 						they&rsquo;ll run tomorrow.
 					</p>
 					<p>
-						More than 20,000 closers train on CloserCoach every day. We&rsquo;re
+						More than 36,000 closers train on CloserCoach every day. We&rsquo;re
 						grateful to the operators, founders, and sales leaders who
 						believed early, and to every rep who&rsquo;s logged a session.
 						We&rsquo;ll have more to share soon. Until then, the work
