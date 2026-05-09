@@ -1349,11 +1349,13 @@ function State1Onboarding({ reducedMotion }: { reducedMotion: boolean }) {
 	return (
 		<div className='flex h-full flex-col items-center justify-between px-4 pb-2 pt-2'>
 			<div className='flex flex-1 w-full flex-col items-center justify-center gap-10'>
-				<BrowserMock reducedMotion={reducedMotion} />
-
-				{/* Paste input removed 2026-05-06 per Andy: redundant since the URL
-				 * is already highlighted as selected text in the browser visual
-				 * above the heading. The narrative beat reads cleanly without it. */}
+				{/* L-02 (2026-05-09): heading + body now sit ABOVE the browser
+				 * mock so the title/heading copy lands first and the visual
+				 * follows. Prior order (BrowserMock above text) read as
+				 * "visual then explanation"; Andy wants "title sets the frame,
+				 * then visual answers it." Animation timings preserved -- text
+				 * fades in at SPRING_FIELD delay 0.6s, BrowserMock keeps its
+				 * own internal animation, Continue CTA still enters at 1.05s. */}
 				<motion.div
 					className='flex w-full flex-col items-center gap-6 text-center'
 					initial={{ opacity: 0, y: 12 }}
@@ -1368,6 +1370,8 @@ function State1Onboarding({ reducedMotion }: { reducedMotion: boolean }) {
 						scenarios you can practice against.
 					</p>
 				</motion.div>
+
+				<BrowserMock reducedMotion={reducedMotion} />
 			</div>
 
 			<motion.button

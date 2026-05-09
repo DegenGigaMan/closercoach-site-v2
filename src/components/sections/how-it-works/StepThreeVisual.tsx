@@ -281,8 +281,12 @@ const ModeToggle = forwardRef<HTMLButtonElement, ModeToggleProps>(function ModeT
  * Interior is passed as children; the interior is the layoutId morph target,
  * not the shell (so the shell doesn't jitter during mode swap). */
 function PhoneFrame({ children, mode }: { children: React.ReactNode, mode: 'A' | 'B' }) {
+	/* L-11 (2026-05-09): mobile width bumped to 280px so this Step 3 phone
+	 * matches the Hero phone (~278-300px on mobile post-L-03 scale) and the
+	 * Step 4 phone (also 280px on mobile). Desktop sticky right-column keeps
+	 * the original 240px so the existing canvas layout doesn't shift. */
 	return (
-		<div className="relative z-10 w-[240px]">
+		<div className="relative z-10 w-[280px] lg:w-[240px]">
 			<div className="rounded-[2.5rem] border border-white/10 bg-gradient-to-b from-[#2a2d36] to-[#1a1d26] p-[5px] shadow-[0_0_50px_rgba(16,185,129,0.1),0_16px_32px_rgba(0,0,0,0.45)]">
 				<div className="overflow-hidden rounded-[2.2rem] border border-white/5 bg-cc-foundation">
 					{/* Dynamic Island */}

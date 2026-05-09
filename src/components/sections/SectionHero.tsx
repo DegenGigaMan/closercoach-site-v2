@@ -371,8 +371,16 @@ export default function SectionHero() {
 							 * mobile/sm scales (was 0.58/0.72/0.85) so the hero phone reads
 							 * with more presence on mobile. body now has overflow-x: hidden
 							 * so any minor edge bleed gets clipped at the viewport. Negative
-							 * mb compensates for the scale-vs-layout gap. */}
-							<div className='origin-top scale-[0.68] sm:scale-[0.82] md:scale-[0.92] lg:scale-100 mb-[-205px] sm:mb-[-115px] md:mb-[-50px] lg:mb-0'>
+							 * mb compensates for the scale-vs-layout gap.
+							 *
+							 * L-03 + L-11 (2026-05-09): bump mobile/sm scales again so the
+							 * hero phone reads at ~278-300px wide (340*0.82 = 278 at <sm,
+							 * 340*0.88 = 299 at sm). This pairs with L-11 mobile phone
+							 * consistency on Step 3 (w-[240px] -> w-[280px] at <lg) and
+							 * Step 4 (w-[340px] -> w-[280px] at <lg) so all three phones
+							 * land within ~280-300px wide on mobile. Negative mb retuned
+							 * to absorb the new scale gap. */}
+							<div className='origin-top scale-[0.82] sm:scale-[0.88] md:scale-[0.92] lg:scale-100 mb-[-130px] sm:mb-[-90px] md:mb-[-50px] lg:mb-0'>
 								<HeroPhoneV3 />
 							</div>
 						</motion.div>
