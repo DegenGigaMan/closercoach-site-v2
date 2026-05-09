@@ -28,20 +28,26 @@ import Image from 'next/image'
 import type { ReactElement } from 'react'
 import { ArrowDown, ChartBar } from '@phosphor-icons/react'
 
-type Rep = { rank: number; deltaPct: number; name: string; avatar: string; insetPx: number; isFocal?: boolean; hasTopShadow?: boolean; mobileHidden?: boolean }
+type Rep = { rank: number; deltaPct: number; name: string; avatar: string; insetPx: number; isFocal?: boolean; hasTopShadow?: boolean; desktopHidden?: boolean }
 
 /* Inset progression per Figma: card 1 (top) wrapper px-40 = narrowest inner;
- * card 6 (focal, bottom) wrapper px-0 = widest. Gives the receding-stack feel. */
+ * card 6 (focal, bottom) wrapper px-0 = widest. Gives the receding-stack feel.
+ *
+ * L-07 (2026-05-09): on desktop (md+), hide the two faded back rows
+ * (Sarah Chen, Jordan Kim) so the stack reads as 4 rows. Mobile keeps all 6.
+ * Replaces the prior `mobileHidden` semantic — that flag dropped 3 cards on
+ * mobile (Jordan, Tom, Mikayla) and showed all 6 on desktop, the inverse of
+ * what Andy wants now. */
 const REPS: readonly Rep[] = [
-	{ rank: 22, deltaPct: 9, name: 'Sarah Chen', avatar: '/images/step1/avatar-sarah-v2.webp', insetPx: 40 },
-	{ rank: 22, deltaPct: 9, name: 'Jordan Kim', avatar: '/images/avatars/closer-3.webp', insetPx: 32, mobileHidden: true },
-	{ rank: 22, deltaPct: 9, name: 'Tom Walsh', avatar: '/images/avatars/closer-2.webp', insetPx: 24, mobileHidden: true },
-	{ rank: 23, deltaPct: 13, name: 'Mikayla Brown', avatar: '/images/avatars/closer-1.png', insetPx: 16, hasTopShadow: true, mobileHidden: true },
+	{ rank: 22, deltaPct: 9, name: 'Sarah Chen', avatar: '/images/step1/avatar-sarah-v2.webp', insetPx: 40, desktopHidden: true },
+	{ rank: 22, deltaPct: 9, name: 'Jordan Kim', avatar: '/images/avatars/closer-3.webp', insetPx: 32, desktopHidden: true },
+	{ rank: 22, deltaPct: 9, name: 'Tom Walsh', avatar: '/images/avatars/closer-2.webp', insetPx: 24 },
+	{ rank: 23, deltaPct: 13, name: 'Mikayla Brown', avatar: '/images/avatars/closer-1.png', insetPx: 16, hasTopShadow: true },
 	{ rank: 24, deltaPct: 18, name: 'Marcus Rivera', avatar: '/images/step1/avatar-marcus-face.webp', insetPx: 8, hasTopShadow: true },
 	{ rank: 25, deltaPct: 22, name: 'Priya Patel', avatar: '/images/avatars/closer-1.png', insetPx: 0, isFocal: true, hasTopShadow: true },
 ] as const
 
-function StackCard({ rank, deltaPct, name, avatar, insetPx, isFocal, hasTopShadow, mobileHidden }: Rep): ReactElement {
+function StackCard({ rank, deltaPct, name, avatar, insetPx, isFocal, hasTopShadow, desktopHidden }: Rep): ReactElement {
 	const padY = isFocal ? 'py-[17px]' : 'pt-[9px] pb-[17px]'
 	const metaSize = isFocal ? 'text-[12px]' : 'text-[10px]'
 	const labelSize = isFocal ? 'text-[12px]' : 'text-[10px]'
@@ -55,7 +61,7 @@ function StackCard({ rank, deltaPct, name, avatar, insetPx, isFocal, hasTopShado
 
 	return (
 		<div
-			className={`relative w-full${mobileHidden ? ' hidden md:block' : ''}`}
+			className={`relative w-full${desktopHidden ? ' md:hidden' : ''}`}
 			style={{ paddingLeft: insetPx, paddingRight: insetPx, marginBottom: -28 }}
 		>
 			<div
