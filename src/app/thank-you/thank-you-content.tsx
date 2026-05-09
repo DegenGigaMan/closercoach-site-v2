@@ -28,7 +28,7 @@ import {
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
 import { BRAND } from '@/lib/constants'
 
-const QR_DESTINATION = 'https://closercoach-site-v2.vercel.app/download?source=qr-thankyou'
+const QR_DESTINATION = 'https://closercoach.ai/download?source=qr-thankyou'
 const WHATSAPP_URL = 'https://chat.whatsapp.com/HkG7urngZAV4wV9Ufd02Z1'
 const INSTAGRAM_URL = 'https://instagram.com/closercoach'
 const TIKTOK_URL = 'https://tiktok.com/@closercoach'
