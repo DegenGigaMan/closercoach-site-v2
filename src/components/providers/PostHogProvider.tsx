@@ -52,6 +52,11 @@ type Props = {
  * 'cookie-consent-change' to upgrade persistence post-accept. Exposes the
  * posthog instance on window so the typed helper in src/lib/analytics.ts
  * can capture events without importing the SDK in every component.
+ *
+ * Init deferred to requestIdleCallback per render-delay audit 2026-05-09
+ * Patch 4. PostHog ships ~50-60KB to the critical bundle; deferring init
+ * means the first $pageview event fires ~200ms later but keeps the LCP
+ * path leaner. Pageview window tolerance is generous enough.
  */
 export const PostHogProvider = ({ children }: Props) => {
 	useEffect(() => {
@@ -63,10 +68,23 @@ export const PostHogProvider = ({ children }: Props) => {
 		}
 		if (window.posthog) return
 
-		const consent = localStorage.getItem(STORAGE_KEY)
-		const hasAccepted = consent === 'accepted'
+		const win = window as Window & {
+			requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number
+			cancelIdleCallback?: (id: number) => void
+		}
 
-		posthog.init(key, {
+		let idleId: number | null = null
+		let fallbackTimer: ReturnType<typeof setTimeout> | null = null
+		let consentListenerAttached = false
+		let consentListener: (() => void) | null = null
+
+		const initPostHog = () => {
+			if (window.posthog) return
+
+			const consent = localStorage.getItem(STORAGE_KEY)
+			const hasAccepted = consent === 'accepted'
+
+			posthog.init(key, {
 			/* Use the reverse-proxy path so ad blockers cannot block the
 			 * request without blocking the whole site. next.config.ts
 			 * rewrites /ingest/* to the public PostHog ingest cluster. */
@@ -105,22 +123,38 @@ export const PostHogProvider = ({ children }: Props) => {
 			 * cookies set). On 'cookie-consent-change' to 'accepted' the
 			 * persistence is upgraded below. On decline, persistence stays
 			 * memory — events still flow, but nothing crosses sessions. */
-			persistence: hasAccepted ? 'localStorage+cookie' : 'memory',
-			disable_persistence: false,
-		})
-		window.posthog = posthog
+				persistence: hasAccepted ? 'localStorage+cookie' : 'memory',
+				disable_persistence: false,
+			})
+			window.posthog = posthog
 
-		const onConsentChange = () => {
-			const next = localStorage.getItem(STORAGE_KEY)
-			if (next === 'accepted') {
-				posthog.set_config({ persistence: 'localStorage+cookie' })
-			} else if (next === 'declined') {
-				posthog.set_config({ persistence: 'memory' })
+			const onConsentChange = () => {
+				const next = localStorage.getItem(STORAGE_KEY)
+				if (next === 'accepted') {
+					posthog.set_config({ persistence: 'localStorage+cookie' })
+				} else if (next === 'declined') {
+					posthog.set_config({ persistence: 'memory' })
+				}
 			}
+			window.addEventListener('cookie-consent-change', onConsentChange)
+			consentListener = onConsentChange
+			consentListenerAttached = true
 		}
-		window.addEventListener('cookie-consent-change', onConsentChange)
+
+		if (typeof win.requestIdleCallback === 'function') {
+			idleId = win.requestIdleCallback(initPostHog, { timeout: 3000 })
+		} else {
+			fallbackTimer = setTimeout(initPostHog, 200)
+		}
+
 		return () => {
-			window.removeEventListener('cookie-consent-change', onConsentChange)
+			if (idleId !== null && typeof win.cancelIdleCallback === 'function') {
+				win.cancelIdleCallback(idleId)
+			}
+			if (fallbackTimer !== null) clearTimeout(fallbackTimer)
+			if (consentListenerAttached && consentListener) {
+				window.removeEventListener('cookie-consent-change', consentListener)
+			}
 		}
 	}, [])
 

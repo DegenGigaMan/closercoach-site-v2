@@ -31,6 +31,7 @@ import SmoothScroll from '@/components/layout/SmoothScroll'
 import ScrollToTop from '@/components/layout/ScrollToTop'
 import CookieConsent from '@/components/layout/CookieConsent'
 import AnnouncementBanner from '@/components/layout/AnnouncementBanner'
+import DeferredMount from '@/components/layout/DeferredMount'
 import { PostHogProvider } from '@/components/providers/PostHogProvider'
 import { ScrollDepthTracker } from '@/components/providers/ScrollDepthTracker'
 import { BRAND, STATS, PRICING } from '@/lib/constants'
@@ -233,8 +234,15 @@ export default function RootLayout({
 				/>
 				<PostHogProvider>
 					<ScrollDepthTracker />
-					<SmoothScroll />
-					<ScrollToTop />
+					{/* Non-critical mounts deferred to requestIdleCallback per
+					 * render-delay audit 2026-05-09 Patch 3. SmoothScroll only
+					 * matters once user starts scrolling; ScrollToTop only
+					 * matters post-scroll; CookieConsent showing ~100-200ms
+					 * later is acceptable. Keeps the LCP critical path lean. */}
+					<DeferredMount>
+						<SmoothScroll />
+						<ScrollToTop />
+					</DeferredMount>
 					<AnnouncementBanner />
 					<Header />
 					<main
@@ -244,7 +252,9 @@ export default function RootLayout({
 						{children}
 					</main>
 					<Footer />
-					<CookieConsent />
+					<DeferredMount>
+						<CookieConsent />
+					</DeferredMount>
 				</PostHogProvider>
 				<Analytics />
 				<SpeedInsights />
