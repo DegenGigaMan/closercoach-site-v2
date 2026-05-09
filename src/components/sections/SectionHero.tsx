@@ -143,10 +143,17 @@ export default function SectionHero() {
 					<AnimatedBadge text={`Join ${STATS.userCount} Sales Closers`} color='#10B981' />
 				</motion.div>
 
-				{/* H1 headline -- clipPath line reveal, white with emerald italic accent.
+				{/* H1 headline -- white with emerald italic accent. Plain element
+				 * so the LCP candidate paints with the SSR HTML at frame 1. The
+				 * inner italic span keeps a delayed color flourish (white -> emerald
+				 * at 1s) — that runs post-LCP and does not block paint. Per
+				 * render-delay audit 2026-05-09 (Patch 1, Option A): on-mount
+				 * clipPath entrance was 1.5-1.8s of mobile LCP because Motion
+				 * serialized initial={clipPath:inset(0 0 100% 0)} into the SSR HTML,
+				 * shipping the H1 fully clipped until hydration ran the entrance.
 				 * Desktop locked to 72px per Figma 62:3049; mobile collapses to
 				 * ~40px via the clamp ceiling. */}
-				<motion.h1
+				<h1
 					className='max-w-[920px] text-center text-white'
 					style={{
 						fontFamily: 'var(--font-heading)',
@@ -154,9 +161,6 @@ export default function SectionHero() {
 						fontSize: 'clamp(2.5rem, 6vw, 72px)',
 						lineHeight: 0.933,
 					}}
-					initial={{ clipPath: 'inset(0 0 100% 0)' }}
-					animate={{ clipPath: 'inset(0 0 0% 0)' }}
-					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.8, delay: 0.15, ease: EASE }}
 				>
 					The AI Sales Coach That Lives{' '}
 					<motion.span
@@ -167,23 +171,19 @@ export default function SectionHero() {
 					>
 						in Your Pocket
 					</motion.span>
-				</motion.h1>
+				</h1>
 
-				{/* Subheadline -- centered, narrow. Wave AA.2: reverted to original timing. */}
-				<motion.p
-					className='mt-6 max-w-[600px] text-center font-sans text-lg leading-relaxed text-cc-text-secondary'
-					{...enter(0.35, 12)}
-				>
+				{/* Subheadline -- plain element so it paints with SSR at frame 1.
+				 * Entrance animation removed per render-delay audit Patch 1. */}
+				<p className='mt-6 max-w-[600px] text-center font-sans text-lg leading-relaxed text-cc-text-secondary'>
 					Practice closing deals. Record your meetings. Know exactly where you&rsquo;re losing deals. All from your phone.
-				</motion.p>
+				</p>
 
 				{/* CTA cluster -- centered pair, stacked on mobile, row on sm+.
-				 * Wave AA.2: reverted to original timing. */}
-				<motion.div
+				 * Plain element so CTAs paint with SSR at frame 1. Entrance
+				 * animation removed per render-delay audit Patch 1. */}
+				<div
 					className='mt-10 flex w-full max-w-[420px] flex-col items-center gap-3 sm:max-w-none sm:flex-row sm:justify-center sm:gap-4'
-					initial={{ opacity: 0, scale: 0.96 }}
-					animate={{ opacity: 1, scale: 1 }}
-					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.55, delay: 0.45, ease: EASE }}
 				>
 					{/* Wrapped in span+onClickCapture to instrument the click without
 					 * disrupting MotionCTA's transition behavior. span.contents is
@@ -216,7 +216,7 @@ export default function SectionHero() {
 							{CTA.contactSales.text}
 						</MotionCTA>
 					</span>
-				</motion.div>
+				</div>
 
 				{/* Platform availability row. iOS / Android / Web tags only. The
 				 * trailing "No annual contracts." value prop was killed 2026-04-26
