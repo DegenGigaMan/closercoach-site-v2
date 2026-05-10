@@ -89,9 +89,11 @@ export default function StepFourReviewPhone() {
 				</h3>
 			</div>
 
-			{/* Phone mockup */}
+			{/* Phone mockup — scale matches hero phone on all breakpoints */}
 			<div className='mt-12 flex justify-center'>
-				<PhoneMockup reduced={reduced} />
+				<div className='origin-top scale-[0.82] sm:scale-[0.88] md:scale-[0.92] lg:scale-100 mb-[-130px] sm:mb-[-90px] md:mb-[-50px] lg:mb-0'>
+					<PhoneMockup reduced={reduced} />
+				</div>
 			</div>
 
 			{/* Subhead beneath the visual. */}

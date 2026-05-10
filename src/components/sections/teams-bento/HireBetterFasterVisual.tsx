@@ -78,7 +78,7 @@ export default function HireBetterFasterVisual(): ReactElement {
 
 	return (
 		<div className='relative h-full w-full overflow-hidden px-4 py-5 md:px-6 md:py-7'>
-			<div className='flex h-full w-full flex-col items-center justify-center'>
+			<div className='flex h-full w-full flex-col items-end justify-center'>
 				{/* Inner stack container — Figma 95:18325. Border on top/right/
 				 * bottom only (no LEFT), rounded-r only, max-w-[314px], aligned
 				 * to the right edge of the visual area so the elevated AI-pick

@@ -1,26 +1,9 @@
 /** @fileoverview S6 Card 2 visual — "Know Where Every Rep Stands".
  *
- * Composition (per Figma 93-16986, Wave V tokens 2026-04-27):
- *   ─ 6 receding rep score cards stacked vertically. Each card is solid
- *     #1e2230 bg + 1px white/10 border + rounded-12. Each lower card sits
- *     in a wrapper with progressively LESS horizontal padding so it appears
- *     wider than the card above it: 40 / 32 / 24 / 16 / 8 / 0 px.
- *   ─ Cards overlap by 28px via mb-[-28px] so the stack reads as cards
- *     receding into depth.
- *   ─ Cards 4-6 carry an upward 4px shadow at top edge (overlap depth cue);
- *     card 6 (focal, bottom) ALSO carries a grounding 8px bottom shadow.
- *   ─ Card 6 is the focal point: typography stepped up — meta line 12px
- *     (was 10px), close-rate label 12px, percentage 18px (was 16px),
- *     vertical content gap 10px (was 8px), padding py-17 (was pt-9 pb-17).
- *   ─ 90px top blur fade bleeds the top of card 1 into the card body above.
- *   ─ Footer: 12px ChartBar icon + "Your team rankings" Inter Medium 12px
- *     white/50 — gap-1 between icon and label.
- *
- * Rank typography: Lora Bold 14px white/50 leading 16.5.
- * Name typography: Inter Regular 16px #ebebeb leading 20.
- * Meta line typography: Inter Regular 10/12px rgba(251,251,251,0.6).
- * Percentage typography: Lora Bold 16/18px #ff5a5a.
- * Avatar: 32×32 rounded-100, white/5 border. */
+ * Mobile inset fix: with only 3 cards visible on mobile (Sarah, Marcus, Priya),
+ * the desktop inset of 40px for Sarah breaks the proportional feel (0→8→40).
+ * mobileInsetPx=16 gives even 8px steps: 0, 8, 16. CSS custom properties
+ * switch the inset at the md breakpoint. */
 
 'use client'
 
@@ -28,45 +11,56 @@ import Image from 'next/image'
 import type { ReactElement } from 'react'
 import { ArrowDown, ChartBar } from '@phosphor-icons/react'
 
-type Rep = { rank: number; deltaPct: number; name: string; avatar: string; insetPx: number; isFocal?: boolean; hasTopShadow?: boolean; mobileHidden?: boolean }
+type Rep = {
+	rank: number
+	deltaPct: number
+	name: string
+	avatar: string
+	insetPx: number
+	mobileInsetPx?: number
+	isFocal?: boolean
+	hasTopShadow?: boolean
+	mobileHidden?: boolean
+}
 
-/* Inset progression per Figma: card 1 (top) wrapper px-40 = narrowest inner;
- * card 6 (focal, bottom) wrapper px-0 = widest. Gives the receding-stack feel.
- *
- * L-07 (2026-05-09): on desktop (md+), hide the two faded back rows
- * (Sarah Chen, Jordan Kim) so the stack reads as 4 rows. Mobile keeps all 6.
- * Replaces the prior `mobileHidden` semantic — that flag dropped 3 cards on
- * mobile (Jordan, Tom, Mikayla) and showed all 6 on desktop, the inverse of
- * what Andy wants now. */
 const REPS: readonly Rep[] = [
-	{ rank: 22, deltaPct: 9, name: 'Sarah Chen', avatar: '/images/step1/avatar-sarah-v2.png', insetPx: 40 },
-	{ rank: 22, deltaPct: 9, name: 'Jordan Kim', avatar: '/images/avatars/closer-3.png', insetPx: 32, mobileHidden: true },
-	{ rank: 22, deltaPct: 9, name: 'Tom Walsh', avatar: '/images/avatars/closer-2.png', insetPx: 24, mobileHidden: true },
-	{ rank: 23, deltaPct: 13, name: 'Mikayla Brown', avatar: '/images/avatars/closer-1.png', insetPx: 16, hasTopShadow: true, mobileHidden: true },
-	{ rank: 24, deltaPct: 18, name: 'Marcus Rivera', avatar: '/images/step1/avatar-marcus-face.png', insetPx: 8, hasTopShadow: true },
-	{ rank: 25, deltaPct: 22, name: 'Priya Patel', avatar: '/images/avatars/closer-1.png', insetPx: 0, isFocal: true, hasTopShadow: true },
+	{ rank: 22, deltaPct: 9,  name: 'Sarah Chen',    avatar: '/images/step1/avatar-sarah-v2.png',      insetPx: 40, mobileInsetPx: 16 },
+	{ rank: 22, deltaPct: 9,  name: 'Jordan Kim',    avatar: '/images/avatars/closer-3.png',            insetPx: 32, mobileHidden: true },
+	{ rank: 22, deltaPct: 9,  name: 'Tom Walsh',     avatar: '/images/avatars/closer-2.png',            insetPx: 24, mobileHidden: true },
+	{ rank: 23, deltaPct: 13, name: 'Mikayla Brown', avatar: '/images/avatars/closer-1.png',            insetPx: 16, hasTopShadow: true, mobileHidden: true },
+	{ rank: 24, deltaPct: 18, name: 'Marcus Rivera', avatar: '/images/step1/avatar-marcus-face.png',    insetPx: 8,  hasTopShadow: true },
+	{ rank: 25, deltaPct: 22, name: 'Priya Patel',   avatar: '/images/avatars/closer-1.png',            insetPx: 0,  isFocal: true, hasTopShadow: true },
 ] as const
 
-function StackCard({ rank, deltaPct, name, avatar, insetPx, isFocal, hasTopShadow, mobileHidden }: Rep): ReactElement {
-	const padY = isFocal ? 'py-[17px]' : 'pt-[9px] pb-[17px]'
-	const metaSize = isFocal ? 'text-[12px]' : 'text-[10px]'
+function StackCard({ rank, deltaPct, name, avatar, insetPx, mobileInsetPx, isFocal, hasTopShadow, mobileHidden }: Rep): ReactElement {
+	const padY      = isFocal ? 'py-[17px]' : 'pt-[9px] pb-[17px]'
+	const metaSize  = isFocal ? 'text-[12px]' : 'text-[10px]'
 	const labelSize = isFocal ? 'text-[12px]' : 'text-[10px]'
-	const pctSize = isFocal ? 'text-[18px]' : 'text-[16px]'
-	const innerGap = isFocal ? 'gap-[10px]' : 'gap-[8px]'
-	const shadow = isFocal
+	const pctSize   = isFocal ? 'text-[18px]' : 'text-[16px]'
+	const innerGap  = isFocal ? 'gap-[10px]' : 'gap-[8px]'
+	const shadow    = isFocal
 		? 'shadow-[0_-4px_8px_rgba(0,0,0,0.2),0_8px_6px_rgba(0,0,0,0.6)]'
 		: hasTopShadow
 			? 'shadow-[0_-4px_8px_rgba(0,0,0,0.2)]'
 			: ''
 
+	/* CSS custom properties let us switch inset at the md breakpoint without
+	 * duplicating DOM. --i-m = mobile inset, --i-d = desktop inset. */
+	const mInset = mobileInsetPx ?? insetPx
+	const cssVars = {
+		'--i-m': `${mInset}px`,
+		'--i-d': `${insetPx}px`,
+		paddingLeft:  'var(--i-m)',
+		paddingRight: 'var(--i-m)',
+		marginBottom: -28,
+	} as React.CSSProperties
+
 	return (
 		<div
-			className={`relative w-full${mobileHidden ? ' hidden md:block' : ''}`}
-			style={{ paddingLeft: insetPx, paddingRight: insetPx, marginBottom: -28 }}
+			className={`relative w-full rep-inset-card${mobileHidden ? ' hidden md:block' : ''}`}
+			style={cssVars}
 		>
-			<div
-				className={`flex items-center gap-2 rounded-[12px] border border-white/10 bg-[#1e2230] px-[9px] ${padY} ${shadow}`}
-			>
+			<div className={`flex items-center gap-2 rounded-[12px] border border-white/10 bg-[#1e2230] px-[9px] ${padY} ${shadow}`}>
 				<span
 					className='shrink-0 text-trim text-[14px] font-bold text-white/50'
 					style={{ fontFamily: 'var(--font-heading)', lineHeight: '16.5px' }}
@@ -100,34 +94,28 @@ function StackCard({ rank, deltaPct, name, avatar, insetPx, isFocal, hasTopShado
 export default function KnowEveryRepVisual(): ReactElement {
 	return (
 		<div className='relative flex h-full w-full flex-col overflow-hidden px-5 pt-6 pb-5 md:px-6 md:pt-8 md:pb-6'>
+			{/* Switch inset CSS var at md breakpoint */}
+			<style>{`@media (min-width: 768px) { .rep-inset-card { padding-left: var(--i-d) !important; padding-right: var(--i-d) !important; } }`}</style>
+
 			{/* Pushes the receding stack toward the bottom of the visual area. */}
 			<div className='flex-1 min-h-2' />
 
 			<div className='relative flex w-full max-w-[300px] flex-col self-center pb-[28px]'>
-				{/* Top blur fade — Figma 93:17037, 90px tall gradient fading from
-				 * the bento card's effective fill color down to transparent. The
-				 * card overlay rgba(30,34,48,0.2) blended over cc-foundation
-				 * #0D0F14 produces ~#101219, which is exactly Figma's stop color.
-				 * Using #101219 here means the fade visually melts into the card
-				 * surface around it, hiding the top-card edges. */}
+				{/* Top blur fade */}
 				<div
 					aria-hidden='true'
 					className='pointer-events-none absolute inset-x-0 top-0 z-10 h-[90px]'
-					style={{
-						background: 'linear-gradient(to bottom, #101219 0%, rgba(16,18,25,0) 100%)',
-					}}
+					style={{ background: 'linear-gradient(to bottom, #101219 0%, rgba(16,18,25,0) 100%)' }}
 				/>
 				{REPS.map((rep, i) => (
 					<StackCard key={`${rep.rank}-${i}`} {...rep} />
 				))}
 			</div>
 
-			{/* Footer — Figma 93:16987. ChartBar icon 12px + label 12px white/50. */}
+			{/* Footer */}
 			<div className='mt-6 flex items-center justify-center gap-1'>
 				<ChartBar size={12} weight='fill' className='text-white/50' aria-hidden='true' />
-				<span className='text-trim text-[12px] font-medium text-white/50'>
-					Your team rankings
-				</span>
+				<span className='text-trim text-[12px] font-medium text-white/50'>Your team rankings</span>
 			</div>
 		</div>
 	)

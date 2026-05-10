@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { List, X } from '@phosphor-icons/react'
+import { motion, AnimatePresence } from 'motion/react'
 import { BRAND, NAV_LINKS, CTA } from '@/lib/constants'
 import { track } from '@/lib/analytics'
 
@@ -91,38 +92,62 @@ export default function Header() {
 							className="md:hidden flex items-center justify-center w-10 h-10 text-white"
 							aria-label={menuOpen ? 'Close menu' : 'Open menu'}
 						>
-							{menuOpen ? <X size={24} /> : <List size={24} />}
+							<AnimatePresence mode="wait" initial={false}>
+								<motion.span
+									key={menuOpen ? 'close' : 'open'}
+									initial={{ opacity: 0, rotate: -90, scale: 0.7 }}
+									animate={{ opacity: 1, rotate: 0, scale: 1 }}
+									exit={{ opacity: 0, rotate: 90, scale: 0.7 }}
+									transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+								>
+									{menuOpen ? <X size={24} /> : <List size={24} />}
+								</motion.span>
+							</AnimatePresence>
 						</button>
 					</div>
 				</div>
 			</header>
 
 			{/* Mobile overlay */}
-			{menuOpen && (
-				<div className="fixed inset-0 z-40 bg-cc-foundation/98 backdrop-blur-lg md:hidden">
-					<div className="flex flex-col pt-20 px-6">
-						{NAV_LINKS.map((link) => (
-							<Link
-								key={link.href}
-								href={link.href}
-								onClick={() => {
-									if (link.href === '/download') track('download_click', { source: 'header', cta_text: link.label, position: 'mobile_nav' })
-									else if (link.href === '/sales') track('book_demo_click', { source: 'header', cta_text: link.label, position: 'mobile_nav' })
-									closeMenu()
-								}}
-								className={`py-3 text-lg border-b border-cc-surface-border ${
-									isActive(link.href)
-										? 'text-white'
-										: 'text-cc-text-secondary'
-								}`}
-								style={{ minHeight: 48 }}
-							>
-								{link.label}
-							</Link>
-						))}
-					</div>
-				</div>
-			)}
+			<AnimatePresence>
+				{menuOpen && (
+					<motion.div
+						className="fixed inset-0 z-40 bg-cc-foundation/98 backdrop-blur-lg md:hidden"
+						initial={{ opacity: 0, y: -12 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -12 }}
+						transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+					>
+						<div className="flex flex-col pt-20 px-6">
+							{NAV_LINKS.map((link, i) => (
+								<motion.div
+									key={link.href}
+									initial={{ opacity: 0, y: 10 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1], delay: 0.06 + i * 0.05 }}
+								>
+									<Link
+										href={link.href}
+										onClick={() => {
+											if (link.href === '/download') track('download_click', { source: 'header', cta_text: link.label, position: 'mobile_nav' })
+											else if (link.href === '/sales') track('book_demo_click', { source: 'header', cta_text: link.label, position: 'mobile_nav' })
+											closeMenu()
+										}}
+										className={`block py-3 text-lg border-b border-cc-surface-border ${
+											isActive(link.href)
+												? 'text-white'
+												: 'text-cc-text-secondary'
+										}`}
+										style={{ minHeight: 48 }}
+									>
+										{link.label}
+									</Link>
+								</motion.div>
+							))}
+						</div>
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</>
 	)
 }

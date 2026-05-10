@@ -41,7 +41,7 @@ import { User } from '@phosphor-icons/react'
 
 export default function OnboardFasterVisual(): ReactElement {
 	return (
-		<div className='relative flex h-full w-full flex-col justify-center overflow-hidden px-5 py-6 md:px-6 md:py-7'>
+		<div className='relative flex h-full w-full flex-col items-center justify-center overflow-hidden px-5 py-6 md:px-6 md:py-7'>
 			{/* Header row: 10x faster + Quota Reached. mb-5 sets the
 			 * generous header→tracks breathing gap (20px) while the track
 			 * stack below uses a tighter gap-3 (12px) so the two bars read
@@ -54,7 +54,7 @@ export default function OnboardFasterVisual(): ReactElement {
 			 * reading as a series of small ornaments instead of a paired
 			 * comparison; bumping the labels + avatars gives it the visual
 			 * weight to carry its column. */}
-			<div className='mb-5 flex items-center justify-between'>
+			<div className='w-full mb-5 flex items-center justify-between'>
 				<span
 					className='text-trim text-[19px] font-bold leading-none text-cc-mint'
 					style={{ fontFamily: 'var(--font-heading)' }}
@@ -74,7 +74,7 @@ export default function OnboardFasterVisual(): ReactElement {
 
 			{/* Two-track stack — 12px between rails so the 91%/44% pair
 			 * reads as a comparison, not two unrelated rows. */}
-			<div className='flex flex-col gap-3'>
+			<div className='flex w-full flex-col gap-3'>
 				{/* Track 1: trained rep at ~91% */}
 				<div className='flex items-center gap-2.5'>
 					{/* CC logomark chip — emerald-glow tile per Figma 95:18331 vocab. */}

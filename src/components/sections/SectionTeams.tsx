@@ -316,9 +316,9 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 		)
 	}
 
-	/* ── Default (Cards 1, 2, 3): title+body top, visual bottom ──
-	 * mt-auto on the visual keeps row-1 / row-2 baselines aligned even when
-	 * body copy lengths differ. */
+	/* ── Default (Cards 1, 2, 3): title+body top, visual centered ──
+	 * flex-1 on the visual slot lets it grow to fill remaining card height;
+	 * items-center + justify-center inside the visual centers the content. */
 	return (
 		<Reveal delay={index * 0.08} className={roleSpanClass[role]}>
 			<article className={articleClass}>
@@ -326,7 +326,7 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 					{titleNode}
 					{bodyNode}
 				</div>
-				<div className={`relative mt-auto w-full overflow-hidden ${roleVisualHeight[role]}`}>
+				<div className={`relative flex flex-1 w-full items-center justify-center overflow-hidden`}>
 					<Visual />
 				</div>
 			</article>

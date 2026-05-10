@@ -5,6 +5,7 @@
 import Image from 'next/image'
 import { Clock, VideoCamera, CheckCircle, Globe } from '@phosphor-icons/react/dist/ssr'
 import CalendlyWrapper from './CalendlyWrapper'
+import { buildPageMetadata } from '@/lib/seo'
 
 export const metadata = buildPageMetadata({
 	title: 'Book a Demo',

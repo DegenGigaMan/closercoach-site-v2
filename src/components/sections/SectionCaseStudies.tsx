@@ -249,9 +249,9 @@ function TierCard({
 				boxShadow: '0 1px 2px rgba(13,15,20,0.04), 0 24px 48px -32px rgba(13,15,20,0.18)',
 			}}
 		>
-			{/* Portrait + tier pill overlap */}
-			<header className='relative'>
-				<div className='relative h-28 w-28 overflow-hidden rounded-full md:h-32 md:w-32'>
+			{/* Portrait + tier pill — flex row, pill self-aligns top-right */}
+			<header className='flex items-start justify-between gap-3'>
+				<div className='relative h-28 w-28 shrink-0 overflow-hidden rounded-full md:h-32 md:w-32'>
 					<Image
 						src={portraitSrc}
 						alt={portraitAlt}
@@ -262,7 +262,7 @@ function TierCard({
 					/>
 				</div>
 				<span
-					className='absolute -top-1 left-24 inline-flex items-center rounded-full bg-cc-warm px-3 py-1.5 md:left-28'
+					className='inline-flex shrink-0 items-center rounded-full bg-cc-warm px-3 py-1.5'
 					style={{
 						border: `1px solid ${WARM_BORDER}`,
 						boxShadow: '0 4px 12px -6px rgba(13,15,20,0.12)',

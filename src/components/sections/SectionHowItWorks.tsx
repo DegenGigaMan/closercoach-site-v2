@@ -509,7 +509,7 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 			 * "replaced" narrative reads visually, not just from the eyebrow.
 			 * Mobile cut-off (was overflowing 390px viewport at 416px width):
 			 * gap-8 → gap-4 sm:gap-8, w-24 → w-20 sm:w-24, px-8 → px-4 sm:px-8. */}
-			<div className="relative mt-8 w-fit self-center pt-[14px]">
+			<div className="relative mt-8 w-fit self-center lg:self-start pt-[14px]">
 				{/* Badge — floats above the container, centered. */}
 				<div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-red-500/30 bg-[#1a0808] px-3 py-1.5 shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
 					<XCircle size={12} weight="fill" className="shrink-0 text-red-400" />
