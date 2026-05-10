@@ -14,7 +14,7 @@
 'use client'
 
 import type { ReactElement } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { motion, useInView, useReducedMotion } from 'motion/react'
 import Image from 'next/image'
 import { ArrowUp, ArrowDown } from '@phosphor-icons/react'
@@ -101,7 +101,7 @@ function StatCell({
 	revealed,
 	reduced,
 }: {
-	value: string | number
+	value: string | number | React.ReactNode
 	label: string
 	valueColor: string
 	icon?: ReactElement
