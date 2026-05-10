@@ -2,31 +2,15 @@
  *  Calendly right. Both columns sit inside a single bordered card on the
  *  dark page surface, separated by a vertical rule. */
 
-import type { Metadata } from 'next'
 import Image from 'next/image'
 import { Clock, VideoCamera, CheckCircle, Globe } from '@phosphor-icons/react/dist/ssr'
 import CalendlyWrapper from './CalendlyWrapper'
 
-const TITLE = 'Book a Demo'
-const DESCRIPTION =
-	'Book a 45-minute demo with the CloserCoach team and see how AI sales coaching trains your reps.'
-
-export const metadata: Metadata = {
-	title: TITLE,
-	description: DESCRIPTION,
-	alternates: { canonical: '/sales' },
-	openGraph: {
-		title: `${TITLE} | CloserCoach`,
-		description: DESCRIPTION,
-		url: '/sales',
-		type: 'website',
-	},
-	twitter: {
-		card: 'summary_large_image',
-		title: `${TITLE} | CloserCoach`,
-		description: DESCRIPTION,
-	},
-}
+export const metadata = buildPageMetadata({
+	title: 'Book a Demo',
+	description: 'Book a 45-minute demo with the CloserCoach team and see how AI sales coaching trains your reps.',
+	path: '/sales',
+})
 
 const BULLETS = [
 	'Live walkthrough of the AI roleplay engine',

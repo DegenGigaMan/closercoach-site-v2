@@ -8,8 +8,8 @@ import { motion, useReducedMotion } from 'motion/react'
 
 const AVATARS = [
 	{ src: '/images/avatars/closer-1.png', alt: 'Rep avatar 1' },
-	{ src: '/images/avatars/closer-2.png', alt: 'Rep avatar 2' },
-	{ src: '/images/avatars/closer-3.png', alt: 'Rep avatar 3' },
+	{ src: '/images/avatars/closer-2.webp', alt: 'Rep avatar 2' },
+	{ src: '/images/avatars/closer-3.webp', alt: 'Rep avatar 3' },
 ] as const
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1]

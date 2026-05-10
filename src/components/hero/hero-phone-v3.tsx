@@ -23,11 +23,12 @@
 
 'use client'
 
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import {
 	AnimatePresence,
 	LayoutGroup,
 	motion,
+	useInView,
 	useReducedMotion,
 } from 'motion/react'
 import Image from 'next/image'
@@ -462,7 +463,7 @@ const STATE3_PROSPECTS: ReadonlyArray<ProspectData> = [
 		quote: '“We’re still figuring things out.”',
 		difficulty: 'Easy',
 		difficultyColor: '#10B981',
-		photo: '/images/prospects/brandon.png',
+		photo: '/images/prospects/brandon.webp',
 		heightPx: 320,
 	},
 	{
@@ -473,7 +474,7 @@ const STATE3_PROSPECTS: ReadonlyArray<ProspectData> = [
 		quote: '“We don’t want to sell the house.”',
 		difficulty: 'Hard',
 		difficultyColor: '#FF5A5A',
-		photo: '/images/prospects/camil-v3.png',
+		photo: '/images/prospects/camil-v3.webp',
 		heightPx: 370,
 	},
 	{
@@ -484,7 +485,7 @@ const STATE3_PROSPECTS: ReadonlyArray<ProspectData> = [
 		quote: '“What’s your best offer?”',
 		difficulty: 'Medium',
 		difficultyColor: '#F59E0B',
-		photo: '/images/prospects/caleb.png',
+		photo: '/images/prospects/caleb.webp',
 		heightPx: 320,
 	},
 ] as const
@@ -616,7 +617,7 @@ function ProspectCard({
 
 /* ─── State 6: Call Complete ────────────────────────────────────
  * Figma 191:625. Verdict screen. Emerald gradient bg (handled by
- * shell ScreenBackground when state===5), Top 15% trophy pill,
+ * shell ScreenBackground when state===5), Top 35% trophy pill,
  * 120px grade ring with "A" letter, AI Coach Suggests bubble,
  * 3 scorecard cards (with bottom blur fade), Practice Again CTA.
  *
@@ -742,7 +743,7 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 
 	return (
 		<div className='relative flex h-full flex-col items-center gap-4 overflow-hidden px-4 pb-2 pt-8'>
-			{/* Top 15% trophy pill + grade ring stack. Per Andy 2026-05-06 the
+			{/* Top 35% trophy pill + grade ring stack. Per Andy 2026-05-06 the
 			 * pill should sit ON the ring's top stroke (was floating above it
 			 * with a negative margin, now absolute-positioned over the ring
 			 * container so the pill's bottom edge aligns with the ring stroke
@@ -836,7 +837,7 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 				>
 					<div className='relative size-[40px] shrink-0 overflow-hidden rounded-full border border-white/[0.05]'>
 						<Image
-							src='/images/prospects/camil-v3.png'
+							src='/images/prospects/camil-v3.webp'
 							alt='AI Coach'
 							fill
 							sizes='40px'
@@ -1042,7 +1043,7 @@ function ChatBubbleRow({
 				{isAI && (
 					<div className='relative size-[20px] shrink-0 overflow-hidden rounded-full border border-white/[0.05]'>
 						<Image
-							src='/images/prospects/camil-v3.png'
+							src='/images/prospects/camil-v3.webp'
 							alt=''
 							fill
 							sizes='20px'
@@ -1348,11 +1349,13 @@ function State1Onboarding({ reducedMotion }: { reducedMotion: boolean }) {
 	return (
 		<div className='flex h-full flex-col items-center justify-between px-4 pb-2 pt-2'>
 			<div className='flex flex-1 w-full flex-col items-center justify-center gap-10'>
-				<BrowserMock reducedMotion={reducedMotion} />
-
-				{/* Paste input removed 2026-05-06 per Andy: redundant since the URL
-				 * is already highlighted as selected text in the browser visual
-				 * above the heading. The narrative beat reads cleanly without it. */}
+				{/* L-02 (2026-05-09): heading + body now sit ABOVE the browser
+				 * mock so the title/heading copy lands first and the visual
+				 * follows. Prior order (BrowserMock above text) read as
+				 * "visual then explanation"; Andy wants "title sets the frame,
+				 * then visual answers it." Animation timings preserved -- text
+				 * fades in at SPRING_FIELD delay 0.6s, BrowserMock keeps its
+				 * own internal animation, Continue CTA still enters at 1.05s. */}
 				<motion.div
 					className='flex w-full flex-col items-center gap-6 text-center'
 					initial={{ opacity: 0, y: 12 }}
@@ -1367,6 +1370,8 @@ function State1Onboarding({ reducedMotion }: { reducedMotion: boolean }) {
 						scenarios you can practice against.
 					</p>
 				</motion.div>
+
+				<BrowserMock reducedMotion={reducedMotion} />
 			</div>
 
 			<motion.button
@@ -1468,8 +1473,20 @@ export default function HeroPhoneV3({
 	 * black overlay over the screen. Reduced motion skips entirely. */
 	const [loopFade, setLoopFade] = useState(false)
 
+	/* Visibility gate: pause the state cycle when the phone scrolls out of
+	 * view, resume from the last active state when it scrolls back in.
+	 * `amount: 0.3` = active when at least 30% of the phone is in viewport.
+	 * autoIndexRef lets the resume path read the latest autoIndex without
+	 * making the effect re-fire on every state advance. */
+	const containerRef = useRef<HTMLDivElement>(null)
+	const inView = useInView(containerRef, { amount: 0.3 })
+	const autoIndexRef = useRef<HeroV3StateIndex>(0)
 	useEffect(() => {
-		if (!autoplay || prefersReducedMotion) return
+		autoIndexRef.current = autoIndex
+	}, [autoIndex])
+
+	useEffect(() => {
+		if (!autoplay || prefersReducedMotion || !inView) return
 		let advanceTimer: ReturnType<typeof setTimeout> | null = null
 		let fadeInTimer: ReturnType<typeof setTimeout> | null = null
 		let fadeOutTimer: ReturnType<typeof setTimeout> | null = null
@@ -1495,13 +1512,13 @@ export default function HeroPhoneV3({
 			}, STATE_DWELL_MS[current])
 		}
 
-		scheduleNext(0)
+		scheduleNext(autoIndexRef.current)
 		return () => {
 			if (advanceTimer) clearTimeout(advanceTimer)
 			if (fadeInTimer) clearTimeout(fadeInTimer)
 			if (fadeOutTimer) clearTimeout(fadeOutTimer)
 		}
-	}, [autoplay, prefersReducedMotion])
+	}, [autoplay, prefersReducedMotion, inView])
 
 	const activeIndex: HeroV3StateIndex = autoplay ? autoIndex : pinnedState
 
@@ -1509,6 +1526,7 @@ export default function HeroPhoneV3({
 	return (
 		<LayoutGroup>
 			<div
+				ref={containerRef}
 				className='relative h-[696px] w-[340px] shrink-0 rounded-[48px] border border-white/10 px-[7px] pb-px pt-[7px] shadow-[0_0_60px_rgba(16,185,129,0.1),0_20px_40px_rgba(0,0,0,0.4)]'
 				style={{
 					background:

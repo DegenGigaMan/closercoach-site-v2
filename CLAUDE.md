@@ -4,7 +4,7 @@
 
 ## Project
 - Purpose: Multi-page marketing site for CloserCoach AI sales coaching platform (clean rebuild)
-- Deploy: Vercel (closercoach-site-v2.vercel.app)
+- Deploy: Vercel — production at closercoach.ai (Vercel preview also at closercoach-site-v2.vercel.app)
 - Owner: vault/clients/closer-coach/project.json
 - Tracker: vault/clients/closer-coach/PROJECT-TRACKER.md
 

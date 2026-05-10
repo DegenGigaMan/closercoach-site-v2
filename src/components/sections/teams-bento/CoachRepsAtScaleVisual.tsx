@@ -32,18 +32,18 @@ import { PencilSimple } from '@phosphor-icons/react'
 type Meeting = { hour: string; name: string; time: string; avatar: string }
 
 const MEETINGS: readonly Meeting[] = [
-	{ hour: '8 AM', name: 'Marcus Rivera', time: '8:00am', avatar: '/images/step1/avatar-marcus-face.png' },
+	{ hour: '8 AM', name: 'Marcus Rivera', time: '8:00am', avatar: '/images/step1/avatar-marcus-face.webp' },
 	{ hour: '9 AM', name: 'Priya Patel', time: '9:30am', avatar: '/images/avatars/closer-1.png' },
-	{ hour: '10 AM', name: 'Tom Walsh', time: '10:30am', avatar: '/images/avatars/closer-2.png' },
-	{ hour: '11 AM', name: 'Jordan Kim', time: '11:00am', avatar: '/images/avatars/closer-3.png' },
+	{ hour: '10 AM', name: 'Tom Walsh', time: '10:30am', avatar: '/images/avatars/closer-2.webp' },
+	{ hour: '11 AM', name: 'Jordan Kim', time: '11:00am', avatar: '/images/avatars/closer-3.webp' },
 ] as const
 
 const STACKED_AVATARS = [
-	{ src: '/images/step1/avatar-sarah-v2.png', alt: 'Sarah Chen' },
+	{ src: '/images/step1/avatar-sarah-v2.webp', alt: 'Sarah Chen' },
 	{ src: '/images/avatars/closer-1.png', alt: 'Priya Patel' },
-	{ src: '/images/avatars/closer-2.png', alt: 'Tom Walsh' },
-	{ src: '/images/avatars/closer-3.png', alt: 'Jordan Kim' },
-	{ src: '/images/step1/avatar-marcus-face.png', alt: 'Marcus Rivera' },
+	{ src: '/images/avatars/closer-2.webp', alt: 'Tom Walsh' },
+	{ src: '/images/avatars/closer-3.webp', alt: 'Jordan Kim' },
+	{ src: '/images/step1/avatar-marcus-face.webp', alt: 'Marcus Rivera' },
 ] as const
 
 function MeetingCard({ name, time, avatar }: { name: string; time: string; avatar: string }): ReactElement {

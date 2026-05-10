@@ -10,7 +10,7 @@
  *     staggered opacity + translate animation, landing at 0.88 opacity so
  *     the headline reads at 100%.
  *   - Mobile collapses to a vertical stack below the centered headline.
- *   - Cards: Profile anchor, 20,000+ closers, 4.7/5 App Store, 3,000+ calls
+ *   - Cards: Profile anchor, 36,000+ closers, 4.7/5 App Store, 3,000+ calls
  *     per day, 16+ industries, 7-dimension radar, 76% coached weekly, and
  *     a 7/50/30 performance gains strip.
  *
@@ -516,7 +516,7 @@ export default function SectionResults(): ReactElement {
 				<div className='mt-12 grid grid-cols-1 gap-5 md:mt-16 md:grid-cols-3 md:gap-6'>
 					<Reveal delay={0}>
 						<TierCard
-							portraitSrc='/images/case-studies/dimitriy.jpg'
+							portraitSrc='/images/case-studies/dimitriy.webp'
 							industryTag='Insurance Sales'
 							quote={'Honestly a great app and a surprisingly well thought out and detail-oriented use of AI. I\u2019ve been using CloserCoach to sharpen my skills and get back into sales after being out of the game, it\u2019s the most valuable resource I have.'}
 							name='Dimitriy'
@@ -526,7 +526,7 @@ export default function SectionResults(): ReactElement {
 					</Reveal>
 					<Reveal delay={0.05}>
 						<TierCard
-							portraitSrc='/images/case-studies/chris.jpg'
+							portraitSrc='/images/case-studies/chris.webp'
 							industryTag='Home Services'
 							metricHeadline={'1 hour per week.\n20 reps trained.'}
 							quote={'Before CloserCoach, I was spending 1 hour per week per rep. Now, I spend 1 hour per week training 20 reps.'}
@@ -541,7 +541,7 @@ export default function SectionResults(): ReactElement {
 					 * pivot, drops the "game-changer" line per slop discipline. */}
 					<Reveal delay={0.1}>
 						<TierCard
-							portraitSrc='/images/case-studies/taylor.jpg'
+							portraitSrc='/images/case-studies/taylor.webp'
 							industryTag='Financial Services'
 							quote={'CloserCoach streamlined my discovery and made objection handling more fluid. Shifted my focus from selling a product to securing a client’s future.'}
 							name='Taylor'

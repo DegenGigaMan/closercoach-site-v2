@@ -23,7 +23,7 @@ import { BRAND, STATS, getStoreUrl } from '@/lib/constants'
 
 /** QR points at the deployed /download URL so scans resolve from print/screenshots.
  * source=qr-download lets PostHog split self-link QR scans from organic traffic. */
-const QR_DESTINATION = 'https://closercoach-site-v2.vercel.app/download?source=qr-download'
+const QR_DESTINATION = 'https://closercoach.ai/download?source=qr-download'
 
 type ProofPill = {
 	icon: typeof Star

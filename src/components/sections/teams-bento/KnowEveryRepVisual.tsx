@@ -31,7 +31,13 @@ import { ArrowDown, ChartBar } from '@phosphor-icons/react'
 type Rep = { rank: number; deltaPct: number; name: string; avatar: string; insetPx: number; isFocal?: boolean; hasTopShadow?: boolean; mobileHidden?: boolean }
 
 /* Inset progression per Figma: card 1 (top) wrapper px-40 = narrowest inner;
- * card 6 (focal, bottom) wrapper px-0 = widest. Gives the receding-stack feel. */
+ * card 6 (focal, bottom) wrapper px-0 = widest. Gives the receding-stack feel.
+ *
+ * L-07 (2026-05-09): on desktop (md+), hide the two faded back rows
+ * (Sarah Chen, Jordan Kim) so the stack reads as 4 rows. Mobile keeps all 6.
+ * Replaces the prior `mobileHidden` semantic — that flag dropped 3 cards on
+ * mobile (Jordan, Tom, Mikayla) and showed all 6 on desktop, the inverse of
+ * what Andy wants now. */
 const REPS: readonly Rep[] = [
 	{ rank: 22, deltaPct: 9, name: 'Sarah Chen', avatar: '/images/step1/avatar-sarah-v2.png', insetPx: 40 },
 	{ rank: 22, deltaPct: 9, name: 'Jordan Kim', avatar: '/images/avatars/closer-3.png', insetPx: 32, mobileHidden: true },

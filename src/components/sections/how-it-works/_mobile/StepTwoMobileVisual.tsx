@@ -25,7 +25,7 @@ import Image from 'next/image'
 import { motion, useInView, useReducedMotion } from 'motion/react'
 import { PhoneCall, User, Microphone, CheckCircle } from '@phosphor-icons/react'
 
-const SARAH_AVATAR = '/images/step2/avatar-sarah.png'
+const SARAH_AVATAR = '/images/step2/avatar-sarah.webp'
 const EASE: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94]
 
 /* Compact waveform — fewer bars than desktop for mobile width. */

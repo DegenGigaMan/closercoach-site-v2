@@ -38,7 +38,7 @@ import {
 	XCircle,
 } from '@phosphor-icons/react'
 
-const SARAH_AVATAR = '/images/step2/avatar-sarah.png'
+const SARAH_AVATAR = '/images/step2/avatar-sarah.webp'
 
 /* Audio waveform bar ladder. Heights and opacities mirror the Figma pattern
  * at node 40:1211, visually approximating an active voice capture. */
@@ -408,7 +408,7 @@ function InterestGauge({ value, inView, reduced }: { value: number; inView: bool
 			 * anchored so the "39" sits just inside the arc baseline with the
 			 * label trailing below. */}
 			<div className='absolute inset-x-0 bottom-[4px] flex flex-col items-center gap-[4px]'>
-				<span className='font-[family-name:var(--font-heading)] text-[20px] font-semibold leading-none text-white tabular-nums'>
+				<span className='font-[family-name:var(--font-heading)] text-[20px] font-bold leading-none text-white tabular-nums'>
 					{displayValue}
 				</span>
 				<span

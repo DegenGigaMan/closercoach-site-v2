@@ -1,23 +1,16 @@
 /** @fileoverview Privacy Policy page. Warm editorial surface, sticky TOC, SOC2 plain-English summary, structured legal sections. */
 
-import type { Metadata } from 'next'
 import LegalPageLayout from '@/components/layout/LegalPageLayout'
 import { Section, BulletList, Strong } from '@/components/layout/LegalContent'
 import { BRAND } from '@/lib/constants'
+import { buildPageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
 	title: 'Privacy Policy',
-	description:
-		'How CloserCoach collects, uses, and protects your data and call recordings. End-to-end encryption, isolated data, RBAC, and SOC2-aligned security.',
-	alternates: { canonical: '/privacy' },
-	openGraph: {
-		title: 'Privacy Policy | CloserCoach',
-		description:
-			'How CloserCoach collects, uses, and protects your data and call recordings.',
-		url: '/privacy',
-		type: 'website',
-	},
-}
+	description: 'How CloserCoach collects, uses, and protects your data and call recordings. End-to-end encryption, isolated data, RBAC, and SOC2-aligned security.',
+	ogDescription: 'How CloserCoach collects, uses, and protects your data and call recordings.',
+	path: '/privacy',
+})
 
 const LAST_UPDATED = 'April 21, 2026'
 
@@ -131,9 +124,9 @@ export default function PrivacyPage() {
 							</>,
 							<>
 								<Strong>Access:</Strong> On individual plans, only you can access
-								your recordings. On Teams plans, designated managers may view
-								recordings for coaching purposes based on role-based access
-								controls.
+								your recordings. On Business and Enterprise White Label plans,
+								designated managers may view recordings for coaching purposes
+								based on role-based access controls.
 							</>,
 							<>
 								<Strong>Retention:</Strong> Recordings remain in your account

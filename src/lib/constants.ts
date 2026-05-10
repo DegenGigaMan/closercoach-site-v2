@@ -1,7 +1,7 @@
 /** @fileoverview Locked brand data, pricing, stats, and design tokens for CloserCoach site. */
 
 export const STATS = {
-	userCount: '20,000+',
+	userCount: '36,000+',
 	appStoreRating: '4.7',
 	appStoreReviews: '378+',
 	trialDays: 3,
@@ -11,9 +11,15 @@ export const STATS = {
 	skillDimensions: 7,
 } as const
 
+/* L-12 (2026-05-09) — pricing rebuild per Alim Slack 2026-05-08 23:43.
+ * Closer unchanged at $12.99/mo. Teams renamed to Business at flat $49.99/mo
+ * (no per-user). Enterprise renamed to Enterprise White Label, price stays
+ * Custom. `business` field replaces `teams` to avoid downstream confusion
+ * with the SectionTeams bento (which is about CloserCoach for sales teams,
+ * a different concept than the Business pricing tier). */
 export const PRICING = {
 	individual: { monthly: 12.99, yearly: 69.99, effectiveMonthly: 5.83 },
-	teams: { monthly: 49, annualDiscount: 0.20 },
+	business: { monthly: 49.99, annualDiscount: 0.20 },
 	enterprise: { label: 'Custom' },
 	yearlySavingsPercent: 55,
 } as const

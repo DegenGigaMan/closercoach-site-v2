@@ -47,3 +47,7 @@ scratch/
 # drafts (pre-edit backups per workspace convention)
 drafts/
 .env*.local
+
+# local agent state (Claude Code worktree markers, never commit)
+.claude/worktrees/
+.claude/cache/

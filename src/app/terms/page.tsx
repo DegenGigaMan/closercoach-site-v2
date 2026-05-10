@@ -1,23 +1,16 @@
 /** @fileoverview Terms of Service page. Warm editorial surface, sticky TOC, plain-English summary, structured legal sections. */
 
-import type { Metadata } from 'next'
 import LegalPageLayout from '@/components/layout/LegalPageLayout'
 import { Section, BulletList, Strong } from '@/components/layout/LegalContent'
 import { BRAND, PRICING, STATS } from '@/lib/constants'
+import { buildPageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
 	title: 'Terms of Service',
-	description:
-		'CloserCoach Terms of Service. Subscription terms, cancellation policy, recording consent, and usage rules.',
-	alternates: { canonical: '/terms' },
-	openGraph: {
-		title: 'Terms of Service | CloserCoach',
-		description:
-			'CloserCoach Terms of Service. Subscription, cancellation, recording consent, and usage rules.',
-		url: '/terms',
-		type: 'website',
-	},
-}
+	description: 'CloserCoach Terms of Service. Subscription terms, cancellation policy, recording consent, and usage rules.',
+	ogDescription: 'CloserCoach Terms of Service. Subscription, cancellation, recording consent, and usage rules.',
+	path: '/terms',
+})
 
 const LAST_UPDATED = 'April 21, 2026'
 
@@ -40,7 +33,7 @@ const TOC = [
 ] as const
 
 export default function TermsPage() {
-	const annualDiscountPct = Math.round(PRICING.teams.annualDiscount * 100)
+	const annualDiscountPct = Math.round(PRICING.business.annualDiscount * 100)
 
 	return (
 		<LegalPageLayout
@@ -103,8 +96,9 @@ export default function TermsPage() {
 								/month or ${PRICING.individual.yearly}/year.
 							</>,
 							<>
-								<Strong>Teams plan:</Strong> ${PRICING.teams.monthly}/month per
-								user, with {annualDiscountPct}% off when billed annually.
+								<Strong>Business plan:</Strong> ${PRICING.business.monthly}/month
+								flat for the team, with {annualDiscountPct}% off when billed
+								annually.
 							</>,
 							<>
 								<Strong>Free trial:</Strong> a {STATS.trialDays}-day trial is

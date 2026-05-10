@@ -1,23 +1,15 @@
 /** @fileoverview List of Subprocessors page. Warm editorial surface, table of confirmed + placeholder third-party service providers. */
 
-import type { Metadata } from 'next'
 import LegalPageLayout from '@/components/layout/LegalPageLayout'
 import { Section } from '@/components/layout/LegalContent'
 import { BRAND } from '@/lib/constants'
+import { buildPageMetadata } from '@/lib/seo'
 
-export const metadata: Metadata = {
+export const metadata = buildPageMetadata({
 	title: 'List of Subprocessors',
-	description:
-		'Third-party service providers that may process customer data on behalf of CloserCoach.',
-	alternates: { canonical: '/subprocessors' },
-	openGraph: {
-		title: 'List of Subprocessors | CloserCoach',
-		description:
-			'Third-party service providers that may process customer data on behalf of CloserCoach.',
-		url: '/subprocessors',
-		type: 'website',
-	},
-}
+	description: 'Third-party service providers that may process customer data on behalf of CloserCoach.',
+	path: '/subprocessors',
+})
 
 const LAST_UPDATED = 'April 21, 2026'
 

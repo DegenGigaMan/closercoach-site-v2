@@ -2,9 +2,9 @@
  * Linked from the top AnnouncementBanner. Placeholder body copy until the
  * announcement copy lands; structure + typography are launch-grade. */
 
-import type { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft } from '@phosphor-icons/react/dist/ssr'
+import { buildPageMetadata } from '@/lib/seo'
 import ScrollTopOnMount from './ScrollTopOnMount'
 
 const TITLE = 'CloserCoach raises $1M to build Duolingo for sales'
@@ -12,9 +12,9 @@ const PUBLISHED = 'March 2026'
 const READ_TIME = '3 min read'
 
 const DESCRIPTION =
-	'CloserCoach raises $1M seed round to scale AI-powered sales coaching for the 20,000+ closers training inside the app every day.'
+	'CloserCoach raises $1M seed round to scale AI-powered sales coaching for the 36,000+ closers training inside the app every day.'
 
-export const metadata: Metadata = {
+const baseMetadata = buildPageMetadata({
 	title: TITLE,
 	description: DESCRIPTION,
 	alternates: { canonical: '/blog/closercoach-raises-1m-for-duolingo-for-sales' },
@@ -25,11 +25,6 @@ export const metadata: Metadata = {
 		type: 'article',
 		publishedTime: '2026-03-15T00:00:00.000Z',
 		authors: ['CloserCoach'],
-	},
-	twitter: {
-		card: 'summary_large_image',
-		title: TITLE,
-		description: DESCRIPTION,
 	},
 }
 
@@ -121,7 +116,7 @@ export default function FundingAnnouncementPage() {
 						they&rsquo;ll run tomorrow.
 					</p>
 					<p>
-						More than 20,000 closers train on CloserCoach every day. We&rsquo;re
+						More than 36,000 closers train on CloserCoach every day. We&rsquo;re
 						grateful to the operators, founders, and sales leaders who
 						believed early, and to every rep who&rsquo;s logged a session.
 						We&rsquo;ll have more to share soon. Until then, the work

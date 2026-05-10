@@ -27,8 +27,8 @@ import { motion, useInView, useReducedMotion } from 'motion/react'
 import { Calendar, Sparkle, SpinnerGap } from '@phosphor-icons/react'
 import { CLONE_CARD } from '@/lib/constants'
 
-const SARAH_AVATAR = '/images/step1/avatar-sarah-v2.png'
-const MARCUS_AVATAR = '/images/step1/avatar-marcus-face.png'
+const SARAH_AVATAR = '/images/step1/avatar-sarah-v2.webp'
+const MARCUS_AVATAR = '/images/step1/avatar-marcus-face.webp'
 
 const EASE: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94]
 

@@ -67,12 +67,12 @@
 
 	<!-- Stat pill row (mono, centered) -->
 	<g transform="translate(600, 525)">
-		<!-- Pill 1: 20K closers -->
+		<!-- Pill 1: 36K closers -->
 		<g transform="translate(-232, 0)">
 			<rect x="0" y="0" width="220" height="44" rx="22" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
 			<circle cx="22" cy="22" r="4" fill="#10B981"/>
 			<text x="40" y="28" font-family="'SF Mono', Menlo, Monaco, monospace" font-weight="500" font-size="15" fill="#FFFFFF" letter-spacing="0.3">
-				20,000+ closers
+				36,000+ closers
 			</text>
 		</g>
 		<!-- Pill 2: 4.7 App Store -->

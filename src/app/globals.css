@@ -172,6 +172,18 @@
 	h1, h2, h3, h4, h5, h6 {
 		font-family: var(--font-heading);
 		font-weight: 700;
+		/* L-10 (2026-05-09): sitewide text-wrap balance for headings.
+		 * Browsers re-distribute words so multi-line headings have visually
+		 * even line lengths. Falls back gracefully on older browsers. */
+		text-wrap: balance;
+	}
+
+	/* L-10 (2026-05-09): paragraphs use `pretty` (less aggressive than
+	 * `balance`) so body copy avoids orphans + ragged last lines without
+	 * the perf cost of full balancing on every paragraph. Applies sitewide
+	 * to <p> elements on desktop and mobile. */
+	p {
+		text-wrap: pretty;
 	}
 
 	/* Wave I FIX-03: anchor offset for sticky chrome (32px promo bar + 68px

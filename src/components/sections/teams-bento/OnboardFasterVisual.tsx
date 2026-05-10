@@ -45,18 +45,26 @@ export default function OnboardFasterVisual(): ReactElement {
 			{/* Header row: 10x faster + Quota Reached. mb-5 sets the
 			 * generous header→tracks breathing gap (20px) while the track
 			 * stack below uses a tighter gap-3 (12px) so the two bars read
-			 * as paired siblings. */}
+			 * as paired siblings.
+			 *
+			 * L-09 (2026-05-09): scale up the headline (15→19px), quota
+			 * caption (11→14px), flag emoji (13→16px), AVG label (9→13px),
+			 * CC chip (34→44 tall), trained-rep avatar (24→32), and avg
+			 * placeholder ring (24→32 + inner icon 12→16). The card was
+			 * reading as a series of small ornaments instead of a paired
+			 * comparison; bumping the labels + avatars gives it the visual
+			 * weight to carry its column. */}
 			<div className='mb-5 flex items-center justify-between'>
 				<span
-					className='text-trim text-[15px] font-bold leading-none text-cc-mint'
+					className='text-trim text-[19px] font-bold leading-none text-cc-mint'
 					style={{ fontFamily: 'var(--font-heading)' }}
 				>
 					10x faster
 				</span>
 				<div className='flex items-center gap-1'>
-					<span aria-hidden='true' className='text-[13px] leading-none'>🏁</span>
+					<span aria-hidden='true' className='text-[16px] leading-none'>🏁</span>
 					<span
-						className='text-trim text-[11px] font-medium uppercase tracking-[0.08em] text-white/70'
+						className='text-trim text-[14px] font-medium uppercase tracking-[0.08em] text-white/70'
 						style={{ fontFamily: 'var(--font-mono)' }}
 					>
 						Quota Reached
@@ -89,8 +97,8 @@ export default function OnboardFasterVisual(): ReactElement {
 					<div className='relative h-2.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]'>
 						<div className='h-full w-[91%] rounded-full bg-gradient-to-r from-[#2dc87e] to-[#3ae09b] shadow-[0_0_10px_rgba(52,225,142,0.45)]' />
 					</div>
-					<div className='relative h-6 w-6 shrink-0 overflow-hidden rounded-full ring-2 ring-cc-foundation shadow-[0_0_0_1px_rgba(16,185,129,0.35)]'>
-						<Image src='/images/avatars/closer-1.png' alt='Priya Patel' fill sizes='24px' className='object-cover' unoptimized />
+					<div className='relative h-8 w-8 shrink-0 overflow-hidden rounded-full ring-2 ring-cc-foundation shadow-[0_0_0_1px_rgba(16,185,129,0.35)]'>
+						<Image src='/images/avatars/closer-1.png' alt='Priya Patel' fill sizes='32px' className='object-cover' unoptimized />
 					</div>
 				</div>
 
@@ -105,8 +113,8 @@ export default function OnboardFasterVisual(): ReactElement {
 					<div className='relative h-2.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]'>
 						<div className='h-full w-[44%] rounded-full bg-white/25' />
 					</div>
-					<div className='relative flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/[0.06] ring-1 ring-white/10'>
-						<User size={12} weight='regular' className='text-white/45' aria-hidden='true' />
+					<div className='relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/[0.06] ring-1 ring-white/10'>
+						<User size={16} weight='regular' className='text-white/45' aria-hidden='true' />
 					</div>
 				</div>
 			</div>

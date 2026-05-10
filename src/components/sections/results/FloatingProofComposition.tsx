@@ -8,12 +8,12 @@
  *
  *   1. Camil Reese profile card (top-left, w 240) — Recent Performance bars
  *      (Week 1 amber C, Week 8 emerald A with +2 trust badge), real headshot
- *      from /images/prospects/camil-reese.png
+ *      from /images/prospects/camil-reese.webp
  *   2. Performance Gains stats (top-center) — 7% Close Rate / 50% Faster Ramp
  *      / 30% More Deals
  *   3. C+ → A grade-up badge card (top-right) — +2 grades indicator
  *   4. 16+ Industries pill (right mid)
- *   5. 20,000+ closers + 3,000+ calls/day stack (left mid)
+ *   5. 36,000+ closers + 3,000+ calls/day stack (left mid)
  *   6. 7-Dimensions Scored radar (center bottom) — Discovery / Pitch /
  *      Objection Handling / Closing / Tonality / Pace / Clarity heptagon
  *   7. Coached vs Uncoached area chart (bottom-right) — 2x outcome delta
@@ -51,7 +51,7 @@ const CARD_BG = '#F2EDE5'        // Figma master card surface
 const CARD_BORDER = 'rgba(0,0,0,0.05)'
 const CARD_SHADOW = '0px 0px 20px 0px rgba(16,185,129,0.05)'
 
-const CAMIL_AVATAR = '/images/prospects/camil-reese.png'
+const CAMIL_AVATAR = '/images/prospects/camil-reese.webp'
 
 /* ─── Float wrapper: handles entrance motion + reduced-motion fallback ─── */
 
@@ -382,7 +382,7 @@ function IndustriesPill(): ReactElement {
 	)
 }
 
-/* ─── 5a. Single stat card (used for 20,000+ + 3,000+ stack) ─── */
+/* ─── 5a. Single stat card (used for 36,000+ + 3,000+ stack) ─── */
 
 type StatCardProps = {
 	value: string
@@ -760,7 +760,7 @@ export default function FloatingProofComposition(): ReactElement {
 						</Float>
 						<Float delay={0.22} className='absolute left-[3%] top-[320px] lg:left-[-1%]'>
 							<div className='flex flex-col items-start gap-4'>
-								<StatCard value='20,000+' label='Sales closers' />
+								<StatCard value='36,000+' label='Sales closers' />
 								<div className='pl-12'>
 									<StatCard value='3,000+' label='Calls / day' />
 								</div>

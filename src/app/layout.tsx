@@ -13,17 +13,21 @@
  *   - JSON-LD Organization + SoftwareApplication + WebSite injected so Google
  *     rich results can surface app rating / pricing in search SERPs.
  *
- * Observability (2026-05-01):
+ * Observability (refined 2026-05-09):
  *   - Vercel Analytics + Speed Insights mounted at body end.
  *   - PostHogProvider wraps the entire app shell so client events fire from
  *     any nested component via the analytics helper at @/lib/analytics.
  *   - ScrollDepthTracker reports 25/50/75/100% depth events.
+ *   - GoogleAnalytics (@next/third-parties/google) loads gtag.js post-
+ *     hydration, gaId G-M5XZXKLHLJ. Alim mandate 2026-05-09. Pageviews
+ *     auto-tracked via GA4 Enhanced Measurement on history state changes.
  *   - Skip-nav anchor as the first body child for keyboard a11y.
  */
 
 import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import { lora, geistMono, inter, plusJakarta } from '@/lib/fonts'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
@@ -31,44 +35,16 @@ import SmoothScroll from '@/components/layout/SmoothScroll'
 import ScrollToTop from '@/components/layout/ScrollToTop'
 import CookieConsent from '@/components/layout/CookieConsent'
 import AnnouncementBanner from '@/components/layout/AnnouncementBanner'
+import DeferredMount from '@/components/layout/DeferredMount'
 import { PostHogProvider } from '@/components/providers/PostHogProvider'
 import { ScrollDepthTracker } from '@/components/providers/ScrollDepthTracker'
 import { BRAND, STATS, PRICING } from '@/lib/constants'
+import { SITE_URL, SITE_NAME, OG_IMAGE, TWITTER_HANDLE } from '@/lib/seo'
 import './globals.css'
 
-/**
- * Resolve the site origin so OG image / canonical URLs always point at the
- * domain that is actually serving the response. Self-healing across the DNS
- * cutover: pre-cutover this resolves to closercoach-site-v2.vercel.app, post-
- * cutover Vercel sets VERCEL_PROJECT_PRODUCTION_URL to the attached apex
- * (closercoach.ai) automatically, no code change required.
- *
- *   1. NEXT_PUBLIC_SITE_URL — manual override (set in Vercel project env if
- *      we ever need to force a specific origin).
- *   2. Vercel production build — VERCEL_PROJECT_PRODUCTION_URL. This is the
- *      project's primary production hostname. Pre-DNS-cutover that's
- *      closercoach-site-v2.vercel.app; once we attach closercoach.ai as a
- *      production domain, Vercel updates this var on the next deploy and
- *      the OG image starts unfurling from the apex with zero diff.
- *   3. Vercel preview build — VERCEL_URL is the per-deployment hostname so
- *      social-preview crawlers hitting the share URL fetch the OG image
- *      from the SAME deploy that's serving the page.
- *   4. Local dev — localhost:3000.
- */
-function resolveSiteUrl(): string {
-	if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL
-	if (process.env.VERCEL_ENV === 'production' && process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-		return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-	}
-	if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
-	return 'http://localhost:3000'
-}
-
-const SITE_URL = resolveSiteUrl()
-const SITE_NAME = 'CloserCoach'
 const SITE_TITLE = 'CloserCoach - AI Sales Coach for B2C Sales Reps'
 const SITE_DESCRIPTION =
-	'Practice before every meeting, record real calls, and get scored by AI. 20,000+ closers train with CloserCoach. Try free for 3 days.'
+	'Practice before every meeting, record real calls, and get scored by AI. 36,000+ closers train with CloserCoach. Try free for 3 days.'
 
 export const metadata: Metadata = {
 	metadataBase: new URL(SITE_URL),
@@ -110,23 +86,15 @@ export const metadata: Metadata = {
 		url: SITE_URL,
 		type: 'website',
 		locale: 'en_US',
-		images: [
-			{
-				url: '/og-image.jpg',
-				width: 1200,
-				height: 630,
-				alt: 'CloserCoach - The AI Sales Coach That Lives in Your Pocket',
-				type: 'image/jpeg',
-			},
-		],
+		images: [OG_IMAGE],
 	},
 	twitter: {
 		card: 'summary_large_image',
 		title: SITE_TITLE,
 		description: SITE_DESCRIPTION,
-		images: ['/og-image.jpg'],
-		site: '@closercoach',
-		creator: '@closercoach',
+		images: [OG_IMAGE.url],
+		site: TWITTER_HANDLE,
+		creator: TWITTER_HANDLE,
 	},
 	robots: {
 		index: true,
@@ -198,7 +166,7 @@ const SOFTWARE_APP_LD = {
 	operatingSystem: 'iOS, Android',
 	applicationCategory: 'BusinessApplication',
 	description: SITE_DESCRIPTION,
-	image: `${SITE_URL}/og-image.jpg`,
+	image: `${SITE_URL}${OG_IMAGE.url}`,
 	url: SITE_URL,
 	offers: {
 		'@type': 'Offer',
@@ -270,8 +238,15 @@ export default function RootLayout({
 				/>
 				<PostHogProvider>
 					<ScrollDepthTracker />
-					<SmoothScroll />
-					<ScrollToTop />
+					{/* Non-critical mounts deferred to requestIdleCallback per
+					 * render-delay audit 2026-05-09 Patch 3. SmoothScroll only
+					 * matters once user starts scrolling; ScrollToTop only
+					 * matters post-scroll; CookieConsent showing ~100-200ms
+					 * later is acceptable. Keeps the LCP critical path lean. */}
+					<DeferredMount>
+						<SmoothScroll />
+						<ScrollToTop />
+					</DeferredMount>
 					<AnnouncementBanner />
 					<Header />
 					<main
@@ -281,10 +256,19 @@ export default function RootLayout({
 						{children}
 					</main>
 					<Footer />
-					<CookieConsent />
+					<DeferredMount>
+						<CookieConsent />
+					</DeferredMount>
 				</PostHogProvider>
 				<Analytics />
 				<SpeedInsights />
+				{/* Google Analytics 4 (gaId: G-M5XZXKLHLJ) — Alim mandate
+				 * 2026-05-09. Loaded via @next/third-parties/google which
+				 * fetches gtag.js after hydration so it stays off the LCP
+				 * critical path. Pageviews fire automatically on App Router
+				 * navigations because GA4 Enhanced Measurement listens to
+				 * history state changes (no manual sendGAEvent needed). */}
+				<GoogleAnalytics gaId='G-M5XZXKLHLJ' />
 			</body>
 		</html>
 	)

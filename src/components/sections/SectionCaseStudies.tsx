@@ -462,7 +462,7 @@ export default function SectionCaseStudies(): ReactElement {
 						<TierCard
 							tier='Enterprise'
 							tierAccent={SLATE_WARM}
-							portraitSrc='/images/placeholders/case-taylor.jpg'
+							portraitSrc='/images/placeholders/case-taylor.webp'
 							portraitAlt=''
 							industryTag='Financial Services'
 							quote={'CloserCoach streamlined my discovery and made objection handling more fluid. Shifted my focus from selling a product to securing a client’s future.'}
