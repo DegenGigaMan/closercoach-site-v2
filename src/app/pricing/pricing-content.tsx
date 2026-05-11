@@ -293,26 +293,16 @@ export default function PricingContent() {
 									className={`absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-white transition-transform ${yearly ? 'translate-x-5' : 'translate-x-0'}`}
 								/>
 							</button>
-							<span className='relative'>
-								<span className={`text-sm ${yearly ? 'text-white' : 'text-cc-text-secondary'}`}>
-									Yearly
-								</span>
-								{/* Desktop: floating badge to the right of Yearly */}
-								<span
-									aria-hidden={!yearly}
-									className={`pointer-events-none absolute left-full top-1/2 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-full border border-cc-accent/40 bg-cc-accent/15 px-3 py-1 text-xs font-semibold text-cc-accent transition-opacity duration-200 sm:inline-block ${yearly ? 'opacity-100' : 'opacity-0'}`}
-								>
-									Save {PRICING.yearlySavingsPercent}%
-								</span>
+							<span className={`text-sm ${yearly ? 'text-white' : 'text-cc-text-secondary'}`}>
+								Yearly
+							</span>
+							<span
+								aria-hidden={!yearly}
+								className={`whitespace-nowrap rounded-full border border-cc-accent/40 bg-cc-accent/15 px-3 py-1 text-xs font-semibold text-cc-accent transition-opacity duration-200 ${yearly ? 'opacity-100' : 'opacity-0'}`}
+							>
+								Save {PRICING.yearlySavingsPercent}%
 							</span>
 						</div>
-						{/* Mobile: badge tucked below the toggle row, doesn't affect alignment */}
-						<span
-							aria-hidden={!yearly}
-							className={`mt-3 inline-block whitespace-nowrap rounded-full border border-cc-accent/40 bg-cc-accent/15 px-3 py-1 text-xs font-semibold text-cc-accent transition-opacity duration-200 sm:hidden ${yearly ? 'opacity-100' : 'opacity-0'}`}
-						>
-							Save {PRICING.yearlySavingsPercent}%
-						</span>
 					</ScrollReveal>
 				</div>
 			</section>
