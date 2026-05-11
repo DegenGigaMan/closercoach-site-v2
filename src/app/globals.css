@@ -13,12 +13,12 @@
  * body CTA. Header CTAs opt out via the MotionCTA `chrome` variant to keep
  * their existing Inter treatment. */
 :root {
-	--font-cta: var(--font-jakarta);
+	--font-cta: var(--font-inter-tight);
 }
 
 @theme inline {
 	/* Typography */
-	--font-sans: var(--font-inter);
+	--font-sans: var(--font-jakarta);
 	--font-mono: var(--font-geist-mono);
 	--font-heading: var(--font-lora);
 
