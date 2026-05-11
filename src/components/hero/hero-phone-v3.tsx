@@ -1100,6 +1100,13 @@ function ChatBubbleRow({
 }
 
 function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
+	const [pressed, setPressed] = useState(false)
+	useEffect(() => {
+		if (reducedMotion) return
+		const t = setTimeout(() => setPressed(true), STATE_DWELL_MS[4] - PRESS_LEAD_MS)
+		return () => clearTimeout(t)
+	}, [reducedMotion])
+
 	return (
 		<div className='flex h-full flex-col gap-6 px-4 pb-2 pt-2'>
 			{/* Header: Camil avatar (layoutId target from State 4 brand circle)
@@ -1169,11 +1176,11 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 			<motion.div
 				className='flex items-center gap-2 rounded-[24px] border border-cc-accent/60 bg-cc-accent/15 py-[5px] pl-[5px] pr-[9px] shadow-[0_0_20px_rgba(16,185,129,0.4)]'
 				initial={{ opacity: 0, y: 8 }}
-				animate={{ opacity: 1, y: 0 }}
+				animate={{ opacity: 1, y: 0, scale: pressed ? 0.94 : 1 }}
 				transition={
 					reducedMotion
 						? { duration: 0 }
-						: { ...SPRING_FIELD, delay: 0.2 }
+						: pressed ? { ...SPRING_PRESS } : { ...SPRING_FIELD, delay: 0.2 }
 				}
 			>
 				<div className='flex size-[40px] shrink-0 items-center justify-center rounded-full bg-cc-accent/25'>
