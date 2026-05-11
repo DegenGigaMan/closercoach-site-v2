@@ -270,32 +270,34 @@ export default function PricingContent() {
 						 * appearance on yearly-select doesn't shift the toggle row
 						 * leftward. Mobile keeps the badge but tucks it inline below
 						 * to avoid right-edge overflow at narrow viewports. */}
-						<div className='mt-6 flex items-center justify-center gap-3'>
-							<span className={`text-sm ${!yearly ? 'text-white' : 'text-cc-text-secondary'}`}>
-								Monthly
-							</span>
-							<button
-								type='button'
-								onClick={() => {
-									const next = !yearly
-									setYearly(next)
-									track('pricing_tier_select', {
-										interaction: 'billing_toggle',
-										billing: next ? 'yearly' : 'monthly',
-									})
-								}}
-								className={`relative h-7 w-12 rounded-full transition-colors ${yearly ? 'bg-cc-accent' : 'bg-cc-surface-card'}`}
-								role='switch'
-								aria-checked={yearly}
-								aria-label='Toggle annual billing'
-							>
-								<span
-									className={`absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-white transition-transform ${yearly ? 'translate-x-5' : 'translate-x-0'}`}
-								/>
-							</button>
-							<span className={`text-sm ${yearly ? 'text-white' : 'text-cc-text-secondary'}`}>
-								Yearly
-							</span>
+						<div className='mt-6 flex flex-col items-center gap-2'>
+							<div className='flex items-center gap-3'>
+								<span className={`text-sm ${!yearly ? 'text-white' : 'text-cc-text-secondary'}`}>
+									Monthly
+								</span>
+								<button
+									type='button'
+									onClick={() => {
+										const next = !yearly
+										setYearly(next)
+										track('pricing_tier_select', {
+											interaction: 'billing_toggle',
+											billing: next ? 'yearly' : 'monthly',
+										})
+									}}
+									className={`relative h-7 w-12 rounded-full transition-colors ${yearly ? 'bg-cc-accent' : 'bg-cc-surface-card'}`}
+									role='switch'
+									aria-checked={yearly}
+									aria-label='Toggle annual billing'
+								>
+									<span
+										className={`absolute top-0.5 left-0.5 h-6 w-6 rounded-full bg-white transition-transform ${yearly ? 'translate-x-5' : 'translate-x-0'}`}
+									/>
+								</button>
+								<span className={`text-sm ${yearly ? 'text-white' : 'text-cc-text-secondary'}`}>
+									Yearly
+								</span>
+							</div>
 							<span
 								aria-hidden={!yearly}
 								className={`whitespace-nowrap rounded-full border border-cc-accent/40 bg-cc-accent/15 px-3 py-1 text-xs font-semibold text-cc-accent transition-opacity duration-200 ${yearly ? 'opacity-100' : 'opacity-0'}`}
