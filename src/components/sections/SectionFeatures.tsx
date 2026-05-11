@@ -141,13 +141,13 @@ type CardShellProps = {
 function CardShell({ feature, motionSlot, className = '', slotWrapperClassName = '' }: CardShellProps): ReactElement {
 	const { title, body, Icon, layout } = feature
 
-	const cardBase = `group relative flex h-full flex-col gap-5 rounded-2xl border border-cc-surface-border bg-cc-surface-card/40 p-6 md:p-8 ${className}`
+	const cardBase = `group relative flex h-full flex-col gap-5 rounded-2xl border border-cc-surface-border bg-[#0C0E13] p-6 md:p-8 ${className}`
 
 	const textBlock = (
 		<>
 			<Icon className='text-cc-accent' size={28} weight='duotone' aria-hidden='true' />
 			<h3 className='display-sm text-cc-text-primary'>{title}</h3>
-			<p className='max-w-md text-base leading-relaxed text-cc-text-secondary'>{body}</p>
+			<p className='max-w-md text-base leading-relaxed text-cc-text-secondary' style={{ fontFamily: 'var(--font-jakarta)', fontWeight: 400 }}>{body}</p>
 		</>
 	)
 
