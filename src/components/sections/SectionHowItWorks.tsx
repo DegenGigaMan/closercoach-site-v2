@@ -116,7 +116,7 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 				 * emphasis matching the SectionFeatures 'win more deals.' VIS
 				 * lock 2026-04-21 pattern (italic primary, color secondary). */}
 				<h2 className="display-lg mx-auto mt-6 max-w-4xl text-white md:text-5xl lg:text-6xl">
-					Practice. Train. Close. <em className="italic font-bold text-cc-accent">Win.</em>
+					Roleplay. Review. <em className="italic font-bold text-cc-accent">Win.</em>
 				</h2>
 				{/* L-04 + L-05 (2026-05-09): subhead linebreak tuning. Desktop
 				 * (>=1280px): one line via max-w-4xl + lg:text-lg (downsized from
@@ -429,7 +429,7 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 		<>
 			<StepKicker number="03" stepIndex={3}>CLOSE</StepKicker>
 			<StepHeadline>
-				Close The <em className="text-cc-accent">Deal</em>
+				From Dial to <em className="text-cc-accent">Deal</em>
 			</StepHeadline>
 			<StepBody>
 				Dial directly from CloserCoach for AI-powered phone calls, or record any in-person meeting. Every word captured, every missed moment flagged, every objection coached: whether you&rsquo;re at the door or on the phone.

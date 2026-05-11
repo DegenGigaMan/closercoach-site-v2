@@ -41,7 +41,7 @@ const TIERS = [
 		getPrice: (yearly: boolean) => yearly
 			? { amount: `$${PRICING.individual.effectiveMonthly}`, period: '/mo', note: `Billed $${PRICING.individual.yearly}/yr` }
 			: { amount: `$${PRICING.individual.monthly}`, period: '/mo', note: 'Billed monthly' },
-		trial: `${STATS.trialDays} days free. Full access. No credit card required.`,
+		trial: `${STATS.trialDays} days free. Full access. Cancel anytime.`,
 		cta: { text: CTA.startFree.text, href: CTA.startFree.href },
 		ctaVariant: 'primary' as const,
 		features: [
@@ -63,7 +63,7 @@ const TIERS = [
 		label: 'BUSINESS',
 		labelTone: 'amber' as const,
 		badge: 'Best for Teams',
-		subtitle: 'For sales teams of 5+',
+		subtitle: 'For serious closers',
 		highlighted: false,
 		getPrice: (yearly: boolean) => yearly
 			? { amount: `$${(PRICING.business.monthly * (1 - PRICING.business.annualDiscount)).toFixed(2)}`, period: '/mo', note: `${PRICING.business.annualDiscount * 100}% off annual` }

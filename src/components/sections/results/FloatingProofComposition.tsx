@@ -663,14 +663,14 @@ function ResultsHeadline(): ReactElement {
 				letterSpacing: '-0.015em',
 			}}
 		>
-			Every call, Scored.
+			Every call scored.
 			<br />
-			Every no,{' '}
+			Every no{' '}
 			<em
 				className='italic font-bold'
 				style={{ color: EMERALD_AA, fontFamily: 'var(--font-heading)' }}
 			>
-				is now a yes
+				becomes a yes
 			</em>
 			.
 		</motion.h2>

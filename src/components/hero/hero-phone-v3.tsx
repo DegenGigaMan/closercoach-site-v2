@@ -84,9 +84,9 @@ const STATE_DWELL_MS: Record<HeroV3StateIndex, number> = {
 	0: 3400,
 	1: 5800,
 	2: 3600,
-	3: 2800,
+	3: 4800,
 	4: 6800,
-	5: 4600,
+	5: 6600,
 }
 
 /* Loop-restart fade. State 6 → black overlay (~250ms in, ~150ms hold,
@@ -345,7 +345,7 @@ function BrowserMock({ reducedMotion }: { reducedMotion: boolean }) {
 
 const STATE2_PILLS: ReadonlyArray<{ icon: PhosphorIcon, label: string }> = [
 	{ icon: Binoculars, label: 'Analyzing Ideal Customer Profile' },
-	{ icon: UserFocus, label: 'Designing AI Characters' },
+	{ icon: UserFocus, label: 'Designing AI Prospects' },
 	{ icon: UserSound, label: 'Configuring Realistic Voices' },
 	{ icon: HeadCircuit, label: 'Setting up Buyer Behavior' },
 ] as const
@@ -1180,7 +1180,7 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 					<Microphone size={24} weight='fill' className='text-white' />
 				</div>
 				<span className='text-trim min-w-0 flex-1 truncate font-sans text-[14px] font-medium leading-none text-white/90'>
-					Record your response
+					Recording your response
 				</span>
 				<MicWaveform bars={22} reducedMotion={reducedMotion} />
 			</motion.div>
