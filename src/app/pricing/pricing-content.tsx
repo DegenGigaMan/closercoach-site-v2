@@ -62,47 +62,39 @@ const TIERS = [
 		key: 'business',
 		label: 'BUSINESS',
 		labelTone: 'amber' as const,
-		badge: 'Best for Teams',
+		badge: 'Most Powerful',
 		subtitle: 'For serious closers',
 		highlighted: false,
 		getPrice: (yearly: boolean) => yearly
 			? { amount: `$${(PRICING.business.monthly * (1 - PRICING.business.annualDiscount)).toFixed(2)}`, period: '/mo', note: `${PRICING.business.annualDiscount * 100}% off annual` }
 			: { amount: `$${PRICING.business.monthly}`, period: '/mo', note: 'Billed monthly' },
 		trial: null,
-		cta: { text: CTA.contactSales.text, href: CTA.contactSales.href },
+		cta: { text: 'Purchase in app', href: CTA.startFree.href },
 		ctaVariant: 'secondary' as const,
 		features: [
 			'Unlimited usage',
 			'Unlimited AI Customers',
 			'Advanced AI Model Training',
 			'Built In Dialer',
-			'Manager web dashboard',
-			'Team analytics and performance tracking',
 			'Custom scorecards and talk tracks',
-			'AI-powered team onboarding (enter your website, AI builds training)',
 			'CRM connections (Salesforce, HubSpot, GoHighLevel)',
 			'Priority support',
-			'1:1 white-glove setup call',
 		],
 	},
 	{
 		key: 'enterprise',
-		label: 'ENTERPRISE WHITE LABEL',
+		label: 'ENTERPRISE',
 		labelTone: 'slate' as const,
-		badge: 'For Large Organizations',
-		subtitle: 'For large organizations',
+		badge: 'For Sales Teams',
+		subtitle: 'For sales teams of 10+',
 		highlighted: false,
 		getPrice: () => ({ amount: PRICING.enterprise.label, period: '', note: 'Volume pricing · SSO · custom integrations' }),
 		trial: null,
 		cta: { text: CTA.contactSales.text, href: CTA.contactSales.href },
-		/* Wave R FIX-04 (2026-04-27): swap ghost → secondary so Enterprise gets
-		 * the same bordered-outline emerald CTA as Business (was bare-text "Book
-		 * a Demo" with no padding/styling, looked orphaned next to the bordered
-		 * Closer + Business cards). */
 		ctaVariant: 'secondary' as const,
 		features: [
-			'White Label Branding',
-			'Remove All CloserCoach Logos',
+			'Everything in Business',
+			'Manager dashboard + team analytics',
 			'Forward Deployed Engineer',
 			'Custom RAG Model Training',
 			'Dedicated Account Manager',
@@ -134,13 +126,11 @@ const COMPARISON_ROWS: { feature: string; tiers: TierIncluded }[] = [
 	{ feature: 'Community leaderboard', tiers: [true, true, true] },
 	{ feature: 'Daily challenges and streaks', tiers: [true, true, true] },
 	{ feature: '100+ scenarios, all industries', tiers: [true, true, true] },
-	{ feature: 'Manager dashboard', tiers: [false, true, true] },
-	{ feature: 'Team performance analytics', tiers: [false, true, true] },
+	{ feature: 'Advanced AI Model Training', tiers: [false, true, true] },
 	{ feature: 'Custom scorecards', tiers: [false, true, true] },
-	{ feature: 'AI team onboarding (from your website)', tiers: [false, true, true] },
 	{ feature: 'CRM connections', tiers: [false, true, true] },
 	{ feature: 'Priority support', tiers: [false, true, true] },
-	{ feature: 'White-glove setup', tiers: [false, true, true] },
+	{ feature: 'Manager dashboard + team analytics', tiers: [false, false, true] },
 	{ feature: 'SSO / SAML', tiers: [false, false, true] },
 	{ feature: 'Admin controls and role-based permissions', tiers: [false, false, true] },
 	{ feature: 'Custom API access', tiers: [false, false, true] },
@@ -167,15 +157,15 @@ const FAQ_ITEMS = [
 	},
 	{
 		question: 'How does Business pricing work?',
-		answer: `$${PRICING.business.monthly}/mo flat billed monthly. ${PRICING.business.annualDiscount * 100}% off when you pay annually. Your team gets unlimited usage, unlimited AI customers, advanced AI model training, the built-in dialer, plus the manager dashboard and analytics.`,
+		answer: `$${PRICING.business.monthly}/mo flat billed monthly. ${PRICING.business.annualDiscount * 100}% off when you pay annually. You get unlimited usage, unlimited AI customers, advanced AI model training, the built-in dialer, custom scorecards, and CRM connections.`,
 	},
 	{
 		question: 'Is there a minimum for Business?',
-		answer: 'No minimums. The Business plan is a flat monthly price for the whole team. No per-user fees. No annual contracts required.',
+		answer: 'No minimums. The Business plan is a flat monthly price. No per-user fees. No annual contracts required.',
 	},
 	{
-		question: 'Does Enterprise White Label include SSO and audit logs?',
-		answer: 'Yes. Enterprise White Label adds white label branding, removal of CloserCoach logos, a forward deployed engineer, custom RAG model training, a dedicated account manager, single sign-on (SSO / SAML), role-based admin controls, compliance and audit logging, custom SLA, and enterprise-grade security on top of everything in Business. Book a demo for volume pricing and a custom integration scope.',
+		question: 'Does Enterprise include SSO and audit logs?',
+		answer: 'Yes. Enterprise adds a manager dashboard, team analytics, a forward deployed engineer, custom RAG model training, a dedicated account manager, single sign-on (SSO / SAML), role-based admin controls, compliance and audit logging, custom SLA, and enterprise-grade security on top of everything in Business. Book a demo for volume pricing and a custom integration scope.',
 	},
 	{
 		question: 'How is the yearly discount calculated?',
@@ -429,7 +419,7 @@ export default function PricingContent() {
 					    previously trapped in the Teams card, creating ~150px dead
 					    space and uneven card bottom edges at 1280-1440. */}
 					<p className='mt-8 text-center text-xs text-cc-text-muted'>
-						No minimums. No annual contracts. Add or remove reps anytime.
+						No minimums. No annual contracts. Cancel anytime.
 					</p>
 				</div>
 			</section>
@@ -465,7 +455,7 @@ export default function PricingContent() {
 										<th className='bg-cc-foundation pb-4 pr-4 pt-4 text-sm font-medium text-cc-text-secondary'>Feature</th>
 										<th className='bg-cc-foundation pb-4 pt-4 text-center text-sm font-medium text-cc-accent'>Closer</th>
 										<th className='bg-cc-foundation pb-4 pt-4 text-center text-sm font-medium text-cc-text-secondary'>Business</th>
-										<th className='bg-cc-foundation pb-4 pt-4 text-center text-sm font-medium text-cc-text-secondary'>Enterprise White Label</th>
+										<th className='bg-cc-foundation pb-4 pt-4 text-center text-sm font-medium text-cc-text-secondary'>Enterprise</th>
 									</tr>
 								</thead>
 								<tbody>
