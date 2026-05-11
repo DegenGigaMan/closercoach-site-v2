@@ -468,7 +468,7 @@ const STATE3_PROSPECTS: ReadonlyArray<ProspectData> = [
 	},
 	{
 		id: 'camil',
-		name: 'Jose',
+		name: 'Camil',
 		age: 42,
 		role: 'Homeowner • Phoenix, AZ',
 		quote: '“We don’t want to sell the house.”',
@@ -1112,8 +1112,8 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 						className='relative size-[48px] overflow-hidden rounded-full border border-white/[0.05]'
 					>
 						<Image
-							src='/images/prospects/camil-v3.png'
-							alt='Jose'
+							src='/images/prospects/camil-v3.webp'
+							alt='Camil'
 							fill
 							sizes='48px'
 							className='object-cover'
@@ -1125,7 +1125,7 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 							layoutId='prospect-camil-name'
 							className='text-trim font-sans text-[16px] font-medium leading-[16px] text-white'
 						>
-							Jose
+							Camil
 						</motion.span>
 						<motion.span
 							className='size-1 rounded-full bg-cc-score-red'
@@ -1214,8 +1214,8 @@ function State4CallConnecting({ reducedMotion }: { reducedMotion: boolean }) {
 			>
 				<motion.div layoutId='prospect-camil-avatar' className='absolute inset-0'>
 					<Image
-						src='/images/prospects/camil-v3.png'
-						alt='Jose'
+						src='/images/prospects/camil-v3.webp'
+						alt='Camil'
 						fill
 						sizes='133px'
 						className='object-cover'
@@ -1271,7 +1271,7 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 		caleb: { delay: 0.7, fromX: 40 },
 	} as const
 
-	/* Press the Call Jose CTA right before state advances to State 4. */
+	/* Press the Call Camil CTA right before state advances to State 4. */
 	const [pressed, setPressed] = useState(false)
 	useEffect(() => {
 		if (reducedMotion) return
@@ -1316,7 +1316,7 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 				</div>
 			</div>
 
-			{/* Call Jose CTA. */}
+			{/* Call Camil CTA. */}
 			<motion.button
 				type='button'
 				className='flex h-[48px] w-full items-center justify-center gap-[10px] rounded-[27px] bg-cc-mint shadow-[0_8px_20px_rgba(52,225,142,0.18)]'
@@ -1328,7 +1328,7 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 				}}
 			>
 				<span className='text-trim text-[16px] font-bold text-black [font-family:var(--font-cta),system-ui,sans-serif]'>
-					Call Jose
+					Call Camil
 				</span>
 				<ArrowRight size={16} weight='bold' className='text-black' />
 			</motion.button>

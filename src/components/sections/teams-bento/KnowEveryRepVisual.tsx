@@ -21,18 +21,19 @@ type Rep = {
 	isFocal?: boolean
 	hasTopShadow?: boolean
 	mobileHidden?: boolean
+	desktopHidden?: boolean
 }
 
 const REPS: readonly Rep[] = [
-	{ rank: 22, deltaPct: 9,  name: 'Sarah Chen',    avatar: '/images/step1/avatar-sarah-v2.png',      insetPx: 40, mobileInsetPx: 16 },
-	{ rank: 22, deltaPct: 9,  name: 'Jordan Kim',    avatar: '/images/avatars/closer-3.png',            insetPx: 32, mobileHidden: true },
-	{ rank: 22, deltaPct: 9,  name: 'Tom Walsh',     avatar: '/images/avatars/closer-2.png',            insetPx: 24, mobileHidden: true },
-	{ rank: 23, deltaPct: 13, name: 'Mikayla Brown', avatar: '/images/avatars/closer-1.png',            insetPx: 16, hasTopShadow: true, mobileHidden: true },
+	{ rank: 22, deltaPct: 9,  name: 'Sarah Chen',    avatar: '/images/step1/avatar-sarah-v2.webp',     insetPx: 40, desktopHidden: true },
+	{ rank: 22, deltaPct: 9,  name: 'Jordan Kim',    avatar: '/images/avatars/closer-3.webp',           insetPx: 32, desktopHidden: true },
+	{ rank: 22, deltaPct: 9,  name: 'Tom Walsh',     avatar: '/images/avatars/closer-2.webp',           insetPx: 24 },
+	{ rank: 23, deltaPct: 13, name: 'Mikayla Brown', avatar: '/images/avatars/closer-1.png',            insetPx: 16, hasTopShadow: true },
 	{ rank: 24, deltaPct: 18, name: 'Marcus Rivera', avatar: '/images/step1/avatar-marcus-face.png',    insetPx: 8,  hasTopShadow: true },
 	{ rank: 25, deltaPct: 22, name: 'Priya Patel',   avatar: '/images/avatars/closer-1.png',            insetPx: 0,  isFocal: true, hasTopShadow: true },
 ] as const
 
-function StackCard({ rank, deltaPct, name, avatar, insetPx, mobileInsetPx, isFocal, hasTopShadow, mobileHidden }: Rep): ReactElement {
+function StackCard({ rank, deltaPct, name, avatar, insetPx, mobileInsetPx, isFocal, hasTopShadow, mobileHidden, desktopHidden }: Rep): ReactElement {
 	const padY      = isFocal ? 'py-[17px]' : 'pt-[9px] pb-[17px]'
 	const metaSize  = isFocal ? 'text-[12px]' : 'text-[10px]'
 	const labelSize = isFocal ? 'text-[12px]' : 'text-[10px]'
@@ -57,7 +58,7 @@ function StackCard({ rank, deltaPct, name, avatar, insetPx, mobileInsetPx, isFoc
 
 	return (
 		<div
-			className={`relative w-full rep-inset-card${mobileHidden ? ' hidden md:block' : ''}`}
+			className={`relative w-full rep-inset-card${mobileHidden ? ' hidden md:block' : ''}${desktopHidden ? ' md:hidden' : ''}`}
 			style={cssVars}
 		>
 			<div className={`flex items-center gap-2 rounded-[12px] border border-white/10 bg-[#1e2230] px-[9px] ${padY} ${shadow}`}>
