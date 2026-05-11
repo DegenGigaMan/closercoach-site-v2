@@ -300,7 +300,7 @@ export default function PricingContent() {
 								{/* Desktop: floating badge to the right of Yearly */}
 								<span
 									aria-hidden={!yearly}
-									className={`pointer-events-none absolute left-full top-1/2 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-full bg-cc-accent/10 px-2.5 py-0.5 text-xs font-medium text-cc-accent transition-opacity duration-200 sm:inline-block ${yearly ? 'opacity-100' : 'opacity-0'}`}
+									className={`pointer-events-none absolute left-full top-1/2 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-full border border-cc-accent/40 bg-cc-accent/15 px-3 py-1 text-xs font-semibold text-cc-accent transition-opacity duration-200 sm:inline-block ${yearly ? 'opacity-100' : 'opacity-0'}`}
 								>
 									Save {PRICING.yearlySavingsPercent}%
 								</span>
@@ -309,7 +309,7 @@ export default function PricingContent() {
 						{/* Mobile: badge tucked below the toggle row, doesn't affect alignment */}
 						<span
 							aria-hidden={!yearly}
-							className={`mt-3 inline-block whitespace-nowrap rounded-full bg-cc-accent/10 px-2.5 py-0.5 text-xs font-medium text-cc-accent transition-opacity duration-200 sm:hidden ${yearly ? 'opacity-100' : 'opacity-0'}`}
+							className={`mt-3 inline-block whitespace-nowrap rounded-full border border-cc-accent/40 bg-cc-accent/15 px-3 py-1 text-xs font-semibold text-cc-accent transition-opacity duration-200 sm:hidden ${yearly ? 'opacity-100' : 'opacity-0'}`}
 						>
 							Save {PRICING.yearlySavingsPercent}%
 						</span>
