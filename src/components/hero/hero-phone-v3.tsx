@@ -28,6 +28,7 @@ import {
 	AnimatePresence,
 	LayoutGroup,
 	motion,
+	useAnimation,
 	useInView,
 	useReducedMotion,
 } from 'motion/react'
@@ -731,16 +732,6 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 	const RING_R = 50
 	const RING_C = 2 * Math.PI * RING_R
 
-	/* Press Practice Again right before the loop fade-to-black starts. This
-	 * is the "user kicks off another practice round" beat — without press
-	 * feedback the loop restart reads as a teleport. */
-	const [pressed, setPressed] = useState(false)
-	useEffect(() => {
-		if (reducedMotion) return
-		const t = setTimeout(() => setPressed(true), STATE_DWELL_MS[5] - PRESS_LEAD_MS)
-		return () => clearTimeout(t)
-	}, [reducedMotion])
-
 	return (
 		<div className='relative flex h-full flex-col items-center gap-4 overflow-hidden px-4 pb-2 pt-8'>
 			{/* Top 35% trophy pill + grade ring stack. Per Andy 2026-05-06 the
@@ -891,11 +882,8 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 				type='button'
 				className='flex h-[48px] w-full items-center justify-center gap-[10px] rounded-[27px] bg-cc-mint shadow-[0_8px_20px_rgba(52,225,142,0.18)]'
 				initial={{ opacity: 0, y: 14 }}
-				animate={{ opacity: 1, y: 0, scale: pressed ? 0.94 : 1 }}
-				transition={{
-					default: reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 2.7 },
-					scale: SPRING_PRESS,
-				}}
+				animate={{ opacity: 1, y: 0 }}
+				transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 2.7 }}
 			>
 				<span className='text-trim text-[16px] font-bold text-[#313131] [font-family:var(--font-cta),system-ui,sans-serif]'>
 					Practice Again
@@ -1100,12 +1088,6 @@ function ChatBubbleRow({
 }
 
 function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
-	const [pressed, setPressed] = useState(false)
-	useEffect(() => {
-		if (reducedMotion) return
-		const t = setTimeout(() => setPressed(true), STATE_DWELL_MS[4] - PRESS_LEAD_MS)
-		return () => clearTimeout(t)
-	}, [reducedMotion])
 
 	return (
 		<div className='flex h-full flex-col gap-6 px-4 pb-2 pt-2'>
@@ -1176,12 +1158,8 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 			<motion.div
 				className='flex items-center gap-2 rounded-[24px] border border-cc-accent/60 bg-cc-accent/15 py-[5px] pl-[5px] pr-[9px] shadow-[0_0_20px_rgba(16,185,129,0.4)]'
 				initial={{ opacity: 0, y: 8 }}
-				animate={{ opacity: 1, y: 0, scale: pressed ? 0.94 : 1 }}
-				transition={
-					reducedMotion
-						? { duration: 0 }
-						: pressed ? { ...SPRING_PRESS } : { ...SPRING_FIELD, delay: 0.2 }
-				}
+				animate={{ opacity: 1, y: 0 }}
+				transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 0.2 }}
 			>
 				<div className='flex size-[40px] shrink-0 items-center justify-center rounded-full bg-cc-accent/25'>
 					<Microphone size={24} weight='fill' className='text-white' />
@@ -1264,7 +1242,7 @@ function State4CallConnecting({ reducedMotion }: { reducedMotion: boolean }) {
 	)
 }
 
-function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
+function State3StartTraining({ reducedMotion, isPressed }: { reducedMotion: boolean; isPressed: boolean }) {
 	/* Motion order updated 2026-05-06 per Andy: Camil leads (focal card
 	 * entering first establishes the lead), then Brandon and Caleb slide
 	 * in from off-screen to flank her. Reading priority Camil → sides
@@ -1278,13 +1256,6 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 		caleb: { delay: 0.7, fromX: 40 },
 	} as const
 
-	/* Press the Call Camil CTA right before state advances to State 4. */
-	const [pressed, setPressed] = useState(false)
-	useEffect(() => {
-		if (reducedMotion) return
-		const t = setTimeout(() => setPressed(true), STATE_DWELL_MS[2] - PRESS_LEAD_MS)
-		return () => clearTimeout(t)
-	}, [reducedMotion])
 
 	return (
 		<div className='flex h-full flex-col items-center justify-between gap-4 px-4 pb-2 pt-4'>
@@ -1324,34 +1295,29 @@ function State3StartTraining({ reducedMotion }: { reducedMotion: boolean }) {
 			</div>
 
 			{/* Call Camil CTA. */}
-			<motion.button
-				type='button'
-				className='flex h-[48px] w-full items-center justify-center gap-[10px] rounded-[27px] bg-cc-mint shadow-[0_8px_20px_rgba(52,225,142,0.18)]'
-				initial={{ opacity: 0, y: 14 }}
-				animate={{ opacity: 1, y: 0, scale: pressed ? 0.94 : 1 }}
-				transition={{
-					default: reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 1.1 },
-					scale: SPRING_PRESS,
-				}}
+			<motion.div
+				animate={isPressed ? { scale: [1, 0.86, 1.03, 1] } : { scale: 1 }}
+				transition={isPressed ? { duration: 0.3, times: [0, 0.2, 0.75, 1] } : { duration: 0 }}
+				className='w-full'
 			>
-				<span className='text-trim text-[16px] font-bold text-black [font-family:var(--font-cta),system-ui,sans-serif]'>
-					Call Camil
-				</span>
-				<ArrowRight size={16} weight='bold' className='text-black' />
-			</motion.button>
+				<motion.button
+					type='button'
+					className='flex h-[48px] w-full items-center justify-center gap-[10px] rounded-[27px] bg-cc-mint shadow-[0_8px_20px_rgba(52,225,142,0.18)]'
+					initial={{ opacity: 0, y: 14 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 1.1 }}
+				>
+					<span className='text-trim text-[16px] font-bold text-black [font-family:var(--font-cta),system-ui,sans-serif]'>
+						Call Camil
+					</span>
+					<ArrowRight size={16} weight='bold' className='text-black' />
+				</motion.button>
+			</motion.div>
 		</div>
 	)
 }
 
-function State1Onboarding({ reducedMotion }: { reducedMotion: boolean }) {
-	/* Press the Continue CTA ~300ms before the state advances to provide
-	 * "click happened" feedback that justifies the transition to State 2. */
-	const [pressed, setPressed] = useState(false)
-	useEffect(() => {
-		if (reducedMotion) return
-		const t = setTimeout(() => setPressed(true), STATE_DWELL_MS[0] - PRESS_LEAD_MS)
-		return () => clearTimeout(t)
-	}, [reducedMotion])
+function State1Onboarding({ reducedMotion, isPressed }: { reducedMotion: boolean; isPressed: boolean }) {
 
 	return (
 		<div className='flex h-full flex-col items-center justify-between px-4 pb-2 pt-2'>
@@ -1381,21 +1347,24 @@ function State1Onboarding({ reducedMotion }: { reducedMotion: boolean }) {
 				<BrowserMock reducedMotion={reducedMotion} />
 			</div>
 
-			<motion.button
-				type='button'
-				className='mt-4 flex h-[48px] w-full items-center justify-center gap-[10px] rounded-[27px] bg-cc-mint shadow-[0_8px_20px_rgba(52,225,142,0.18)]'
-				initial={{ opacity: 0, y: 14 }}
-				animate={{ opacity: 1, y: 0, scale: pressed ? 0.94 : 1 }}
-				transition={{
-					default: reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 1.05 },
-					scale: SPRING_PRESS,
-				}}
+			<motion.div
+				animate={isPressed ? { scale: [1, 0.86, 1.03, 1] } : { scale: 1 }}
+				transition={isPressed ? { duration: 0.3, times: [0, 0.2, 0.75, 1] } : { duration: 0 }}
+				className='mt-4 w-full'
 			>
-				<span className='text-trim text-[16px] font-bold text-black [font-family:var(--font-cta),system-ui,sans-serif]'>
-					Continue
-				</span>
-				<ArrowRight size={16} weight='bold' className='text-black' />
-			</motion.button>
+				<motion.button
+					type='button'
+					className='flex h-[48px] w-full items-center justify-center gap-[10px] rounded-[27px] bg-cc-mint shadow-[0_8px_20px_rgba(52,225,142,0.18)]'
+					initial={{ opacity: 0, y: 14 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 1.05 }}
+				>
+					<span className='text-trim text-[16px] font-bold text-black [font-family:var(--font-cta),system-ui,sans-serif]'>
+						Continue
+					</span>
+					<ArrowRight size={16} weight='bold' className='text-black' />
+				</motion.button>
+			</motion.div>
 		</div>
 	)
 }
@@ -1479,6 +1448,7 @@ export default function HeroPhoneV3({
 	/* loopFade flips true briefly during the 6→1 transition to render the
 	 * black overlay over the screen. Reduced motion skips entirely. */
 	const [loopFade, setLoopFade] = useState(false)
+	const [btnPressed, setBtnPressed] = useState(false)
 
 	/* Visibility gate: pause the state cycle when the phone scrolls out of
 	 * view, resume from the last active state when it scrolls back in.
@@ -1495,14 +1465,26 @@ export default function HeroPhoneV3({
 	useEffect(() => {
 		if (!autoplay || prefersReducedMotion || !inView) return
 		let advanceTimer: ReturnType<typeof setTimeout> | null = null
-		let fadeInTimer: ReturnType<typeof setTimeout> | null = null
+		let pressTimer:   ReturnType<typeof setTimeout> | null = null
+		let fadeInTimer:  ReturnType<typeof setTimeout> | null = null
 		let fadeOutTimer: ReturnType<typeof setTimeout> | null = null
 
+		/* States that have a CTA button to press before advancing. */
+		const PRESSABLE_STATES = new Set<HeroV3StateIndex>([0, 2])
+
 		const scheduleNext = (current: HeroV3StateIndex) => {
+			setBtnPressed(false)
+
+			/* Fire the press animation PRESS_LEAD_MS before the state advances. */
+			if (PRESSABLE_STATES.has(current)) {
+				pressTimer = setTimeout(() => {
+					setBtnPressed(true)
+				}, STATE_DWELL_MS[current] - PRESS_LEAD_MS)
+			}
+
 			advanceTimer = setTimeout(() => {
+				setBtnPressed(false)
 				if (current === 5) {
-					/* Loop restart: fade to black, hold, advance to state 0,
-					 * fade back. */
 					setLoopFade(true)
 					fadeInTimer = setTimeout(() => {
 						setAutoIndex(0)
@@ -1523,7 +1505,8 @@ export default function HeroPhoneV3({
 		scheduleNext(autoIndexRef.current)
 		return () => {
 			if (advanceTimer) clearTimeout(advanceTimer)
-			if (fadeInTimer) clearTimeout(fadeInTimer)
+			if (pressTimer)   clearTimeout(pressTimer)
+			if (fadeInTimer)  clearTimeout(fadeInTimer)
 			if (fadeOutTimer) clearTimeout(fadeOutTimer)
 		}
 	}, [autoplay, prefersReducedMotion, inView])
@@ -1575,11 +1558,11 @@ export default function HeroPhoneV3({
 								{renderState ? (
 									renderState(activeIndex)
 								) : activeIndex === 0 ? (
-									<State1Onboarding reducedMotion={prefersReducedMotion} />
+									<State1Onboarding reducedMotion={prefersReducedMotion} isPressed={btnPressed} />
 								) : activeIndex === 1 ? (
 									<State2CreatingCustomers reducedMotion={prefersReducedMotion} />
 								) : activeIndex === 2 ? (
-									<State3StartTraining reducedMotion={prefersReducedMotion} />
+									<State3StartTraining reducedMotion={prefersReducedMotion} isPressed={btnPressed} />
 								) : activeIndex === 3 ? (
 									<State4CallConnecting reducedMotion={prefersReducedMotion} />
 								) : activeIndex === 4 ? (
