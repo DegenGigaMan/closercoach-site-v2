@@ -641,7 +641,7 @@ const STATE6_SCORECARDS: ReadonlyArray<{
 }> = [
 	{
 		title: 'Building Rapport',
-		desc: 'You made Jose feel heard right away.',
+		desc: 'You made Camil feel heard right away.',
 		grade: 'A',
 		ringFill: 1.0,
 		ringColor: '#10D078',
@@ -847,7 +847,7 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 					</div>
 					<div className='flex-1 rounded-[12px] rounded-tl-none border border-white/[0.06] bg-[#09f] p-3'>
 						<p className='text-trim font-sans text-[14px] font-medium leading-[1.4] text-white'>
-							Good opener. Next time, lead with the cash offer benefit earlier — Jose needs to hear speed and certainty upfront.
+							Good opener. Next time, lead with the cash offer benefit earlier — Camil needs to hear speed and certainty upfront.
 						</p>
 					</div>
 				</motion.div>
@@ -1179,7 +1179,7 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 				<div className='flex size-[40px] shrink-0 items-center justify-center rounded-full bg-cc-accent/25'>
 					<Microphone size={24} weight='fill' className='text-white' />
 				</div>
-				<span className='text-trim min-w-0 flex-1 truncate font-sans text-[14px] font-medium leading-none text-white/90'>
+				<span className='text-trim min-w-0 flex-1 truncate font-sans text-[14px] font-medium leading-[1.3] text-white/90'>
 					Recording your response
 				</span>
 				<MicWaveform bars={22} reducedMotion={reducedMotion} />
