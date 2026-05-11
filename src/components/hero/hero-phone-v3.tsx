@@ -1505,7 +1505,8 @@ export default function HeroPhoneV3({
 						}, LOOP_FADE_HOLD_MS)
 					}, LOOP_FADE_IN_MS)
 				} else {
-					const next = (current + 1) as HeroV3StateIndex
+					/* Skip state 3 (Call Connecting) — jump straight from 2 → 4 */
+					const next = (current === 2 ? 4 : current + 1) as HeroV3StateIndex
 					setAutoIndex(next)
 					scheduleNext(next)
 				}
@@ -1527,9 +1528,13 @@ export default function HeroPhoneV3({
 		<LayoutGroup>
 			<div
 				ref={containerRef}
-				className='relative h-[696px] w-[340px] shrink-0 overflow-hidden rounded-[42.4px]'
+				className='relative h-[696px] w-[340px] shrink-0 rounded-[48px] border border-white/10 px-[7px] pb-px pt-[7px] shadow-[0_0_60px_rgba(16,185,129,0.1),0_20px_40px_rgba(0,0,0,0.4)]'
+				style={{
+					background:
+						'linear-gradient(180deg, #2a2d36 0%, #28293a 14.286%, #252831 28.571%, #23262f 42.857%, #21242d 57.143%, #1e212a 71.429%, #1c1f28 85.714%, #1a1d26 100%)',
+				}}
 			>
-				<div className='relative flex h-full w-full flex-col'>
+				<div className='relative flex h-full w-full flex-col overflow-hidden rounded-[42.4px] border border-white/[0.05]'>
 					<ScreenBackground state={activeIndex} />
 					<BezelInsetGlow state={activeIndex} />
 
@@ -1617,6 +1622,7 @@ export default function HeroPhoneV3({
 							ease: 'easeOut',
 						}}
 					/>
+				</div>
 			</div>
 		</LayoutGroup>
 	)
