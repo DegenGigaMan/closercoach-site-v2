@@ -2,7 +2,7 @@
 
 const CALENDLY_URL =
 	'https://calendly.com/taylor-closercoach/demo' +
-	'?background_color=ffffff' +
+	'?background_color=FAF9F7' +
 	'&primary_color=059669' +
 	'&text_color=1A1D26' +
 	'&hide_event_type_details=1' +
@@ -11,19 +11,21 @@ const CALENDLY_URL =
 
 export default function CalendlyEmbed() {
 	return (
-		<div className='relative overflow-hidden' style={{ maxHeight: '660px' }}>
-			{/* Mask strips to hide Calendly border artifacts */}
-			<div className='pointer-events-none absolute inset-y-0 left-0 z-10 w-3 bg-white' />
-			<div className='pointer-events-none absolute inset-y-0 right-0 z-10 w-3 bg-white' />
-			<div className='pointer-events-none absolute inset-x-0 bottom-0 z-10 h-10 bg-white' />
+		/* Clip top (hide Calendly header/nav) and bottom (hide cookie strip) */
+		<div className='relative overflow-hidden' style={{ maxHeight: '620px' }}>
+			{/* Side masks */}
+			<div className='pointer-events-none absolute inset-y-0 left-0 z-10 w-3' style={{ background: '#FAF9F7' }} />
+			<div className='pointer-events-none absolute inset-y-0 right-0 z-10 w-3' style={{ background: '#FAF9F7' }} />
+			{/* Bottom mask — covers the "Cookie settings" gray strip */}
+			<div className='pointer-events-none absolute inset-x-0 bottom-0 z-10 h-24' style={{ background: '#FAF9F7' }} />
 
 			<div style={{ marginTop: '-70px' }}>
 				<iframe
 					src={CALENDLY_URL}
 					width='100%'
-					height='860'
+					height='900'
 					frameBorder='0'
-					style={{ border: 'none', background: '#ffffff' } as React.CSSProperties}
+					style={{ border: 'none', background: '#FAF9F7' } as React.CSSProperties}
 					title='Book a demo'
 				/>
 			</div>

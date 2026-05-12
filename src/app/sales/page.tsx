@@ -1,5 +1,5 @@
-/** @fileoverview /sales — Book a Demo. Light-mode page: crisp white surface,
- *  two-column card layout with info left and Calendly right. */
+/** @fileoverview /sales — Book a Demo. Light-mode warm page, two-column
+ *  card layout: info left, Calendly right. */
 
 import Image from 'next/image'
 import { Clock, VideoCamera, CheckCircle, Globe } from '@phosphor-icons/react/dist/ssr'
@@ -18,18 +18,24 @@ const BULLETS = [
 	'Custom onboarding plan for your team',
 ]
 
+const BG = '#FAF9F7'
+const TEXT_PRIMARY = '#111827'
+const TEXT_SECONDARY = '#4B5563'
+const TEXT_MUTED = '#9CA3AF'
+const DIVIDER = 'rgba(0,0,0,0.08)'
+
 export default function SalesPage() {
 	return (
-		<section className='min-h-screen py-12 md:py-16' style={{ background: '#F7F8FA' }}>
+		<section className='min-h-screen py-12 md:py-16' style={{ background: BG }}>
 			<div className='mx-auto w-full max-w-5xl px-6'>
 
 				{/* Unified card */}
 				<div
 					className='overflow-hidden rounded-2xl'
 					style={{
-						background: '#FFFFFF',
-						boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.08)',
-						border: '1px solid rgba(0,0,0,0.07)',
+						background: BG,
+						boxShadow: '0 1px 3px rgba(0,0,0,0.05), 0 8px 32px rgba(0,0,0,0.07)',
+						border: '1px solid rgba(0,0,0,0.08)',
 					}}
 				>
 					<div className='flex flex-col lg:flex-row'>
@@ -37,17 +43,28 @@ export default function SalesPage() {
 						{/* ── Left info panel ── */}
 						<div
 							className='flex flex-col gap-7 p-8 lg:w-96 lg:shrink-0 lg:p-10'
-							style={{ background: '#F7F8FA', borderRight: '1px solid rgba(0,0,0,0.07)' }}
+							style={{ background: BG, borderRight: `1px solid ${DIVIDER}` }}
 						>
 
-							{/* Logo mark */}
+							{/* Logo */}
 							<div className='flex items-center gap-2'>
-								{/* eslint-disable-next-line @next/next/no-img-element */}
-								<img src='/cc-logo.png' alt='CloserCoach' className='h-6 w-auto' />
+								<Image
+									src='/cc-logomark-192.png'
+									alt='CloserCoach'
+									width={26}
+									height={26}
+									className='rounded-md'
+								/>
+								<span
+									className='text-sm font-bold tracking-tight'
+									style={{ color: TEXT_PRIMARY, fontFamily: 'var(--font-heading)' }}
+								>
+									CloserCoach
+								</span>
 							</div>
 
 							{/* Divider */}
-							<div className='h-px' style={{ background: 'rgba(0,0,0,0.07)' }} />
+							<div className='h-px' style={{ background: DIVIDER }} />
 
 							{/* Host */}
 							<div className='flex items-center gap-3'>
@@ -57,11 +74,11 @@ export default function SalesPage() {
 									width={44}
 									height={44}
 									className='h-11 w-11 rounded-full object-cover'
-									style={{ boxShadow: '0 0 0 2px rgba(16,185,129,0.3)' }}
+									style={{ boxShadow: '0 0 0 2px rgba(16,185,129,0.4)' }}
 								/>
 								<div>
-									<p className='text-xs' style={{ color: '#94A3B8' }}>with</p>
-									<p className='text-sm font-semibold' style={{ color: '#1A1D26' }}>Taylor Martinez</p>
+									<p className='text-xs' style={{ color: TEXT_MUTED }}>with</p>
+									<p className='text-sm font-semibold' style={{ color: TEXT_PRIMARY }}>Taylor Martinez</p>
 								</div>
 							</div>
 
@@ -74,40 +91,40 @@ export default function SalesPage() {
 										fontSize: 'clamp(1.4rem, 2.5vw, 1.75rem)',
 										fontWeight: 700,
 										letterSpacing: '-0.01em',
-										color: '#1A1D26',
+										color: TEXT_PRIMARY,
 									}}
 								>
 									See CloserCoach{' '}
 									<em className='italic' style={{ color: '#059669' }}>in action.</em>
 								</h1>
-								<p className='mt-2 text-sm leading-relaxed' style={{ color: '#64748B' }}>
+								<p className='mt-2 text-sm leading-relaxed' style={{ color: TEXT_SECONDARY }}>
 									Live demo of how top sales teams use AI roleplay to close more deals.
 								</p>
 							</div>
 
 							{/* Meta */}
-							<ul className='flex flex-col gap-2.5 text-sm' style={{ color: '#64748B' }}>
+							<ul className='flex flex-col gap-2.5 text-sm' style={{ color: TEXT_SECONDARY }}>
 								<li className='flex items-center gap-2.5'>
-									<Clock size={14} weight='regular' className='shrink-0' style={{ color: '#94A3B8' }} />
+									<Clock size={14} weight='regular' className='shrink-0' style={{ color: TEXT_MUTED }} />
 									45 minutes
 								</li>
 								<li className='flex items-center gap-2.5'>
-									<VideoCamera size={14} weight='regular' className='shrink-0' style={{ color: '#94A3B8' }} />
+									<VideoCamera size={14} weight='regular' className='shrink-0' style={{ color: TEXT_MUTED }} />
 									Video call
 								</li>
 								<li className='flex items-center gap-2.5'>
-									<Globe size={14} weight='regular' className='shrink-0' style={{ color: '#94A3B8' }} />
+									<Globe size={14} weight='regular' className='shrink-0' style={{ color: TEXT_MUTED }} />
 									Your timezone
 								</li>
 							</ul>
 
 							{/* Divider */}
-							<div className='h-px' style={{ background: 'rgba(0,0,0,0.07)' }} />
+							<div className='h-px' style={{ background: DIVIDER }} />
 
 							{/* What you get */}
 							<ul className='flex flex-col gap-2.5'>
 								{BULLETS.map((b) => (
-									<li key={b} className='flex items-start gap-2.5 text-sm' style={{ color: '#475569' }}>
+									<li key={b} className='flex items-start gap-2.5 text-sm' style={{ color: TEXT_SECONDARY }}>
 										<CheckCircle size={14} weight='fill' className='mt-0.5 shrink-0' style={{ color: '#10B981' }} />
 										{b}
 									</li>
@@ -115,7 +132,7 @@ export default function SalesPage() {
 							</ul>
 
 							{/* Reassurance */}
-							<p className='mt-auto text-xs' style={{ color: '#94A3B8' }}>
+							<p className='mt-auto text-xs' style={{ color: TEXT_MUTED }}>
 								Can&rsquo;t make these times?{' '}
 								<a
 									href='mailto:hello@closercoach.ai'
@@ -128,7 +145,10 @@ export default function SalesPage() {
 						</div>
 
 						{/* ── Right calendar panel ── */}
-						<div className='flex min-w-0 flex-1 items-center justify-center p-6 lg:p-8' style={{ background: '#FFFFFF' }}>
+						<div
+							className='flex min-w-0 flex-1 flex-col items-center justify-center p-6 lg:p-8'
+							style={{ background: BG }}
+						>
 							<div className='w-full max-w-[520px]'>
 								<CalendlyWrapper />
 							</div>
