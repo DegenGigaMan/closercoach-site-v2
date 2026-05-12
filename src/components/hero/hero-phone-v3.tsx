@@ -49,7 +49,6 @@ import {
 	Lightning,
 	Microphone,
 	Trophy,
-	UserFocus,
 	UserSound,
 	XCircle,
 	type Icon as PhosphorIcon,
@@ -346,7 +345,6 @@ function BrowserMock({ reducedMotion }: { reducedMotion: boolean }) {
 
 const STATE2_PILLS: ReadonlyArray<{ icon: PhosphorIcon, label: string }> = [
 	{ icon: Binoculars, label: 'Analyzing Ideal Customer Profile' },
-	{ icon: UserFocus, label: 'Designing AI Prospects' },
 	{ icon: UserSound, label: 'Configuring Realistic Voices' },
 	{ icon: HeadCircuit, label: 'Setting up Buyer Behavior' },
 ] as const
