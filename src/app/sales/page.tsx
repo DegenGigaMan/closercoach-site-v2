@@ -45,19 +45,22 @@ export default function SalesPage() {
 							className='flex flex-col gap-7 p-8 lg:w-96 lg:shrink-0 lg:p-10'
 							style={{ background: BG, borderRight: `1px solid ${DIVIDER}` }}
 						>
-
-							{/* Logo */}
-							<div className='flex items-center gap-2'>
-								<Image
-									src='/cc-logomark-192.png'
-									alt='CloserCoach'
-									width={26}
-									height={26}
-									className='rounded-md'
-								/>
+							{/* Logo — matches navbar: dark green bg + icon + wordmark */}
+							<div className='flex items-center gap-2.5'>
+								<div
+									className='flex h-8 w-8 shrink-0 items-center justify-center rounded-md'
+									style={{ background: 'linear-gradient(135deg, #0D2B1A 0%, #0A1F12 100%)' }}
+								>
+									<Image
+										src='/cc-logomark-192.png'
+										alt=''
+										width={22}
+										height={22}
+									/>
+								</div>
 								<span
-									className='text-sm font-bold tracking-tight'
-									style={{ color: TEXT_PRIMARY, fontFamily: 'var(--font-heading)' }}
+									className='text-[15px] font-semibold tracking-tight'
+									style={{ color: TEXT_PRIMARY }}
 								>
 									CloserCoach
 								</span>
