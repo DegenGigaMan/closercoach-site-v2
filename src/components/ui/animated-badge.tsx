@@ -22,18 +22,10 @@ const AnimatedBadge = ({
       viewport={{ once: true }}
       className="group relative flex max-w-fit items-center justify-center"
     >
-      {/* Pill with subtly pulsing border */}
+      {/* Pill with static border */}
       <motion.div
         className="flex items-center gap-2.5 rounded-full px-4 py-1.5"
-        style={{ backgroundColor: `${color}0D` }}
-        animate={{
-          boxShadow: [
-            `0 0 0 1px ${color}25`,
-            `0 0 0 1px ${color}60`,
-            `0 0 0 1px ${color}25`,
-          ],
-        }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        style={{ backgroundColor: `${color}0D`, boxShadow: `0 0 0 1px ${color}35` }}
       >
         <span className="text-sm font-medium text-cc-text-secondary">{text}</span>
       </motion.div>

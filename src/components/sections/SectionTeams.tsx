@@ -358,7 +358,7 @@ export default function SectionTeams(): ReactElement {
 			<div className='relative z-10 mx-auto max-w-[1232px] px-6'>
 				{/* ── Top block (center-aligned) ── */}
 				<Reveal className='flex flex-col items-center gap-5 text-center'>
-					<span className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.18em] text-cc-accent'>
+					<span className='text-[11px] font-semibold uppercase tracking-[0.18em] text-cc-accent'>
 						For Sales Managers
 					</span>
 					<h2

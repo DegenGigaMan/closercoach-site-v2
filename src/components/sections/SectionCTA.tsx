@@ -92,22 +92,6 @@ export default function SectionCTA() {
 
 					{/* QR museum exhibit (AD) -- concentric rings behind, emerald frame, corner registration */}
 					<div className='relative mt-4 flex flex-col items-center gap-3'>
-						{/* AI concentric rings -- 2 thin emerald rings breathing behind QR */}
-						<div className='pointer-events-none absolute inset-0 flex items-center justify-center' aria-hidden='true'>
-							<motion.div
-								className='absolute rounded-full border border-cc-accent/25'
-								style={{ width: 240, height: 240 }}
-								animate={prefersReducedMotion ? undefined : { scale: [1, 1.06, 1], opacity: [0.4, 0.15, 0.4] }}
-								transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-							/>
-							<motion.div
-								className='absolute rounded-full border border-cc-accent/15'
-								style={{ width: 300, height: 300 }}
-								animate={prefersReducedMotion ? undefined : { scale: [1, 1.08, 1], opacity: [0.3, 0.1, 0.3] }}
-								transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut', delay: 1.4 }}
-							/>
-						</div>
-
 						{/* QR frame -- thin emerald border with 4 corner registration marks */}
 						<div data-primary-cta='' className='relative rounded-xl border border-cc-accent/40 bg-white p-3'>
 							{/* Corner registration marks (L-brackets) */}
