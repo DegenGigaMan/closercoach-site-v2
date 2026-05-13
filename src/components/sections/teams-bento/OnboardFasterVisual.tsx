@@ -79,7 +79,7 @@ export default function OnboardFasterVisual(): ReactElement {
 				<div className='flex items-center gap-2.5'>
 					{/* CC logomark chip — emerald-glow tile per Figma 95:18331 vocab. */}
 					<div
-						className='relative flex h-[34px] w-[36px] shrink-0 items-center justify-center rounded-[8px] shadow-[0_0_18px_rgba(16,208,120,0.45),0_0_44px_rgba(16,208,120,0.18)]'
+						className='relative flex h-[34px] w-[36px] shrink-0 items-center justify-center rounded-[8px]'
 						style={{
 							background: 'radial-gradient(ellipse at center, rgba(8,40,4,1) 30%, rgba(4,20,2,1) 65%, rgba(2,10,1,1) 82%, rgba(0,0,0,1) 100%)',
 						}}
@@ -95,7 +95,7 @@ export default function OnboardFasterVisual(): ReactElement {
 						/>
 					</div>
 					<div className='relative h-2.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]'>
-						<div className='h-full w-[91%] rounded-full bg-gradient-to-r from-[#2dc87e] to-[#3ae09b] shadow-[0_0_10px_rgba(52,225,142,0.45)]' />
+						<div className='h-full w-[91%] rounded-full bg-gradient-to-r from-[#2dc87e] to-[#3ae09b]' />
 					</div>
 					<div className='relative h-8 w-8 shrink-0 overflow-hidden rounded-full ring-2 ring-cc-foundation shadow-[0_0_0_1px_rgba(16,185,129,0.35)]'>
 						<Image src='/images/avatars/closer-1.png' alt='Priya Patel' fill sizes='32px' className='object-cover' unoptimized />

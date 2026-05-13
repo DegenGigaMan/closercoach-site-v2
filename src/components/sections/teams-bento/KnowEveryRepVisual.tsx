@@ -94,19 +94,16 @@ function StackCard({ rank, deltaPct, name, avatar, insetPx, mobileInsetPx, isFoc
 
 export default function KnowEveryRepVisual(): ReactElement {
 	return (
-		<div className='relative flex h-full w-full flex-col overflow-hidden px-5 pt-6 pb-5 md:px-6 md:pt-8 md:pb-6'>
+		<div className='relative flex h-full w-full flex-col items-center justify-center overflow-hidden px-5 py-6 md:px-6 md:py-8'>
 			{/* Switch inset CSS var at md breakpoint */}
 			<style>{`@media (min-width: 768px) { .rep-inset-card { padding-left: var(--i-d) !important; padding-right: var(--i-d) !important; } }`}</style>
-
-			{/* Pushes the receding stack toward the bottom of the visual area. */}
-			<div className='flex-1 min-h-2' />
 
 			<div className='relative flex w-full max-w-[300px] flex-col self-center pb-[28px]'>
 				{/* Top blur fade */}
 				<div
 					aria-hidden='true'
 					className='pointer-events-none absolute inset-x-0 top-0 z-10 h-[90px]'
-					style={{ background: 'linear-gradient(to bottom, #101219 0%, rgba(16,18,25,0) 100%)' }}
+					style={{ background: 'linear-gradient(to bottom, #0C0E13 0%, rgba(12,14,19,0) 100%)' }}
 				/>
 				{REPS.map((rep, i) => (
 					<StackCard key={`${rep.rank}-${i}`} {...rep} />
@@ -114,7 +111,7 @@ export default function KnowEveryRepVisual(): ReactElement {
 			</div>
 
 			{/* Footer */}
-			<div className='mt-6 flex items-center justify-center gap-1'>
+			<div className='mt-4 flex items-center justify-center gap-1'>
 				<ChartBar size={12} weight='fill' className='text-white/50' aria-hidden='true' />
 				<span className='text-trim text-[12px] font-medium text-white/50'>Your team rankings</span>
 			</div>

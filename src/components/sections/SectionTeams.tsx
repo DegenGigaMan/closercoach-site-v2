@@ -144,18 +144,6 @@ type Feature = {
 
 const FEATURES: readonly Feature[] = [
 	{
-		title: 'Coach Reps At Scale',
-		body: 'AI handles the repetitions so your coaching time goes to the moments that actually need you.',
-		Visual: CoachRepsAtScaleVisual,
-		role: 'hero',
-	},
-	{
-		title: 'Know Where Every Rep Stands',
-		body: 'See every rep’s performance from one dashboard.',
-		Visual: KnowEveryRepVisual,
-		role: 'narrow',
-	},
-	{
 		title: 'Onboard New Reps 10x Faster',
 		body: 'New reps practice before they ever talk to a customer.',
 		Visual: OnboardFasterVisual,
@@ -165,12 +153,19 @@ const FEATURES: readonly Feature[] = [
 		title: 'Enforce New Scripting Efficiently',
 		body: 'Roll out a new talk track and push it as a structured practice.',
 		Visual: EnforceScriptingVisual,
-		/* Andy 2026-05-01: flipped from 'equal-inverted' → 'equal-flow' to
-		 * match the assignment-flow visual reference (title+body TOP, visual
-		 * BOTTOM, ~420px tall). 'equal-flow' is a dedicated tier — the 4-node
-		 * Manager → Task → App → Reps stack needs taller breathing room than
-		 * the standard 250px 'equal' tier so the emerald rails read cleanly. */
 		role: 'equal-flow',
+	},
+	{
+		title: 'Know Where Every Rep Stands',
+		body: "See every rep's performance from one dashboard.",
+		Visual: KnowEveryRepVisual,
+		role: 'narrow',
+	},
+	{
+		title: 'Coach Reps At Scale',
+		body: 'AI handles the repetitions so your coaching time goes to the moments that actually need you.',
+		Visual: CoachRepsAtScaleVisual,
+		role: 'hero',
 	},
 	{
 		title: 'Hire Better, Faster',
@@ -258,7 +253,7 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 	 *   ─ Padding: 32px on the title/body block (was p-6 md:p-8).
 	 *   ─ Heading→visual gap: 40px (was mt-auto). */
 	const articleClass =
-		'group relative flex h-full flex-col overflow-hidden rounded-[24px] border border-[rgba(255,255,255,0.06)] bg-[rgba(30,34,48,0.2)] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.12] hover:shadow-[0_0_32px_rgba(16,185,129,0.12)]'
+		'group relative flex h-full flex-col overflow-hidden rounded-[24px] border border-[rgba(255,255,255,0.06)] bg-[#0C0E13] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.12] hover:shadow-[0_0_32px_rgba(16,185,129,0.12)]'
 
 	/* ── Card 6: horizontal split at lg+ ──
 	 * Title+body left (~42%), hub-spoke right (~58%). Collapses to vertical

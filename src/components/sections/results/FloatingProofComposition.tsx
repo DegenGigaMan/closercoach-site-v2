@@ -217,11 +217,9 @@ function PerformanceGainsCard(): ReactElement {
 			style={CARD_STYLE}
 		>
 			<p
-				className='text-trim whitespace-nowrap text-[12px] font-semibold uppercase leading-none'
+				className='text-trim whitespace-nowrap text-[12px] font-medium leading-none'
 				style={{
-					fontFamily: 'var(--font-mono)',
 					color: SLATE_LABEL,
-					letterSpacing: '0.72px',
 				}}
 			>
 				Performance gains
@@ -236,11 +234,9 @@ function PerformanceGainsCard(): ReactElement {
 							{s.value}
 						</p>
 						<p
-							className='text-trim whitespace-nowrap text-[10px] font-medium uppercase leading-none'
+							className='text-trim whitespace-nowrap text-[10px] font-medium leading-none'
 							style={{
-								fontFamily: 'var(--font-mono)',
 								color: 'rgba(0,0,0,0.5)',
-								letterSpacing: '1px',
 							}}
 						>
 							{s.label}
@@ -369,11 +365,9 @@ function IndustriesPill(): ReactElement {
 				16+
 			</p>
 			<p
-				className='text-trim whitespace-nowrap text-[10px] font-medium uppercase leading-none'
+				className='text-trim whitespace-nowrap text-[10px] font-medium leading-none'
 				style={{
-					fontFamily: 'var(--font-mono)',
 					color: 'rgba(0,0,0,0.5)',
-					letterSpacing: '1px',
 				}}
 			>
 				Industries
@@ -403,11 +397,9 @@ function StatCard({ value, label, width = 200 }: StatCardProps): ReactElement {
 				{value}
 			</p>
 			<p
-				className='text-trim whitespace-nowrap text-[12px] font-medium uppercase leading-none'
+				className='text-trim whitespace-nowrap text-[12px] font-medium leading-none'
 				style={{
-					fontFamily: 'var(--font-mono)',
 					color: 'rgba(0,0,0,0.5)',
-					letterSpacing: '1.2px',
 				}}
 			>
 				{label}
