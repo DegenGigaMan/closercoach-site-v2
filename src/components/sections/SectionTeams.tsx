@@ -405,7 +405,7 @@ export default function SectionTeams(): ReactElement {
 				 * stack 1-up in source order (Coach → Know Where → Onboard →
 				 * Enforce → Hire → Integrate). Desktop (lg+, 1024px+): 3-col grid
 				 * where per-card lg:col-span-* drives the asymmetric layout. */}
-				<div className='mt-20 grid grid-cols-1 gap-4 md:mt-24 md:gap-5 lg:grid-cols-3 lg:gap-6'>
+				<div className='mt-20 grid grid-cols-1 gap-4 md:mt-24 md:gap-5 lg:grid-cols-3 lg:gap-6 '>
 					{FEATURES.map((feature, i) => (
 						<BentoCard key={feature.title} feature={feature} index={i} />
 					))}
