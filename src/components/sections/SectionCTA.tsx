@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { QRCodeSVG } from 'qrcode.react'
-import { motion, useReducedMotion } from 'motion/react'
 import { ChatCircleDots } from '@phosphor-icons/react'
 import ScrollReveal from '@/components/shared/scroll-reveal'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
@@ -16,8 +15,6 @@ const QR_DESTINATION = 'https://closercoach.ai/download?source=qr-cta'
 const WHATSAPP_URL = 'https://chat.whatsapp.com/HkG7urngZAV4wV9Ufd02Z1'
 
 export default function SectionCTA() {
-	const prefersReducedMotion = useReducedMotion() ?? false
-
 	return (
 		<section
 			id='cta'
@@ -140,14 +137,7 @@ export default function SectionCTA() {
 					</Link>
 
 						<div className='flex items-center gap-2 pt-2 font-mono text-sm text-cc-text-secondary'>
-						<span className='relative flex h-2 w-2' aria-hidden='true'>
-							<motion.span
-								className='absolute inline-flex h-full w-full rounded-full bg-cc-accent/60'
-								animate={prefersReducedMotion ? undefined : { scale: [1, 2.2, 1], opacity: [0.6, 0, 0.6] }}
-								transition={prefersReducedMotion ? undefined : { duration: 4.4, repeat: Infinity, ease: 'easeOut' }}
-							/>
-							<span className='relative inline-flex h-2 w-2 rounded-full bg-cc-accent' />
-						</span>
+						<span className='inline-flex h-2 w-2 rounded-full bg-cc-accent' aria-hidden='true' />
 						<span>
 							<span className='text-white'>1,003 closers</span> joined last week.
 						</span>
