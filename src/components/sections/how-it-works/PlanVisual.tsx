@@ -312,7 +312,7 @@ function FieldLong({ label, value, start }: {
 	start: boolean
 }) {
 	return (
-		<div className='flex flex-col items-start gap-1.5'>
+		<div className='flex flex-col items-start gap-0.5'>
 			<span className='text-trim font-[family-name:var(--font-mono)] text-[10px] uppercase leading-[12px] tracking-[0.04em] text-cc-text-secondary'>
 				{label}
 			</span>

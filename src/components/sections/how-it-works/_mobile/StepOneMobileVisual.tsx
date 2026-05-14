@@ -169,7 +169,7 @@ function FieldShort({ label, value }: { label: string; value: string }) {
 
 function FieldLong({ label, value }: { label: string; value: string }) {
 	return (
-		<div className='flex flex-col gap-1'>
+		<div className='flex flex-col gap-0.5'>
 			<span className='text-trim font-[family-name:var(--font-mono)] text-[10px] uppercase leading-[12px] tracking-[0.05em] text-cc-text-secondary'>
 				{label}
 			</span>
