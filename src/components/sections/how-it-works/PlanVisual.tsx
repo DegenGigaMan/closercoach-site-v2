@@ -1,46 +1,3 @@
-/** @fileoverview S3 Step 1 "Plan" visual -- standalone composition with R-09
- * cinematic motion sequence (Wave C 2026-04-25). Wave X.2 (2026-04-28)
- * re-architected the cloning sequence per Alim's overnight Slack feedback:
- * "Clone your clients visual animation needs a pass. The graphics look
- * great but the clone should appear at the end.. we should make the Cloning
- * loading bigger and obvious af that somethings being cloned. .. think like
- * a cloning lab".
- *
- * Composition (horizontal flex, gap-[79px] at desktop):
- *   LEFT  Source: integrations + today's meetings (Sarah active, Marcus dim)
- *   RIGHT Cloning lab (during cloning) -> Clone card (after cloning).
- *         Card stays hidden while cloning loads. The clone is the payoff.
- *
- * R-09 motion sequence (Wave X.2 re-timing, ~6.0s total -- slower per Alim
- * pacing directive "long is OK, that's the point"):
- *   Phase 1 (0.0-1.0s):   "CONNECTED" pill activates + integrations cascade.
- *   Phase 2 (1.0-2.0s):   "TODAY'S MEETINGS" populates -- Sarah active.
- *   Phase 3 (2.0-5.0s):   CLONING LAB STATE (big, obvious): pulsing emerald
- *                         halo around source-avatar silhouette + scanning
- *                         line + big "CLONING SARAH" mono label + 7-pip
- *                         progress bar fills 0->7 with delayed segment beats.
- *                         The clone card area is hidden -- only the cloning
- *                         lab is visible.
- *   Phase 4 (5.0-5.5s):   Cloning lab dims, clone card SNAPS into place
- *                         (spring scale 0.92->1 + opacity 0->1) with all
- *                         fields populated. No per-field typewriter; the
- *                         card lands as a confident, complete clone.
- *   Phase 5 (5.5-6.0s):   Proof badge pulses emerald. Done.
- *
- * Each phase is gated by an in-viewport flag. Reduced-motion: settles
- * instantly to phase-5 state (clone card visible, no animation). Re-trigger:
- * useInView with viewport reset.
- *
- * Library: motion/react AnimatePresence for the cloning-lab -> clone-card
- * crossfade. The TextType per-field typewriter that lived here pre-Wave X.2
- * was removed since the card is no longer visible during cloning -- fields
- * are static-rendered the moment the card snaps in.
- *
- * Copy source: vault/clients/closer-coach/copy/lp-copy-deck-v5.md §S3 Step 1.
- * Field schema source: src/lib/constants.ts CLONE_CARD (R-11 B2C lock).
- * Motion spec: vault/clients/closer-coach/design/hero-s3-connected-system-spec.md.
- */
-
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
@@ -64,33 +21,6 @@ const EASE: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94]
  * literals — so we promote the hex to a single source of truth here. */
 const EMERALD = '#10B981'
 
-/* Motion-sequence phase timings (seconds). Wave AA.3 (Andy 2026-04-28) staged
- * entry choreography. Container starts EMPTY; each beat lands one at a time
- * so the user's eye follows the story.
- *
- * Andy verbatim: "the animation there It should start off basically As like a
- * like that container should be like empty and then like the connected Or
- * like the Google Calendar Outlook Salesforce like that component that pops
- * in then it says connected and then the line comes down and then the
- * today's meetings title comes up and then the Sarah Chen 1030 Marcus Rivera
- * To write them those pop in and then the cloning starts happening then that
- * component comes in".
- *
- *   0.00s  CONTAINER EMPTY (no marks rendered)
- *   0.20s  Integrations pill pops in
- *   0.55s  "CONNECTED" caption fades in beside pill
- *   1.10s  Top emerald rail line draws DOWN to the calendar icon
- *   1.45s  Calendar icon + "TODAY'S MEETINGS" caption fade in
- *   1.85s  Sarah Chen meeting card slides in (active, emerald stripe)
- *   2.10s  Marcus Rivera card slides in (dim)
- *   2.40s  Connector line draws LEFT->RIGHT into the cloning column
- *   2.55s  Cloning lab appears (halo + scanline) + progress pips begin
- *   5.40s  Cloning complete checkmark + clone card snap-in (fields populate
- *          via per-field typewriter: name/badge first, then 4 short fields,
- *          then 3 long fields, ~0.18s gap each).
- *   6.10s  Footer "7 Layers" badge pulses emerald
- *
- * Total cycle ~6.6s. Reduced-motion settles instantly at the final state. */
 const PHASE = {
 	headerLand: 0,
 	integrationCascade: 0.20,
@@ -106,19 +36,10 @@ const PHASE = {
 	footerPulse: 6.10,
 } as const
 
-/* Per-field typewriter stagger inside the clone card. Each field's `start`
- * flag flips false -> true at FIELD_START[label] (absolute seconds from the
- * sequence root, NOT relative to card mount). Card mount lands at
- * PHASE.cardReveal (5.40s) and the first field begins ~0.35s later so the
- * card spring settles before any typing starts. FIELD_TYPE_GAP staggers
- * subsequent fields. Using flag-flips (not initialDelay inside TextType)
- * matches the proven Wave C pattern from commit 14446f3 -- single
- * setTimeout per field instead of a chained-render loop, more robust under
- * React 19's set-state-in-effect rule. */
 const FIELD_TYPE_GAP = 0.18
 const FIELD_TYPE_BASE = PHASE.cardReveal + 0.35
 const FIELD_START: Record<string, number> = {}
-{
+	{
 	const ordered = [
 		...CLONE_CARD.fields.filter((f) => f.span === 'short'),
 		...CLONE_CARD.fields.filter((f) => f.span === 'long'),
@@ -150,10 +71,6 @@ function IconRail({ children }: { children: React.ReactNode }) {
 	)
 }
 
-/* RailLine. Wave AA.3: optional animated draw via `delay` prop. When `delay`
- * is undefined (legacy callers), renders static. When set, draws DOWN from
- * top -> bottom over 0.5s on the staged-entry beat so "the line comes down"
- * after the integrations pill lands and before the calendar caption appears. */
 function RailLine({ inView, reduced, delay }: {
 	inView?: boolean
 	reduced?: boolean
@@ -251,9 +168,6 @@ function MeetingCard({ name, time, avatarSrc, active = false, inView, reduced, d
 
 /* ─── Left visual (integrations + calendar) ─── */
 
-/* IconBox with a staged pop-in. Wave AA.3: each rail icon (Checks, Calendar)
- * fades + scales in at its assigned beat so the rail does not pre-render
- * before its row's content is ready. */
 function IconBoxStaged({ children, inView, reduced, delay }: {
 	children: React.ReactNode
 	inView: boolean
@@ -334,10 +248,6 @@ function LeftVisual({ inView, reduced }: { inView: boolean, reduced: boolean }) 
 
 /* ─── Right visual (clone) ─── */
 
-/* Cloning header. Wave X.2: bigger label (14px mono) + taller progress
- * bar (3px tall, was 1px) so the cloning state reads from across the
- * room, not as a hairline. Per Alim: "make the Cloning loading bigger
- * and obvious af that somethings being cloned". */
 function CloneHeader({ filled, reduced, isComplete }: { filled: number, reduced: boolean, isComplete: boolean }) {
 	return (
 		<div className='flex w-full flex-col gap-3 px-3'>
@@ -374,13 +284,6 @@ function CloneHeader({ filled, reduced, isComplete }: { filled: number, reduced:
 	)
 }
 
-/* Field renders. Wave AA.3 (Andy 2026-04-28): per-field typewriter restored
- * so each Layer of Personalization fills in one at a time instead of all
- * popping in at once. Andy verbatim: "the text for each Layer of personali-
- * zation the marketing director credit score all that stuff that should
- * also be Using that typewriter Animation". TextType has its own reduced-
- * motion handling that snaps to the full string. Stagger is gated on
- * `start` (card-revealed) and `delay` (per-field offset). */
 function FieldShort({ label, value, start }: {
 	label: string
 	value: string
@@ -441,12 +344,6 @@ function ProofBadge({ pulse }: { pulse: boolean }) {
 	)
 }
 
-/* CloneCard. Wave AA.3: card snap-in spring (matches Wave X.2) followed by
- * per-field typewriter cascade. The card frame lands first, then 4 short
- * fields stagger in via TextType (FIELD_TYPE_GAP between starts), then 3
- * long fields. Each field's `start` flag is supplied via `fieldStarts` --
- * the parent flips false -> true at FIELD_START[label]. Reduced-motion:
- * TextType collapses to the full string instantly. */
 function CloneCard({ reduced, pulseFooter, fieldStarts }: {
 	reduced: boolean
 	pulseFooter: boolean
@@ -479,10 +376,7 @@ function CloneCard({ reduced, pulseFooter, fieldStarts }: {
 					</span>
 				</div>
 
-				{/* 2-col grid for 4 short fields. Wave AA.3: each field's `start`
-				 * flag flips false -> true at FIELD_START[label] so its TextType
-				 * begins typing on schedule. */}
-				<div className='grid grid-cols-2 gap-x-3 gap-y-3.5'>
+					<div className='grid grid-cols-2 gap-x-3 gap-y-3.5'>
 					{shortFields.map((f) => (
 						<FieldShort
 							key={f.label}
@@ -515,20 +409,6 @@ function CloneCard({ reduced, pulseFooter, fieldStarts }: {
 	)
 }
 
-/* CloningLabState (Wave X.2). The big, obvious "cloning lab" visual that
- * occupies the clone-card real estate while filled < 7. Composition:
- *
- *   - Outer frame: same width as the eventual clone card so the swap is
- *     dimensionally honest.
- *   - Center: pulsing emerald halo + Sarah source-avatar silhouette.
- *     Scanline travels top->bottom across the avatar (the cloning beam).
- *   - Below avatar: large mono "CLONING SARAH" label.
- *   - Footer: dotted gridlines (lab grid) hint at scientific instrumentation
- *     without stacking a 4th effect (Alim anti-pattern: "do not stack
- *     scanline + particles + glow + typewriter all at once" -- we use halo
- *     + scanline + grid; particles + typewriter are out).
- *
- * No card chrome -- this is the lab table, not the cloned product. */
 function CloningLabState({ reduced }: { reduced: boolean }) {
 	return (
 		<motion.div
@@ -592,11 +472,7 @@ function CloningLabState({ reduced }: { reduced: boolean }) {
 				</div>
 			</div>
 
-			{/* Big label. Wave C1 (Q17 A4): unified register to sans sentence-case
-			 * for both lines so the primary "Cloning Sarah" reads with the same
-			 * voice as the descriptive sub-line, removing the mono-caps /
-			 * sans-sentence break. */}
-			<div className='flex flex-col items-center gap-1'>
+				<div className='flex flex-col items-center gap-1'>
 				<span className='text-trim font-sans text-[14px] font-semibold text-cc-accent'>
 					Cloning Sarah
 				</span>
@@ -608,19 +484,6 @@ function CloningLabState({ reduced }: { reduced: boolean }) {
 	)
 }
 
-/* Connector "link" arrow — hangs off the left of the clone column at the
- * vertical level of Sarah's active meeting card. SVG keeps the gradient +
- * endpoint dots in one paint pass.
- *
- * Wave AA.3: optional staged draw via `inView` + `delay`. The line draws
- * left -> right after Marcus's card lands, leading the eye into the clone
- * column. Reduced-motion renders settled.
- *
- * Q17 Wave D1-2 (Andy 2026-04-29 #12a): connector y-anchor moved from
- * top-[191px] to top-[224px] to vertically center against the Sarah card
- * (measured live: Sarah card center at relY ~227.5; connector svg is 6px
- * tall, so top = 227.5 - 3 = 224.5). Previously the connector sat ~36px
- * above the card center, breaking the eye-line from "Sarah Chen" → clone. */
 function Connector({ inView, reduced, delay }: {
 	inView?: boolean
 	reduced?: boolean
@@ -674,11 +537,6 @@ function CloneVisual({ reduced, filled, pulseFooter, isComplete, cardRevealed, c
 	inView: boolean
 	fieldStarts: Record<string, boolean>
 }) {
-	/* Wave AA.3: the right column starts EMPTY and only mounts the cloning
-	 * header + lab visual when the staged sequence reaches PHASE.cloningStart.
-	 * Lock min-h on the swap container so the connector's anchor stays fixed
-	 * across CloningLabState (~250px) -> CloneCard (~340px) and the link line
-	 * does not appear to drift between sub-states. */
 	return (
 		<div className='relative flex w-[280px] shrink-0 flex-col items-center gap-4'>
 			<motion.div
@@ -750,10 +608,6 @@ export default function PlanVisual({}: { devPin?: boolean } = {}) {
 			return
 		}
 		if (!inView) return
-		/* Wave AA.3: schedule cloning column reveal at PHASE.cloningStart, then
-		 * progress bar segment fills, card snap-in at PHASE.cardReveal, footer
-		 * pulse beat. Right column is hidden via opacity until cloning starts.
-		 * Per-field typewriter starts flip false -> true at FIELD_START[label]. */
 		const timeouts: ReturnType<typeof setTimeout>[] = []
 		const tCloningStart = setTimeout(() => setCloningStarted(true), PHASE.cloningStart * 1000)
 		timeouts.push(tCloningStart)

@@ -1,7 +1,3 @@
-/** @fileoverview /download page -- Beside-style single-action conversion destination.
- * Logo + headline + QR museum frame + App Store/Google Play badges + 3-pill proof row + trust strip.
- * Dark surface. Minimal. One screen, one action. W12. */
-
 import { buildPageMetadata } from '@/lib/seo'
 import DownloadContent from './download-content'
 

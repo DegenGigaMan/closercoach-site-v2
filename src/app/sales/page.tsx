@@ -1,6 +1,3 @@
-/** @fileoverview /sales — Book a Demo. Light-mode warm page, two-column
- *  card layout: info left, Calendly right. */
-
 import Image from 'next/image'
 import { Clock, VideoCamera, CheckCircle, Globe } from '@phosphor-icons/react/dist/ssr'
 import CalendlyWrapper from './CalendlyWrapper'

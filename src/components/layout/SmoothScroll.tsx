@@ -1,23 +1,3 @@
-/** @fileoverview Lenis smooth scroll wrapper. Initializes smooth scrolling globally.
- *
- * G-FOOTER-SCROLL fix (2026-05-02): listens for a custom `scroll-reset` event
- * dispatched by ScrollToTop on every route change. When received, snaps
- * Lenis's internal target to 0 in lockstep with the native window scroll so
- * footer Privacy → Terms → Privacy revisits land at the top.
- *
- * H-21 scroll-lock fix (2026-05-04):
- *   - Dropped `force: true` from the scrollTo call (was overriding Lenis's
- *     user-input lock and causing intermittent desktop scroll lock).
- *   - Ref guard against Strict Mode double-init.
- *   - 100ms debounce on `scroll-reset`.
- *
- * Refresh restoration (2026-05-05): we no longer set
- * `history.scrollRestoration = 'manual'` so the browser's native scroll
- * restoration runs on hard refresh — user keeps their scroll position. The
- * footer-revisit fix doesn't need manual restoration; ScrollToTop's
- * pathname-change handler already covers client-side navigation.
- */
-
 'use client'
 
 import { useEffect, useRef } from 'react'

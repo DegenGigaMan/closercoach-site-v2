@@ -1,7 +1,3 @@
-/** @fileoverview /thank-you -- post-Calendly-booking confirmation with 3-step next-actions.
- * Celebration header + Download/WhatsApp/Social step cards + minimal footer (triggered via pathname in Footer.tsx).
- * Reads invitee name from Calendly redirect query params for personalized headline. Dark surface. noindex. */
-
 import { buildPageMetadata } from '@/lib/seo'
 import ThankYouContent from './thank-you-content'
 

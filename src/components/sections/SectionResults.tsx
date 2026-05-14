@@ -1,32 +1,3 @@
-/** @fileoverview S5 Results. Billboard headline + floating proof-field pattern
- * ported from the legacy lab (`/lab/s5/ca-billboard-proof-field`), adapted to
- * v2 fonts + styling:
- *
- *   - Massive Lora Bold headline as the absolute gravity center of the top
- *     section. "Getting Better" uses Lora Bold Italic per VIS §2 lock (no
- *     colour variation on warm surface for WCAG AA).
- *   - 8 ambient proof cards orbit the headline in the surrounding whitespace
- *     on desktop (absolute-positioned percentages). Each card enters with a
- *     staggered opacity + translate animation, landing at 0.88 opacity so
- *     the headline reads at 100%.
- *   - Mobile collapses to a vertical stack below the centered headline.
- *   - Cards: Profile anchor, 36,000+ closers, 4.7/5 App Store, 3,000+ calls
- *     per day, 16+ industries, 7-dimension radar, 76% coached weekly, and
- *     a 7/50/30 performance gains strip.
- *
- * Everything below the billboard (context callout, App Store review
- * carousel, review-count anchor, ego appeal line, CTA) is unchanged from
- * prior S5 spec — we are only rebuilding the top of the section.
- *
- * WCAG AA on warm surface:
- *   - Emerald text uses #059669 (cc-accent-hover), not #10B981
- *   - Amber stat text uses #D97706 (amber-600), not #F59E0B
- *   - Body text: #475569 (text-secondary-warm) on #F5F0EB = 6.7:1
- *   - Headlines: #1A1D26 (text-primary-warm) on #F5F0EB = 14.9:1
- *
- * Profile card is anonymised ("Insurance closer") per the v2 truth-pack rule
- * — named customers are reserved for S5.5 and are not duplicated here. */
-
 'use client'
 
 import { useRef, type ReactElement } from 'react'
@@ -49,11 +20,6 @@ type RevealProps = {
 	delay?: number
 }
 
-/**
- * @description Local scroll-reveal wrapper for below-the-billboard blocks.
- * Stable initial props so server and client first-render match. Reduced
- * motion collapses the transition to 0s.
- */
 function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElement {
 	const prefersReducedMotion = useReducedMotion()
 	const ref = useRef<HTMLDivElement | null>(null)
@@ -71,26 +37,6 @@ function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElem
 		</motion.div>
 	)
 }
-
-/* ── Customer success tier cards (Figma 108:2, 2026-04-27) ──
- *
- * 3 named-customer cards rebuilt to match Figma 108:2 exactly:
- *   ─ Card shell: #fafaf8 fill, 1px rgba(13,15,20,0.08) border, rounded-16,
- *     drop-shadow 0 2px 8px rgba(0,0,0,0.03), p-[33px], gap-[28px], h-[500px]
- *     on desktop (auto on mobile so long quotes don't clip).
- *   ─ Header ROW: 128px circular portrait LEFT + industry tag pill RIGHT
- *     (Geist Mono Medium 11px uppercase tracking 1.54px slate, light bg).
- *   ─ Optional metric headline: Lora Bold 28px / 32.2 / -0.28px tracking,
- *     slate #1a1d26. Renders multiline on \n so 2-line headlines break clean.
- *   ─ Block quote: Lora Bold Italic 27px emerald open-quote + Inter Italic
- *     16px / 1.6 line-height slate #475569 body.
- *   ─ Footer (separated by border-t rgba(13,15,20,0.08), pt-[21px]):
- *     name (Lora Bold 16px slate #1a1d26) + role (Inter Regular 12px slate
- *     #94a3b8) on the left, emerald check pill on the right (rounded-full
- *     rgba(5,150,105,0.08) / rgba(5,150,105,0.2), Geist Mono Regular 10px
- *     uppercase tracking 0.25px emerald #059669).
- *   ─ Prior CLOSER / TEAMS / ENTERPRISE tier label retired — Figma 108:2 uses
- *     the industry tag pill in the header instead. */
 
 const WARM_BORDER = 'rgba(13,15,20,0.08)'
 const SLATE_HEADING = '#1a1d26'
@@ -115,7 +61,7 @@ function TierCard({
 	name,
 	role,
 	badge,
-}: TierCardProps): ReactElement {
+	}: TierCardProps): ReactElement {
 	const headlineLines = metricHeadline ? metricHeadline.split('\n') : null
 	return (
 		<article
@@ -274,21 +220,6 @@ function TierCard({
 	)
 }
 
-/* ── App Store testimonial cards (Wave Y.7 — Alim 2026-04-28) ──
- *
- * Wave Y.7 rebuild per Alim AM Slack: 'improve to look like actual App
- * Store review boxes.' Real iOS App Store reviews show:
- *   - Star rating row at top (with platform wordmark on the right)
- *   - Review title in semibold (like a subject line)
- *   - Body text below
- *   - Reviewer handle + relative date footer
- *
- * The Wave R card shell (cream bg, soft warm border) is preserved. The
- * footer 'APP STORE REVIEW' emerald pill is replaced with the actual
- * attribution row Apple uses (handle · date). Verbatim quote bodies
- * preserved from prior data; titles + handles + dates added to match
- * App Store review-box semantics. */
-
 type Review = {
 	title: string
 	quote: string
@@ -296,9 +227,6 @@ type Review = {
 	date: string
 }
 
-/* Verbatim review bodies (Wave R baseline). Titles + reviewer handles + dates
- * added Wave Y.7 to match App Store review-box semantics (title is a real
- * App Store metadata field; handles + dates are public on each review). */
 const APP_STORE_REVIEWS: ReadonlyArray<Review> = [
 	{
 		title: 'Streamlined my process',
@@ -323,14 +251,6 @@ const APP_STORE_REVIEWS: ReadonlyArray<Review> = [
 	},
 ] as const
 
-/* Q17 Wave E (Andy 2026-04-29 #20 / CC-D3): swap to light-on-dark App Store
-   variant locked from /lab/app-store-reviews-explorations Variant A. Card
-   structure mirrors the real iOS App Store review box:
-     - Bold title top-left + "Xy ago" timestamp top-right
-     - 5 stars row (iOS orange #FF9500) + username right-aligned
-     - 2-paragraph body with line-clamp-3 + "more" link to expand
-   Light cream cards (#FAFAF8) on the dark surface band — see the wrapping
-   <div data-surface='dark-reviews-band'> below for the layered-depth context. */
 const STAR_COLOR = '#FF9500' // iOS orange (Variant A lock)
 
 function TruncatedBody({ body }: { body: string }): ReactElement {
@@ -355,11 +275,7 @@ function ReviewCard({ title, quote, reviewer, date }: Review): ReactElement {
 				border: '1px solid rgba(0,0,0,0.08)',
 			}}
 		>
-			{/* Title row + relative date — chip dropped 2026-05-02 per Andy.
-			 * The 5-star + handle + truncated-body grammar already reads as
-			 * an App Store review on its own; the explicit chip was belt-and-
-			 * suspenders. Mirrors lab Variant A structure. */}
-			<div className='flex items-start justify-between gap-3'>
+				<div className='flex items-start justify-between gap-3'>
 				<h4
 					className='leading-tight'
 					style={{
@@ -406,32 +322,16 @@ function ReviewCard({ title, quote, reviewer, date }: Review): ReactElement {
 
 /* ── Section ── */
 
-/**
- * @description S5 Results. Billboard floating-proof top + unchanged
- * testimonial + ego-appeal tail. Lora Bold + italic emphasis on "Getting
- * Better" per VIS lock. All colours AA-safe on warm surface.
- */
 export default function SectionResults(): ReactElement {
 	return (
 		<section id='results' data-surface='warm' className='relative overflow-hidden bg-cc-warm'>
-			{/* ── Billboard top: floating proof composition per Figma 81:4377 ──
-			 * Reworked 2026-04-27 (Wave P): replaces hub-spoke composition with
-			 * 6 designed proof components orbiting the centered headline:
-			 * Camil Reese profile card, Pitch B+ score card, Close Rate ↑10%
-			 * pill, "We have a deal" italic quote pill, 7-Dimensions radar, and
-			 * Coached vs Uncoached area chart. Headline + eyebrow now live
-			 * inside FloatingProofComposition so the desktop layout can position
-			 * them in the middle band between top and bottom rows of cards. */}
-			<div className='relative overflow-hidden py-24 md:py-32'>
+				<div className='relative overflow-hidden py-24 md:py-32'>
 				<FloatingProofComposition />
 			</div>
 
 			{/* ── Below-billboard content (top: warm pill + headline) ── */}
 			<div className='mx-auto max-w-7xl px-6'>
-				{/* Context pill + billboard title (Figma 1:8353). Pill carries the
-				 * quota stat with red/emerald accents; title below in Lora Bold
-				 * 48px anchors the App Store Review block. */}
-				<Reveal className='mt-4 flex flex-col items-center gap-6 text-center md:mt-8' delay={0.05}>
+					<Reveal className='mt-4 flex flex-col items-center gap-6 text-center md:mt-8' delay={0.05}>
 					<span
 						className='inline-flex items-center justify-center rounded-full px-5 py-[10px]'
 						style={{
@@ -464,13 +364,7 @@ export default function SectionResults(): ReactElement {
 				</Reveal>
 			</div>
 
-			{/* ── App Store reviews. Cream review cards sit directly on the warm
-			 * surface; the prior edge-to-edge dark band was dropped per Andy
-			 * 2026-05-01 in favour of a single continuous warm surface. Each
-			 * card now carries its own "App Store Review" chip beside the
-			 * title for source-of-proof identification (replacing the dark band
-			 * as the contextual signifier). Wave Z.6 P2-E stagger preserved. */}
-			<div className='mx-auto mt-12 grid max-w-7xl grid-cols-1 gap-4 px-6 md:mt-16 md:grid-cols-3'>
+				<div className='mx-auto mt-12 grid max-w-7xl grid-cols-1 gap-4 px-6 md:mt-16 md:grid-cols-3'>
 				{APP_STORE_REVIEWS.map((r, i) => (
 					<Reveal key={i} delay={i * 0.06}>
 						<ReviewCard
@@ -485,13 +379,7 @@ export default function SectionResults(): ReactElement {
 
 			{/* ── Below-reviews content (back to warm: anchor + tier cards + ego appeal + CTA) ── */}
 			<div className='mx-auto max-w-7xl px-6 pb-16 md:pb-24'>
-				{/* Review count anchor (Figma 1:8435). "378+" in Lora Bold Italic
-				 * emerald; the rest in Inter Medium uppercase slate. Sits directly
-				 * beneath the 3 App Store review cards per Andy 2026-04-27.
-				 *
-				 * Q17 Wave E: spacing bumped from mt-8/mt-10 to pt-12/pt-16 to
-				 * compensate for the dark band's bottom padding boundary. */}
-				<Reveal className='pt-12 md:pt-16' delay={0.05}>
+					<Reveal className='pt-12 md:pt-16' delay={0.05}>
 					<p
 						className='text-trim text-center uppercase text-cc-text-secondary-warm'
 						style={{
@@ -535,11 +423,7 @@ export default function SectionResults(): ReactElement {
 							badge='Sales Manager'
 						/>
 					</Reveal>
-					{/* T6 P0 (2026-05-02): real Enterprise testimonial from Taylor lands.
-					 * Replaces the G9 placeholder reframe. Verbatim-trimmed from her
-					 * two-paragraph submission, keeps the strongest financial-services
-					 * pivot, drops the "game-changer" line per slop discipline. */}
-					<Reveal delay={0.1}>
+						<Reveal delay={0.1}>
 						<TierCard
 							portraitSrc='/images/case-studies/taylor.webp'
 							industryTag='Financial Services'
@@ -550,12 +434,6 @@ export default function SectionResults(): ReactElement {
 						/>
 					</Reveal>
 				</div>
-
-				{/* Ego appeal line removed 2026-05-01 — was previously a PC5+PC6
-				 * stat-stuffed paragraph ("After one roleplay you will know: B
-				 * grade · Top 15% · 211 WPM · 64/36 talk-listen ratio. Every
-				 * number gets better."). Cut to tighten the testimonial → CTA
-				 * read; numbers already live in S3 Step 4 + S5 results grid. */}
 
 				{/* CTA */}
 				<Reveal className='mt-16 flex justify-center md:mt-24' delay={0.05}>

@@ -1,28 +1,3 @@
-/** @fileoverview S6 Card 1 visual — "Coach Reps At Scale" calendar mockup.
- *
- * Composition (per Figma 93-16849, Wave V tokens 2026-04-27):
- *   ─ Header row: "YOUR CALENDAR BEFORE" mono kicker (Geist Mono Medium 12px,
- *     0.72px tracking, white/80) → 80px hairline → 29×28 emerald-glow pill
- *     carrying the actual CC logomark → 80px hairline → "6h cleared up!" pill
- *     (emerald gradient bg, pencil icon + Inter Medium 12px white/95).
- *   ─ Calendar lane: 4 hour rows (8/9/10/11 AM). Each row has a 26px-wide
- *     time label (10px hour + 7px AM tail) followed by a 1px white/10 hairline,
- *     then meeting cards beneath.
- *   ─ Meeting card: rgba(30,34,48,0.3) bg + white/10 border + 0,8 r=8 0.4
- *     drop-shadow + rounded-12px + 9px padding. 2px emerald `#10B981` accent
- *     bar pinned full-height left, 28x28 avatar with white/5 ring, name in
- *     Inter Semibold 14px #ebebeb, time in Inter Regular 12px rgba(251,251,251,0.5).
- *   ─ 8 AM row also carries the right-column avatar cluster: 5×28px avatars
- *     with 2px cc-surface-card ring, -6px overlap, 8px gap to the
- *     "10 AI sessions active" label (Inter Regular 12px emerald #10d078 with
- *     5x5 emerald square dot).
- *   ─ Bottom blur fade (Figma 93:16871, 137px tall) softens the lower hours
- *     into the card surface.
- *
- * CC logomark: /public/images/cc-logomark.png (40×40 transparent PNG
- * sourced from Figma 94:18012 → image 98). Replaces the prior Sparkle icon
- * orb per Andy 2026-04-27 — the orb is the brand mark, not a generic icon. */
-
 'use client'
 
 import Image from 'next/image'
@@ -101,10 +76,7 @@ function HourRow({ hour }: { hour: string }): ReactElement {
 export default function CoachRepsAtScaleVisual(): ReactElement {
 	return (
 		<div className='relative h-full w-full overflow-hidden px-7 pt-3 pb-3 md:px-12 md:pt-4 md:pb-4'>
-			{/* Top header row per Figma 94:17959. At <sm the row stacks so the 3
-			 * elements don't crowd; at sm+ the symmetric 80px hairlines flank
-			 * the 29×28 emerald-glow logomark pill. */}
-			<div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-2'>
+				<div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-2'>
 				<div className='flex items-center gap-2 sm:flex-1 sm:justify-end'>
 					<span
 						className='text-trim shrink-0 uppercase'
@@ -121,9 +93,7 @@ export default function CoachRepsAtScaleVisual(): ReactElement {
 					<span aria-hidden='true' className='hidden h-px w-[80px] shrink-0 bg-white/15 sm:block' />
 				</div>
 
-				{/* CC logomark orb — Figma 94:18012. 29×28 rounded-14 pill with
-				 * triple-layer emerald glow shadow + radial-gradient interior. */}
-				<div
+					<div
 					className='relative flex h-7 w-[29px] shrink-0 items-center justify-center self-start rounded-[14px] sm:self-auto'
 					style={{
 						background:
@@ -145,9 +115,7 @@ export default function CoachRepsAtScaleVisual(): ReactElement {
 
 				<div className='flex items-center gap-2 sm:flex-1'>
 					<span aria-hidden='true' className='hidden h-px w-[80px] shrink-0 bg-white/15 sm:block' />
-					{/* "6h cleared up!" pill per Figma 94:17976 — emerald gradient
-					 * bg + white/6 border + drop-shadow + pencil icon. */}
-					<div
+						<div
 						className='relative flex shrink-0 items-center gap-1 self-start rounded-[24px] border border-white/[0.06] py-2 pl-2 pr-2.5 shadow-[0_4px_6px_rgba(0,0,0,0.4)] sm:self-auto'
 						style={{
 							background:
@@ -199,9 +167,7 @@ export default function CoachRepsAtScaleVisual(): ReactElement {
 				</p>
 			</div>
 
-			{/* Bottom blur fade — Figma 93:16871. Fades calendar lane into the
-			 * card surface so lower rows trail off naturally. */}
-			<div
+				<div
 				aria-hidden='true'
 				className='pointer-events-none absolute inset-x-0 bottom-0 h-32'
 				style={{ background: 'linear-gradient(to bottom, rgba(16,18,25,0) 0%, rgba(16,18,25,0.95) 85%)' }}

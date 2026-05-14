@@ -1,11 +1,3 @@
-/** @fileoverview Per-segment error boundary. Renders within root layout, so
- * Header + Footer auto-mount around this content.
- *
- * IMPORTANT: This Next.js exposes `unstable_retry` (NOT `reset`) per
- * `node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/error.md`.
- * `unstable_retry` re-fetches and re-renders the segment; `reset` (deprecated
- * in this version) clears state without re-fetching. We use unstable_retry. */
-
 'use client'
 
 import { useEffect } from 'react'

@@ -1,16 +1,3 @@
-/** @fileoverview Card 3 visual -- Skills Progression Tracking.
- *
- * Animated on scroll-into-view:
- *   - Card entrance: fade + slide up
- *   - Avatar ring: stroke-dashoffset draw from 0% → 82%
- *   - Lvl pill + name: fade up staggered
- *   - Stat cells: count-up for numeric values
- *   - Chart line: stroke-dashoffset draw left → right
- *   - Chart dots + grade labels: staggered scale/fade in after line
- *   - B+ badge: scale spring in
- *
- * Mapped from Figma node 1:11325. */
-
 'use client'
 
 import type { ReactElement } from 'react'

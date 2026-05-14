@@ -1,7 +1,3 @@
-/** @fileoverview L3 particle system for S1 Hero and S8 Final CTA.
- * Canvas 2D with 3 depth layers. Two modes: 'ambient' (hero) and 'converge' (S8).
- * Per atmosphere-spec.md Section 4.3 and motion-spec.md Section 5. */
-
 'use client'
 
 import { useRef, useEffect, useCallback } from 'react'

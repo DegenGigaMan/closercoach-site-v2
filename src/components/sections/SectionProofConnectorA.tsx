@@ -1,14 +1,5 @@
-/** @fileoverview Proof Connector A. Thin E1 stat band between S3 How It Works and S4 Features.
- * CT-1 hairline + stat treatment per section-blueprint Proof Connector A. Maintains proof pressure
- * across the scroll. Dark surface continuing from S3. ~60px desktop / ~48px mobile.
- * Zero motion. Geist Mono uppercase muted, centered between AK-style emerald hairlines. */
-
 import type { ReactElement } from 'react'
 
-/**
- * @description Thin dark band with top/bottom emerald hairlines and centered E1 stat.
- * No entrance animation -- a quiet proof beat between two large sections.
- */
 export default function SectionProofConnectorA(): ReactElement {
 	return (
 		<section

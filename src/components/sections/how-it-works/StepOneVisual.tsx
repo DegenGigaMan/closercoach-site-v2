@@ -1,23 +1,3 @@
-/** @fileoverview S3 Step 1 Plan right-column visual composition.
- *
- * Animation (scroll-triggered, once: true, amount: 0.3):
- *   All entrance motion fires when ≥30% of the canvas enters the viewport.
- *   Sequence (t = seconds after inView):
- *     0.00  CONNECTED label  — fade + slide up
- *     0.12  Integration pill — fade + slide up
- *     0.24  Emerald thread   — scaleY 0→1 (origin top)
- *     0.34  Calendar row     — fade + slide up
- *     0.46  Sarah card       — fade + slide up
- *     0.58  Marcus card      — fade + slide up
- *     0.68  Connector        — opacity + scaleX 0→1 (origin left)
- *     0.72  Clone header     — fade + slide in from right
- *     0.84  Progress pips    — stagger fill left→right (each +0.06s)
- *     1.00  Clone card       — fade + scale up
- *     1.18  Sparkle badge    — fade + scale up
- *
- * Reduced-motion: all entrance animations collapse to instant (duration:0).
- */
-
 'use client'
 
 import { useRef } from 'react'

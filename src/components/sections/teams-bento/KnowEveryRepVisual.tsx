@@ -1,10 +1,3 @@
-/** @fileoverview S6 Card 2 visual — "Know Where Every Rep Stands".
- *
- * Mobile inset fix: with only 3 cards visible on mobile (Sarah, Marcus, Priya),
- * the desktop inset of 40px for Sarah breaks the proportional feel (0→8→40).
- * mobileInsetPx=16 gives even 8px steps: 0, 8, 16. CSS custom properties
- * switch the inset at the md breakpoint. */
-
 'use client'
 
 import Image from 'next/image'

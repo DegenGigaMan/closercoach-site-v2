@@ -1,12 +1,3 @@
-/** @fileoverview Pricing page client component with billing toggle, 3 tier cards
- * (Closer / Business / Enterprise White Label), feature comparison table,
- * trust signals, FAQ accordion, and bottom CTA with store badges.
- * Tier naming per Alim Slack 2026-05-08 23:43 (L-12): Closer unchanged,
- * Teams -> Business at flat $49.99/mo (was per-user), Enterprise -> Enterprise
- * White Label. Locked-spec features pinned at the top of each tier; existing
- * supplementary bullets preserved where they don't contradict the spec.
- */
-
 'use client'
 
 import { useState } from 'react'
@@ -21,15 +12,6 @@ import { track } from '@/lib/analytics'
 
 /* ---------- Tier data ---------- */
 
-/* L-12 (2026-05-09): tier features start with the locked Alim spec at the
- * top, then keep the existing supplementary bullets that add depth without
- * contradicting the spec. Closer adds "100 minutes of usage" + "3 AI
- * Customers" up top. Business renames from Teams (flat $49.99/mo, no
- * per-user) and pins Unlimited usage / Unlimited AI Customers / Advanced AI
- * Model Training / Built In Dialer first. Enterprise renames to Enterprise
- * White Label and pins White Label Branding / Remove All CloserCoach Logos /
- * Forward Deployed Engineer / Custom RAG Model Training / Dedicated Account
- * Manager first. */
 const TIERS = [
 	{
 		key: 'closer',
@@ -179,11 +161,6 @@ const FAQ_ITEMS = [
 
 /* ---------- Trust signal logos ---------- */
 
-/* F3-L1 (2026-04-24): width/height set to native SVG viewBox proportions so
- * Next Image keeps intrinsic aspect ratio. CSS `h-6 w-auto` caps the row to
- * uniform height; width scales from the native ratio. Prior 64-72 × 28
- * dimensions forced 2.3-2.6:1 on logos whose native ratios range 1:1 to 7:1,
- * visibly squishing Toyota, State Farm, and RE/MAX. */
 const TRUST_LOGOS = [
 	{ src: '/logos/toyota.svg', alt: 'Toyota', w: 168, h: 24 },
 	{ src: '/logos/state-farm.svg', alt: 'State Farm', w: 171, h: 24 },
@@ -233,18 +210,9 @@ function FAQItem({ item, isOpen, onToggle }: { item: typeof FAQ_ITEMS[number]; i
 
 /* ---------- Main content ---------- */
 
-/**
- * @description Full pricing page content with Closer / Business / Enterprise
- * White Label tier cards, monthly/yearly toggle, feature comparison, trust
- * strip, FAQ accordion, and bottom CTA with store badges.
- */
 export default function PricingContent() {
 	const [yearly, setYearly] = useState(false)
 	const [openFaq, setOpenFaq] = useState(0)
-	/* Wave J.2 (FIX-02 P1): mobile compare tier switcher. Defaults to
-	 * 'business' (the highlighted tier in the cards above) so the most
-	 * relevant tier loads first. Index maps to TIERS order:
-	 * 0=closer, 1=business, 2=enterprise white label. */
 	const [compareTier, setCompareTier] = useState<0 | 1 | 2>(1)
 
 	return (
@@ -265,12 +233,7 @@ export default function PricingContent() {
 							Less than a lunch. More reps closed.
 						</p>
 
-						{/* Billing toggle. H-09 (2026-05-04): "Save 55%" badge is now
-						 * absolutely positioned to the right of "Yearly" so its
-						 * appearance on yearly-select doesn't shift the toggle row
-						 * leftward. Mobile keeps the badge but tucks it inline below
-						 * to avoid right-edge overflow at narrow viewports. */}
-						<div className='mt-6 flex flex-col items-center gap-2'>
+							<div className='mt-6 flex flex-col items-center gap-2'>
 							<div className='flex items-center gap-3'>
 								<span className={`text-sm ${!yearly ? 'text-white' : 'text-cc-text-secondary'}`}>
 									Monthly
@@ -319,11 +282,6 @@ export default function PricingContent() {
 								<ScrollReveal key={tier.key} delay={i * 0.1}>
 									<div
 										{...(tier.highlighted ? { 'data-primary-cta': '' } : {})}
-										/* Wave R FIX-04 (2026-04-27): Enterprise (i===2) bg flipped
-										 * from bg-cc-foundation (which matched the section behind
-										 * it, making the border invisible and the card look
-										 * bottomless) to bg-cc-surface-card so the bordered frame
-										 * reads with the same visual weight as Teams. */
 										className={`relative flex h-full flex-col rounded-xl border p-8 ${
 											tier.highlighted
 												? 'border-cc-accent bg-cc-surface-card shadow-[0_0_64px_-24px_rgba(16,185,129,0.35)] ring-1 ring-cc-accent/25'
@@ -331,9 +289,6 @@ export default function PricingContent() {
 										}`}
 									>
 										{/* Most Popular badge (top-right absolute, Closer only) */}
-										{/* F3-M4 (2026-04-24): text-cc-foundation (~11:1) replaces
-										 * text-white (2.85:1) on emerald bg. WCAG AA for small text
-										 * requires 4.5:1. */}
 										{tier.highlighted && (
 											<span className='absolute -top-3 right-6 rounded-full bg-cc-accent px-3 py-1 text-xs font-semibold text-cc-foundation'>
 												{tier.badge}
@@ -348,9 +303,7 @@ export default function PricingContent() {
 										{/* Tier subtitle */}
 										<p className='mt-2 text-sm text-cc-text-secondary'>{tier.subtitle}</p>
 
-										{/* Price — Lora Bold for the headline amount + the
-										 * "Custom" enterprise label, per Andy 2026-04-27. */}
-										<div className='mt-6 flex items-baseline gap-1'>
+											<div className='mt-6 flex items-baseline gap-1'>
 											<span
 												className='text-5xl font-bold text-white'
 												style={{ fontFamily: 'var(--font-heading)' }}
@@ -406,11 +359,7 @@ export default function PricingContent() {
 						})}
 					</div>
 
-					{/* Wave I FIX-04: unified disclaimer below all 3 cards. The
-					    no-minimums copy applies to every tier semantically and was
-					    previously trapped in the Teams card, creating ~150px dead
-					    space and uneven card bottom edges at 1280-1440. */}
-					<p className='mt-8 text-center text-xs text-cc-text-muted'>
+						<p className='mt-8 text-center text-xs text-cc-text-muted'>
 						No minimums. No annual contracts. Cancel anytime.
 					</p>
 				</div>
@@ -425,19 +374,8 @@ export default function PricingContent() {
 						</h2>
 					</ScrollReveal>
 
-					{/* Desktop table. Wave C1 (Q17 A30): sticky thead so column tier
-					 * names (Closer / Teams / Enterprise) stay visible while scrolling
-					 * the long row list. Top offset = banner height + header height
-					 * (~64px) so the row stays clear of the announcement bar + main
-					 * sticky header. Background painted on the inner cell wrappers
-					 * to opaque-mask the rows scrolling underneath. */}
-					<ScrollReveal>
-						{/* Wave C1 (Q17 A30): drop `overflow-x-auto` so the thead's
-						 * sticky offset is computed against the viewport rather than
-						 * the wrapper's scroll container (overflow:auto on either
-						 * axis creates a scroll container that traps sticky). 4 cols
-						 * fit easily at lg+ (1024+). */}
-						<div className='hidden lg:block'>
+							<ScrollReveal>
+							<div className='hidden lg:block'>
 							<table className='w-full text-left'>
 								<thead
 									className='sticky z-10'
@@ -469,14 +407,7 @@ export default function PricingContent() {
 						</div>
 					</ScrollReveal>
 
-					{/* Wave J.2 (FIX-02 P1) — Mobile + tablet: tier-tab switcher.
-					    Replaces the prior 3x details-accordion pattern that produced
-					    ~800-1000px of mostly-empty space at <md (em-dash placeholders
-					    for unavailable features looked like broken layout).
-					    Linear / Resend pricing mobile uses this segmented-control
-					    pattern: 3 tier pills at top + vertical feature checklist for
-					    the selected tier only. */}
-					<div className='flex flex-col gap-6 lg:hidden'>
+						<div className='flex flex-col gap-6 lg:hidden'>
 						<ScrollReveal>
 							<div
 								role='tablist'
@@ -537,13 +468,6 @@ export default function PricingContent() {
 				</div>
 			</section>
 
-			{/* ---- Section 4: Competitor Context Anchor ---- REMOVED 2026-05-02
-			 * per Alim feedback "remove the 12.99 box - dont like how we sell
-			 * cheap so much". The block displayed $12.99 vs $200+ strikethrough
-			 * with "15-27x cheaper than Rilla, Siro, Hyperbound." Same
-			 * comparison still lives in the FAQ entry "How is this different
-			 * from Rilla, Siro, and Hyperbound?" for users who want it. */}
-
 			{/* ---- Section 5: Trust Signals ---- */}
 			<section className='pb-24 md:pb-32'>
 				<div className='mx-auto max-w-7xl px-6 2xl:max-w-[1440px]'>
@@ -565,9 +489,6 @@ export default function PricingContent() {
 									alt={logo.alt}
 									width={logo.w}
 									height={logo.h}
-									/* G-02 (2026-05-02): logos rendered as solid white silhouettes
-									 * per Alim "fix company logos, make white". brightness-0 collapses
-									 * source colors to black, invert flips to white; opacity softens. */
 									className='h-6 w-auto opacity-60 brightness-0 invert'
 								/>
 							))}

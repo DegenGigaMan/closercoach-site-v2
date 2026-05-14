@@ -1,21 +1,3 @@
-/** @fileoverview Press Strip — minimal pull-quote band between S2 warm and
- * S3 dark. Refined 2026-04-26 (Wave F.3) per Figma 85:16459: vertical
- * hairline between quote and attribution removed, gap between the two
- * tightened to 24px (Figma blockquote `gap-[24px]`). Compact 32px vertical
- * padding preserved; horizontal emerald gradient framing lines preserved.
- *
- * Wave Y.2 (Alim 2026-04-28): pull-quote rewritten from "The Duolingo for
- * sales." to the Hypepotamus article's framing angle. Alim shared the source
- * URL and suggested pulling the angle "Ex prizepicks engineer bringing
- * sports-like competition to sales" — that headline summary now anchors the
- * strip. (Wave X.5's REDUCTION CANDIDATE C — remove SectionPressStrip — is
- * moot now that ProofConnectorB was deleted entirely 2026-05-01; the press
- * angle is editorial framing, not customer testimony, so it stands alone.)
- *
- * Wave Z.1 P1-A (2026-04-28): attribution wrapped in source link to the
- * Hypepotamus article so the editorial press framing is verifiably
- * third-party. Subtle hover underline; new tab + noopener noreferrer. */
-
 'use client'
 
 export default function SectionPressStrip() {

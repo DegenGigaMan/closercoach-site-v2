@@ -1,5 +1,3 @@
-/** @fileoverview Privacy Policy page. Warm editorial surface, sticky TOC, SOC2 plain-English summary, structured legal sections. */
-
 import LegalPageLayout from '@/components/layout/LegalPageLayout'
 import { Section, BulletList, Strong } from '@/components/layout/LegalContent'
 import { BRAND } from '@/lib/constants'

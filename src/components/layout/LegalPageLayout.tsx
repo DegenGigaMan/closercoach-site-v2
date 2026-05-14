@@ -1,5 +1,3 @@
-/** @fileoverview Shared layout for legal pages. Warm editorial surface, breadcrumb, plain-English summary, sticky TOC, cross-page navigation. */
-
 import Link from 'next/link'
 import LegalTOC from './LegalTOC'
 
@@ -22,11 +20,6 @@ const LEGAL_LINKS = [
 	{ label: 'Cookie Policy', href: '/cookie-policy' },
 ] as const
 
-/**
- * @description Shared layout for all legal pages. Header with breadcrumb + title + last-updated date,
- * plain-English summary block, sticky TOC sidebar (desktop) / mobile accordion, main content area
- * with max-w-prose for readability, and footer with contact + cross-navigation.
- */
 export default function LegalPageLayout({
 	title,
 	lastUpdated,

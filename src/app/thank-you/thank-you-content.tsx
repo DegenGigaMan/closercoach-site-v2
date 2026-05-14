@@ -1,16 +1,3 @@
-/** @fileoverview /thank-you client component. Calendly demo-booking confirmation
- * page (rewired Wave Y.15, Alim 2026-04-28). Header confirms the demo, three
- * next-action cards (download the app while you wait, join the WhatsApp
- * community, follow on social) keep the moment productive. Dark surface with
- * warm celebration atmospheric accent. Minimal footer handled via Footer.tsx
- * pathname detection.
- *
- * Wave Y.15 copy rewrite: prior framing said 'Trial Active / 3-day free trial
- * just started' but the page is wired for Calendly demo redirects per W6.
- * Confirmation copy now matches the demo flow. The QR + Install card stays
- * (closers may still want to download the app after booking) but loses its
- * 'trial' framing and reads as 'explore while you wait'. */
-
 'use client'
 
 import Image from 'next/image'
@@ -57,10 +44,7 @@ export default function ThankYouContent({ firstName }: Props) {
 			<AtmosphereNoise opacity={0.03} />
 
 			<div className='relative z-10 mx-auto max-w-3xl px-6 py-20 md:py-28'>
-				{/* Confirmation header (Wave Y.15: rewritten for Calendly demo
-				 * confirmation flow). Pill, headline, and subhead all confirm
-				 * the booking instead of activating a trial. */}
-				<div className='text-center'>
+					<div className='text-center'>
 					<span className='mx-auto inline-flex items-center gap-2 rounded-full border border-cc-accent/30 bg-cc-accent/8 px-4 py-1.5 text-xs font-medium text-cc-accent'>
 						<CheckCircle weight='fill' className='h-4 w-4' aria-hidden='true' />
 						<span className='font-mono uppercase tracking-[0.2em]'>Demo Booked</span>
@@ -153,13 +137,7 @@ export default function ThankYouContent({ firstName }: Props) {
 									/>
 								</Link>
 							</div>
-							{/* Wave Z.7 P2-F (2026-04-28): scan-cue caption fills the
-							 * dead vertical space below the QR + store badges at
-							 * 1440 grid heights, where Card 1 was floating short
-							 * relative to Cards 2-3. Mono uppercase voice mirrors
-							 * Card 3's "Daily clips, every weekday" footer cadence
-							 * so all three cards now baseline-align at the bottom. */}
-							<p className='mt-auto pt-4 font-mono text-[11px] uppercase tracking-[0.18em] text-cc-text-muted'>
+								<p className='mt-auto pt-4 font-mono text-[11px] uppercase tracking-[0.18em] text-cc-text-muted'>
 								Scan with your phone camera
 							</p>
 						</div>
@@ -252,21 +230,13 @@ export default function ThankYouContent({ firstName }: Props) {
 							</li>
 						</ul>
 
-						{/* Wave R.2 FIX-02 (2026-04-27): footer kicker brings Card 3
-						 * to baseline parity with Cards 1-2. Mono uppercase voice
-						 * matches the eyebrow "FOLLOW" treatment higher in the card
-						 * and adds a concrete cadence cue. */}
-						<p className='mt-4 font-mono text-[11px] uppercase tracking-[0.18em] text-cc-text-muted'>
+							<p className='mt-4 font-mono text-[11px] uppercase tracking-[0.18em] text-cc-text-muted'>
 							Daily clips, every weekday
 						</p>
 					</div>
 				</div>
 
-				{/* Reassurance block (Wave Y.15: reframed for demo flow). The
-				 * '60 seconds to a scored session' moment landed under the
-				 * trial framing; under the demo framing the guidance is to
-				 * come prepared so the call is productive. */}
-				<div className='mt-14 rounded-2xl border border-cc-surface-border bg-cc-surface/40 p-6 text-center md:p-8'>
+					<div className='mt-14 rounded-2xl border border-cc-surface-border bg-cc-surface/40 p-6 text-center md:p-8'>
 					<p className='font-mono text-[11px] uppercase tracking-[0.2em] text-cc-accent'>
 						Before the call
 					</p>

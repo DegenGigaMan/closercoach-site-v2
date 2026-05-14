@@ -1,45 +1,3 @@
-/** @fileoverview S6 Teams — Wave U bento per Figma 93-16838 (2026-04-27).
- *
- * Six-card bento, 3-row asymmetric composition per Andy's 2026-04-26 master
- * frame. Wave U corrects Wave M/S/T errors:
- *   ─ Chapter markers ([01]..[06]) removed — were never in Figma.
- *   ─ Gradient fade between visual + body removed — Figma cards are one fill.
- *   ─ Card 5 promoted from row-2 split to row-2+3 tall vertical column.
- *   ─ Card 6 narrowed from col-span-3 to col-span-2 (Card 5 owns col 3).
- *
- * Parent container: 1232x1159 desktop frame -> max-w-[1232px] at lg+.
- *
- *   ROW 1 (2/1 split, ~503px tall)
- *     01 Coach Reps At Scale (93:16849) -- col-span-2, calendar mockup
- *     02 Know Where Every Rep Stands (93:16986) -- col-span-1, rep score stack
- *
- *   ROW 2-3 (left two cols 1/1, right col tall col-span-1 row-span-2)
- *     03 Onboard New Reps 10x Faster (81:5018) -- progress bar viz
- *     04 Enforce New Scripting Efficiently (81:5069) -- vertical timeline
- *     05 Hire Better, Faster (81:4739) -- candidate ranking list (TALL)
- *
- *   ROW 3 (col-span-2 under cards 3+4)
- *     06 Integrate Your Existing Sales Technology (81:4702) -- hub-and-spoke
- *
- * Card body (title + supporting copy) sits beneath each visual on the same
- * surface. Hover lifts the card and intensifies the emerald surround.
- *
- * Tablet (md, 768-1024px): single-column stack -- the cards are content-dense
- * and 2-col makes them cramped. Bento spans only activate at lg+ (1024px+).
- *
- * PRIOR constellation hero (stat pills + growth chart + 3 inline features)
- * KILLED 2026-04-20. Center-aligned heading + 6-logo manager wall (SP2)
- * preserved. Cost-of-Inaction + Competitive Pricing rows hidden 2026-04-23.
- *
- * Surface: dark (cc-foundation #0D0F14). Returns from S5.5 warm.
- * Copy locked to lp-copy-deck-v5 § Section 6.
- *
- * Hydration safety: Reveal uses stable initial props; useReducedMotion
- * handled by the shared wrapper. F42 safe.
- *
- * WCAG AA on dark: white headings (21:1), cc-text-secondary #94A3B8 body
- * (6.4:1), emerald #10B981 chapter (4.83:1). */
-
 'use client'
 
 import Image from 'next/image'
@@ -63,16 +21,6 @@ type RevealProps = {
 	delay?: number
 }
 
-/**
- * @description Fades + lifts children on scroll. Stable initial props so SSR
- * matches first client render. Collapses to 0s under reduced-motion per F42.
- *
- * Phase 8 (Andy 2026-05-01): bento was firing too late + cards were staggered
- * too far apart. Wave X.1's 0.9s duration + 0.18 stagger (then doubled by
- * Wave Y.8 to 1.8s + 0.36) meant Andy was scrolling past the section before
- * the last cards revealed. Tightened: duration 0.55s, stagger 0.08, margin
- * '-10% 0px' -> '0px' so cards reveal as the section enters viewport.
- */
 function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElement {
 	const prefersReducedMotion = useReducedMotion()
 	const ref = useRef<HTMLDivElement | null>(null)
@@ -95,8 +43,6 @@ function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElem
 	)
 }
 
-/* ── Manager logo wall (SP2) ── */
-
 /* Figma-locked logo set + order per node 63:3441. Sunrun is a pre-white
  * variant so it opts out of the brightness-0 invert filter. Per-logo
  * heightClass mirrors the Figma optical weight band (20-32px tall). */
@@ -111,28 +57,6 @@ const MANAGER_LOGOS = [
 
 /* ── Bento feature cards (6) ── */
 
-/* Layout role drives both the lg+ column span and the visual area height per
- * Figma 93-16838 master frame. Each card's visual is a hand-coded React
- * composition imported from ./teams-bento/*Visual.
- *
- *  - 'hero'           : Card 1 (col-span-2, row 1). Tallest visual area.
- *  - 'narrow'         : Card 2 (col-span-1, row 1). Matches hero height so row
- *                       1 reads as a balanced 2/1 split.
- *  - 'equal'          : Card 3 (col-span-1, row 2). Title+body top, visual
- *                       bottom (default vertical stack).
- *  - 'equal-inverted' : Card 4 (col-span-1, row 2). INVERTED — visual TOP
- *                       (~60%), title+body BOTTOM (~40%) per Figma 81-5069.
- *                       Wave S 2026-04-27.
- *  - 'tall'           : Card 5 (col-span-1, ROW-SPAN-2 covering rows 2+3).
- *                       Vertical stack — title+body TOP, visual fills the
- *                       remaining tall column with flex-1 per Figma 81-4739.
- *                       Wave U 2026-04-27 (replaces prior 'split-equal').
- *  - 'split-full'     : Card 6 (col-span-2, row 3). HORIZONTAL split at lg+ —
- *                       title+body LEFT (~40%), hub-spoke RIGHT (~60%) per
- *                       Figma 81-4702. Collapses to vertical at <lg. Wave U
- *                       narrows from col-span-3 to col-span-2 since Card 5
- *                       now owns the third column for both rows 2 and 3.
- */
 type FeatureRole = 'hero' | 'narrow' | 'equal' | 'equal-inverted' | 'equal-flow' | 'tall' | 'split-full'
 
 type Feature = {
@@ -208,12 +132,6 @@ const roleVisualHeight: Record<FeatureRole, string> = {
 	narrow: 'h-[280px] md:h-[360px]',
 	equal: 'h-[230px] md:h-[250px]',
 	'equal-inverted': 'h-[230px] md:h-[250px]',
-	/* Andy 2026-05-01: 'equal-flow' is for the Enforce New Scripting card.
-	 * Matches the 'equal' tier (230/250px) so the row-2 grid lockstep keeps
-	 * both Onboard and Enforce cards at the same total height (~412px).
-	 * The flow-visual elements are tuned compact (sm rails, 24px manager
-	 * badge, 36px app icon, 32px avatars) so the assignment flow still
-	 * reads cleanly inside the 250px visual area. */
 	'equal-flow': 'h-[300px] md:h-[340px]',
 	tall: 'flex-1',
 	'split-full': 'h-[280px] md:h-[300px]',
@@ -225,8 +143,6 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 	const isSplit = role === 'split-full'
 	const isTall = role === 'tall'
 
-	/* Title typography per Figma 93:16840: Lora Bold 24px white, line-height
-	 * 1.2 — same on every card (no hero / body split). */
 	const titleNode = (
 		<h3
 			className='text-trim text-white text-[24px] font-bold'
@@ -235,8 +151,6 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 			{feature.title}
 		</h3>
 	)
-	/* Subhead per Figma 93:16847: Inter Light 14px #94a3b8, line-height 1.6 —
-	 * same on every card. */
 	const bodyNode = (
 		<p
 			className='text-trim font-light text-[14px] text-[#94a3b8]'
@@ -246,12 +160,6 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 		</p>
 	)
 
-	/* Shared article shell per Figma 93:16840:
-	 *   ─ Background: rgba(30,34,48,0.2) — translucent surface, NOT solid card.
-	 *   ─ Border: 1px rgba(255,255,255,0.06) — subtler than cc-surface-border.
-	 *   ─ Radius: 24px (was rounded-2xl 16px).
-	 *   ─ Padding: 32px on the title/body block (was p-6 md:p-8).
-	 *   ─ Heading→visual gap: 40px (was mt-auto). */
 	const articleClass =
 		'group relative flex h-full flex-col overflow-hidden rounded-[24px] border border-[rgba(255,255,255,0.06)] bg-[#0C0E13] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.12] hover:shadow-[0_0_32px_rgba(16,185,129,0.12)]'
 
@@ -331,11 +239,6 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 
 /* ── Main section ── */
 
-/**
- * @description S6 Teams section. Center-aligned hero block (heading +
- * subhead + "Join 35+" social proof line + logo wall) over a 6-card bento
- * grid with Figma-derived per-card visuals, and dual CTAs.
- */
 export default function SectionTeams(): ReactElement {
 	return (
 		<section
@@ -343,19 +246,9 @@ export default function SectionTeams(): ReactElement {
 			data-surface='dark-teams'
 			className='relative overflow-hidden bg-cc-foundation py-24 md:py-32'
 		>
-			{/* Andy 2026-05-01: prior 4-stop warm→mid→grey→dark gradient bridge
-			 * (Wave Y.10 / Z.4 P2-C) read muddy. Removed in favor of a normal
-			 * clean section seam — warm Results terminates at its bottom edge,
-			 * dark Teams begins at its top edge, no gradient mush in between. */}
+				<AtmosphereNoise opacity={0.02} />
 
-			<AtmosphereNoise opacity={0.02} />
-
-			{/* Wave M (2026-04-26): cap at Figma master-frame 1232px. Wave J.3's
-			 * 2xl:max-w-[1440px] kept the rest of the page wide but the bento
-			 * needs to land at the spec'd 1232 so the hand-coded card visuals
-			 * read at their intended density. Heading + logo wall + CTAs sit
-			 * inside the same 1232 rail for vertical alignment. */}
-			<div className='relative z-10 mx-auto max-w-[1232px] px-6'>
+				<div className='relative z-10 mx-auto max-w-[1232px] px-6'>
 				{/* ── Top block (center-aligned) ── */}
 				<Reveal className='flex flex-col items-center gap-5 text-center'>
 					<span className='text-[11px] font-semibold uppercase tracking-[0.18em] text-cc-accent'>
@@ -382,11 +275,7 @@ export default function SectionTeams(): ReactElement {
 					>
 						Join 35+ sales teams scaling with CloserCoach.
 					</p>
-					{/* H-36 (2026-05-04): mobile uses a 2-col grid with all logos
-					 * normalized to h-6 (24px) so the row reads as one consistent
-					 * brand wall instead of per-logo size noise. md+ restores the
-					 * Figma-locked per-logo heightClass + flex-nowrap row layout. */}
-					<div className='grid w-full max-w-5xl grid-cols-2 items-center justify-items-center gap-x-6 gap-y-8 md:flex md:flex-nowrap md:justify-between md:gap-x-8'>
+						<div className='grid w-full max-w-5xl grid-cols-2 items-center justify-items-center gap-x-6 gap-y-8 md:flex md:flex-nowrap md:justify-between md:gap-x-8'>
 						{MANAGER_LOGOS.map((logo) => (
 							<Image
 								key={logo.alt}
@@ -400,7 +289,6 @@ export default function SectionTeams(): ReactElement {
 					</div>
 				</Reveal>
 
-				{/* ── Bento feature grid (3-row asymmetric per Andy reference 2026-04-26) ── */}
 				{/* Mobile / tablet (<lg, ≤1023px): single-column stack, all 6 cards
 				 * stack 1-up in source order (Coach → Know Where → Onboard →
 				 * Enforce → Hire → Integrate). Desktop (lg+, 1024px+): 3-col grid
@@ -411,10 +299,7 @@ export default function SectionTeams(): ReactElement {
 					))}
 				</div>
 
-				{/* ── Compliance pill strip — moved here from its own section per
-				 * Andy 2026-04-27 so the trust anchor sits directly under the
-				 * bento and above the closing CTAs. */}
-				<Reveal delay={0.1} className='mt-10 md:mt-12'>
+					<Reveal delay={0.1} className='mt-10 md:mt-12'>
 					<CompliancePills />
 				</Reveal>
 

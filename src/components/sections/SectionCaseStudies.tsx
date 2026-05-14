@@ -1,43 +1,3 @@
-/** @fileoverview S5.5 Case Studies (W6). NEW section between Founder Strip (W5,
- * dark) and Teams (S6). Warm surface (#F5F0EB) continues the exhale. Top edge
- * gradient softens the dark → warm transition from Founder Strip.
- *
- * Composition per section-blueprint v2 § S5.5 Case Studies:
- *   1. Top-edge gradient band (~96px) from cc-foundation into warm.
- *   2. Geist Mono overline + Lora Bold billboard-adjacent headline.
- *   3. AZ 4-frame duotone interstitial: Practice · Lose · Learn · Win.
- *      Inline SVG duotone color blocks (emerald shadow #0D4A38 → warm highlight
- *      #F5F0EB). Large Lora Bold label overlay bottom-left on each frame.
- *      Desktop: 4-col horizontal row. Mobile: 2x2 grid.
- *   4. Three case study tier cards (REAL DATA ONLY — NO fabricated V2 content):
- *        - CLOSER — Dimitriy (T2 verbatim) · "Verified User" badge
- *        - TEAMS — Chris (T3 verbatim + "1 hour per week. 20 reps trained.")
- *        - ENTERPRISE — G9 reframe ("22-seat team onboarding") — flagged as
- *          placeholder until real enterprise testimonial lands (T6 P0).
- *      3-col grid desktop / stack mobile.
- *
- * Surface transition: 80-100px gradient at top from cc-foundation (#0D0F14) into
- * cc-warm-light (#F5F0EB). Continues from W5 dark into warm exhale.
- *
- * Portrait placeholders: /public/images/case-studies/{dimitriy,chris,enterprise}.svg
- * Same duotone vocabulary as W5 founder headshots (circular frame, emerald ring,
- * duotone bg). Marked placeholder — swap when real photos land.
- *
- * WCAG AA on warm (#F5F0EB):
- *   - cc-text-primary #0D0F14 = 18:1 (headlines, names)
- *   - cc-text-secondary-warm (#3A3D47) = ~10:1 (body)
- *   - Emerald-hover #059669 = 4.52:1 (tier accent for CLOSER pill text)
- *   - Amber-dark #B45309 = 5.03:1 (tier accent for TEAMS pill text)
- *   - Slate-700 #334155 = 9.1:1 (tier accent for ENTERPRISE pill text)
- *
- * Hydration safety: all initial props stable, no client-branched initial state.
- * Reduced motion via useReducedMotion collapses transitions to 0s per F42.
- *
- * Zero fabricated data: T2 Dimitriy quote verbatim, T3 Chris quote verbatim, G9
- * enterprise reframe uses only verified "22-seat deal" fact. Marcus Chen and all
- * V2 fabricated metrics (3x quota, C- to A in 8 weeks, $10K months, Meridian
- * Financial) are KILLED. */
-
 'use client'
 
 import { useRef, type ReactElement } from 'react'
@@ -57,10 +17,6 @@ type RevealProps = {
 	delay?: number
 }
 
-/**
- * @description Scroll-reveal wrapper. Stable initial props so SSR matches CSR.
- * Reduced motion collapses the transition to 0s per F42 hydration contract.
- */
 function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElement {
 	const prefersReducedMotion = useReducedMotion()
 	const ref = useRef<HTMLDivElement | null>(null)
@@ -113,9 +69,6 @@ const AZ_FRAMES: ReadonlyArray<AzFrame> = [
 	},
 ] as const
 
-/**
- * @description Small decorative glyph. Faint white stroke, aria-hidden.
- */
 function FrameGlyph({ glyph }: { glyph: AzFrame['glyph'] }): ReactElement {
 	const common = { stroke: 'rgba(245,240,235,0.35)', strokeWidth: 1.5, fill: 'none', strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
 	switch (glyph) {
@@ -148,12 +101,6 @@ function FrameGlyph({ glyph }: { glyph: AzFrame['glyph'] }): ReactElement {
 	}
 }
 
-/**
- * @description 4-frame duotone interstitial. 4-col desktop / 2x2 mobile grid.
- * Each frame is a 3:4 duotone color block with a Lora Bold label overlay and a
- * subtle glyph hint. No photos — stylized color-block treatment per agent
- * judgment (cleaner than placeholder SVGs for launch).
- */
 function AzInterstitial(): ReactElement {
 	return (
 		<div className='grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4'>
@@ -222,12 +169,6 @@ type TierCardProps = {
 	isPlaceholder?: boolean
 }
 
-/**
- * @description Case study tier card. Portrait top 40-50%, tier pill top-left
- * overlapping portrait edge, optional metric headline, industry tag pill, Lora
- * Bold Italic quote, name + role + source badge footer. Used for CLOSER, TEAMS,
- * and ENTERPRISE tiers on warm surface.
- */
 function TierCard({
 	tier,
 	tierAccent,
@@ -364,8 +305,6 @@ function TierCard({
 					</span>
 				</span>
 				{isPlaceholder ? (
-					/* PLACEHOLDER — real enterprise customer testimonial pending (T6 P0 Taylor).
-					 * Swap to "[INDUSTRY VERTICAL TBD]" tag pre-launch per F1-H3. Real attribution lands in Wave F4. */
 					<p className='font-[family-name:var(--font-mono)] text-[9px] font-medium uppercase tracking-[0.14em] text-cc-text-secondary-warm/70'>
 						[Industry Vertical TBD]
 					</p>
@@ -377,12 +316,6 @@ function TierCard({
 
 /* ── Section ── */
 
-/**
- * @description S5.5 Case Studies section. Warm surface with top-edge dark→warm
- * gradient transition from Founder Strip. AZ 4-frame interstitial above 3 tier
- * cards (CLOSER Dimitriy T2, TEAMS Chris T3, ENTERPRISE G9 reframe). All
- * content traced to verified proof — zero fabricated quotes, metrics, or names.
- */
 export default function SectionCaseStudies(): ReactElement {
 	return (
 		<section
@@ -455,10 +388,7 @@ export default function SectionCaseStudies(): ReactElement {
 							badge='Sales Manager'
 						/>
 					</Reveal>
-					{/* T6 P0 (2026-05-02): real Enterprise testimonial from Taylor lands.
-					    Photo + verbatim-trimmed quote provided 2026-05-02. Replaces the
-					    G9 placeholder reframe. */}
-					<Reveal delay={0.16}>
+						<Reveal delay={0.16}>
 						<TierCard
 							tier='Enterprise'
 							tierAccent={SLATE_WARM}

@@ -1,16 +1,3 @@
-/** @fileoverview TextType — typewriter effect adapted from ReactBits
- * (TextAnimations/TextType). Single-string typing only (no rotating array, no
- * deletion loop). Adds `start` prop so callers can chain with motion timelines.
- *
- * Source: ReactBits MCP `mcp__reactbits__get_component name:TextType` 2026-04-25.
- * Customized for CC: TypeScript, single string, gated `start` prop, no GSAP cursor
- * blink (uses CSS animation), token-friendly cursor styling.
- *
- * @description Typewriter that reveals `text` one character at a time once
- * `start` is true. Holds settled (full text) afterwards. Cursor blinks via CSS.
- * No deletion. Reduced-motion: snaps to full text instantly.
- */
-
 'use client'
 
 import { useEffect, useRef, useState, createElement } from 'react'

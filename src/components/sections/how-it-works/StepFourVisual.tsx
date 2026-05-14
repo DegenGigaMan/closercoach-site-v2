@@ -1,47 +1,3 @@
-/** @fileoverview S3 Step 4 Review right-column visual composition.
- * 5-sub-state scroll-trigger-then-autoplay chain. The S3 narrative payoff: every
- * call scored, practice vs real grade delta, word-for-word coached rewrites,
- * 1-of-20-page deep-drill preview, AI Coach summary + stats.
- *
- *   4A (0 - 800ms):     Shell appears. Industry tab bar (top) + metric tab stack
- *                        (left) + empty comparison panel + empty transcript area.
- *   4B (800 - 2000ms):  Practice scorecard on left materializes. Amber C+ grade
- *                        with letter-spring reveal (HPV2 ScoreState vocabulary,
- *                        stiffness 300 / damping 18). "PRACTICE" kicker mono muted.
- *   4C (2000 - 3500ms): Real scorecard on right materializes. Emerald A- grade
- *                        with staggered letter-spring reveal. Emerald delta arrow
- *                        draws from Practice to Real (SVG pathLength 0 -> 1,
- *                        THREAD_EASE). "REAL CALL" kicker mono emerald.
- *                        "+2 grades" delta chip fades in on arrow land.
- *   4D (3500 - 5000ms): Transcript split reveals beneath scorecards. Two columns:
- *                        "YOU SAID" (left, white, weak line) vs "COACHED RESPONSE"
- *                        (right, emerald rewrite). Line pairs cascade in with
- *                        FIELD_CASCADE_SPRING stagger. Deep-drill "1 / 20" card
- *                        slides in from right with PC3 "Up to 20 Pages of
- *                        Feedback" badge (PC_BADGE_PILL vocabulary).
- *   4E (5000ms+):        AI Coach summary bar fades up beneath transcript row.
- *                        "B grade. Top 15% this week." + "211 WPM / 64/36
- *                        talk-listen ratio" stats + PC4 "Scoring adapts to your
- *                        conversation. Not a fixed rubric." callout. Settled.
- *
- * Authority:
- *   - Visual spec: vault/clients/closer-coach/design/section-blueprint.md §S3 Step 4 (236-250)
- *   - Copy spec:   vault/clients/closer-coach/copy/lp-copy-deck-v5.md §Section 3 Step 4 (v5.3)
- *   - Motion:      vault/clients/closer-coach/design/motion-spec.md (Thread Emergence arrow draw)
- *   - Vocabulary:  src/components/hero/hero-phone-v3.tsx (ScoreState grade-reveal spring),
- *                  src/components/sections/_lab/how-it-works/StepThreeVisual.tsx (kicker grammar)
- *   - Shared utils: ./_shared/use-sub-state-machine + ./_shared/step-visual-defaults
- *
- * NO phone frame in Step 4: phone is reserved for Step 3 per R7 v3 D3. This is
- * the "after the call" payoff surface and reads as a dashboard, not a device.
- *
- * Reduced-motion guard collapses to 4E instantly: scorecards both present, arrow
- * fully drawn, transcript pairs visible, deep-drill card open, AI Coach summary
- * rendered. No cascades, no ambient breath.
- *
- * F38/F39 hydration safety: every motion.* initial prop uses STABLE values.
- * Reduced-motion lives exclusively in transition (duration: 0). */
-
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
@@ -68,9 +24,6 @@ const T_4E = 5000
 
 type SubState = '4A' | '4B' | '4C' | '4D' | '4E'
 
-/* Module-level pinned chain per F27 (states-array identity warning). Inline
- * arrays create new references every render; pinning keeps the hook contract
- * clean and mirrors W2-W4 STEP_*_STATES convention. */
 const STEP_FOUR_STATES: ReadonlyArray<{ id: SubState, enterAtMs: number }> = [
 	{ id: '4A', enterAtMs: T_4A },
 	{ id: '4B', enterAtMs: T_4B },
@@ -79,17 +32,9 @@ const STEP_FOUR_STATES: ReadonlyArray<{ id: SubState, enterAtMs: number }> = [
 	{ id: '4E', enterAtMs: T_4E },
 ] as const
 
-/* Industry tabs (top bar). Verbatim from dispatch brief -- these are the
- * Enterprise SaaS / Logistics / FinTech scorecard verticals. Active = Enterprise
- * SaaS per M2 (agent-authored selection, see DEV-028). */
 const INDUSTRY_TABS = ['Enterprise SaaS', 'Logistics', 'FinTech'] as const
 const ACTIVE_INDUSTRY = 'Enterprise SaaS'
 
-/* Metric tabs (left stack). Verbatim from section-blueprint.md Step 4: Discovery,
- * Pitch, Objection Handling, Closing, Tonality. Active = Objection Handling
- * per M2 -- anchors the transcript split to the same beat (prospect deflection
- * on pricing / integration) as Step 3's live call. Agent-authored selection,
- * DEV-028. */
 const METRIC_TABS = [
 	'Discovery',
 	'Pitch',
@@ -99,24 +44,12 @@ const METRIC_TABS = [
 ] as const
 const ACTIVE_METRIC = 'Objection Handling'
 
-/* Transcript split lines (4D). Agent-authored, anchored on the Step 3
- * integration-objection narrative for S3 continuity. Practice-side line reads as
- * a weak rebuttal; Coached-side line reads as an authentic surgical rewrite that
- * flips the objection into discovery. Logged DEV-029. */
 const TRANSCRIPT_YOU = 'We have integrations with everyone. I can send you docs.'
 const TRANSCRIPT_COACHED = 'Which integration broke first when you tried it before?'
 
-/* Deep-drill 1 of 20 finding body (4D). Agent-authored per M5: one specific
- * finding from the call in the coach's voice, framed as observation + fix. The
- * "1 / 20" pagination proves the PC3 stat ("Up to 20 Pages of Feedback") is real.
- * Logged DEV-030. */
 const FINDING_BODY =
 	'Prospect deflected on pricing at 04:22. You answered with features. Anchor to the ROI timeline next time: "If this closes one deal in 90 days, it pays for itself."'
 
-/* AI Coach summary line + stats (4E). "B grade. Top 15% this week." is
- * PC5-verbatim from copy deck / proof-inventory (percentile framing). "211 WPM"
- * and "64 / 36 talk-listen ratio" are PC6-verbatim scorecard data points from
- * copy deck. Only the connective tissue between them is agent-authored, DEV-031. */
 const AI_SUMMARY_STATS_WPM = 211
 const AI_SUMMARY_STATS_TALK = 64
 const AI_SUMMARY_STATS_LISTEN = 36
@@ -143,7 +76,6 @@ function IndustryTabs({ active, prefersReducedMotion }: {
 						aria-selected={isActive}
 						tabIndex={isActive ? 0 : -1}
 						className="relative px-3 py-2 font-[family-name:var(--font-mono)] text-[10px] font-medium uppercase tracking-[0.15em] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent/60"
-						/* F39: stable initial. Reduced-motion collapses via duration: 0. */
 						initial={{ opacity: 1 }}
 						animate={{ color: isActive ? '#ffffff' : 'rgba(133,149,168,0.9)' }}
 						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.35, ease: THREAD_EASE }}
@@ -185,7 +117,6 @@ function MetricTabs({ active, prefersReducedMotion }: {
 						aria-selected={isActive}
 						tabIndex={isActive ? 0 : -1}
 						className="relative flex items-center rounded-md px-2.5 py-1.5 text-left text-[11px] font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent/60"
-						/* F39: stable initial. All color motion lives in animate + transition. */
 						initial={{ opacity: 1 }}
 						animate={{
 							color: isActive ? '#10B981' : 'rgba(133,149,168,0.85)',
@@ -239,7 +170,6 @@ function ScorecardPanel({
 		<motion.div
 			data-scorecard-variant={variant}
 			className={`flex flex-1 flex-col items-center gap-2 rounded-2xl border border-white/[0.08] bg-cc-surface/70 p-4 ${CARD_SHADOW}`}
-			/* F39: stable initial. Reduced-motion collapses via duration: 0. */
 			initial={{ opacity: 0, y: 8 }}
 			animate={revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
 			transition={prefersReducedMotion ? { duration: 0 } : CARD_ENTER_SPRING}
@@ -280,7 +210,6 @@ function ScorecardPanel({
 				<motion.span
 					className={`absolute font-[family-name:var(--font-heading)] text-[28px] leading-none ${letterColor}`}
 					aria-label={`${label} grade ${grade}`}
-					/* F39: stable initial. HPV2 ScoreState grade-reveal vocabulary. */
 					initial={{ opacity: 0, scale: 0.5 }}
 					animate={revealed ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }}
 					transition={prefersReducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 18, delay: 0.55 }}
@@ -306,9 +235,6 @@ function DeltaArrow({ drawn, prefersReducedMotion }: {
 			aria-hidden="true"
 			data-arrow-drawn={drawn}
 			className="pointer-events-none relative flex w-12 shrink-0 flex-col items-center justify-center"
-			/* F58 fix: outer opacity gate suppresses stroke-linecap dot artifacts at
-			 * 4A/4B before pathLength draws. Fade in at 4C with a short crossfade
-			 * ahead of the draw start so the arc appears to emerge, not pop. */
 			initial={{ opacity: 0 }}
 			animate={{ opacity: drawn ? 1 : 0 }}
 			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.2, ease: 'easeOut' }}
@@ -320,7 +246,6 @@ function DeltaArrow({ drawn, prefersReducedMotion }: {
 					stroke="#10B981"
 					strokeWidth="2"
 					strokeLinecap="round"
-					/* F39: stable initial. Reduced-motion lives in transition.duration: 0. */
 					initial={{ pathLength: 0 }}
 					animate={{ pathLength: drawn ? 1 : 0 }}
 					transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.9, ease: THREAD_EASE }}
@@ -360,10 +285,6 @@ function TranscriptRow({ label, body, tone, index, revealed, prefersReducedMotio
 	prefersReducedMotion: boolean
 }) {
 	const kickerClass = tone === 'coached' ? KICKER_MONO_EMERALD : KICKER_MONO_MUTED
-	/* F59 fix: both tones render body in white. Semantic "coached" signal lives
-	 * on the emerald kicker + emerald border + emerald/6 bg. Removing the full-
-	 * emerald body equalizes visual weight with the YOU SAID panel so the pair
-	 * reads as parallel dialogue, not a louder rewrite. */
 	const bodyClass = 'text-white'
 	const borderClass = tone === 'coached'
 		? 'border-cc-accent/20 bg-cc-accent/[0.06]'
@@ -371,7 +292,6 @@ function TranscriptRow({ label, body, tone, index, revealed, prefersReducedMotio
 	return (
 		<motion.div
 			className={`flex flex-col gap-1.5 rounded-xl border p-3 ${borderClass}`}
-			/* F39: stable initial. Cascade stagger via delay in transition. */
 			initial={{ opacity: 0, y: 6 }}
 			animate={revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 6 }}
 			transition={prefersReducedMotion
@@ -394,7 +314,6 @@ function DeepDrillCard({ revealed, prefersReducedMotion }: {
 	return (
 		<motion.div
 			className={`flex min-w-0 flex-col gap-2 rounded-xl border border-cc-accent/20 bg-cc-surface-card p-3 ${CARD_SHADOW}`}
-			/* F39: stable initial. Slides in from right. Reduced-motion collapses. */
 			initial={{ opacity: 0, x: 20 }}
 			animate={revealed ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
 			transition={prefersReducedMotion
@@ -413,7 +332,7 @@ function DeepDrillCard({ revealed, prefersReducedMotion }: {
 			<p className="text-[11.5px] leading-[1.45] text-cc-text-secondary">
 				{FINDING_BODY}
 			</p>
-			{/* PC3 badge inside the card for tight proof-adjacency. */}
+			{/* Badge inside the card for tight proof-adjacency. */}
 			<span className={PC_BADGE_PILL}>
 				Up to 20 Pages of Feedback
 			</span>
@@ -430,7 +349,6 @@ function AICoachSummary({ revealed, prefersReducedMotion }: {
 	return (
 		<motion.div
 			className={`flex flex-col gap-2 rounded-2xl border border-white/[0.08] bg-cc-surface/70 p-4 ${CARD_SHADOW}`}
-			/* F39: stable initial. 4E reveal. */
 			initial={{ opacity: 0, y: 12 }}
 			animate={revealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
 			transition={prefersReducedMotion ? { duration: 0 } : CARD_ENTER_SPRING}
@@ -443,16 +361,12 @@ function AICoachSummary({ revealed, prefersReducedMotion }: {
 					AI Coach Summary
 				</span>
 			</div>
-			{/* Headline grade + percentile (PC5). */}
+			{/* Headline grade + percentile. */}
 			<p className="text-[13px] leading-[1.4] text-white">
 				<span className="font-semibold text-cc-accent">B grade.</span>
 				{' Top 15% this week.'}
 			</p>
-			{/* Stats row (PC6). NumberFlow on the WPM value so the reveal feels measured.
-			 * F60 (W6): explicit aria-label on the NumberFlow wrapper and sr-only text
-			 * below so the animated digit reveal doesn't leave assistive-tech users with
-			 * an un-announced statistic. */}
-			<div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-[family-name:var(--font-mono)] text-[10.5px] text-cc-text-secondary tabular-nums">
+				<div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-[family-name:var(--font-mono)] text-[10.5px] text-cc-text-secondary tabular-nums">
 				<span aria-label={`${AI_SUMMARY_STATS_WPM} words per minute`}>
 					<span aria-hidden="true">
 						<NumberFlow value={revealed ? AI_SUMMARY_STATS_WPM : 0} />
@@ -467,8 +381,7 @@ function AICoachSummary({ revealed, prefersReducedMotion }: {
 					</span>
 				</span>
 			</div>
-			{/* PC4 callout: verbatim from copy deck / proof inventory.
-			 * 10px floor per mobile-visual-a11y-checklist.md v1.0. */}
+			{/* 10px floor for readability at small sizes. */}
 			<p className="font-[family-name:var(--font-mono)] text-[10px] italic leading-snug text-cc-text-muted">
 				Scoring adapts to your conversation. Not a fixed rubric.
 			</p>
@@ -478,7 +391,6 @@ function AICoachSummary({ revealed, prefersReducedMotion }: {
 
 /* --------------- Dev pin hook --------------- */
 
-/* Gated behind `enabled` prop (W6). Production never reads URLSearchParams. */
 function useSubStatePin(enabled: boolean): SubState | null {
 	const [pin, setPin] = useState<SubState | null>(null)
 	useEffect(() => {
@@ -530,7 +442,6 @@ export default function StepFourVisual({ devPin = false }: { devPin?: boolean } 
 			 * fill it. */}
 			<motion.div
 				className={`flex flex-col gap-3 rounded-3xl border border-white/[0.08] bg-cc-surface-card/80 p-4 backdrop-blur-sm ${CARD_SHADOW}`}
-				/* F39: stable initial. Shell fades in at 4A; reduced-motion via duration 0. */
 				initial={{ opacity: 0, y: 12 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={prefersReducedMotion ? { duration: 0 } : CARD_ENTER_SPRING}

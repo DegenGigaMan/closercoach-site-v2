@@ -1,5 +1,3 @@
-/** @fileoverview Locked brand data, pricing, stats, and design tokens for CloserCoach site. */
-
 export const STATS = {
 	userCount: '36,000+',
 	appStoreRating: '4.7',
@@ -11,12 +9,6 @@ export const STATS = {
 	skillDimensions: 7,
 } as const
 
-/* L-12 (2026-05-09) — pricing rebuild per Alim Slack 2026-05-08 23:43.
- * Closer unchanged at $12.99/mo. Teams renamed to Business at flat $49.99/mo
- * (no per-user). Enterprise renamed to Enterprise White Label, price stays
- * Custom. `business` field replaces `teams` to avoid downstream confusion
- * with the SectionTeams bento (which is about CloserCoach for sales teams,
- * a different concept than the Business pricing tier). */
 export const PRICING = {
 	individual: { monthly: 12.99, yearly: 69.99, effectiveMonthly: 5.83 },
 	business: { monthly: 49.99, annualDiscount: 0.20 },
@@ -284,17 +276,6 @@ export const SCORING_DATA = {
 	},
 } as const
 
-/**
- * @description Step 1 Clone Card B2C field schema (R-11). Replaces the prior
- * B2B field set (Name/Role/Company/Industry/Objection/Talk Track/Pain 1/Pain 2)
- * with 7 personalization layers tailored to CC's actual ICP (B2C closers in
- * insurance, mortgage, real estate, solar). Persona: Sarah Chen, mortgage
- * refinance lead. Locked Andy 2026-04-25 per
- * `vault/clients/closer-coach/feedback/clone-card-b2c-schema-proposal-2026-04-25.md`.
- *
- * `span: 'short'` -> 2-col grid placement (4 short fields share 2 columns).
- * `span: 'long'`  -> single-column full-width row (sentence-length values).
- */
 export const CLONE_CARD = {
 	name: 'Sarah Chen',
 	fields: [
@@ -308,11 +289,6 @@ export const CLONE_CARD = {
 	],
 } as const
 
-/**
- * @description Returns the appropriate store URL based on user's platform.
- * iOS -> App Store, Android -> Google Play, Desktop -> /download fallback.
- * Must be called client-side only (uses navigator.userAgent).
- */
 export function getStoreUrl(): string {
 	if (typeof navigator === 'undefined') return '/download'
 	const ua = navigator.userAgent

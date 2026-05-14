@@ -1,8 +1,3 @@
-/** @fileoverview Branded 404 page. Renders within root layout, so Header /
- * Footer auto-mount. Server component (no client-side state needed). Voice
- * matches site rhythm: short, slightly playful, never desperate. Pattern for
- * italic emphasis ported from /thank-you `<span className='italic text-cc-accent'>`. */
-
 import type { Metadata } from 'next'
 import MotionCTA from '@/components/shared/motion-cta'
 

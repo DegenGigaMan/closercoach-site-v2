@@ -1,40 +1,3 @@
-/** @fileoverview S4 Bento 1 — three fanned persona roleplay cards.
- *
- * Spec: Figma node 4:72 (S4 - Bento 1). Each card maps to 4:3 / 4:26 / 4:49
- * (Brenda / Bobby / Marcus). All three cards are 240 × 351 with identical
- * recipes:
- *   - Container: bg #1E2230, border white/14, rounded-[16px], p-[13px],
- *     shadow `-8 8 16 rgba(0,0,0,0.6), 0 0 20 rgba(16,185,129,0.05)`
- *   - Inner layout: flex-col h-full gap-[16px]
- *       * Portrait: aspect-[214/200], border white/5, rounded-[8px]; full-bleed
- *         photo with a backdrop-blur "Name, Age" pill anchored top-left
- *         (12px inset per Figma overlay padding).
- *       * Badge + quote group: flex-col gap-[12px]. Trust pill uses the
- *         persona's tone colour; quote is Inter Regular 16px leading-[1.4].
- *       * Difficulty: flex-1 justify-end so the label + 5-segment meter pin
- *         to the bottom regardless of quote length.
- *   - Meter: 116px track, gap-[4px]. Segments 1-2 are fixed 20px; segments
- *     3-5 are flex-1 (matches every card's auto-layout in Figma).
- *
- * Tone colours (exact Figma hex):
- *   - Card 1 Skeptical Prospect: #F5880B orange (NOT amber)
- *   - Card 2 Price-sensitive Buyer: #10B981 emerald (bg rgba(16,183,127))
- *   - Card 3 Technical Evaluator: #00C3FF cyan
- *
- * Difficulty colours:
- *   - Easy: #10B981
- *   - Medium: #F59E0B
- *   - Hard: #FF5A5A
- *
- * Text-trim (`text-box: trim-both cap alphabetic`) applied to every visible
- * text element so the cap-to-baseline box matches Figma's reported metrics
- * instead of the browser's default leading-inflated line box.
- *
- * Fan layout: three cards placed side-by-side with negative horizontal
- * margins; outer cards rotated ±6° per Figma node 1:11128's original
- * composition. Responsive scale keeps the stack inside the bento card
- * footprint on smaller viewports. */
-
 'use client'
 
 import type { ReactElement } from 'react'
@@ -52,17 +15,10 @@ type Persona = {
 	filled: number
 	meterColor: string
 	meterText: string
-	/* Responsive rotation classes. Mobile values derived from Figma
-	 * 12:1509 (-3° / 0° / +3°); desktop from Figma 4:72 (-8° / -2° / +5°).
-	 * Class controls the card frame rotation; `imgRotClass` is the
-	 * exact opposite so the portrait image stays visually upright. */
 	rotClass: string
 	imgRotClass: string
 }
 
-/* Exact Figma 4:72 tone values. Badge bg/border use slightly different hex
- * from the text colour in Figma source (emerald card uses rgba(16,183,127)
- * for surfaces but #10B981 for text — we honour that inconsistency). */
 const BADGE_TONES: Record<Persona['badgeTone'], { bg: string; border: string; text: string }> = {
 	orange: {
 		bg: 'rgba(245,136,11,0.10)',
@@ -126,9 +82,6 @@ const PERSONAS: readonly Persona[] = [
 	},
 ] as const
 
-/* 5-segment meter per Figma 4:20/4:43/4:66. Segments 1-2 are fixed 20px;
- * segments 3-5 are flex-1 and grow to fill the remaining track width.
- * Track: 116 wide, gap-[4px] between segments. */
 function DifficultyMeter({ filled, color }: { filled: number; color: string }): ReactElement {
 	return (
 		<div className='flex h-[6px] w-[116px] items-start gap-1' aria-hidden='true'>
@@ -220,22 +173,6 @@ function PersonaCard({ persona }: { persona: Persona }): ReactElement {
 	)
 }
 
-/**
- * @description S4 bento fan — three persona roleplay cards.
- *
- * Mobile (< lg, Figma 12:1509): tight stack. Cards tilted ±3°, each
- * overlapping the next by 210px so only ~30px of Brenda and Bobby peek
- * out to the left of Marcus, who sits fully visible on top.
- *
- * Desktop (lg+, Figma 4:72): deck fan. Cards tilted -8° / -2° / +5°,
- * each overlapping the next by 130px so the left ~110px of Brenda and
- * Bobby show as stack hints. Marcus is fully visible on the right.
- *
- * Z-order (both breakpoints): Brenda (z-0) → Bobby (z-10) → Marcus
- * (z-20), so subsequent cards render on top of earlier ones. A per-
- * breakpoint scale wrapper keeps the composition inside the bento card
- * footprint without horizontal overflow.
- */
 export default function PracticeFanVisual(): ReactElement {
 	return (
 		<div

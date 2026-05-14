@@ -1,10 +1,3 @@
-/** @fileoverview 4 distinct product UI compositions for the hero phone.
- * Each state tells a compressed story of one step in the CloserCoach flow.
- * TRAIN → PRACTICE → RECORD → SCORE
- *
- * These are marketing-abstracted compositions, not raw screenshots.
- * Each state should visually communicate its value before the user reads any text. */
-
 'use client'
 
 import { motion } from 'motion/react'

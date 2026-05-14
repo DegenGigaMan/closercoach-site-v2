@@ -1,5 +1,3 @@
-/** @fileoverview Terms of Service page. Warm editorial surface, sticky TOC, plain-English summary, structured legal sections. */
-
 import LegalPageLayout from '@/components/layout/LegalPageLayout'
 import { Section, BulletList, Strong } from '@/components/layout/LegalContent'
 import { BRAND, PRICING, STATS } from '@/lib/constants'

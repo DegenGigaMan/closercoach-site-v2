@@ -1,22 +1,3 @@
-/** @fileoverview Compliance pill strip — Figma 111:557, Wave V (2026-04-27).
- *
- * Sits between FAQ and the Final CTA as a trust anchor before conversion.
- * Each compliance label renders as a pill: 1px white/6 border, px-[13px]
- * py-[7px], rounded-full, gap-1 between icon (16px) and Geist Mono Medium
- * 14px uppercase text (tracking 1.44px, line-height 18px, color #94a3b8).
- *
- * Distinct Phosphor icons per badge per Andy 2026-04-27 (his Figma reused
- * a single shield icon as a placeholder):
- *   ─ SOC2            : ShieldCheck (security audit framework)
- *   ─ GDPR            : Scales (legal/regulatory privacy framework)
- *   ─ SSO             : SignIn (single sign-on flow)
- *   ─ SAML            : Key (assertion-based auth)
- *   ─ AUDIT LOGGING   : ClipboardText (record-keeping)
- *   ─ DATA RESIDENCY  : Globe (regional data location)
- *
- * Each pill links to TRUST_HREF placeholder; Andy swaps for the real
- * external trust-center URL when ready. */
-
 'use client'
 
 import Link from 'next/link'
@@ -48,11 +29,6 @@ const BADGES: readonly Badge[] = [
 
 const TRUST_HREF = '#trust' as const
 
-/**
- * @description Reusable pill strip — flex-wrap row of compliance badges.
- * Embed inside any section that needs a trust anchor. Format per Figma
- * 111:557.
- */
 export function CompliancePills() {
 	return (
 		<ul className='flex flex-wrap items-center justify-center gap-3'>
@@ -87,12 +63,6 @@ export function CompliancePills() {
 	)
 }
 
-/**
- * @description Standalone section wrapper around the pill strip. Kept for
- * any future page that wants the strip as its own section. The home page
- * embeds CompliancePills directly inside SectionTeams (between bento and
- * CTAs) per Andy 2026-04-27, so this default export is currently unused.
- */
 export default function SectionCompliance() {
 	return (
 		<section

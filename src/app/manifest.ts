@@ -1,12 +1,3 @@
-/** @fileoverview Web App Manifest exposed at /manifest.webmanifest. Powers
- * the "Add to Home Screen" install prompt on mobile browsers and tells iOS
- * Safari which icon + theme to use when the marketing site is bookmarked.
- *
- * Icons reference the cleaned brand logomark PNGs under /public extracted
- * from the Figma logomark.svg export (the original SVG ships a 1.16MB
- * embedded raster — the 192/512 resampled PNGs are the same image at the
- * sizes Android + iOS install prompts actually consume). */
-
 import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {

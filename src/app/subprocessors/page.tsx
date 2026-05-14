@@ -1,5 +1,3 @@
-/** @fileoverview List of Subprocessors page. Warm editorial surface, table of confirmed + placeholder third-party service providers. */
-
 import LegalPageLayout from '@/components/layout/LegalPageLayout'
 import { Section } from '@/components/layout/LegalContent'
 import { BRAND } from '@/lib/constants'

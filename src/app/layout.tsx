@@ -1,29 +1,3 @@
-/** @fileoverview Root layout with fonts, metadata, viewport, JSON-LD structured
- * data, analytics + observability providers, and body wrapper.
- *
- * Metadata strategy (2026-05-01):
- *   - Title template ensures every subpage reads "Page | CloserCoach".
- *   - Open Graph + Twitter cards mirror the same hero copy + 1200x630 og-image
- *     so link unfurls (LinkedIn, Slack, iMessage, Twitter) all render the same
- *     branded preview.
- *   - canonical via `alternates.canonical` (root) + per-page metadata where
- *     each subpage extends the template.
- *   - Web App Manifest, sitemap, robots, and themeColor wired here so search
- *     engines and PWA installs see a consistent identity.
- *   - JSON-LD Organization + SoftwareApplication + WebSite injected so Google
- *     rich results can surface app rating / pricing in search SERPs.
- *
- * Observability (refined 2026-05-09):
- *   - Vercel Analytics + Speed Insights mounted at body end.
- *   - PostHogProvider wraps the entire app shell so client events fire from
- *     any nested component via the analytics helper at @/lib/analytics.
- *   - ScrollDepthTracker reports 25/50/75/100% depth events.
- *   - GoogleAnalytics (@next/third-parties/google) loads gtag.js post-
- *     hydration, gaId G-M5XZXKLHLJ. Alim mandate 2026-05-09. Pageviews
- *     auto-tracked via GA4 Enhanced Measurement on history state changes.
- *   - Skip-nav anchor as the first body child for keyboard a11y.
- */
-
 import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
@@ -195,9 +169,9 @@ const WEBSITE_LD = {
 
 export default function RootLayout({
 	children,
-}: Readonly<{
+	}: Readonly<{
 	children: React.ReactNode
-}>) {
+	}>) {
 	return (
 		<html
 			lang='en'
@@ -238,12 +212,7 @@ export default function RootLayout({
 				/>
 				<PostHogProvider>
 					<ScrollDepthTracker />
-					{/* Non-critical mounts deferred to requestIdleCallback per
-					 * render-delay audit 2026-05-09 Patch 3. SmoothScroll only
-					 * matters once user starts scrolling; ScrollToTop only
-					 * matters post-scroll; CookieConsent showing ~100-200ms
-					 * later is acceptable. Keeps the LCP critical path lean. */}
-					<DeferredMount>
+						<DeferredMount>
 						<SmoothScroll />
 						<ScrollToTop />
 					</DeferredMount>
@@ -262,13 +231,7 @@ export default function RootLayout({
 				</PostHogProvider>
 				<Analytics />
 				<SpeedInsights />
-				{/* Google Analytics 4 (gaId: G-M5XZXKLHLJ) — Alim mandate
-				 * 2026-05-09. Loaded via @next/third-parties/google which
-				 * fetches gtag.js after hydration so it stays off the LCP
-				 * critical path. Pageviews fire automatically on App Router
-				 * navigations because GA4 Enhanced Measurement listens to
-				 * history state changes (no manual sendGAEvent needed). */}
-				<GoogleAnalytics gaId='G-M5XZXKLHLJ' />
+			<GoogleAnalytics gaId='G-M5XZXKLHLJ' />
 			</body>
 		</html>
 	)

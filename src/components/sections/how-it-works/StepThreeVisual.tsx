@@ -1,51 +1,3 @@
-/** @fileoverview S3 Step 3 Sell right-column visual composition.
- * 6-sub-state scroll-trigger-then-autoplay chain. Single phone frame MORPHS
- * between Mode A (AI Phone Call) and Mode B (In-Person Record) via layoutId.
- * In 3E, coaching annotations spring OUT of the phone onto the dark surface
- * around it -- the $10K signature moment unique to S3.
- *
- *   3A (0 - 800ms):    Dual-mode toggles appear above empty phone frame.
- *                       "AI Phone Call" toggle active, "Record In-Person" muted.
- *                       Mode A dialer visible: Sarah Chen, number, caller-ID sub.
- *   3B (800 - 2400ms): Dial -> connecting dots -> live call UI with avatar +
- *                       call timer counting up from 00:00. NumberFlow animates.
- *   3C (2400 - 4000ms): Coaching annotations fire INSIDE the phone during the
- *                       live call. Negative + positive CoachingPill appear near
- *                       transcript. Transcript line italic.
- *   3D (4000 - 5600ms): Mode toggle swap: "Record In-Person" becomes active,
- *                       "AI Phone Call" dims. Phone interior MORPHS via
- *                       layoutId. REC pulse + ambient waveform + room-blur
- *                       backdrop fades in behind phone.
- *   3E (5600 - 7200ms): SIGNATURE -- 4 coaching annotations emerge from phone
- *                       edges onto surrounding dark surface. Staggered springs
- *                       + emerald glow trail. Unique to S3.
- *   3F (7200ms+):       Settled. Annotations breathe at anchor positions
- *                       (ambient scale + opacity drift, staggered 0.4s per
- *                       pill). Replacement badge rendered by left-column
- *                       body copy (single source); right-column keeps the
- *                       phone + annotations breathing as the payoff surface.
- *
- * Authority:
- *   - Visual spec: vault/clients/closer-coach/design/section-blueprint.md §S3 Step 3 (222-235)
- *   - Copy spec:   vault/clients/closer-coach/copy/lp-copy-deck-v5.md §Section 3 Step 3 (v5.3)
- *   - Motion:      vault/clients/closer-coach/design/motion-spec.md (Thread Emergence + layoutId morph)
- *   - Vocabulary:  src/components/hero/hero-phone-v3.tsx (CoachingPill, Waveform, PhoneFrame, layoutId)
- *   - Shared utils: ./_shared/use-sub-state-machine + ./_shared/step-visual-defaults
- *
- * Phone is appearance #2 on the page (S1 Hero is #1). D3 phone allocation rule:
- * Step 3 is the ONLY S3 phone step.
- *
- * Single linear 6-state hook (per W4 dispatch pre-K1 decision). NOT two hook
- * instances. The mode transition (3C -> 3D) is a state advance; the layoutId
- * morph is a consequence of swapping the interior panel while the outer shell
- * keeps a stable layoutId.
- *
- * Reduced-motion guard collapses to 3F instantly: REC interior, annotations at
- * final perimeter positions, replacement badge visible, no ambient, no fade.
- *
- * F38/F39 hydration safety: every motion.* initial prop uses STABLE values.
- * Reduced-motion lives exclusively in transition (duration: 0). */
-
 'use client'
 
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -67,39 +19,8 @@ import {
 } from './_shared/step-visual-defaults'
 
 const SARAH_IMG = '/images/prospects/sarah-chen.webp'
-/* CC wordmark — points at the optimized 64KB PNG (was a 24KB SVG, swapped
- * 2026-05-04). Same visual; PNG enables the new wordmark Andy provided. */
 const CC_LOGO = '/cc-logo.png'
 
-/* Sub-state timings (ms). Each value is the moment the state begins.
- *
- * Wave AA.5 (Andy 2026-04-28): pacing slowdown for the AI Phone Call beats.
- * Andy verbatim: "for the step 3 close, I think that that animation could
- * also be like slowed down from like the first sub state with like Sarah
- * Chen calling that first initial screen. It just goes by wave fast, like
- * let's reduce like the AI phone call part of it to be slowed down so that
- * it actually feels like it's ringing. And then it gets connected like a
- * second or two extra on like connected and then it goes into the next
- * phase because right now it's transitioning very, very fast. And kind of
- * difficult to keep up with like I wasn't even able to consume the contents
- * of the screen before it jumped right into the record in person."
- *
- * Retimed:
- *   3A dialer/ringing: 0     -> 2800   (was 800ms, now 2.8s so the ring
- *                                       actually FEELS like ringing)
- *   3B connecting:    2800   -> 4400   (was 1600ms, now 1.6s but fires AFTER
- *                                       the long ring so the lingering
- *                                       reads correctly)
- *   3C live call:     4400   -> 6800   (extended +400ms so messages can
- *                                       stagger one at a time)
- *   3D mode swap:     6800   -> 8400
- *   3E annotations:   8400   -> 10000
- *   3F settled:       10000+
- */
-/* 3C dwell extended (2026-04-30): the deal-card payoff lands at T_3C + 2350ms
- * = ~3.95s. Previously T_3D=4400 fired the mode swap at 4.4s, leaving only
- * ~450ms to register the $24.5k card before the recording UI took over. T_3D
- * now sits ~4s after the deal lands so the win moment can breathe. */
 const T_3B = 0
 const T_3C = 1600
 const T_3D = 8000
@@ -108,7 +29,6 @@ const T_3F = 11200
 
 type SubState = '3B' | '3C' | '3D' | '3E' | '3F'
 
-/* Module-level pinned chain per F27 (states-array identity warning). */
 const STEP_THREE_STATES: ReadonlyArray<{ id: SubState, enterAtMs: number }> = [
 	{ id: '3B', enterAtMs: T_3B },
 	{ id: '3C', enterAtMs: T_3C },
@@ -117,18 +37,10 @@ const STEP_THREE_STATES: ReadonlyArray<{ id: SubState, enterAtMs: number }> = [
 	{ id: '3F', enterAtMs: T_3F },
 ] as const
 
-/* Sarah Chen transcript lines fire inside the phone during 3C. Agent-authored,
- * anchored on the Step 1/2 OBJECTION (integration failure) for narrative
- * continuity. Logged DEV-024. */
 const TRANSCRIPT_AI = 'Honestly, I just don\u2019t think it\u2019s worth it at that price..'
 const TRANSCRIPT_USER = 'I hear you. Can I ask what\u2019s working well with your current setup?'
 const TRANSCRIPT_CLOSE = 'Alright, let\u2019s do it!'
 
-/* Coaching pill copy fired during 3E (signature annotations-spring-OUT moment).
- * Agent-authored, specific to the authentic-beat-observation tone per K6. Logged
- * DEV-026. Positioned around the phone perimeter. Timestamps anchor each chip
- * to a moment in the live call / record session for credibility. The inline 3C
- * coaching pill labels (DEV-025) live in the LiveCallPanel JSX below. */
 type AnnotationSpec = {
 	id: string
 	type: 'positive' | 'negative'
@@ -173,14 +85,6 @@ const ANCHOR_POSITIONS: Record<AnnotationSpec['anchor'], AnchorPos> = {
 
 /* ─── Dual-mode toggle row (above phone) ────────────────────── */
 
-/* Interactive tablist per F2 (Alim feedback, 2026-04-23): tabs become
- * user-clickable to switch modes. When the user clicks either tab, the state
- * machine yields and the selected mode is shown as its settled/representative
- * state (Mode A -> live-call 3C, Mode B -> record-settled 3F). The state
- * machine continues to drive subState for any sub-mode interior that the
- * selected mode exposes, but the OUTER mode A/B choice is owned by `userMode`
- * once set. Keyboard: Tab focuses the active tab; Left/Right arrow rotates
- * focus within the tablist; Enter/Space (native button) activates. */
 function DualModeToggles({
 	modeBActive,
 	onSelect,
@@ -281,10 +185,6 @@ const ModeToggle = forwardRef<HTMLButtonElement, ModeToggleProps>(function ModeT
  * Interior is passed as children; the interior is the layoutId morph target,
  * not the shell (so the shell doesn't jitter during mode swap). */
 function PhoneFrame({ children, mode }: { children: React.ReactNode, mode: 'A' | 'B' }) {
-	/* L-11 (2026-05-09): mobile width bumped to 280px so this Step 3 phone
-	 * matches the Hero phone (~278-300px on mobile post-L-03 scale) and the
-	 * Step 4 phone (also 280px on mobile). Desktop sticky right-column keeps
-	 * the original 240px so the existing canvas layout doesn't shift. */
 	return (
 		<div className="relative z-10 w-[280px] lg:w-[240px]">
 			<div className="rounded-[2.5rem] border border-white/10 bg-gradient-to-b from-[#2a2d36] to-[#1a1d26] p-[5px] shadow-[0_0_50px_rgba(16,185,129,0.1),0_16px_32px_rgba(0,0,0,0.45)]">
@@ -677,7 +577,6 @@ function LiveCallPanel({ prefersReducedMotion }: { prefersReducedMotion: boolean
 	)
 }
 
-
 /* ─── Mode B interior (3D-3F) ──────────────────────────────── */
 
 function ModeBInterior({ subState, prefersReducedMotion }: { subState: SubState, prefersReducedMotion: boolean }) {
@@ -777,7 +676,6 @@ function RoomBlurBackdrop({ active, prefersReducedMotion }: { active: boolean, p
 				background: 'radial-gradient(ellipse at 30% 40%, rgba(16,185,129,0.12) 0%, transparent 45%), radial-gradient(ellipse at 75% 65%, rgba(0,0,0,0.55) 0%, transparent 55%), linear-gradient(135deg, rgba(13,15,20,0.7) 0%, rgba(26,29,38,0.2) 50%, rgba(0,0,0,0.5) 100%)',
 				filter: 'blur(32px)',
 			}}
-			/* F39: stable initial. Reduced-motion settles visible at 3F via duration: 0. */
 			initial={{ opacity: 0 }}
 			animate={{ opacity: active ? 1 : 0 }}
 			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.9, ease: THREAD_EASE }}
@@ -932,7 +830,6 @@ function EdgeRipple({ spec, active, index, prefersReducedMotion }: {
 			aria-hidden="true"
 			className={rippleClass}
 			style={ripplePosition}
-			/* F39: stable initial. All ripple motion lives in animate + transition. */
 			initial={{ opacity: 0, scale: 0 }}
 			animate={canFire
 				? { opacity: [0, 0.7, 0], scale: [0, 2.4, 3] }
@@ -948,7 +845,6 @@ function EdgeRipple({ spec, active, index, prefersReducedMotion }: {
 
 /* ─── Dev pin hook ─────────────────────────────────────────── */
 
-/* Gated behind `enabled` prop (W6). Production never reads URLSearchParams. */
 function useSubStatePin(enabled: boolean): SubState | null {
 	const [pin, setPin] = useState<SubState | null>(null)
 	useEffect(() => {
@@ -989,10 +885,6 @@ export default function StepThreeVisual({ devPin = false }: { devPin?: boolean }
 	})
 	const subState: SubState = pin ?? machineState
 
-	/* F2 (Alim feedback, 2026-04-23): user-selectable mode overrides the state
-	 * machine once the user clicks a tab. Until then, mode follows subState.
-	 * Mode A click -> settled at 3C (live call interior).
-	 * Mode B click -> settled at 3F (record mode with annotations visible). */
 	const [userMode, setUserMode] = useState<'A' | 'B' | null>(null)
 	const handleModeSelect = useCallback((mode: 'A' | 'B') => {
 		setUserMode(mode)
@@ -1041,7 +933,6 @@ export default function StepThreeVisual({ devPin = false }: { devPin?: boolean }
 				<div className="relative w-full overflow-visible">
 					<motion.div
 						className="relative mx-auto flex w-fit justify-center"
-						/* F39: stable initial. Reduced-motion snaps via duration: 0. */
 						initial={{ opacity: 0, y: 12 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={prefersReducedMotion ? { duration: 0 } : CARD_ENTER_SPRING}

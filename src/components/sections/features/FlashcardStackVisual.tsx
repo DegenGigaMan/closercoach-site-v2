@@ -1,13 +1,3 @@
-/** @fileoverview Card 4 visual -- Cash Cards stacked flashcards.
- *
- * All 3 cards are rendered simultaneously as absolute-positioned motion divs.
- * Every 3.5 s the front card animates to the back of the deck (shrinks, moves
- * up, fades) while the back cards advance forward — giving a card-deck shuffle
- * effect. Slot positions: slot 0 = front (y:30, full width), slot 1 = middle
- * (y:12, 88% width), slot 2 = back (y:0, 78% width).
- *
- * Mapped from Figma node 1:11393. */
-
 'use client'
 
 import { useState, useEffect } from 'react'

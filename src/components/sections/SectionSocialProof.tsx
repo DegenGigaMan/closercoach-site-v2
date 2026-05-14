@@ -1,41 +1,14 @@
-/** @fileoverview S2 Social Proof. Warm editorial strip per section-blueprint v2.
- * Three elements: industries headline (SP3 inline text), avatar anchor (3 headshots + G4
- * humanized to "+36,000 closers"), and continuous logo marquee (SP1 enterprise logos).
- * V2 redundancy killed: no activity ticker, no industry pill counters, no extra stat counters.
- * Warm surface (#F5F0EB). Stacks on mobile, single editorial row on desktop.
- *
- * F3-C1 (2026-04-24): logos render at full brand-color + full opacity on cream.
- * Prior grayscale+opacity treatment killed Sunrun (white fill = invisible) and
- * ghosted AF/coverd. Each logo SVG now carries its native brand color as default fill. */
-
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 
-/* Closer headshots — Figma node 85-7316 export. Three real-person portraits
- * sourced from Figma per R-04. PNGs (Figma exported raster). */
 const AVATARS = [
 	{ src: '/images/avatars/closer-1.png', alt: '' },
 	{ src: '/images/avatars/closer-2.webp', alt: '' },
 	{ src: '/images/avatars/closer-3.webp', alt: '' },
 ] as const
 
-/* Per-logo heightClass per Figma 36:110. Each brand carries a different stroke
- * weight + wordmark proportion, so a uniform height collapses visual balance
- * (Sunrun looks oversized at h-8, Liberty Mutual looks compressed). Heights
- * here match the Figma roster spec. Marquee container vertically centers
- * mixed-height children.
- *
- * Wave K.1 (FIX-CC-01 P2, 2026-04-26): SUNRUN removed from this strip to
- * dedupe against S6 Teams logo wall — Mercury / Stripe never repeat the same
- * brand twice on a single page. SUNRUN preserved in S6 (solar industry
- * signal in the manager roster).
- *
- * Wave L.3 (FIX-03 P2, 2026-04-26): Toyota + State Farm also removed to
- * achieve zero overlap between S2 marquee and S6 Teams strip. Both kept
- * in S6 Teams roster (auto + insurance industry signals). Marquee
- * compresses to 6 brands. */
 const LOGOS = [
 	{ name: 'Mercedes-Benz', file: '/logos/mercedes-benz.svg', width: 126, height: 32, heightClass: 'h-8' },
 	{ name: 'Morgan Stanley', file: '/logos/morgan-stanley.svg', width: 167, height: 24, heightClass: 'h-[22px]' },
@@ -45,10 +18,6 @@ const LOGOS = [
 	{ name: 'Aroma360', file: '/logos/aroma360.svg', width: 253, height: 24, heightClass: 'h-5' },
 ] as const
 
-/**
- * @description Single pass of logos. Duplicated by the marquee track for a seamless
- * loop. Full brand color at full opacity on cream (F3-C1).
- */
 function LogoPass({ ariaHidden = false }: { ariaHidden?: boolean }) {
 	return (
 		<div className='flex items-center' aria-hidden={ariaHidden}>
@@ -72,10 +41,6 @@ function LogoPass({ ariaHidden = false }: { ariaHidden?: boolean }) {
 	)
 }
 
-/**
- * @description S2 Social Proof. Avatar anchor + logo marquee + industries line on
- * a warm surface. Pauses animation for reduced-motion. Mobile stacks vertically.
- */
 export default function SectionSocialProof() {
 	const trackContainerRef = useRef<HTMLDivElement>(null)
 	const [duration, setDuration] = useState(0)
@@ -119,14 +84,13 @@ export default function SectionSocialProof() {
 			/>
 
 			<div className='mx-auto max-w-7xl px-6'>
-				{/* Industries headline (SP3 inline, not pills) */}
-				<p className='mx-auto mb-8 max-w-2xl text-center text-xs uppercase tracking-[0.14em] text-cc-text-secondary-warm md:mb-10 md:text-[13px]'>
+					<p className='mx-auto mb-8 max-w-2xl text-center text-xs uppercase tracking-[0.14em] text-cc-text-secondary-warm md:mb-10 md:text-[13px]'>
 					Trusted by closers across Insurance, Financial, Real Estate, Automotive, and Home Services.
 				</p>
 
 				{/* Editorial row: avatar anchor + marquee */}
 				<div className='flex flex-col items-center gap-8 md:flex-row md:items-center md:gap-10'>
-					{/* Avatar anchor (G4 humanized) */}
+					{/* Avatar anchor */}
 					<div className='flex shrink-0 items-center gap-3'>
 						<div className='flex -space-x-3'>
 							{AVATARS.map((avatar, i) => (
@@ -169,16 +133,7 @@ export default function SectionSocialProof() {
 						aria-hidden='true'
 					/>
 
-					{/* Logo marquee — H-30 (2026-05-04): now runs on ALL viewports
-					 * (was sm+ only with a snap-scroll fallback below sm). Mobile
-					 * users see the logos auto-scrolling right-to-left like desktop.
-					 * Touch-pause via :active state (animation pauses while finger
-					 * is down on the strip; resumes on lift). The mobile snap-scroll
-					 * fallback was removed — single source of truth simplifies the
-					 * row and avoids conflicting layouts. Parent <section> already
-					 * has overflow-hidden (Wave 1) so the marquee width: max-content
-					 * never leaks horizontal scroll on the page. */}
-					<div
+						<div
 						ref={trackContainerRef}
 						className='group relative w-full overflow-hidden'
 						role='marquee'

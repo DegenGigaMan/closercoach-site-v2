@@ -1,21 +1,3 @@
-/** @fileoverview S3 How It Works section (production port, W6).
- *
- * Scroll-pinned 4-step narrative: Prepare / Train / Close / Win. Left column
- * scrolls naturally through four ~100vh rooms; right column is sticky-pinned
- * and swaps its visual per activeStep. Emerald StepIndicator thread spans the
- * split column with a scroll-linked pulse.
- *
- * This file is the W6 production port of the approved lab composition
- * previously at src/components/sections/_lab/SectionHowItWorksLab.tsx. The
- * step visuals, StepIndicator, shared defaults, and sub-state-machine hook
- * were lifted namespace from `_lab/how-it-works/*` to `how-it-works/*` in the
- * same wave. Lab scaffolding removed: no `?step=N` URL read here (dev pin is
- * gated behind each step visual's `devPin` prop, only enabled by the
- * `/lab/how-it-works` preview route). No PLACEHOLDER copy. No lab page chrome.
- *
- * Copy source: lp-copy-deck-v5.md §Section 3 (v5.3). Em-dash substitutions
- * logged in design/build-deviations.md DEV-017. */
-
 'use client'
 
 import { createContext, useContext, useRef, useState, useEffect, useCallback, useSyncExternalStore, type CSSProperties, type ReactNode } from 'react'
@@ -27,19 +9,10 @@ import StepCanvas from './how-it-works/StepCanvas'
 import PlanVisual from './how-it-works/PlanVisual'
 import StepTwoVisual from './how-it-works/StepTwoVisual'
 import StepThreeVisual from './how-it-works/StepThreeVisual'
-/* Q17 Wave D2-1 (Andy 2026-04-29 #16+#17): Step 4 review swapped from the
- * dense scorecard composite to a phone-mockup variant for elegance parity
- * with preceding steps. Legacy non-phone variant remains importable from
- * './how-it-works/StepFourReview' and is exposed at /lab/legacy-step-detail
- * for fallback / comparison. */
 import StepFourReview from './how-it-works/StepFourReviewPhone'
 import StepOneMobileVisual from './how-it-works/_mobile/StepOneMobileVisual'
 import StepTwoMobileVisual from './how-it-works/_mobile/StepTwoMobileVisual'
 
-/* SSR-safe mount flag. useSyncExternalStore returns the SSR snapshot (false) on
- * the server AND on the first client render, then switches to the client
- * snapshot (true) AFTER hydration completes. F33 hydration fix carried forward
- * from the lab composition. */
 function subscribeNoop() { return () => {} }
 function useMounted(): boolean {
 	return useSyncExternalStore(subscribeNoop, () => true, () => false)
@@ -66,17 +39,6 @@ const SPLIT_VARS: CSSProperties = {
 	'--cc-rail-bottom': 'calc(100vh + 4.75rem)',
 } as CSSProperties
 
-/**
- * @description S3 How It Works. Renders the opener, the split layout, and the
- * per-activeStep sticky right-column visual. Each step room's useInView advances
- * the shared activeStep monotonically (forward-only; scrolling back up does NOT
- * un-visit a step).
- *
- * @param devPin When true, step visuals read `?pin=<state>` from the URL to
- *   pin their sub-state machine for DD / Playwright captures. Production (the
- *   homepage `/` route) leaves this false. Only the `/lab/how-it-works`
- *   preview route passes `devPin={true}`.
- */
 export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean } = {}) {
 	const [activeStep, setActiveStep] = useState(1)
 
@@ -94,55 +56,18 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 			data-surface="dark-education"
 			className="relative w-full bg-cc-foundation"
 		>
-			{/* Section opener.
-			 * Wave Y.4 (Alim 2026-04-28): bottom padding bumped (py-24 lg:py-32
-			 * -> pt-24 pb-40 lg:pt-32 lg:pb-56) to add breathing room between
-			 * the section heading and the first step content (now PREPARE).
-			 * Alim feedback: 'Increase margin from SELL and heading' — increasing
-			 * the gap so the section heading lands cleanly without crowding the
-			 * step rail.
-			 *
-			 * Wave Y DD R1 S1 (2026-04-28): closer 'Win.' previously spoiled the
-			 * Step 4 kicker post-rename (Review→Win). Swapped closer to
-			 * 'Compound.' so the opener ends on the cycle frame (compound
-			 * interest of skill) without pre-calling Step 4. */}
-			<div className="mx-auto max-w-7xl px-6 pt-24 pb-20 text-center md:px-12 md:pb-40 lg:px-24 lg:pt-32 lg:pb-56">
+				<div className="mx-auto max-w-7xl px-6 pt-24 pb-20 text-center md:px-12 md:pb-40 lg:px-24 lg:pt-32 lg:pb-56">
 				<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cc-accent">
 					HOW IT WORKS
 				</p>
-				{/* Q17 Wave E (Andy 2026-04-29 #25): heading reframed to verb-map
-				 * directly to the 4 steps (PREPARE/Practice, TRAIN/Train,
-				 * CLOSE/Close, WIN/Win). Closer 'Win.' uses italic emerald
-				 * emphasis matching the SectionFeatures 'win more deals.' VIS
-				 * lock 2026-04-21 pattern (italic primary, color secondary). */}
-				<h2 className="display-lg mx-auto mt-6 max-w-4xl text-white md:text-5xl lg:text-6xl">
+					<h2 className="display-lg mx-auto mt-6 max-w-4xl text-white md:text-5xl lg:text-6xl">
 					Roleplay. Review. <em className="italic font-bold text-cc-accent">Win.</em>
 				</h2>
-				{/* L-04 + L-05 (2026-05-09): subhead linebreak tuning. Desktop
-				 * (>=1280px): one line via max-w-4xl + lg:text-lg (downsized from
-				 * xl) + lg:whitespace-nowrap so the 85-char string never wraps at
-				 * ≥1280px. Mobile (390px): two lines via max-w-[340px] + text-base
-				 * landing the natural break near "you/" between the second and
-				 * third sentence. Tablet keeps max-w-2xl + text-xl. */}
-				<p className="mx-auto mt-6 max-w-[340px] text-base text-cc-text-secondary md:max-w-2xl md:text-xl lg:max-w-4xl lg:whitespace-nowrap lg:text-lg">
+					<p className="mx-auto mt-6 max-w-[340px] text-base text-cc-text-secondary md:max-w-2xl md:text-xl lg:max-w-4xl lg:whitespace-nowrap lg:text-lg">
 					Train before the call. Find out where you lost it. Fix it before it costs you again.
 				</p>
 			</div>
 
-			{/* Split layout: position: relative so Motion useScroll can compute offsets.
-			 * F5 (W6): `position: relative` is set explicitly via the `relative` class
-			 * and via `style={{ position: 'relative' }}` so Motion's useScroll in
-			 * StepIndicator never falls back to the mount-time "non-static position"
-			 * warning. Tailwind's `relative` is already present; the inline style is
-			 * a belt-and-suspenders guarantee that the value is set on the very first
-			 * paint (before Tailwind's compiled CSS has bound to the DOM).
-			 *
-			 * F63 (W6): `pb-32 lg:pb-24` (desktop baseline pb-24; mobile pb-32) adds
-			 * 32px of bottom padding above the existing py-24 so the cookie banner
-			 * (z-50 fixed bottom ~142px tall on mobile) does not occlude Step 4's
-			 * AI Coach summary + CTA. The banner is dismissible; once accepted/declined
-			 * the extra padding is harmless. The 32px delta > the 24px cookie-banner
-			 * backdrop compensation that sat above the banner's backdrop-blur. */}
 			<ActiveStepContext.Provider value={activeStep}>
 			<div
 				style={{ position: 'relative', ...SPLIT_VARS }}
@@ -178,32 +103,22 @@ export default function SectionHowItWorks({ devPin = false }: { devPin?: boolean
 			</div>
 			</ActiveStepContext.Provider>
 
-			{/* Step 4 Review: brought back 2026-04-25 per Andy R-08 (was hidden
-			 * 2026-04-23, now restored). Renders the scorecard composite below
-			 * the 3-step scroll-pinned narrative as a vertically-stacked section. */}
-			<StepFourReview />
+		<StepFourReview />
 		</section>
 	)
 }
 
 /* ---------- Step room ---------- */
 
-/**
- * @description One ~100vh step room in the left column. useInView toggles
- * whenever the room crosses 40% into viewport, firing in BOTH scroll directions:
- * scrolling down triggers advance, scrolling up triggers revert. F33 hydration
- * fix: advancement is gated behind a post-mount flag so SSR and first client
- * render always produce activeStep=1 (the pinned initial).
- */
 function StepRoom({
 	index,
 	onEnter,
 	children,
-}: {
+	}: {
 	index: number
 	onEnter: (n: number) => void
 	children: ReactNode
-}) {
+	}) {
 	const prefersReducedMotion = useReducedMotion()
 	const ref = useRef<HTMLDivElement>(null)
 	const isInView = useInView(ref, { amount: 0.4 })
@@ -216,8 +131,6 @@ function StepRoom({
 	return (
 		<motion.div
 			ref={ref}
-			/* F39: stable initial across SSR/client hydration. Reduced-motion snaps
-			 * via transition.duration: 0 below. */
 			initial={{ opacity: 0, y: 24 }}
 			animate={isInView ? { opacity: 1, y: 0 } : {}}
 			transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -233,10 +146,6 @@ function StepRoom({
 function RightColumnVisual({ activeStep, devPin }: { activeStep: number; devPin: boolean }) {
 	const prefersReducedMotion = useReducedMotion()
 
-	/* Single StepCanvas wraps all 4 step visuals. The canvas provides the
-	 * rounded-3xl surface + radial-gradient background + border. Inner content
-	 * swaps via AnimatePresence on activeStep. F39 hydration safety: stable
-	 * initials on motion.div; reduced-motion collapses duration to 0. */
 	return (
 		<StepCanvas>
 			<AnimatePresence mode="popLayout" initial={false}>
@@ -301,10 +210,6 @@ function StepKicker({ number, stepIndex, children }: { number: string; stepIndex
 }
 
 function StepHeadline({ children }: { children: ReactNode }) {
-	/* Q17 Wave D1-1 (Andy 2026-04-29 #11): label→heading vertical gap on
-	 * desktop felt cramped. Bumped mt-4 → mt-4 md:mt-8 (16px → 32px on
-	 * desktop) so the kicker breathes before the headline lands. Mobile
-	 * spacing unchanged. */
 	return (
 		<h3 className="text-trim mt-4 text-3xl leading-[1.15] text-white md:mt-8 md:text-4xl lg:text-[2.75rem]">
 			{children}
@@ -333,12 +238,7 @@ function Step1Plan({ devPin }: { devPin: boolean }) {
 				Sync your calendar and CRM. CloserCoach pulls the buyer&rsquo;s profile, clones them, and hands you a practice partner that looks, talks, and pushes back exactly like the real person on your calendar.
 			</StepBody>
 
-			{/* Mobile visual: compact composition echoes the desktop right-column
-			 * calendar -> clone enrichment moment. Hidden at lg+ where the sticky
-			 * desktop StepOneVisual takes over. R7 v3 D9 first-class mobile.
-			 * devPin is not wired to mobile visuals (they have no pinnable
-			 * sub-state; they animate once on inView and settle). */}
-			<div className="mt-8 lg:hidden">
+				<div className="mt-8 lg:hidden">
 				<StepOneMobileVisual />
 			</div>
 
@@ -346,16 +246,7 @@ function Step1Plan({ devPin }: { devPin: boolean }) {
 			 * devPin from the Right Column. This wrapper here is mobile-scoped. */}
 			{devPin && null}
 
-			{/* Testimonial — Figma 1:1527. 5 filled yellow stars (#FBBC04, 16px,
-			 * gap-[2px]), italic Inter 16px quote leading-[1.4], and a user row
-			 * (40px circular avatar + name "Andy Bolton" 16px + role "Sales rep"
-			 * 14px in #8A9BA1). No card frame; container py-[12px] only. */}
-			{/* Q17 Wave D1-6 (Andy 2026-04-29 #15): testimonial sat too
-			 * close to the heading/body. Bumped mt-10 → mt-10 md:mt-20
-			 * so the testimonial reads as a separate beat in the same
-			 * vertical rhythm as Step 2/3/4 visual cards. Mobile rhythm
-			 * preserved. */}
-			<figure className="mt-10 flex max-w-xl flex-col gap-4 py-3 md:mt-20">
+				<figure className="mt-10 flex max-w-xl flex-col gap-4 py-3 md:mt-20">
 				<div role="img" className="flex items-start gap-[2px]" aria-label="5 out of 5 stars">
 					{[0, 1, 2, 3, 4].map((i) => (
 						<Star key={i} size={16} weight="fill" style={{ color: '#FBBC04' }} aria-hidden="true" />
@@ -409,11 +300,7 @@ function Step2Practice({ devPin }: { devPin: boolean }) {
 
 			{devPin && null}
 
-			{/* Q17 Wave D1-4 (Andy 2026-04-29 #13): pill was stretching to
-			 * full column width because the parent flex-col defaults to
-			 * align-items: stretch. inline-flex alone doesn't escape that.
-			 * Added self-start + w-fit so the pill hugs its text content. */}
-			<div className="mt-8 inline-flex w-fit items-center gap-3 self-start rounded-full border border-cc-surface-border bg-cc-surface-card/40 px-4 py-2">
+				<div className="mt-8 inline-flex w-fit items-center gap-3 self-start rounded-full border border-cc-surface-border bg-cc-surface-card/40 px-4 py-2">
 				<span className="font-[family-name:var(--font-mono)] text-sm text-cc-accent">5 min / week</span>
 				<span className="text-xs text-cc-text-secondary">=</span>
 				<span className="font-[family-name:var(--font-mono)] text-sm text-white">2 practice rounds</span>
@@ -445,71 +332,7 @@ function Step3Sell({ devPin }: { devPin: boolean }) {
 
 			{devPin && null}
 
-			{/* CloserCoach replaces -- logo strip per Alim 2026-04-28 overnight
-			 * Slack feedback: 'CloserCoach replaces -- was hoping wed have the
-			 * logos here of who we replace. like logo logo logo'.
-			 *
-			 * Wave Y.5 (Alim 2026-04-28 AM): Phosphor placeholders replaced
-			 * with iOS-style app-icon SVGs matching how each app looks in the
-			 * App Store / on a phone home screen.
-			 *
-			 * Wave Z.6 P2-D (2026-04-28): canonical-icon retrieval evaluated +
-			 * intentionally declined. DD R1 C4 / S+ Audit P2-D flagged the
-			 * risk that recreated-from-memory SVGs could drift from iOS stock
-			 * gradients. Retrieval paths considered:
-			 *   - Apple SF Symbols: Voice Memos + Phone glyphs are licensed
-			 *     for use IN Apple platform apps only, not for redistribution
-			 *     as marketing raster/SVG mockups (Apple SF Symbols License
-			 *     §2.b). Embedding stock SF Symbols on a marketing site is a
-			 *     license violation.
-			 *   - Brandfetch (apple.com / openai.com): OpenAI mark is
-			 *     available but Apple Voice Memos + Phone return no public
-			 *     app-icon assets; both are first-party iOS surfaces, not
-			 *     brand marks Apple distributes.
-			 *   - Recraft canonical generation: would produce a reasonable
-			 *     visual but introduces same trademark risk + still drifts
-			 *     from current iOS stock.
-			 * Decision: keep the current inline SVGs as INTENTIONAL editorial
-			 * reproductions. They communicate the home-screen-icon language
-			 * (rounded square, white glyph on saturated gradient, label
-			 * underneath) without claiming Apple's or OpenAI's actual
-			 * identity. The composition is the message, not pixel parity
-			 * with iOS 18 stock. If iOS stock drifts again the next refresh,
-			 * these stay legible.
-			 *
-			 * Sources:
-			 *   - Voice Memos: inline SVG iOS app icon (white waveform on red
-			 *     #FF453A -> #C30000 vertical gradient rounded square).
-			 *     simple-icons has no Apple Voice Memos mark; Brandfetch
-			 *     returns no clean public asset.
-			 *   - ChatGPT: inline SVG of OpenAI's 4-petal logomark on black
-			 *     rounded square (matches the public ChatGPT iOS app icon).
-			 *     simple-icons does not ship an openai/chatgpt SVG (verified
-			 *     2026-04-28 against node_modules/simple-icons/icons/);
-			 *     mark is rendered inline from the public OpenAI logomark.
-			 *   - Phone: inline SVG iOS app icon (white handset on green
-			 *     #4CD964 -> #1B9628 vertical gradient rounded square). Apple
-			 *     Phone trademark concern resolved by using a generic handset
-			 *     glyph at iOS-icon dimensions, no Apple wordmark.
-			 *
-			 * Canonical order (lp-copy-deck-v5.md §S3 Step 2):
-			 *   Voice Memos (left), ChatGPT (middle), Phone (right). */}
-			{/* Q17 Wave D1-5 (Andy 2026-04-29 #14): card was stretching to
-			 * column width. Added w-fit + self-start to outer + inner card
-			 * so the icon strip hugs Voice Memos / ChatGPT / Phone content.
-			 *
-			 * 2026-05-02 (Andy): left-align the whole block with the body
-			 * paragraph above (self-start + items-start). The three icon
-			 * columns inside still use w-24 each so the icons themselves
-			 * line up cleanly relative to one another. */}
-			{/* H-34 (2026-05-04): stronger replacement messaging + mobile cut-off fix.
-			 * Eyebrow rewritten from "CloserCoach replaces" → "ONE APP. THREE TOOLS
-			 * GONE." Bumped from 10px mono to 12px Lora-bold uppercase so it commands
-			 * the strip. Icon labels carry a subtle red strikethrough so the
-			 * "replaced" narrative reads visually, not just from the eyebrow.
-			 * Mobile cut-off (was overflowing 390px viewport at 416px width):
-			 * gap-8 → gap-4 sm:gap-8, w-24 → w-20 sm:w-24, px-8 → px-4 sm:px-8. */}
-			<div className="relative mt-8 w-fit self-center lg:self-start pt-[14px]">
+				<div className="relative mt-8 w-fit self-center lg:self-start pt-[14px]">
 				{/* Badge — floats above the container, centered. */}
 				<div className="absolute left-1/2 top-0 z-10 flex -translate-x-1/2 items-center gap-1.5 rounded-full border border-red-500/30 bg-[#1a0808] px-3 py-1.5 shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
 					<XCircle size={12} weight="fill" className="shrink-0 text-red-400" />

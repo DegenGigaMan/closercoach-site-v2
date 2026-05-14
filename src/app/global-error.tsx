@@ -1,11 +1,3 @@
-/** @fileoverview Root-level error boundary. Replaces root layout when the
- * layout itself crashes, so it must define its own <html> + <body> and cannot
- * rely on Tailwind tokens / Lora / Inter being loaded. Critical visuals are
- * inline-styled with system-font fallbacks.
- *
- * IMPORTANT: This Next.js exposes `unstable_retry` (NOT `reset`) per
- * `node_modules/next/dist/docs/01-app/03-api-reference/03-file-conventions/error.md`. */
-
 'use client'
 
 import { useEffect } from 'react'

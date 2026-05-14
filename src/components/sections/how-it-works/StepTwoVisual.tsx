@@ -1,28 +1,3 @@
-/** @fileoverview S3 Step 2 Practice right-column visual.
- *
- * Composition mapped from Figma node 40:1211. Renders directly inside the
- * shared StepCanvas (which provides the outer rounded container + radial
- * gradient backdrop), so this file contributes only the two-column layout
- * plus motion:
- *   - Left (213px): "AI Clone" tab badge + clone card with Sarah Chen
- *     portrait, "CLOSING A DEAL" chip, objection quote, Medium difficulty
- *     meter.
- *   - Right: vertical timeline (user icon + hairline) flanking a
- *     "ROLEPLAY SESSION" chat column with 4 alternating bubbles
- *     (AI grey / user blue), coaching chips ("Great Response" / "Missed
- *     The Mark"), a "Get suggested responses" pill, and a bottom bar with
- *     a tick-style 39% interest gauge + audio waveform + 02:34 timer.
- *
- * Prior revision wrapped the whole composition in a second rounded
- * container, producing a visible double-frame against StepCanvas. That
- * container is removed here so StepCanvas is the sole frame.
- *
- * Motion: bubbles stagger in, coaching chips pop after their bubble
- * settles, waveform bars breathe, the suggested responses pill pulses
- * in settled, the interest gauge tick-segments light up in sequence, the
- * indicator dot travels to the reading, and the center number counts
- * from 0 to 39. Reduced-motion collapses to the settled frame. */
-
 'use client'
 
 import { useRef } from 'react'
@@ -50,28 +25,6 @@ const WAVE_BARS: ReadonlyArray<readonly [number, number]> = [
 	[6.8, 0.5], [4.9, 0.3], [7.9, 0.5], [4.0, 0.3], [2, 0.3], [2, 0.3],
 ] as const
 
-/* Sequence delays (seconds) relative to inView. Coaching chips piggyback on
- * user-message delays via +0.35s. Gauge fill begins at first AI message.
- *
- * Wave AA.4 (Andy 2026-04-28): staged entry choreography. Andy verbatim:
- * "the container should start essentially empty with the first thing
- * coming in being the AI clone component. And then the roleplay session
- * on the right side, that starts popping in as well. You can retain the
- * bottom interest and the waveform recording part to be there when the
- * roleplay session comes up. And then the messages come in one by one,
- * just like you have it already."
- *
- * Sequence (relative to inView):
- *   0.00s  EMPTY container
- *   0.10s  AI Clone card (left, with badge + portrait + meter)
- *   0.95s  Roleplay session shell pops in (timeline rail + header +
- *          interest gauge + audio bar at the bottom)
- *   1.30s  AI message 1
- *   1.95s  User message 1 + chip
- *   2.65s  AI message 2
- *   3.30s  User message 2 + chip
- *   3.95s  Suggested-responses pill
- */
 const SHELL = {
 	clone: 0.10,
 	roleplay: 0.95,
@@ -101,11 +54,7 @@ function CloneCard({ inView, reduced }: { inView: boolean; reduced: boolean }) {
 				: { type: 'spring', stiffness: 320, damping: 24, delay: SHELL.clone }
 			}
 		>
-			{/* Clone tab badge — Figma 40:1482. 84 × 43 positioned at (0, -27.5)
-			 * relative to the card. Inner padding pl-[9px] pr-[9px] pt-[9px]
-			 * pb-[25px]; the 25px bottom padding tucks the badge's lower 25px
-			 * behind the card's top edge for the overlapping-tab silhouette. */}
-			<div
+				<div
 				className='absolute -top-[27px] left-0 z-0 inline-flex items-center gap-1.5 rounded-t-[8px] border border-cc-accent/20 border-b-0 px-[9px] pt-[9px] pb-[25px]'
 				style={{ backgroundColor: '#0C2822' }}
 				aria-hidden='true'
@@ -122,11 +71,7 @@ function CloneCard({ inView, reduced }: { inView: boolean; reduced: boolean }) {
 						'-8px 8px 16px 0px rgba(0,0,0,0.6), 0px 0px 20px 0px rgba(16,185,129,0.05)',
 				}}
 			>
-				{/* Figma 40:1447 — avatar 40×40 + name block with gap-[12px] between
-				 * them. Name block per 40:1478 uses gap-[10px] between "Sarah Chen"
-				 * (14px Inter Regular, leading-[20px]) and "VP Operations" (12px
-				 * Inter Regular, white/50). */}
-				<div className='flex items-center gap-3'>
+					<div className='flex items-center gap-3'>
 					<div className='relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-white/[0.05]'>
 						<Image
 							src={SARAH_AVATAR}
@@ -163,10 +108,7 @@ function CloneCard({ inView, reduced }: { inView: boolean; reduced: boolean }) {
 						&ldquo;Why switch from our solution to yours?&rdquo;
 					</p>
 
-					{/* Figma 46:2444 — difficulty meter. 116px track width, 5 segments
-					 * each 20×6 with gap-[4px] between, all fixed 20px (no flex-1
-					 * growth). 3 filled amber + 2 unfilled white/15. */}
-					<div className='flex items-center gap-3'>
+						<div className='flex items-center gap-3'>
 						<span className='text-[10px] leading-[15px] text-cc-amber'>Medium</span>
 						<div className='flex h-[6px] w-[116px] items-start gap-1' aria-hidden='true'>
 							{[0, 1, 2, 3, 4].map((i) => {
@@ -282,8 +224,6 @@ function UserMessage({
 	)
 }
 
-/* ─── Interest gauge (segmented arc per Figma 46:2533) ────────── */
-
 /* Container width matches Figma's 80px exactly so the bar row resolves to
  * Figma's 288 total (80 gauge + 16 gap + 192 audio bar). Container height
  * bumped from Figma's 43.077 to 58 so the "39" + INTEREST stack has
@@ -381,10 +321,7 @@ function InterestGauge({ value, inView, reduced }: { value: number; inView: bool
 					/>
 				))}
 
-				{/* Indicator per Figma 46:2543: 7.38 × 7.38 disc (r ≈ 3.69) with an
-				 * 8.33% outer ring. Rendered as a white-filled circle with a dark
-				 * stroke for definition against the arc. */}
-				<motion.circle
+					<motion.circle
 					r={4}
 					fill='#FFFFFF'
 					stroke='#0D0F14'
@@ -401,13 +338,7 @@ function InterestGauge({ value, inView, reduced }: { value: number; inView: bool
 					}
 				/>
 			</svg>
-			{/* Value stack: Figma 46:2546 places "39" (Lora SemiBold 18px) with a
-			 * 4.923px gap above "interest" (Geist Mono Regular 8px, tracking-0.8px,
-			 * uppercase, white/50). Our Lora is locked Bold (CLAUDE.md) so the
-			 * number renders a touch heavier than Figma's SemiBold. Bottom-
-			 * anchored so the "39" sits just inside the arc baseline with the
-			 * label trailing below. */}
-			<div className='absolute inset-x-0 bottom-[4px] flex flex-col items-center gap-[4px]'>
+				<div className='absolute inset-x-0 bottom-[4px] flex flex-col items-center gap-[4px]'>
 				<span className='font-[family-name:var(--font-heading)] text-[20px] font-bold leading-none text-white tabular-nums'>
 					{displayValue}
 				</span>
@@ -527,11 +458,6 @@ function SuggestedPill({ inView, reduced, delay }: { inView: boolean; reduced: b
 /* ─── Roleplay chat column ─────────────────────────────────── */
 
 function RoleplayChat({ inView, reduced }: { inView: boolean; reduced: boolean }) {
-	/* Wave AA.4: shell (timeline + header + bottom bar) pops in at SHELL.roleplay
-	 * as one cohesive unit. Per Andy: "the roleplay session on the right side,
-	 * that starts popping in as well. You can retain the bottom interest and
-	 * the waveform recording part to be there when the roleplay session comes
-	 * up". Messages then stagger in via DELAY.ai1..user2 (already implemented). */
 	return (
 		<motion.div
 			className='flex items-stretch gap-3'
@@ -606,10 +532,6 @@ export default function StepTwoVisual({}: { devPin?: boolean } = {}) {
 	const rootRef = useRef<HTMLDivElement>(null)
 	const inView = useInView(rootRef, { amount: 0.3, once: true })
 
-	/* Wave AA.4: outer container is a no-fade frame so children own their own
-	 * staged-entry timing. CloneCard pops in at SHELL.clone, RoleplayChat
-	 * shell pops in at SHELL.roleplay, then messages stagger via DELAY.ai1..
-	 * user2. The container starts essentially empty per Andy's directive. */
 	return (
 		<div
 			ref={rootRef}

@@ -1,7 +1,3 @@
-/** @fileoverview /blog/closercoach-raises-1m-for-duolingo-for-sales — funding announcement post.
- * Linked from the top AnnouncementBanner. Placeholder body copy until the
- * announcement copy lands; structure + typography are launch-grade. */
-
 import Link from 'next/link'
 import { ArrowLeft } from '@phosphor-icons/react/dist/ssr'
 import { buildPageMetadata } from '@/lib/seo'

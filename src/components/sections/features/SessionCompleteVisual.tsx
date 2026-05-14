@@ -1,18 +1,3 @@
-/** @fileoverview Card 2 visual -- AI Dialer + Notetaker.
- *
- * Composition: two avatar pills (Marcus R. left, Alim C. Rep right) with a
- * live waveform between them and "LIVE 02:34" label above. Below: a Session
- * Complete card with a circular 81/100 dial on the left and 3 stat bars on
- * the right (Discovery 88, Objections 61, Close Attempt 74).
- *
- * Animations (scroll-triggered via useInView):
- *   - Waveform bars oscillate with staggered durations/delays
- *   - Session card slides up + fades in
- *   - Circular dial arc draws in
- *   - Score bars fill left-to-right
- *
- * Mapped from Figma nodes 1:11220 (live strip) and 1:11256 (session card). */
-
 'use client'
 
 import { useRef } from 'react'

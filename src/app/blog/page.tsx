@@ -1,7 +1,3 @@
-/** @fileoverview /blog -- editorial warm index. Surfaces the $1M funding-announcement
- * post as a hero card above the placeholder grid so the AnnouncementBanner CTA has a
- * visible destination on the index. Wave R FIX-01. */
-
 import Link from 'next/link'
 import { BookOpen, ArrowRight, LinkedinLogo } from '@phosphor-icons/react/dist/ssr'
 import { buildPageMetadata } from '@/lib/seo'
@@ -35,13 +31,7 @@ const PLACEHOLDER_POSTS = [
 export default function BlogPage() {
 	return (
 		<div className='bg-cc-warm-light text-cc-text-primary-warm'>
-			{/* Wave I FIX-05: outer container max-w-7xl so the post grid + footer
-			    distribute evenly at 1440/1920 (was max-w-4xl, leaving 600+px
-			    empty right canvas). Editorial header block (badge / H1 / intro /
-			    LinkedIn row) stays in a max-w-4xl inner container so the
-			    reading line length stays editorial-tight and centered, not
-			    stretched across the wide canvas. */}
-			<div className='mx-auto max-w-7xl px-6 py-20 md:py-28'>
+				<div className='mx-auto max-w-7xl px-6 py-20 md:py-28'>
 				{/* Editorial header — narrower reading column inside the wide canvas. */}
 				<div className='mx-auto max-w-4xl'>
 					{/* Coming soon badge */}
@@ -80,8 +70,7 @@ export default function BlogPage() {
 					</div>
 				</div>
 
-				{/* Hero post — full-width feature card linking to the live post. Wave R FIX-01. */}
-				<Link
+					<Link
 					href={HERO_POST.href}
 					className='group mt-14 block overflow-hidden rounded-3xl border border-cc-warm-border bg-white/70 transition-colors hover:border-cc-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cc-accent-hover focus-visible:ring-offset-2 focus-visible:ring-offset-cc-warm-light md:grid md:grid-cols-[5fr_7fr] md:items-stretch'
 				>

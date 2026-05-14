@@ -1,38 +1,3 @@
-/** @fileoverview S6 Card 3 visual — "Onboard New Reps 10x Faster".
- *
- * Composition (per Figma 81-5018, equal col-span-1 row 2):
- *   ─ Header row: "10x faster" emerald headline (left) + 🏁 emoji + "Quota
- *     Reached" mono caption (right).
- *   ─ Two horizontal progress tracks stacked tight (12px gap) so they read
- *     as a paired comparison, separated from the header by a wider 20px
- *     breathing gap:
- *       Track 1: square emerald CC chip (left bookmark) + emerald-filled bar
- *                 at ~91% + trained-rep portrait at right end (hits the flag).
- *       Track 2: dim "Avg" mono kicker (right-aligned) + thin neutral bar at
- *                 ~44% + generic user silhouette icon at far right (the
- *                 average rep is still plodding while the trained rep is
- *                 done).
- *
- * Narrative: "trained reps hit quota in a fraction of the time average reps
- * take, because they got the reps in roleplay first."
- *
- * Wave T -> Wave U (Figma 81-5018 design-system refinements, 2026-04-27):
- *   ─ Outer flex gap split: header→tracks 20px, track→track 12px (was a
- *     uniform gap-5 that flattened the rhythm).
- *   ─ Quota Reached + Avg switched to mono per Figma caption styling and
- *     to harmonize with Geist Mono kickers used in sibling cards.
- *   ─ CC chip interior shifted from pure-black radial to emerald-tinted
- *     deep-green so it reads as a CC logomark tile (not a hole punched
- *     into the card). 1px emerald-tinted border replaces the bare edge.
- *   ─ Avg track: bar opacities lifted (track /[0.06], fill /25) so the
- *     44% read stays legible at 768/390 without competing with the
- *     emerald primary track.
- *   ─ Trained avatar ring: 2px cc-foundation halo + 1px emerald hint so
- *     the portrait pops off the chip→bar→avatar rail (matches calendar
- *     avatar ring grammar in CoachRepsAtScaleVisual).
- *   ─ Header emoji + caption realigned to items-center with gap-1 so the
- *     flag baseline trims with the mono cap line. */
-
 'use client'
 
 import Image from 'next/image'
@@ -42,19 +7,7 @@ import { User } from '@phosphor-icons/react'
 export default function OnboardFasterVisual(): ReactElement {
 	return (
 		<div className='relative flex h-full w-full flex-col items-center justify-center overflow-hidden px-5 py-6 md:px-6 md:py-7'>
-			{/* Header row: 10x faster + Quota Reached. mb-5 sets the
-			 * generous header→tracks breathing gap (20px) while the track
-			 * stack below uses a tighter gap-3 (12px) so the two bars read
-			 * as paired siblings.
-			 *
-			 * L-09 (2026-05-09): scale up the headline (15→19px), quota
-			 * caption (11→14px), flag emoji (13→16px), AVG label (9→13px),
-			 * CC chip (34→44 tall), trained-rep avatar (24→32), and avg
-			 * placeholder ring (24→32 + inner icon 12→16). The card was
-			 * reading as a series of small ornaments instead of a paired
-			 * comparison; bumping the labels + avatars gives it the visual
-			 * weight to carry its column. */}
-			<div className='w-full mb-5 flex items-center justify-between'>
+				<div className='w-full mb-5 flex items-center justify-between'>
 				<span
 					className='text-trim text-[19px] font-bold leading-none text-cc-mint'
 					style={{ fontFamily: 'var(--font-heading)' }}
@@ -77,8 +30,7 @@ export default function OnboardFasterVisual(): ReactElement {
 			<div className='flex w-full flex-col gap-3'>
 				{/* Track 1: trained rep at ~91% */}
 				<div className='flex items-center gap-2.5'>
-					{/* CC logomark chip — emerald-glow tile per Figma 95:18331 vocab. */}
-					<div
+						<div
 						className='relative flex h-[34px] w-[36px] shrink-0 items-center justify-center rounded-[8px]'
 						style={{
 							background: 'radial-gradient(ellipse at center, rgba(8,40,4,1) 30%, rgba(4,20,2,1) 65%, rgba(2,10,1,1) 82%, rgba(0,0,0,1) 100%)',

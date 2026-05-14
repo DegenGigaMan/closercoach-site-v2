@@ -1,6 +1,3 @@
-/** @fileoverview Fires scroll_depth_25 / 50 / 75 / 100 events once per page
- *  view as the user crosses each threshold. Resets on route change. */
-
 'use client'
 
 import { useEffect } from 'react'

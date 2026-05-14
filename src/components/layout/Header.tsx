@@ -1,5 +1,3 @@
-/** @fileoverview Sticky header with transparent-to-solid scroll behavior, desktop nav + mobile hamburger overlay. */
-
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
