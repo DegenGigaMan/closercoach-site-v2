@@ -22,7 +22,7 @@ const REPS: readonly Rep[] = [
 	{ rank: 22, deltaPct: 9,  name: 'Jordan Kim',    avatar: '/images/avatars/closer-3.webp',           insetPx: 32, desktopHidden: true },
 	{ rank: 22, deltaPct: 9,  name: 'Tom Walsh',     avatar: '/images/avatars/closer-2.webp',           insetPx: 24 },
 	{ rank: 23, deltaPct: 13, name: 'Mikayla Brown', avatar: '/images/avatars/closer-1.png',            insetPx: 16, hasTopShadow: true },
-	{ rank: 24, deltaPct: 18, name: 'Marcus Rivera', avatar: '/images/step1/avatar-marcus-face.png',    insetPx: 8,  hasTopShadow: true },
+	{ rank: 24, deltaPct: 18, name: 'Marcus Rivera', avatar: '/images/step1/avatar-marcus-face.webp',   insetPx: 8,  hasTopShadow: true },
 	{ rank: 25, deltaPct: 22, name: 'Priya Patel',   avatar: '/images/avatars/closer-1.png',            insetPx: 0,  isFocal: true, hasTopShadow: true },
 ] as const
 

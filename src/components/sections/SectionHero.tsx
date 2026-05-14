@@ -227,7 +227,6 @@ export default function SectionHero() {
 							}}
 						>
 							App Store
-							
 						</span>
 					</div>
 				</motion.div>

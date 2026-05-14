@@ -5,7 +5,6 @@ import {
 	AnimatePresence,
 	LayoutGroup,
 	motion,
-	useAnimation,
 	useInView,
 	useReducedMotion,
 } from 'motion/react'
