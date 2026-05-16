@@ -10,9 +10,10 @@
  *     staggered opacity + translate animation, landing at 0.88 opacity so
  *     the headline reads at 100%.
  *   - Mobile collapses to a vertical stack below the centered headline.
- *   - Cards: Profile anchor, 36,000+ closers, 4.7/5 App Store, 3,000+ calls
- *     per day, 16+ industries, 7-dimension radar, 76% coached weekly, and
- *     a 7/50/30 performance gains strip.
+ *   - Cards: Profile anchor, 36,000+ closers, App Store rating + 378+ reviews
+ *     (rating value via STATS.appStoreRating), 3,000+ calls per day, 16+
+ *     industries, 7-dimension radar, 76% coached weekly, and a 7/50/30
+ *     performance gains strip.
  *
  * Everything below the billboard (context callout, App Store review
  * carousel, review-count anchor, ego appeal line, CTA) is unchanged from
@@ -127,13 +128,13 @@ function TierCard({
 			}}
 		>
 			<header className='flex w-full items-start justify-between gap-3'>
-				<div className='relative h-32 w-32 shrink-0 overflow-hidden rounded-full'>
+				<div className='relative h-20 w-20 shrink-0 overflow-hidden rounded-full md:h-32 md:w-32'>
 					<Image
 						src={portraitSrc}
 						alt=''
 						aria-hidden='true'
 						fill
-						sizes='128px'
+						sizes='(min-width: 768px) 128px, 80px'
 						style={{ objectFit: 'cover' }}
 					/>
 				</div>

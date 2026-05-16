@@ -124,7 +124,7 @@ export default function PrivacyPage() {
 							</>,
 							<>
 								<Strong>Access:</Strong> On individual plans, only you can access
-								your recordings. On Business and Enterprise White Label plans,
+								your recordings. On Business and Enterprise plans,
 								designated managers may view recordings for coaching purposes
 								based on role-based access controls.
 							</>,

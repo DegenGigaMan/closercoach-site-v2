@@ -11,7 +11,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { QRCodeSVG } from 'qrcode.react'
-import { motion, useReducedMotion } from 'motion/react'
 import { ChatCircleDots } from '@phosphor-icons/react'
 import ScrollReveal from '@/components/shared/scroll-reveal'
 import AtmosphereNoise from '@/components/atmosphere/atmosphere-noise'
@@ -31,8 +30,6 @@ const WHATSAPP_URL = 'https://chat.whatsapp.com/HkG7urngZAV4wV9Ufd02Z1'
  * Reduced-motion: rings static, pulse dot static, gradient non-animated.
  */
 export default function SectionCTA() {
-	const prefersReducedMotion = useReducedMotion() ?? false
-
 	return (
 		<section
 			id='cta'
@@ -75,7 +72,7 @@ export default function SectionCTA() {
 					</h2>
 
 					{/* Subheadline */}
-					<p className='text-lg text-cc-text-secondary md:text-xl'>
+					<p className='text-balance text-lg text-cc-text-secondary md:text-xl'>
 						Download. Pick your industry. Start your first roleplay. Get your score. Done.
 					</p>
 
@@ -92,22 +89,6 @@ export default function SectionCTA() {
 
 					{/* QR museum exhibit (AD) -- concentric rings behind, emerald frame, corner registration */}
 					<div className='relative mt-4 flex flex-col items-center gap-3'>
-						{/* AI concentric rings -- 2 thin emerald rings breathing behind QR */}
-						<div className='pointer-events-none absolute inset-0 flex items-center justify-center' aria-hidden='true'>
-							<motion.div
-								className='absolute rounded-full border border-cc-accent/25'
-								style={{ width: 240, height: 240 }}
-								animate={prefersReducedMotion ? undefined : { scale: [1, 1.06, 1], opacity: [0.4, 0.15, 0.4] }}
-								transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-							/>
-							<motion.div
-								className='absolute rounded-full border border-cc-accent/15'
-								style={{ width: 300, height: 300 }}
-								animate={prefersReducedMotion ? undefined : { scale: [1, 1.08, 1], opacity: [0.3, 0.1, 0.3] }}
-								transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut', delay: 1.4 }}
-							/>
-						</div>
-
 						{/* QR frame -- thin emerald border with 4 corner registration marks */}
 						<div data-primary-cta='' className='relative rounded-xl border border-cc-accent/40 bg-white p-3'>
 							{/* Corner registration marks (L-brackets) */}
@@ -179,17 +160,9 @@ export default function SectionCTA() {
 					</Link>
 
 					{/* Live growth counter (G5 real data, replaces fabricated 1,247).
-					    Pulse dot uses stable DOM -- motion props are the only reduced-motion switch
-					    to avoid server/client tree mismatch (F38/F39/F42). */}
+					    Pulse animation removed 2026-05-15 per AI-fingerprint reduction lock (Decision #27). */}
 					<div className='flex items-center gap-2 pt-2 font-mono text-sm text-cc-text-secondary'>
-						<span className='relative flex h-2 w-2' aria-hidden='true'>
-							<motion.span
-								className='absolute inline-flex h-full w-full rounded-full bg-cc-accent/60'
-								animate={prefersReducedMotion ? undefined : { scale: [1, 2.2, 1], opacity: [0.6, 0, 0.6] }}
-								transition={prefersReducedMotion ? undefined : { duration: 4.4, repeat: Infinity, ease: 'easeOut' }}
-							/>
-							<span className='relative inline-flex h-2 w-2 rounded-full bg-cc-accent' />
-						</span>
+						<span className='inline-flex h-2 w-2 rounded-full bg-cc-accent' aria-hidden='true' />
 						<span>
 							<span className='text-white'>1,003 closers</span> joined last week.
 						</span>

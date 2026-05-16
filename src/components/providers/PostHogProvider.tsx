@@ -7,17 +7,20 @@
  *      upgraded to `localStorage+cookie` for cross-session continuity.
  *      On decline, persistence stays `memory` (events still capture for
  *      that session; nothing persists across reloads).
- *    - Reverse proxy via /ingest/* (next.config.ts rewrites). The Vercel
- *      env var NEXT_PUBLIC_POSTHOG_HOST (e.g. https://us.i.posthog.com)
- *      is the *project region indicator* — it tells the rewrite which
- *      PostHog cluster to target. The SDK itself uses '/ingest' relative
- *      to our origin so ad blockers cannot block the request without
- *      blocking the entire site. Note: the PostHog dashboard's "reverse
- *      proxy not configured" check is a known false-positive when using
- *      Next.js rewrites (vs vercel.json rewrites) — the /ingest path IS
- *      proxying correctly; the dashboard heuristic just doesn't detect
- *      Next.js-flavored rewrites. Verified via Network tab: requests fire
- *      to /ingest/* on our origin, not us.i.posthog.com directly.
+ *    - Reverse proxy via /d4/* (next.config.ts rewrites; renamed from
+ *      /ingest -> /d4 on 2026-05-16 because modern blocklists pattern-
+ *      match the semantic /ingest prefix in addition to posthog.com).
+ *      The Vercel env var NEXT_PUBLIC_POSTHOG_HOST (e.g.
+ *      https://us.i.posthog.com) is the *project region indicator* — it
+ *      tells the rewrite which PostHog cluster to target. The SDK itself
+ *      uses '/d4' relative to our origin so ad blockers cannot block the
+ *      request without blocking the entire site. Note: the PostHog
+ *      dashboard's "reverse proxy not configured" check is a known
+ *      false-positive when using Next.js rewrites (vs vercel.json
+ *      rewrites) — the /d4 path IS proxying correctly; the dashboard
+ *      heuristic just doesn't detect Next.js-flavored rewrites. Verified
+ *      via Network tab: requests fire to /d4/* on our origin, not
+ *      us.i.posthog.com directly.
  *    - `defaults: '2026-01-30'` adopts PostHog's modern preset. Per the
  *      type defs in @posthog/types, '2026-01-30' inherits from earlier
  *      presets (capture_pageview='history_change', strict replay minimum
@@ -91,7 +94,12 @@ type Props = {
  */
 export const PostHogProvider = ({ children }: Props) => {
 	useEffect(() => {
-		const key = process.env.NEXT_PUBLIC_POSTHOG_KEY
+		/* Defensive .trim() guards against trailing whitespace / newline
+		 * characters baked into the env value at Vercel-side or via a
+		 * dotenv quoted-value expansion of "\n". A bad key with a trailing
+		 * newline silently produced 0 ingest events for an entire pre-
+		 * launch window — never again. */
+		const key = process.env.NEXT_PUBLIC_POSTHOG_KEY?.trim()
 		if (typeof window === 'undefined') return
 		if (!key) {
 			console.warn('[PostHog] NEXT_PUBLIC_POSTHOG_KEY missing; skipping init.')
@@ -118,8 +126,8 @@ export const PostHogProvider = ({ children }: Props) => {
 			posthog.init(key, {
 			/* Use the reverse-proxy path so ad blockers cannot block the
 			 * request without blocking the whole site. next.config.ts
-			 * rewrites /ingest/* to the public PostHog ingest cluster. */
-			api_host: '/ingest',
+			 * rewrites /d4/* to the public PostHog ingest cluster. */
+			api_host: '/d4',
 			ui_host: 'https://us.posthog.com',
 
 			/* Adopt PostHog's modern defaults preset (2026-01-30 release).

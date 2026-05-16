@@ -366,7 +366,7 @@ function CloneHeader({ filled, reduced, isComplete }: { filled: number, reduced:
 				{Array.from({ length: 7 }).map((_, i) => (
 					<span
 						key={i}
-						className={`h-full min-w-px flex-1 rounded-full transition-colors duration-300 ease-out ${i < filled ? 'bg-cc-accent shadow-[0_0_8px_rgba(16,185,129,0.6)]' : 'bg-white/15'}`}
+						className={`h-full min-w-px flex-1 rounded-full transition-colors duration-300 ease-out ${i < filled ? 'bg-cc-accent' : 'bg-white/15'}`}
 					/>
 				))}
 			</div>
@@ -409,7 +409,7 @@ function FieldLong({ label, value, start }: {
 	start: boolean
 }) {
 	return (
-		<div className='flex flex-col items-start gap-1.5'>
+		<div className='flex flex-col items-start gap-0.5'>
 			<span className='text-trim font-[family-name:var(--font-mono)] text-[10px] uppercase leading-[12px] tracking-[0.04em] text-cc-text-secondary'>
 				{label}
 			</span>
@@ -429,12 +429,9 @@ function ProofBadge({ pulse }: { pulse: boolean }) {
 	return (
 		<motion.div
 			className='inline-flex items-center gap-1 rounded-full border border-cc-accent/40 bg-cc-foundation px-[11px] py-[5px]'
-			initial={{ boxShadow: '0 0 16px rgba(16,185,129,0.25)' }}
-			animate={pulse
-				? { boxShadow: ['0 0 16px rgba(16,185,129,0.25)', '0 0 32px rgba(16,185,129,0.7)', '0 0 16px rgba(16,185,129,0.3)'] }
-				: undefined
-			}
-			transition={pulse ? { duration: 1.0, ease: 'easeOut' } : undefined}
+			initial={{ opacity: 0 }}
+			animate={pulse ? { opacity: 1 } : undefined}
+			transition={pulse ? { duration: 0.5, ease: 'easeOut' } : undefined}
 		>
 			<Sparkle size={10} weight='fill' className='text-cc-accent' aria-hidden='true' />
 			<span className='text-trim whitespace-nowrap font-[family-name:var(--font-mono)] text-[10px] font-normal uppercase leading-[15px] tracking-[0.05em] text-cc-accent'>

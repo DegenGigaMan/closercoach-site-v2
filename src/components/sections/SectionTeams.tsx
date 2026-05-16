@@ -144,20 +144,8 @@ type Feature = {
 
 const FEATURES: readonly Feature[] = [
 	{
-		title: 'Coach Reps At Scale',
-		body: 'AI handles the repetitions so your coaching time goes to the moments that actually need you.',
-		Visual: CoachRepsAtScaleVisual,
-		role: 'hero',
-	},
-	{
-		title: 'Know Where Every Rep Stands',
-		body: 'See every rep’s performance from one dashboard.',
-		Visual: KnowEveryRepVisual,
-		role: 'narrow',
-	},
-	{
 		title: 'Onboard New Reps 10x Faster',
-		body: 'New reps practice before they ever talk to a customer.',
+		body: 'Structured roleplay drills + assigned coursework get new reps to OTE faster. They practice every objection before they ever pick up a phone.',
 		Visual: OnboardFasterVisual,
 		role: 'equal',
 	},
@@ -165,16 +153,23 @@ const FEATURES: readonly Feature[] = [
 		title: 'Enforce New Scripting Efficiently',
 		body: 'Roll out a new talk track and push it as a structured practice.',
 		Visual: EnforceScriptingVisual,
-		/* Andy 2026-05-01: flipped from 'equal-inverted' → 'equal-flow' to
-		 * match the assignment-flow visual reference (title+body TOP, visual
-		 * BOTTOM, ~420px tall). 'equal-flow' is a dedicated tier — the 4-node
-		 * Manager → Task → App → Reps stack needs taller breathing room than
-		 * the standard 250px 'equal' tier so the emerald rails read cleanly. */
 		role: 'equal-flow',
 	},
 	{
+		title: 'Know Where Every Rep Stands',
+		body: "See every rep's performance from one dashboard.",
+		Visual: KnowEveryRepVisual,
+		role: 'narrow',
+	},
+	{
+		title: 'Coach Reps At Scale',
+		body: 'AI handles the repetitions so your coaching time goes to the moments that actually need you.',
+		Visual: CoachRepsAtScaleVisual,
+		role: 'hero',
+	},
+	{
 		title: 'Hire Better, Faster',
-		body: 'Send candidates a roleplay challenge before they interview.',
+		body: 'AI interviews where candidates roleplay real objections. See who can actually sell before you make an offer. Hire with conviction, not gut feel.',
 		Visual: HireBetterFasterVisual,
 		role: 'tall',
 	},
@@ -258,7 +253,7 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 	 *   ─ Padding: 32px on the title/body block (was p-6 md:p-8).
 	 *   ─ Heading→visual gap: 40px (was mt-auto). */
 	const articleClass =
-		'group relative flex h-full flex-col overflow-hidden rounded-[24px] border border-[rgba(255,255,255,0.06)] bg-[rgba(30,34,48,0.2)] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.12] hover:shadow-[0_0_32px_rgba(16,185,129,0.12)]'
+		'group relative flex h-full flex-col overflow-hidden rounded-[24px] border border-[rgba(255,255,255,0.06)] bg-[#0C0E13] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/[0.12] hover:shadow-[0_0_32px_rgba(16,185,129,0.12)]'
 
 	/* ── Card 6: horizontal split at lg+ ──
 	 * Title+body left (~42%), hub-spoke right (~58%). Collapses to vertical
@@ -316,9 +311,9 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 		)
 	}
 
-	/* ── Default (Cards 1, 2, 3): title+body top, visual bottom ──
-	 * mt-auto on the visual keeps row-1 / row-2 baselines aligned even when
-	 * body copy lengths differ. */
+	/* ── Default (Cards 1, 2, 3): title+body top, visual centered ──
+	 * flex-1 on the visual slot lets it grow to fill remaining card height;
+	 * items-center + justify-center inside the visual centers the content. */
 	return (
 		<Reveal delay={index * 0.08} className={roleSpanClass[role]}>
 			<article className={articleClass}>
@@ -326,7 +321,7 @@ function BentoCard({ feature, index }: { feature: Feature; index: number }): Rea
 					{titleNode}
 					{bodyNode}
 				</div>
-				<div className={`relative mt-auto w-full overflow-hidden ${roleVisualHeight[role]}`}>
+				<div className={`relative flex flex-1 w-full items-center justify-center overflow-hidden`}>
 					<Visual />
 				</div>
 			</article>
@@ -363,7 +358,7 @@ export default function SectionTeams(): ReactElement {
 			<div className='relative z-10 mx-auto max-w-[1232px] px-6'>
 				{/* ── Top block (center-aligned) ── */}
 				<Reveal className='flex flex-col items-center gap-5 text-center'>
-					<span className='font-[family-name:var(--font-mono)] text-[11px] font-medium uppercase tracking-[0.18em] text-cc-accent'>
+					<span className='text-[11px] font-semibold uppercase tracking-[0.18em] text-cc-accent'>
 						For Sales Managers
 					</span>
 					<h2
@@ -374,8 +369,8 @@ export default function SectionTeams(): ReactElement {
 						<em className='text-cc-accent'>Teams.</em>
 					</h2>
 					<p className='max-w-2xl text-lg text-cc-text-secondary md:text-xl'>
-						Over 36,000 closers already use CloserCoach individually. Now give your
-						whole team the same edge.
+						Ramp new reps to OTE faster. Hire with conviction. Give the team you
+						already have the same AI roleplay that 36,000+ closers train on daily.
 					</p>
 				</Reveal>
 
@@ -410,7 +405,7 @@ export default function SectionTeams(): ReactElement {
 				 * stack 1-up in source order (Coach → Know Where → Onboard →
 				 * Enforce → Hire → Integrate). Desktop (lg+, 1024px+): 3-col grid
 				 * where per-card lg:col-span-* drives the asymmetric layout. */}
-				<div className='mt-20 grid grid-cols-1 gap-4 md:mt-24 md:gap-5 lg:grid-cols-3 lg:gap-6'>
+				<div className='mt-20 grid grid-cols-1 gap-4 md:mt-24 md:gap-5 lg:grid-cols-3 lg:gap-6 '>
 					{FEATURES.map((feature, i) => (
 						<BentoCard key={feature.title} feature={feature} index={i} />
 					))}

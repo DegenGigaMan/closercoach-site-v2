@@ -13,12 +13,12 @@
  * body CTA. Header CTAs opt out via the MotionCTA `chrome` variant to keep
  * their existing Inter treatment. */
 :root {
-	--font-cta: var(--font-jakarta);
+	--font-cta: var(--font-inter-tight);
 }
 
 @theme inline {
 	/* Typography */
-	--font-sans: var(--font-inter);
+	--font-sans: var(--font-jakarta);
 	--font-mono: var(--font-geist-mono);
 	--font-heading: var(--font-lora);
 
@@ -69,7 +69,10 @@
 	/* Text -- dark surfaces */
 	--color-cc-text-primary: #FFFFFF;
 	--color-cc-text-secondary: #94A3B8;
-	--color-cc-text-muted: #8595A8;
+	/* LR-024 (launch lock 2026-05-15): bumped from #8595A8 -> #8c98a8 to clear
+	 * 64 axe color-contrast violations on muted-text passes (4.01-4.02 -> >4.5
+	 * against cc-foundation surface). */
+	--color-cc-text-muted: #8c98a8;
 
 	/* Text -- warm surfaces */
 	--color-cc-text-primary-warm: #1A1D26;
@@ -193,19 +196,8 @@
 		scroll-margin-top: 100px;
 	}
 
-	/* H-05 v2 (2026-05-05): kill the white flash AND the white wrapper card
-	 * around the Calendly iframe. The InlineWidget renders an outer
-	 * `.calendly-inline-widget` div + an inner `iframe`; both can render
-	 * white before Calendly's dark theme paints. Force every layer dark with
-	 * `background` shorthand so any inline `background-color: white` from
-	 * react-calendly's defaults gets shadowed. */
-	.calendly-inline-widget,
-	.calendly-inline-widget > *,
-	.calendly-inline-widget iframe {
-		background: #0d0f14 !important;
-		background-color: #0d0f14 !important;
-		color-scheme: dark !important;
-	}
+	/* Calendly iframe — no global background override; the /sales page is
+	 * light-mode and the iframe uses white background natively. */
 }
 
 /* Typography scale -- VIS Section 2 (Lora Bold 700) */

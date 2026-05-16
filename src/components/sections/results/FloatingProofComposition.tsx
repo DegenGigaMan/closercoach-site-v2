@@ -1,10 +1,10 @@
 /** @fileoverview S5 Results — Floating Proof Composition per Figma 81:4377
  * (recomposed master, Wave Q 2026-04-27; Wave Q.2 mobile pattern 2026-04-27).
  *
- * 7 designed proof components orbit the centered "Every call, scored. Every
- * no, is now a yes." billboard on a warm surface (AL-017 copy swap, Alim
- * 2026-05-01 AM Slack — italic emphasis moves from "improving" to the
- * closer's transformation moment):
+ * 7 designed proof components orbit the centered "Every call scored. Every
+ * no becomes a yes." billboard on a warm surface (AL-017 Alim 2026-05-01 AM
+ * Slack copy; final phrasing locked at launch 2026-05-15 — italic emphasis
+ * sits on the closer's transformation moment):
  *
  *   1. Camil Reese profile card (top-left, w 240) — Recent Performance bars
  *      (Week 1 amber C, Week 8 emerald A with +2 trust badge), real headshot
@@ -217,11 +217,9 @@ function PerformanceGainsCard(): ReactElement {
 			style={CARD_STYLE}
 		>
 			<p
-				className='text-trim whitespace-nowrap text-[12px] font-semibold uppercase leading-none'
+				className='text-trim whitespace-nowrap text-[12px] font-medium leading-none'
 				style={{
-					fontFamily: 'var(--font-mono)',
 					color: SLATE_LABEL,
-					letterSpacing: '0.72px',
 				}}
 			>
 				Performance gains
@@ -236,11 +234,9 @@ function PerformanceGainsCard(): ReactElement {
 							{s.value}
 						</p>
 						<p
-							className='text-trim whitespace-nowrap text-[10px] font-medium uppercase leading-none'
+							className='text-trim whitespace-nowrap text-[10px] font-medium leading-none'
 							style={{
-								fontFamily: 'var(--font-mono)',
 								color: 'rgba(0,0,0,0.5)',
-								letterSpacing: '1px',
 							}}
 						>
 							{s.label}
@@ -369,11 +365,9 @@ function IndustriesPill(): ReactElement {
 				16+
 			</p>
 			<p
-				className='text-trim whitespace-nowrap text-[10px] font-medium uppercase leading-none'
+				className='text-trim whitespace-nowrap text-[10px] font-medium leading-none'
 				style={{
-					fontFamily: 'var(--font-mono)',
 					color: 'rgba(0,0,0,0.5)',
-					letterSpacing: '1px',
 				}}
 			>
 				Industries
@@ -403,11 +397,9 @@ function StatCard({ value, label, width = 200 }: StatCardProps): ReactElement {
 				{value}
 			</p>
 			<p
-				className='text-trim whitespace-nowrap text-[12px] font-medium uppercase leading-none'
+				className='text-trim whitespace-nowrap text-[12px] font-medium leading-none'
 				style={{
-					fontFamily: 'var(--font-mono)',
 					color: 'rgba(0,0,0,0.5)',
-					letterSpacing: '1.2px',
 				}}
 			>
 				{label}
@@ -663,14 +655,14 @@ function ResultsHeadline(): ReactElement {
 				letterSpacing: '-0.015em',
 			}}
 		>
-			Every call, Scored.
+			Every call scored.
 			<br />
-			Every no,{' '}
+			Every no{' '}
 			<em
 				className='italic font-bold'
 				style={{ color: EMERALD_AA, fontFamily: 'var(--font-heading)' }}
 			>
-				is now a yes
+				becomes a yes
 			</em>
 			.
 		</motion.h2>
@@ -740,25 +732,25 @@ export default function FloatingProofComposition(): ReactElement {
 							<ResultsHeadline />
 						</div>
 
-						{/* Top row */}
+						{/* Top row — stagger loosely: left lands first, center second, right third */}
 						<Float delay={0} className='absolute left-[12%] top-0 lg:left-[8%]'>
 							<CamilReeseProfileCard />
 						</Float>
 						<Float
-							delay={0.06}
+							delay={0.1}
 							className='absolute left-1/2 top-[110px] -translate-x-1/2'
 						>
 							<PerformanceGainsCard />
 						</Float>
-						<Float delay={0.12} className='absolute right-[8%] top-[20px] lg:right-[5%]'>
+						<Float delay={0.05} className='absolute right-[8%] top-[20px] lg:right-[5%]'>
 							<GradeUpCard />
 						</Float>
 
-						{/* Mid row */}
+						{/* Mid row — slight pause after top row settles */}
 						<Float delay={0.18} className='absolute right-[3%] top-[230px] lg:right-0'>
 							<IndustriesPill />
 						</Float>
-						<Float delay={0.22} className='absolute left-[3%] top-[320px] lg:left-[-1%]'>
+						<Float delay={0.24} className='absolute left-[3%] top-[320px] lg:left-[-1%]'>
 							<div className='flex flex-col items-start gap-4'>
 								<StatCard value='36,000+' label='Sales closers' />
 								<div className='pl-12'>
@@ -767,9 +759,9 @@ export default function FloatingProofComposition(): ReactElement {
 							</div>
 						</Float>
 
-						{/* Bottom row */}
+						{/* Bottom row — anchor pieces land together */}
 						<Float
-							delay={0.3}
+							delay={0.32}
 							className='absolute left-1/2 top-[430px] -translate-x-1/2'
 						>
 							<SevenDimensionsRadar />
@@ -778,7 +770,7 @@ export default function FloatingProofComposition(): ReactElement {
 						 * IndustriesPill (also right-0). Bumped to lg:right-[5%] so
 						 * the card sits within the GradeUp/IndustriesPill spacing
 						 * convention and stops feeling crammed against the edge. */}
-						<Float delay={0.36} className='absolute right-[3%] top-[420px] lg:right-[5%]'>
+						<Float delay={0.28} className='absolute right-[3%] top-[420px] lg:right-[5%]'>
 							<CoachedVsUncoachedChart />
 						</Float>
 					</div>

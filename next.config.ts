@@ -50,27 +50,34 @@ const nextConfig: NextConfig = {
 		]
 	},
 
-	/* PostHog reverse proxy (2026-05-05). Routes /ingest/* on our origin to
-	 * PostHog's US ingest cluster so direct calls to posthog.com are not
-	 * blocked by ad blockers (uBlock Origin, Brave, Firefox ETP, etc.) — the
-	 * primary cause of "no data captured" in PostHog Next.js setups.
+	/* PostHog reverse proxy (renamed /ingest -> /d4 on 2026-05-16). Routes
+	 * /d4/* on our origin to PostHog's US ingest cluster so direct calls to
+	 * posthog.com are not blocked by ad blockers (uBlock Origin, Brave,
+	 * Firefox ETP, etc.) — the primary cause of "no data captured" in
+	 * PostHog Next.js setups. The semantic /ingest prefix used to be enough
+	 * but modern blocklists now pattern-match it; /d4 is intentionally
+	 * non-semantic to slip blocklist heuristics.
 	 *
 	 * Pattern from posthog.com/docs/advice/proxy/nextjs. /static routes the
 	 * array.js + recorder bundles to us-assets; /flags supports the new flag
-	 * endpoint in posthog-js 1.227+. PostHogProvider sets api_host: '/ingest'
-	 * so the SDK targets these rewrites, not the public ingest URL. */
+	 * endpoint in posthog-js 1.227+. PostHogProvider sets api_host: '/d4' so
+	 * the SDK targets these rewrites, not the public ingest URL.
+	 *
+	 * Note: PostHog dashboard's "improve your setup" panel pattern-matches
+	 * /ingest and may flag this proxy as misconfigured. False positive —
+	 * the rewrite still works; ingest is verified via Activity feed. */
 	async rewrites() {
 		return [
 			{
-				source: '/ingest/static/:path*',
+				source: '/d4/static/:path*',
 				destination: 'https://us-assets.i.posthog.com/static/:path*',
 			},
 			{
-				source: '/ingest/flags',
+				source: '/d4/flags',
 				destination: 'https://us.i.posthog.com/flags',
 			},
 			{
-				source: '/ingest/:path*',
+				source: '/d4/:path*',
 				destination: 'https://us.i.posthog.com/:path*',
 			},
 		]
@@ -78,7 +85,7 @@ const nextConfig: NextConfig = {
 
 	/* Required when using rewrites that target external hosts: prevents
 	 * Next.js from auto-redirecting trailing slash variants and breaking the
-	 * ingest path. Per posthog.com/docs/advice/proxy/nextjs. */
+	 * proxy path. Per posthog.com/docs/advice/proxy/nextjs. */
 	skipTrailingSlashRedirect: true,
 
 	async headers() {

@@ -52,6 +52,7 @@ export default function TextType({
 	 * cycle that caused the JOB field to stay empty). */
 	useEffect(() => {
 		if (!start && !reduced) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect -- intentional reset on start:false; required for the start:true->false->true cycle to retype from the beginning
 			setDisplayed('')
 			setCharIndex(0)
 			startedRef.current = false

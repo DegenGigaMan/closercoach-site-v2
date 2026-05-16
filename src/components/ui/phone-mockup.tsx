@@ -141,23 +141,11 @@ export default function PhoneMockup() {
 
 	return (
 		<div className="relative flex items-center justify-center">
-			{/* 3-layer emerald glow behind phone */}
+			{/* Ambient emerald glow behind phone — static, no pulse */}
 			<div
-				className="absolute inset-0 animate-[glow-pulse_4s_ease-in-out_infinite]"
+				className="absolute inset-0"
 				style={{
-					background: 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)',
-				}}
-			/>
-			<div
-				className="absolute inset-0 animate-[glow-pulse_4s_ease-in-out_infinite_0.5s]"
-				style={{
-					background: 'radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 50%)',
-				}}
-			/>
-			<div
-				className="absolute inset-0 animate-[glow-pulse_4s_ease-in-out_infinite_1s]"
-				style={{
-					background: 'radial-gradient(circle, rgba(16,185,129,0.20) 0%, transparent 30%)',
+					background: 'radial-gradient(circle, rgba(16,185,129,0.06) 0%, transparent 65%)',
 				}}
 			/>
 

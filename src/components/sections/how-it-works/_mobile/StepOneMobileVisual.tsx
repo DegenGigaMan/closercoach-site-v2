@@ -196,7 +196,7 @@ function FieldShort({ label, value }: { label: string; value: string }) {
  * H-32 (2026-05-04): bumped value font from 11px to 13px with leading-relaxed. */
 function FieldLong({ label, value }: { label: string; value: string }) {
 	return (
-		<div className='flex flex-col gap-1'>
+		<div className='flex flex-col gap-0.5'>
 			<span className='text-trim font-[family-name:var(--font-mono)] text-[10px] uppercase leading-[12px] tracking-[0.05em] text-cc-text-secondary'>
 				{label}
 			</span>

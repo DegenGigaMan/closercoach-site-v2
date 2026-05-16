@@ -66,7 +66,7 @@ export default function IntegrateSalesTechVisual(): ReactElement {
 				{/* Centre hub */}
 				<div
 					ref={hubRef}
-					className='relative z-20 flex h-14 w-14 shrink-0 items-center justify-center rounded-full shadow-[0_0_0_2px_rgba(16,208,120,0.3),0_0_32px_rgba(16,208,120,0.55),0_0_80px_rgba(16,208,120,0.2)]'
+					className='relative z-20 flex h-14 w-14 shrink-0 items-center justify-center rounded-full shadow-[0_0_0_1px_rgba(16,185,129,0.3),0_0_16px_rgba(16,185,129,0.15)]'
 					style={{
 						background: 'radial-gradient(ellipse at center, rgba(8,40,4,1) 30%, rgba(4,20,2,1) 65%, rgba(2,10,1,1) 82%, rgba(0,0,0,1) 100%)',
 					}}
