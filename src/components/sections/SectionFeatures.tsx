@@ -1,61 +1,35 @@
-/** @fileoverview S4 Feature Deep Dives (W15 + W16 bento per Image #22).
+/** @fileoverview S4 Feature Deep Dives — scope-reduced bonus-features section
+ * (Decision #7, launch lock 2026-05-15).
  *
  * Composition:
- *   1. Billboard section headline (Lora Bold, clamp 2.5rem to 10rem at 10vw) with
- *      Lora Bold ITALIC emerald span on "Operating System".
- *   2. Scale callout beneath -- E4 "100+ scenarios across 16+ industries."
- *   3. 5-card asymmetric bento (12-col desktop grid, 3 implicit rows):
- *        Row 1: [01] cols 1-7 (wide hook card) | [02] cols 8-12
- *        Row 2: [03] cols 1-4 row-span 2       | [04] cols 5-12 (compact)
- *        Row 3: [03 continues]                 | [05] cols 5-12 (taller than 04)
- *      Card heights vary: [03] is the tall left column; [04] is the compact
- *      middle-right card; [05] is the wider bottom-right card. The grid's row
- *      assignment drives each card's footprint, which matches the reference.
- *      Mobile: independent single-column stack (not a shrunk desktop), natural
- *      card heights.
- *      Tablet: 2-col grid, card 1 spans both cols row 1.
- *   4. Each card renders chapter marker [01]-[05] top-right (Geist Mono, emerald),
- *      Phosphor icon (emerald, duotone where available), title, one-liner body,
- *      and a DASHED-BOX placeholder reserving space for a per-card visual asset
- *      that lands in a later wave.
- *   5. Expert Methodology Strip (DB-1) below the grid -- PC7 expert names inline
- *      with emerald hairline separators.
- *   6. CTA below everything.
- *
- * Copy DEVIATES from lp-copy-deck-v5 §S4 (logged in build-deviations.md W15 entry).
- * Card 1 title shifts from "Daily Roleplay Drills" to "Practice Against Realistic
- * AI Customer Clones"; Card 3 replaces "Pre-Call Preparation" with "40+ Languages".
- * Layout shifts from masonry to 7/5 + 4/4/4 bento. Source of truth for this wave
- * is Image #20 reference; copy deck reconciliation deferred.
- *
- * Motion hooks (TODO only, no implementation this wave):
- *   - Card 1: fan-out 3-card persona stack on hover
- *   - Card 2: live waveform animation + session complete reveal on scroll
- *   - Card 3: stat counter + chart draw-in on scroll
- *   - Card 4: stacked flashcard hover fan
- *   - Card 5: microphone pulse + flag orbit rotation
- * Cards expose a `motionSlot` prop so a future wave can replace the dashed-box
- * placeholder with the animated visual without restructuring layout.
+ *   1. Billboard section headline (Lora Bold, clamp 2.5rem to 10rem at 10vw)
+ *      with italic-emerald emphasis.
+ *   2. Scale callout beneath -- "100+ scenarios across 16+ industries."
+ *   3. 2-card bento covering the supplementary product surfaces not already
+ *      covered by Hero + How It Works + Teams:
+ *        Row 1 desktop: [01] Cash Cards (cols 1-6) | [02] 10+ Languages (cols 7-12)
+ *        Mobile: 1-col stack.
+ *      Cards Practice Against Realistic AI Customer Clones, AI Dialer +
+ *      Notetaker, and Skills Progression Tracking removed per launch decision
+ *      (covered earlier on the LP via Hero State 5 mic bar + How It Works
+ *      Steps 2-4 + Step 3 dialer flow). Surviving cards positioned as
+ *      "bonus features" supporting the core narrative.
+ *   4. Each card renders chapter marker top-right (Geist Mono, emerald),
+ *      Phosphor icon, title, one-liner body, and a per-card animated visual.
+ *   5. CTA below the bento.
  *
  * Hydration safety: no Math.random, Date.now, or window checks in render.
- * All props stable across server + first client render. Section is static
- * at rest -- no ambient animation yet. */
+ * All props stable across server + first client render. */
 
 'use client'
 
 import type { ComponentType, ReactElement, ReactNode } from 'react'
 import {
-	SealCheck,
-	Phone,
-	ChartLineUp,
 	Lightning,
 	GlobeHemisphereWest,
 } from '@phosphor-icons/react'
 import MotionCTA from '@/components/shared/motion-cta'
 import { CTA } from '@/lib/constants'
-import PracticeFanVisual from './features/PracticeFanVisual'
-import SessionCompleteVisual from './features/SessionCompleteVisual'
-import ProgressionVisual from './features/ProgressionVisual'
 import FlashcardStackVisual from './features/FlashcardStackVisual'
 import LanguageOrbitVisual from './features/LanguageOrbitVisual'
 
@@ -85,24 +59,6 @@ type Feature = {
 }
 
 const FEATURES: readonly Feature[] = [
-	{
-		title: 'Practice Against Realistic AI Customer Clones',
-		body: 'Three fresh sales scenarios every day so your skills never go cold.',
-		Icon: SealCheck,
-		layout: 'stack',
-	},
-	{
-		title: 'AI Dialer + Notetaker',
-		body: 'Call directly from the app or hit record in the room. Either way, AI captures the conversation, scores the call, and writes your notes.',
-		Icon: Phone,
-		layout: 'stack',
-	},
-	{
-		title: 'Skills Progression Tracking',
-		body: 'See exactly how your discovery, objection handling, close rate, and more improve over time. Call by call, rep by rep.',
-		Icon: ChartLineUp,
-		layout: 'stack',
-	},
 	{
 		title: 'Cash Cards',
 		body: 'Flashcards built around real objections so you always know exactly what to say when it counts.',
@@ -251,56 +207,22 @@ export default function SectionFeatures(): ReactElement {
 					</p>
 				</div>
 
-				{/* Bento grid.
-				    Desktop (lg+): 12-col grid with a tall left column for card 03.
-				      Row 1: [01] col-span-7 | [02] col-span-5
-				      Row 2: [03] col-span-4 row-span-2 | [04] col-span-8
-				      Row 3: [03 continues]               | [05] col-span-8
-				      Row 2 is shorter than row 3 so [04] reads as the compact card and
-				      [05] reads wider/taller, matching the reference composition.
-				    Tablet (md): 2-col. Row 1 [01] col-span-2. Rows 2-3 pair the rest.
-				    Mobile: 1-col stack in reading order. */}
+				{/* Bento grid (Decision #7, launch lock 2026-05-15).
+				    Desktop (lg+): 2-col 12-grid with each card spanning 6 cols.
+				    Tablet (md): 2-col. Mobile: 1-col stack. */}
 				<div className='grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-12'>
-					{/* [01] Practice Against Realistic AI Customer Clones
-					    TODO(motion): fan-out 3-card persona stack on hover */}
+					{/* [01] Cash Cards */}
 					<CardShell
 						feature={FEATURES[0]}
-						motionSlot={<PracticeFanVisual />}
-						className='md:col-span-2 lg:col-span-7 lg:min-h-[520px]'
+						motionSlot={<FlashcardStackVisual />}
+						className='md:col-span-1 lg:col-span-6 lg:min-h-[420px]'
 					/>
 
-					{/* [02] AI Dialer + Notetaker
-					    TODO(motion): live waveform animation + session complete reveal on scroll */}
+					{/* [02] 10+ Languages */}
 					<CardShell
 						feature={FEATURES[1]}
-						motionSlot={<SessionCompleteVisual />}
-						className='md:col-span-1 lg:col-span-5 lg:min-h-[520px]'
-					/>
-
-					{/* [03] Skills Progression Tracking -- tall column spanning rows 2-3
-					    TODO(motion): stat counter + chart draw-in on scroll */}
-					<CardShell
-						feature={FEATURES[2]}
-						motionSlot={<ProgressionVisual />}
-						className='md:col-span-1 lg:col-span-4 lg:row-span-2'
-					/>
-
-					{/* [04] Cash Cards -- compact row-2 right card on desktop;
-					    full-width row on tablet; vertical stack on mobile
-					    TODO(motion): stacked flashcard hover fan */}
-					<CardShell
-						feature={FEATURES[3]}
-						motionSlot={<FlashcardStackVisual />}
-						className='md:col-span-2 lg:col-span-8 lg:min-h-[300px]'
-					/>
-
-					{/* [05] 40+ Languages -- wider row-3 right card on desktop;
-					    full-width row on tablet; vertical stack on mobile
-					    TODO(motion): microphone pulse + flag orbit rotation */}
-					<CardShell
-						feature={FEATURES[4]}
 						motionSlot={<LanguageOrbitVisual />}
-						className='md:col-span-2 lg:col-span-8 lg:min-h-[380px]'
+						className='md:col-span-1 lg:col-span-6 lg:min-h-[420px]'
 					/>
 				</div>
 
