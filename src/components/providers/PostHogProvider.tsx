@@ -91,7 +91,12 @@ type Props = {
  */
 export const PostHogProvider = ({ children }: Props) => {
 	useEffect(() => {
-		const key = process.env.NEXT_PUBLIC_POSTHOG_KEY
+		/* Defensive .trim() guards against trailing whitespace / newline
+		 * characters baked into the env value at Vercel-side or via a
+		 * dotenv quoted-value expansion of "\n". A bad key with a trailing
+		 * newline silently produced 0 ingest events for an entire pre-
+		 * launch window — never again. */
+		const key = process.env.NEXT_PUBLIC_POSTHOG_KEY?.trim()
 		if (typeof window === 'undefined') return
 		if (!key) {
 			console.warn('[PostHog] NEXT_PUBLIC_POSTHOG_KEY missing; skipping init.')
