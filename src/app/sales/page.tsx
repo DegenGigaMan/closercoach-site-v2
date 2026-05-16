@@ -41,7 +41,7 @@ const BENEFITS = [
 ] as const
 
 const BG = '#FAF9F7'
-const BENEFIT_CARD_BG = '#EEF4FB'
+const BENEFIT_CARD_BG = '#F2EEE5'
 const BENEFIT_CARD_BORDER = 'rgba(15, 23, 42, 0.06)'
 const TEXT_PRIMARY = '#111827'
 const TEXT_SECONDARY = '#4B5563'

@@ -151,11 +151,8 @@ export default function Footer() {
 					))}
 				</div>
 
-				{/* Copyright + LR-027 results disclaimer */}
-				<div className='mt-8 flex flex-col gap-2 border-t border-cc-surface-border pt-8'>
-					<p className='text-xs text-cc-text-muted'>
-						Statistics reflect CloserCoach internal data. Individual results vary.
-					</p>
+				{/* Copyright */}
+				<div className='mt-8 border-t border-cc-surface-border pt-8'>
 					<p className='text-xs text-cc-text-muted'>
 						&copy; 2026 {BRAND.name}. All rights reserved.
 					</p>
