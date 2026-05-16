@@ -48,7 +48,6 @@ export default function SectionHero() {
 	/* Desktop scroll-linked parallax (motion-spec Section 2 rates). */
 	const { scrollY } = useScroll()
 	const phoneParallax = useTransform(scrollY, [0, 800], [0, -60])
-	const glowParallax = useTransform(scrollY, [0, 800], [0, -30])
 	const l1Parallax = useTransform(scrollY, [0, 800], [0, -15])
 
 	/* Shared entrance config. Initial state is stable across SSR/client to avoid
@@ -309,50 +308,6 @@ export default function SectionHero() {
 
 				{/* Phone composite -- centered below the text block. */}
 				<div className='relative z-[8] mt-14 flex w-full items-center justify-center md:mt-16'>
-
-					{/* Three-layer emerald glow -- product as light source. */}
-					<motion.div
-						className='pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
-						aria-hidden='true'
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.7, delay: 1.1, ease: 'easeOut' }}
-						style={isDesktop && !prefersReducedMotion ? { y: glowParallax } : undefined}
-					>
-						<div
-							className='h-[160px] w-[160px] rounded-full md:h-[200px] md:w-[200px]'
-							style={{
-								boxShadow: '0 0 32px rgba(16,185,129,0.15)',
-								background: 'rgba(16,185,129,0.08)',
-							}}
-						/>
-					</motion.div>
-					<motion.div
-						className='pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
-						aria-hidden='true'
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.7, delay: 1.2, ease: 'easeOut' }}
-						style={isDesktop && !prefersReducedMotion ? { y: glowParallax } : undefined}
-					>
-						<div
-							className='h-[320px] w-[320px] rounded-full blur-[64px] md:h-[400px] md:w-[400px]'
-							style={{ background: 'rgba(16,185,129,0.10)' }}
-						/>
-					</motion.div>
-					<motion.div
-						className='pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
-						aria-hidden='true'
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.7, delay: 1.3, ease: 'easeOut' }}
-						style={isDesktop && !prefersReducedMotion ? { y: glowParallax } : undefined}
-					>
-						<div
-							className='h-[440px] w-[440px] rounded-full blur-[200px] md:h-[560px] md:w-[560px]'
-							style={{ background: 'radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%)' }}
-						/>
-					</motion.div>
 
 					{/* Phone frame wrapper. HeroPhoneV3 ships a 320px phone inside px-40 gutters
 					 * (640px outer footprint). No external chips -- the phone stands alone,

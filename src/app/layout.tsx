@@ -28,7 +28,7 @@ import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { GoogleAnalytics } from '@next/third-parties/google'
-import { lora, geistMono, inter, plusJakarta } from '@/lib/fonts'
+import { lora, geistMono, inter, plusJakarta, interTight } from '@/lib/fonts'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import SmoothScroll from '@/components/layout/SmoothScroll'
@@ -42,7 +42,7 @@ import { BRAND, STATS, PRICING } from '@/lib/constants'
 import { SITE_URL, SITE_NAME, OG_IMAGE, TWITTER_HANDLE } from '@/lib/seo'
 import './globals.css'
 
-const SITE_TITLE = 'CloserCoach - AI Sales Coach for B2C Sales Reps'
+const SITE_TITLE = 'CloserCoach - AI Sales Intelligence | Best AI Sales Training Platform'
 const SITE_DESCRIPTION =
 	'Practice before every meeting, record real calls, and get scored by AI. 36,000+ closers train with CloserCoach. Try free for 3 days.'
 
@@ -201,7 +201,7 @@ export default function RootLayout({
 	return (
 		<html
 			lang='en'
-			className={`${lora.variable} ${geistMono.variable} ${inter.variable} ${plusJakarta.variable} h-full antialiased`}
+			className={`${lora.variable} ${geistMono.variable} ${inter.variable} ${plusJakarta.variable} ${interTight.variable} h-full antialiased`}
 		>
 			<head>
 				<link rel='preload' href='/cc-logo.png' as='image' type='image/png' />

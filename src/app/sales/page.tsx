@@ -1,11 +1,10 @@
-/** @fileoverview /sales — Book a Demo. Two-column card layout: info left,
- *  Calendly right. Both columns sit inside a single bordered card on the
- *  dark page surface, separated by a vertical rule. */
+/** @fileoverview /sales — Book a Demo. Light-mode warm page, two-column
+ *  card layout: info left, Calendly right. */
 
 import Image from 'next/image'
 import { Clock, VideoCamera, CheckCircle, Globe } from '@phosphor-icons/react/dist/ssr'
-import { buildPageMetadata } from '@/lib/seo'
 import CalendlyWrapper from './CalendlyWrapper'
+import { buildPageMetadata } from '@/lib/seo'
 
 export const metadata = buildPageMetadata({
 	title: 'Book a Demo',
@@ -19,17 +18,56 @@ const BULLETS = [
 	'Custom onboarding plan for your team',
 ]
 
+const BG = '#FAF9F7'
+const TEXT_PRIMARY = '#111827'
+const TEXT_SECONDARY = '#4B5563'
+const TEXT_MUTED = '#9CA3AF'
+const DIVIDER = 'rgba(0,0,0,0.08)'
+
 export default function SalesPage() {
 	return (
-		<section className='min-h-screen bg-cc-foundation py-12 md:py-16'>
+		<section className='min-h-screen py-12 md:py-16' style={{ background: BG }}>
 			<div className='mx-auto w-full max-w-5xl px-6'>
 
 				{/* Unified card */}
-				<div className='overflow-hidden rounded-2xl border border-white/[0.08]'>
+				<div
+					className='overflow-hidden rounded-2xl'
+					style={{
+						background: BG,
+						boxShadow: '0 1px 3px rgba(0,0,0,0.05), 0 8px 32px rgba(0,0,0,0.07)',
+						border: '1px solid rgba(0,0,0,0.08)',
+					}}
+				>
 					<div className='flex flex-col lg:flex-row'>
 
 						{/* ── Left info panel ── */}
-						<div className='flex flex-col gap-7 bg-white/[0.02] p-8 lg:w-96 lg:shrink-0 lg:p-10'>
+						<div
+							className='flex flex-col gap-7 p-8 lg:w-96 lg:shrink-0 lg:p-10'
+							style={{ background: BG, borderRight: `1px solid ${DIVIDER}` }}
+						>
+							{/* Logo — matches navbar: dark green bg + icon + wordmark */}
+							<div className='flex items-center gap-2.5'>
+								<div
+									className='flex h-8 w-8 shrink-0 items-center justify-center rounded-md'
+									style={{ background: 'linear-gradient(135deg, #0D2B1A 0%, #0A1F12 100%)' }}
+								>
+									<Image
+										src='/cc-logomark-192.png'
+										alt=''
+										width={22}
+										height={22}
+									/>
+								</div>
+								<span
+									className='text-[15px] font-semibold tracking-tight'
+									style={{ color: TEXT_PRIMARY }}
+								>
+									CloserCoach
+								</span>
+							</div>
+
+							{/* Divider */}
+							<div className='h-px' style={{ background: DIVIDER }} />
 
 							{/* Host */}
 							<div className='flex items-center gap-3'>
@@ -38,82 +76,82 @@ export default function SalesPage() {
 									alt='Taylor Martinez'
 									width={44}
 									height={44}
-									className='h-11 w-11 rounded-full object-cover ring-2 ring-cc-accent/30'
+									className='h-11 w-11 rounded-full object-cover'
+									style={{ boxShadow: '0 0 0 2px rgba(16,185,129,0.4)' }}
 								/>
 								<div>
-									<p className='text-xs text-cc-text-muted'>with</p>
-									<p className='text-sm font-semibold text-white'>Taylor Martinez</p>
+									<p className='text-xs' style={{ color: TEXT_MUTED }}>with</p>
+									<p className='text-sm font-semibold' style={{ color: TEXT_PRIMARY }}>Taylor Martinez</p>
 								</div>
 							</div>
-
-							{/* Divider */}
-							<div className='h-px bg-white/[0.06]' />
 
 							{/* Meeting title */}
 							<div>
 								<h1
-									className='text-balance leading-tight text-white'
+									className='text-balance leading-tight'
 									style={{
 										fontFamily: 'var(--font-heading)',
 										fontSize: 'clamp(1.4rem, 2.5vw, 1.75rem)',
 										fontWeight: 700,
 										letterSpacing: '-0.01em',
+										color: TEXT_PRIMARY,
 									}}
 								>
 									See CloserCoach{' '}
-									<em className='italic text-cc-accent'>in action.</em>
+									<em className='italic' style={{ color: '#059669' }}>in action.</em>
 								</h1>
-								<p className='mt-2 text-sm leading-relaxed text-cc-text-secondary'>
+								<p className='mt-2 text-sm leading-relaxed' style={{ color: TEXT_SECONDARY }}>
 									Live demo of how top sales teams use AI roleplay to close more deals.
 								</p>
 							</div>
 
 							{/* Meta */}
-							<ul className='flex flex-col gap-2.5 text-sm text-cc-text-secondary'>
+							<ul className='flex flex-col gap-2.5 text-sm' style={{ color: TEXT_SECONDARY }}>
 								<li className='flex items-center gap-2.5'>
-									<Clock size={14} weight='regular' className='shrink-0 text-cc-text-muted' />
+									<Clock size={14} weight='regular' className='shrink-0' style={{ color: TEXT_MUTED }} />
 									45 minutes
 								</li>
 								<li className='flex items-center gap-2.5'>
-									<VideoCamera size={14} weight='regular' className='shrink-0 text-cc-text-muted' />
+									<VideoCamera size={14} weight='regular' className='shrink-0' style={{ color: TEXT_MUTED }} />
 									Video call
 								</li>
 								<li className='flex items-center gap-2.5'>
-									<Globe size={14} weight='regular' className='shrink-0 text-cc-text-muted' />
+									<Globe size={14} weight='regular' className='shrink-0' style={{ color: TEXT_MUTED }} />
 									Your timezone
 								</li>
 							</ul>
 
 							{/* Divider */}
-							<div className='h-px bg-white/[0.06]' />
+							<div className='h-px' style={{ background: DIVIDER }} />
 
 							{/* What you get */}
 							<ul className='flex flex-col gap-2.5'>
 								{BULLETS.map((b) => (
-									<li key={b} className='flex items-start gap-2.5 text-sm text-cc-text-secondary'>
-										<CheckCircle size={14} weight='fill' className='mt-0.5 shrink-0 text-cc-accent' />
+									<li key={b} className='flex items-start gap-2.5 text-sm' style={{ color: TEXT_SECONDARY }}>
+										<CheckCircle size={14} weight='fill' className='mt-0.5 shrink-0' style={{ color: '#10B981' }} />
 										{b}
 									</li>
 								))}
 							</ul>
 
 							{/* Reassurance */}
-							<p className='mt-auto text-xs text-cc-text-muted'>
+							<p className='mt-auto text-xs' style={{ color: TEXT_MUTED }}>
 								Can&rsquo;t make these times?{' '}
 								<a
 									href='mailto:hello@closercoach.ai'
-									className='text-cc-accent/80 underline-offset-4 hover:text-cc-accent hover:underline'
+									className='underline-offset-4 hover:underline'
+									style={{ color: '#059669' }}
 								>
 									hello@closercoach.ai
 								</a>
 							</p>
 						</div>
 
-						{/* Vertical divider (desktop only) */}
-						<div className='hidden w-px shrink-0 bg-white/[0.08] lg:block' />
-
 						{/* ── Right calendar panel ── */}
-						<div className='flex min-w-0 flex-1 items-center justify-center p-6 lg:p-8'>
+						<div
+							className='flex min-w-0 flex-1 flex-col items-center justify-center p-6 lg:p-8'
+							style={{ background: BG }}
+						>
 							<div className='w-full max-w-[520px]'>
 								<CalendlyWrapper />
 							</div>

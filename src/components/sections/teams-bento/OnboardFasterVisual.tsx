@@ -41,7 +41,7 @@ import { User } from '@phosphor-icons/react'
 
 export default function OnboardFasterVisual(): ReactElement {
 	return (
-		<div className='relative flex h-full w-full flex-col justify-center overflow-hidden px-5 py-6 md:px-6 md:py-7'>
+		<div className='relative flex h-full w-full flex-col items-center justify-center overflow-hidden px-5 py-6 md:px-6 md:py-7'>
 			{/* Header row: 10x faster + Quota Reached. mb-5 sets the
 			 * generous header→tracks breathing gap (20px) while the track
 			 * stack below uses a tighter gap-3 (12px) so the two bars read
@@ -54,7 +54,7 @@ export default function OnboardFasterVisual(): ReactElement {
 			 * reading as a series of small ornaments instead of a paired
 			 * comparison; bumping the labels + avatars gives it the visual
 			 * weight to carry its column. */}
-			<div className='mb-5 flex items-center justify-between'>
+			<div className='w-full mb-5 flex items-center justify-between'>
 				<span
 					className='text-trim text-[19px] font-bold leading-none text-cc-mint'
 					style={{ fontFamily: 'var(--font-heading)' }}
@@ -74,12 +74,12 @@ export default function OnboardFasterVisual(): ReactElement {
 
 			{/* Two-track stack — 12px between rails so the 91%/44% pair
 			 * reads as a comparison, not two unrelated rows. */}
-			<div className='flex flex-col gap-3'>
+			<div className='flex w-full flex-col gap-3'>
 				{/* Track 1: trained rep at ~91% */}
 				<div className='flex items-center gap-2.5'>
 					{/* CC logomark chip — emerald-glow tile per Figma 95:18331 vocab. */}
 					<div
-						className='relative flex h-[44px] w-[46px] shrink-0 items-center justify-center rounded-[10px] shadow-[0_0_18px_rgba(16,208,120,0.45),0_0_44px_rgba(16,208,120,0.18)]'
+						className='relative flex h-[34px] w-[36px] shrink-0 items-center justify-center rounded-[8px]'
 						style={{
 							background: 'radial-gradient(ellipse at center, rgba(8,40,4,1) 30%, rgba(4,20,2,1) 65%, rgba(2,10,1,1) 82%, rgba(0,0,0,1) 100%)',
 						}}
@@ -87,15 +87,15 @@ export default function OnboardFasterVisual(): ReactElement {
 						<Image
 							src='/images/cc-logomark.png'
 							alt=''
-							width={22}
-							height={22}
-							sizes='22px'
-							className='h-[22px] w-[22px] object-contain'
+							width={17}
+							height={17}
+							sizes='17px'
+							className='h-[17px] w-[17px] object-contain'
 							unoptimized
 						/>
 					</div>
 					<div className='relative h-2.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]'>
-						<div className='h-full w-[91%] rounded-full bg-gradient-to-r from-[#2dc87e] to-[#3ae09b] shadow-[0_0_10px_rgba(52,225,142,0.45)]' />
+						<div className='h-full w-[91%] rounded-full bg-gradient-to-r from-[#2dc87e] to-[#3ae09b]' />
 					</div>
 					<div className='relative h-8 w-8 shrink-0 overflow-hidden rounded-full ring-2 ring-cc-foundation shadow-[0_0_0_1px_rgba(16,185,129,0.35)]'>
 						<Image src='/images/avatars/closer-1.png' alt='Priya Patel' fill sizes='32px' className='object-cover' unoptimized />
@@ -105,7 +105,7 @@ export default function OnboardFasterVisual(): ReactElement {
 				{/* Track 2: average rep at ~44% */}
 				<div className='flex items-center gap-2.5'>
 					<span
-						className='text-trim w-[42px] shrink-0 text-right text-[13px] font-medium uppercase tracking-[0.18em] text-white/45'
+						className='text-trim w-[33px] shrink-0 text-right text-[9px] font-medium uppercase tracking-[0.18em] text-white/35'
 						style={{ fontFamily: 'var(--font-mono)' }}
 					>
 						Avg

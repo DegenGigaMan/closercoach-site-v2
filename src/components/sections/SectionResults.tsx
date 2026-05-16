@@ -127,13 +127,13 @@ function TierCard({
 			}}
 		>
 			<header className='flex w-full items-start justify-between gap-3'>
-				<div className='relative h-32 w-32 shrink-0 overflow-hidden rounded-full'>
+				<div className='relative h-20 w-20 shrink-0 overflow-hidden rounded-full md:h-32 md:w-32'>
 					<Image
 						src={portraitSrc}
 						alt=''
 						aria-hidden='true'
 						fill
-						sizes='128px'
+						sizes='(min-width: 768px) 128px, 80px'
 						style={{ objectFit: 'cover' }}
 					/>
 				</div>

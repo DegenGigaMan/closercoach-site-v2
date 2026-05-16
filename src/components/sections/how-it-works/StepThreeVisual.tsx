@@ -49,7 +49,7 @@
 'use client'
 
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { motion, AnimatePresence, LayoutGroup, useInView, useReducedMotion } from 'motion/react'
+import { motion, AnimatePresence, LayoutGroup, useInView, useReducedMotion, useAnimation } from 'motion/react'
 import Image from 'next/image'
 import {
 	CheckCircle,
@@ -163,12 +163,12 @@ const ANNOTATIONS: readonly AnnotationSpec[] = [
  * from the container's right edge, which lands at x=480-360=120 -- right at the
  * phone's left edge, with gap-of-2 spacing applied via mr-2. Right-side pills
  * anchor with `left: 360px` for the mirror placement. */
-type AnchorPos = { top: string, side: 'left' | 'right', offset: string, startDX: number, startDY: number }
+type AnchorPos = { top: string, mTop: string, side: 'left' | 'right', offset: string, startDX: number, startDY: number, mStartDX: number, mStartDY: number }
 const ANCHOR_POSITIONS: Record<AnnotationSpec['anchor'], AnchorPos> = {
-	'top-left':     { top: '4%',   side: 'right', offset: 'calc(50% + 132px)', startDX:  50, startDY:  40 },
-	'top-right':    { top: '14%',  side: 'left',  offset: 'calc(50% + 132px)', startDX: -50, startDY:  30 },
-	'bottom-left':  { top: '64%',  side: 'right', offset: 'calc(50% + 132px)', startDX:  50, startDY: -30 },
-	'bottom-right': { top: '72%',  side: 'left',  offset: 'calc(50% + 132px)', startDX: -50, startDY: -20 },
+	'top-left':     { top: '4%',  mTop: '22%', side: 'right', offset: 'calc(50% + 132px)', startDX:  50, startDY:  40, mStartDX:  10, mStartDY:  8 },
+	'top-right':    { top: '14%', mTop: '32%', side: 'left',  offset: 'calc(50% + 132px)', startDX: -50, startDY:  30, mStartDX: -10, mStartDY:  8 },
+	'bottom-left':  { top: '64%', mTop: '58%', side: 'right', offset: 'calc(50% + 132px)', startDX:  50, startDY: -30, mStartDX:  10, mStartDY: -8 },
+	'bottom-right': { top: '72%', mTop: '72%', side: 'left',  offset: 'calc(50% + 132px)', startDX: -50, startDY: -20, mStartDX: -10, mStartDY: -8 },
 }
 
 /* ─── Dual-mode toggle row (above phone) ────────────────────── */
@@ -793,59 +793,86 @@ function RoomBlurBackdrop({ active, prefersReducedMotion }: { active: boolean, p
  * Reduced-motion: pill renders at final position with full opacity, no travel.
  * At 3F (isSettled), pills gain an ambient breath (scale 1.02 cycle + opacity
  * drift) to lift the post-arrival feel. Reduced-motion suppresses the breath. */
-function AnnotationPill({ spec, visible, isSettled, index, prefersReducedMotion }: {
+function AnnotationPill({ spec, visible, isSettled, index, prefersReducedMotion, mobileOffset }: {
 	spec: AnnotationSpec
 	visible: boolean
 	isSettled: boolean
 	index: number
 	prefersReducedMotion: boolean
+	mobileOffset: boolean
 }) {
 	const isPositive = spec.type === 'positive'
-	const { top, side, offset, startDX, startDY } = ANCHOR_POSITIONS[spec.anchor]
+	const { top, mTop, side, startDX, startDY, mStartDX, mStartDY } = ANCHOR_POSITIONS[spec.anchor]
+	const resolvedTop = mobileOffset ? mTop : top
+	/* On mobile the pills overflow the viewport at 132px. Use a tighter offset
+	 * so pills stay visible. Pill itself is ~110px wide; at 50px offset the
+	 * right edge lands at 50vw + 50 + 110 = well within 375px. */
+	const offset = mobileOffset ? 'calc(50% + 6px)' : 'calc(50% + 132px)'
+	/* Mobile uses tiny travel distances so pills never enter the clipped zone. */
+	const dx = mobileOffset ? mStartDX : startDX
+	const dy = mobileOffset ? mStartDY : startDY
 	const positionStyle: React.CSSProperties = side === 'left'
-		? { top, left: offset }
-		: { top, right: offset }
-	const pillClass = `relative inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-1 text-[11px] font-medium backdrop-blur-sm ${isPositive
+		? { top: resolvedTop, left: offset }
+		: { top: resolvedTop, right: offset }
+	const pillClass = `relative inline-flex items-center gap-1 whitespace-nowrap rounded-full border backdrop-blur-sm ${
+		mobileOffset ? 'px-1.5 py-[3px] text-[8px]' : 'px-2.5 py-1 text-[11px]'
+	} font-medium ${isPositive
 		? 'border-cc-accent/40 bg-cc-accent/15 text-cc-accent'
 		: 'border-cc-score-red/40 bg-cc-score-red/15 text-red-400'
 	}`
-	const timestampClass = `ml-1 font-[family-name:var(--font-mono)] text-[8.5px] tabular-nums ${isPositive ? 'text-cc-accent/85' : 'text-red-400/85'}`
+	const timestampClass = `ml-1 font-[family-name:var(--font-mono)] tabular-nums ${mobileOffset ? 'text-[7px]' : 'text-[8.5px]'} ${isPositive ? 'text-cc-accent/85' : 'text-red-400/85'}`
 	const glowColor = isPositive ? '16,185,129' : '239,68,68'
 
-	/* Ambient breath on settled pills (P1 polish). Scale 1.02 cycle + opacity
-	 * drift, 3.2s loop, staggered 0.4s per pill so they breathe out of sync.
-	 * Gated by isSettled AND !prefersReducedMotion. At 3E (visible but not
-	 * settled), the spring-arrival animation still runs on its own path. */
-	const breatheSettled = isSettled && !prefersReducedMotion
-	const settledAnimate = breatheSettled
-		? { opacity: [0.95, 1, 0.95], scale: [1, 1.02, 1], x: 0, y: 0 }
-		: { opacity: 1, scale: 1, x: 0, y: 0 }
-	const settledTransition = breatheSettled
-		? { duration: 3.2, repeat: Infinity, ease: 'easeInOut' as const, delay: index * 0.4 }
-		: prefersReducedMotion
-			? { duration: 0 }
-			: { type: 'spring' as const, stiffness: 260, damping: 22, delay: 0.15 * index, mass: 0.9 }
+	/* useAnimation controls let us snap to startDX/startDY then spring to final
+	 * position on EVERY visible=true transition — not just on initial mount.
+	 * This fixes the snap-back bug where Framer Motion would re-apply `initial`
+	 * after a visible false->true cycle. */
+	const controls = useAnimation()
+
+	useEffect(() => {
+		if (prefersReducedMotion) {
+			controls.set(visible ? { opacity: 1, scale: 1, x: 0, y: 0 } : { opacity: 0, scale: 1, x: 0, y: 0 })
+			return
+		}
+		if (visible) {
+			if (isSettled) {
+				/* Settled breath: pills already at (0,0) from entrance; just drift opacity+scale. */
+				controls.start({
+					opacity: [0.95, 1, 0.95], scale: [1, 1.02, 1], x: 0, y: 0,
+					transition: { duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: index * 0.4 },
+				})
+			} else if (mobileOffset) {
+				/* Mobile: pure fade+scale only — no x/y travel so there is zero snap-back
+				 * and zero risk of pills entering the overflow-x:clip zone. */
+				controls.set({ opacity: 0, scale: 0.8, x: 0, y: 0 })
+				controls.start({
+					opacity: 1, scale: 1, x: 0, y: 0,
+					transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1], delay: 0.12 * index },
+				})
+			} else {
+				/* Desktop: travel from phone edge, smooth ease-out (no spring overshoot). */
+				controls.set({ opacity: 0, scale: 0.85, x: dx, y: dy })
+				controls.start({
+					opacity: 1, scale: 1, x: 0, y: 0,
+					transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1], delay: 0.12 * index },
+				})
+			}
+		} else {
+			controls.start({
+				opacity: 0, scale: 0.95, x: 0, y: 0,
+				transition: { duration: 0.3, ease: [0.4, 0, 1, 1] },
+			})
+		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [visible, isSettled, prefersReducedMotion, mobileOffset])
 
 	return (
 		<motion.div
 			className="absolute z-20"
 			style={positionStyle}
-			/* F39: stable initial. Reduced-motion: visible=true settled, snaps from
-			 * emerging start -> final via duration: 0. */
-			initial={{ opacity: 0, scale: 0.7, x: startDX, y: startDY }}
-			animate={visible
-				? settledAnimate
-				: { opacity: 0, scale: 0.95, x: 0, y: 0 }
-			}
-			transition={visible
-				? settledTransition
-				: prefersReducedMotion
-					? { duration: 0 }
-					: { duration: 0.35, ease: [0.4, 0, 1, 1] }
-			}
+			initial={{ opacity: 0, scale: 0.85, x: 0, y: 0 }}
+			animate={controls}
 		>
-			{/* Glow trail behind the pill. Only active during spring-out, fades after
-			 * the pill lands. Reduced-motion suppresses entirely. */}
 			{visible && !prefersReducedMotion && (
 				<motion.span
 					aria-hidden="true"
@@ -943,6 +970,13 @@ function useSubStatePin(enabled: boolean): SubState | null {
 export default function StepThreeVisual({ devPin = false }: { devPin?: boolean } = {}) {
 	const prefersReducedMotion = useReducedMotion() ?? false
 	const rootRef = useRef<HTMLDivElement>(null)
+	const [mobileOffset, setMobileOffset] = useState(false)
+	useEffect(() => {
+		const check = () => setMobileOffset(window.innerWidth < 640)
+		check()
+		window.addEventListener('resize', check)
+		return () => window.removeEventListener('resize', check)
+	}, [])
 	const inView = useInView(rootRef, { amount: 0.3, once: true })
 	const pin = useSubStatePin(devPin)
 	const machineState = useSubStateMachine<SubState>({
@@ -1004,7 +1038,7 @@ export default function StepThreeVisual({ devPin = false }: { devPin?: boolean }
 			 * to the dark surface surrounding the phone. The inner motion.div
 			 * contains just the phone + room-blur. */}
 			<LayoutGroup>
-				<div className="relative w-full overflow-hidden lg:overflow-visible">
+				<div className="relative w-full overflow-visible">
 					<motion.div
 						className="relative mx-auto flex w-fit justify-center"
 						/* F39: stable initial. Reduced-motion snaps via duration: 0. */
@@ -1059,6 +1093,7 @@ export default function StepThreeVisual({ devPin = false }: { devPin?: boolean }
 							isSettled={isSettled}
 							index={i}
 							prefersReducedMotion={prefersReducedMotion}
+							mobileOffset={mobileOffset}
 						/>
 					))}
 				</div>

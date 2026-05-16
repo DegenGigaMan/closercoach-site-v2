@@ -89,9 +89,11 @@ export default function StepFourReviewPhone() {
 				</h3>
 			</div>
 
-			{/* Phone mockup */}
+			{/* Phone mockup — scale matches hero phone on all breakpoints */}
 			<div className='mt-12 flex justify-center'>
-				<PhoneMockup reduced={reduced} />
+				<div className='origin-top scale-[0.82] sm:scale-[0.88] md:scale-[0.92] lg:scale-100 mb-[-130px] sm:mb-[-90px] md:mb-[-50px] lg:mb-0'>
+					<PhoneMockup reduced={reduced} />
+				</div>
 			</div>
 
 			{/* Subhead beneath the visual. */}
@@ -151,14 +153,7 @@ function PhoneMockup({ reduced }: { reduced: boolean }) {
 	return (
 		<div
 			ref={phoneRef}
-			/* L-11 (2026-05-09): keep the 340px source layout intact (the inner
-			 * review content has fixed-pixel sizing that does not auto-scale)
-			 * and use a CSS transform on mobile only to land the rendered
-			 * width at ~280px, matching the Hero phone (270px scaled) + Step
-			 * 3 phone (280px). Origin top-center so the scaled phone sits in
-			 * the same vertical position. Desktop keeps lg:scale-100 + lg:w
-			 * uses the source 340px. */
-			className='w-[340px] origin-top scale-[0.82] rounded-[48px] border border-white/10 p-[7px] shadow-[0_0_60px_rgba(16,185,129,0.1),0_20px_40px_rgba(0,0,0,0.4)] lg:scale-100'
+			className='w-[340px] rounded-[48px] border border-white/10 p-[7px] shadow-[0_0_60px_rgba(16,185,129,0.1),0_20px_40px_rgba(0,0,0,0.4)]'
 			style={{
 				backgroundImage:
 					'linear-gradient(180deg, #2a2d36 0%, #282b34 14.286%, #252831 28.571%, #23262f 42.857%, #21242d 57.143%, #1e212a 71.429%, #1c1f28 85.714%, #1a1d26 100%)',

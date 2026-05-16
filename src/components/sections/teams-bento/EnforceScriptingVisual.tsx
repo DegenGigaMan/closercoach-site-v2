@@ -63,10 +63,7 @@ export default function EnforceScriptingVisual(): ReactElement {
 
 				<Rail visible={visible} delay={0.2} reduced={reduced} />
 
-				{/* 2. Task pill.
-				 * L-08 (2026-05-09): drop `w-full` so the pill hugs its content
-				 * + padding instead of stretching the bento card width. Pill stays
-				 * centered via the parent's items-center alignment. */}
+				{/* 2. Task pill */}
 				<motion.div
 					className='relative z-10 w-fit shrink-0 rounded-2xl border border-white/[0.08] bg-[#1E2230] px-5 py-3.5 shadow-[0_4px_24px_rgba(0,0,0,0.35)]'
 					{...fade(0.35)}
