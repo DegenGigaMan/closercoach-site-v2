@@ -1,9 +1,12 @@
 /** @fileoverview Pricing page client component with billing toggle, 3 tier cards
- * (Closer / Business / Enterprise White Label), feature comparison table,
- * trust signals, FAQ accordion, and bottom CTA with store badges.
- * Tier naming per Alim Slack 2026-05-08 23:43 (L-12): Closer unchanged,
- * Teams -> Business at flat $49.99/mo (was per-user), Enterprise -> Enterprise
- * White Label. Locked-spec features pinned at the top of each tier; existing
+ * (Closer / Business / Enterprise), feature comparison table, trust signals,
+ * FAQ accordion, and bottom CTA with store badges.
+ * Tier naming per Alim Slack 2026-05-08 23:43 (L-12) + 2026-05-15 launch lock:
+ * Closer unchanged (individual closer, "Cancel anytime" trial framing).
+ * Business renamed from Teams (individual pro-user tier, flat monthly, "Purchase
+ * in app" CTA mirroring Closer flow). Enterprise dropped "White Label" naming
+ * per launch decision; positioned as "For sales teams of 10+" with "Book a
+ * Demo" CTA. Locked-spec features pinned at the top of each tier; existing
  * supplementary bullets preserved where they don't contradict the spec.
  */
 
@@ -21,15 +24,16 @@ import { track } from '@/lib/analytics'
 
 /* ---------- Tier data ---------- */
 
-/* L-12 (2026-05-09): tier features start with the locked Alim spec at the
- * top, then keep the existing supplementary bullets that add depth without
- * contradicting the spec. Closer adds "100 minutes of usage" + "3 AI
- * Customers" up top. Business renames from Teams (flat $49.99/mo, no
+/* L-12 (2026-05-09) + launch lock (2026-05-15): tier features start with the
+ * locked Alim spec at the top, then keep the existing supplementary bullets
+ * that add depth without contradicting the spec. Closer adds "100 minutes of
+ * usage" + "3 AI Customers" up top with "Cancel anytime" trial framing.
+ * Business renames from Teams (individual pro-user tier, flat monthly, no
  * per-user) and pins Unlimited usage / Unlimited AI Customers / Advanced AI
- * Model Training / Built In Dialer first. Enterprise renames to Enterprise
- * White Label and pins White Label Branding / Remove All CloserCoach Logos /
- * Forward Deployed Engineer / Custom RAG Model Training / Dedicated Account
- * Manager first. */
+ * Model Training / Built In Dialer first. Enterprise (renamed from "Enterprise
+ * White Label" per launch decision) pins Forward Deployed Engineer / Custom RAG
+ * Model Training / Dedicated Account Manager / SSO + SAML first, framed for
+ * sales teams of 10+. */
 const TIERS = [
 	{
 		key: 'closer',
@@ -235,8 +239,8 @@ function FAQItem({ item, isOpen, onToggle }: { item: typeof FAQ_ITEMS[number]; i
 
 /**
  * @description Full pricing page content with Closer / Business / Enterprise
- * White Label tier cards, monthly/yearly toggle, feature comparison, trust
- * strip, FAQ accordion, and bottom CTA with store badges.
+ * tier cards, monthly/yearly toggle, feature comparison, trust strip, FAQ
+ * accordion, and bottom CTA with store badges.
  */
 export default function PricingContent() {
 	const [yearly, setYearly] = useState(false)

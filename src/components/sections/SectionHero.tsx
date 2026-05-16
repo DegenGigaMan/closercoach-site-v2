@@ -243,9 +243,10 @@ export default function SectionHero() {
 					</span>
 				</motion.div>
 
-				{/* Rating block — Figma 62:3128. Vertical stack: big 4.7 in Lora
-				 * Bold 38/-1.52, 5 amber stars at 16px, Apple wordmark + "App
-				 * Store" in Inter Regular 16. 8px gap between rows. */}
+				{/* Rating block — Figma 62:3128. Vertical stack: big rating value
+				 * (STATS.appStoreRating) in Lora Bold 38/-1.52, 5 amber stars at
+				 * 16px, Apple wordmark + "App Store" in Inter Regular 16. 8px
+				 * gap between rows. */}
 				<motion.div
 					className='mt-8 flex flex-col items-center gap-2'
 					{...enter(0.6, 8)}
