@@ -145,7 +145,7 @@ type Feature = {
 const FEATURES: readonly Feature[] = [
 	{
 		title: 'Onboard New Reps 10x Faster',
-		body: 'New reps practice before they ever talk to a customer.',
+		body: 'Structured roleplay drills + assigned coursework get new reps to OTE faster. They practice every objection before they ever pick up a phone.',
 		Visual: OnboardFasterVisual,
 		role: 'equal',
 	},
@@ -169,7 +169,7 @@ const FEATURES: readonly Feature[] = [
 	},
 	{
 		title: 'Hire Better, Faster',
-		body: 'Send candidates a roleplay challenge before they interview.',
+		body: 'AI interviews where candidates roleplay real objections. See who can actually sell before you make an offer. Hire with conviction, not gut feel.',
 		Visual: HireBetterFasterVisual,
 		role: 'tall',
 	},
@@ -369,8 +369,8 @@ export default function SectionTeams(): ReactElement {
 						<em className='text-cc-accent'>Teams.</em>
 					</h2>
 					<p className='max-w-2xl text-lg text-cc-text-secondary md:text-xl'>
-						Over 36,000 closers already use CloserCoach individually. Now give your
-						whole team the same edge.
+						Ramp new reps to OTE faster. Hire with conviction. Give the team you
+						already have the same AI roleplay that 36,000+ closers train on daily.
 					</p>
 				</Reveal>
 
