@@ -907,10 +907,15 @@ function MicWaveform({
 	bars = 25,
 	pulse = true,
 	reducedMotion,
+	fullWidth = false,
 }: {
 	bars?: number
 	pulse?: boolean
 	reducedMotion: boolean
+	/* When true, the waveform stretches across its parent container with
+	 * evenly-spaced bars (justify-between). Used in State 5 mic bar after
+	 * the "Recording your response" text was removed (Decision #14). */
+	fullWidth?: boolean
 }) {
 	const data = Array.from({ length: bars }).map((_, i) => {
 		const t = i / bars
@@ -922,7 +927,7 @@ function MicWaveform({
 	})
 	const animate = pulse && !reducedMotion
 	return (
-		<div className='flex items-center gap-px'>
+		<div className={fullWidth ? 'flex flex-1 items-center justify-between' : 'flex items-center gap-px'}>
 			{data.map((bar, i) => (
 				<motion.span
 					key={i}
@@ -1144,11 +1149,13 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 				))}
 			</div>
 
-			{/* Mic bar with active waveform. Per Figma 200:304: 40px mic-icon
-			 * container, 24px Microphone icon, 14px label. Enters early at 0.2s
-			 * as persistent UI, not mid-cascade. */}
+			{/* Mic bar with full-width active waveform (Decision #14, 2026-05-15):
+			 * "Recording your response" copy removed; waveform stretches across
+			 * the bar via flex-1. Per Figma 200:304: 40px mic-icon container,
+			 * 24px Microphone icon. Enters early at 0.2s as persistent UI, not
+			 * mid-cascade. */}
 			<motion.div
-				className='flex items-center gap-2 rounded-[24px] border border-cc-accent/60 bg-cc-accent/15 py-[5px] pl-[5px] pr-[9px] shadow-[0_0_20px_rgba(16,185,129,0.4)]'
+				className='flex items-center gap-2 rounded-[24px] border border-cc-accent/60 bg-cc-accent/15 py-[5px] pl-[5px] pr-[14px] shadow-[0_0_20px_rgba(16,185,129,0.4)]'
 				initial={{ opacity: 0, y: 8 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={reducedMotion ? { duration: 0 } : { ...SPRING_FIELD, delay: 0.2 }}
@@ -1156,10 +1163,7 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 				<div className='flex size-[40px] shrink-0 items-center justify-center rounded-full bg-cc-accent/25'>
 					<Microphone size={24} weight='fill' className='text-white' />
 				</div>
-				<span className='text-trim flex-1 font-sans text-[14px] font-medium leading-[1.4] text-white/90'>
-					Recording your response
-				</span>
-				<MicWaveform bars={12} reducedMotion={reducedMotion} />
+				<MicWaveform bars={32} fullWidth reducedMotion={reducedMotion} />
 			</motion.div>
 		</div>
 	)
