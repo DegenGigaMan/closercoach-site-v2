@@ -1,8 +1,12 @@
-/** @fileoverview /sales — Book a Demo. Light-mode warm page, two-column
- *  card layout: info left, Calendly right. */
+/** @fileoverview /sales — Book a Demo. Light-mode warm page with AL-020 top
+ *  content block (Hyperbound-inspired): headline + intro + 3 benefit cards
+ *  (Train / Score / Progress), then a two-column unified card (info left,
+ *  Calendly right). Top block adds substance without pushing the calendar
+ *  below the fold on desktop; concise enough to keep the calendar reachable
+ *  with a short scroll on mobile. */
 
 import Image from 'next/image'
-import { Clock, VideoCamera, CheckCircle, Globe } from '@phosphor-icons/react/dist/ssr'
+import { Clock, VideoCamera, CheckCircle, Globe, Sparkle } from '@phosphor-icons/react/dist/ssr'
 import CalendlyWrapper from './CalendlyWrapper'
 import { buildPageMetadata } from '@/lib/seo'
 
@@ -18,7 +22,27 @@ const BULLETS = [
 	'Custom onboarding plan for your team',
 ]
 
+/* AL-020 (Alim 2026-05-15): top content block copy. Hyperbound-inspired
+ * mobile layout pattern — light surface, large bold headline, short intro,
+ * 3 stacked benefit cards with green sparkle icons + bold lead words. */
+const BENEFITS = [
+	{
+		lead: 'Train',
+		body: 'Reps practice with AI roleplays that sound like real buyers — real objections, real pressure, real stakes. Built for the calls your team actually makes, not generic scripts.',
+	},
+	{
+		lead: 'Score',
+		body: 'AI scorecards turn every call into a clear picture of what worked, what didn’t, and what to fix. The coaching moment stops being a guess.',
+	},
+	{
+		lead: 'Progress',
+		body: 'Track skill growth across your whole team. See who’s improving, who’s plateauing, and who needs you — before it shows up in the pipeline.',
+	},
+] as const
+
 const BG = '#FAF9F7'
+const BENEFIT_CARD_BG = '#EEF4FB'
+const BENEFIT_CARD_BORDER = 'rgba(15, 23, 42, 0.06)'
 const TEXT_PRIMARY = '#111827'
 const TEXT_SECONDARY = '#4B5563'
 const TEXT_MUTED = '#9CA3AF'
@@ -26,8 +50,61 @@ const DIVIDER = 'rgba(0,0,0,0.08)'
 
 export default function SalesPage() {
 	return (
-		<section className='min-h-screen py-12 md:py-16' style={{ background: BG }}>
+		<section className='min-h-screen py-10 md:py-12' style={{ background: BG }}>
 			<div className='mx-auto w-full max-w-5xl px-6'>
+
+				{/* AL-020 top content block — Hyperbound-inspired. Concise so the
+				 * unified booking card below remains visible quickly on desktop
+				 * and reachable with one short scroll on mobile. */}
+				<div className='mx-auto flex max-w-3xl flex-col items-center gap-5 pb-10 text-center md:pb-12'>
+					<h2
+						className='text-balance leading-[1.05]'
+						style={{
+							fontFamily: 'var(--font-heading)',
+							fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
+							fontWeight: 700,
+							letterSpacing: '-0.015em',
+							color: TEXT_PRIMARY,
+						}}
+					>
+						The Mobile First{' '}
+						<em className='italic' style={{ color: '#059669' }}>Revenue Activation</em>{' '}
+						Platform
+					</h2>
+					<p
+						className='text-pretty text-[15px] leading-relaxed md:text-base'
+						style={{ color: TEXT_SECONDARY }}
+					>
+						CloserCoach is the AI sales training platform that builds real skill through realistic practice, then proves it on every call. See exactly where each rep stands — and exactly how to get them to quota.
+					</p>
+				</div>
+
+				<div className='grid grid-cols-1 gap-3 pb-12 md:grid-cols-3 md:gap-4 md:pb-14'>
+					{BENEFITS.map((b) => (
+						<div
+							key={b.lead}
+							className='flex flex-col gap-2 rounded-xl p-5 md:p-6'
+							style={{
+								background: BENEFIT_CARD_BG,
+								border: `1px solid ${BENEFIT_CARD_BORDER}`,
+							}}
+						>
+							<Sparkle
+								size={18}
+								weight='fill'
+								className='shrink-0'
+								style={{ color: '#10B981' }}
+								aria-hidden='true'
+							/>
+							<p className='text-[15px] leading-relaxed' style={{ color: TEXT_SECONDARY }}>
+								<span className='font-semibold' style={{ color: TEXT_PRIMARY }}>
+									{b.lead}.
+								</span>{' '}
+								{b.body}
+							</p>
+						</div>
+					))}
+				</div>
 
 				{/* Unified card */}
 				<div
