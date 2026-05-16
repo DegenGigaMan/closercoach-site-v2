@@ -106,6 +106,11 @@ export const FOOTER_LINKS = {
 		{ label: 'Terms of Service', href: '/terms' },
 		{ label: 'List of Subprocessors', href: '/subprocessors' },
 		{ label: 'Cookie Policy', href: '/cookie-policy' },
+		/* LR-028 (launch lock 2026-05-15): CCPA Do-Not-Sell deep-link.
+		 * Required for California compliance; lands on the "California
+		 * Rights" anchor of the Privacy Policy where the opt-out flow
+		 * is documented. */
+		{ label: 'Do Not Sell My Personal Information', href: '/privacy#california-rights' },
 	],
 	support: [
 		{ label: 'Support Email', href: 'mailto:hello@closercoach.ai', external: false },
