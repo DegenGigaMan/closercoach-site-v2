@@ -1,10 +1,10 @@
 /** @fileoverview S5 Results — Floating Proof Composition per Figma 81:4377
  * (recomposed master, Wave Q 2026-04-27; Wave Q.2 mobile pattern 2026-04-27).
  *
- * 7 designed proof components orbit the centered "Every call, scored. Every
- * no, is now a yes." billboard on a warm surface (AL-017 copy swap, Alim
- * 2026-05-01 AM Slack — italic emphasis moves from "improving" to the
- * closer's transformation moment):
+ * 7 designed proof components orbit the centered "Every call scored. Every
+ * no becomes a yes." billboard on a warm surface (AL-017 Alim 2026-05-01 AM
+ * Slack copy; final phrasing locked at launch 2026-05-15 — italic emphasis
+ * sits on the closer's transformation moment):
  *
  *   1. Camil Reese profile card (top-left, w 240) — Recent Performance bars
  *      (Week 1 amber C, Week 8 emerald A with +2 trust badge), real headshot
