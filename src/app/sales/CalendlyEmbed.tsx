@@ -1,5 +1,4 @@
-/** @fileoverview Calendly iframe embed for /sales. Two launch-critical
- * concerns handled here:
+/** @fileoverview Calendly iframe embed for /sales. Two concerns:
  *
  *   1. UTM propagation. The base CALENDLY_URL is static; if a visitor lands
  *      on /sales?utm_source=... we must forward those params into the
@@ -7,16 +6,16 @@
  *      useState reads window.location.search once at mount (component is
  *      rendered ssr:false via CalendlyWrapper, so window is always defined).
  *
- *   2. Scrollable Calendly shell (not "fit"). Calendly's internal steps
- *      (event-type page, time-slot grid, intake form) all have dynamic
- *      heights. Picking any static iframe height that "fits" only changes
- *      where the cutoff happens. Instead we keep the card visually fixed
- *      (parent height = CALENDLY_VIEWPORT_HEIGHT) and make that shell
- *      vertically scrollable (overflow-y-auto). The iframe renders taller
- *      than visible (IFRAME_HEIGHT) and a bottom spacer below the iframe
- *      ensures the user can always scroll the submit button above the
- *      fixed bottom mask. overscroll-behavior:contain prevents scroll
- *      chaining into the page when the shell hits its scroll end.
+ *   2. One scroll container only — Calendly's own iframe. Earlier attempts
+ *      added an outer overflow-y-auto wrapper plus a bottom spacer, which
+ *      produced two competing scrollbars (ours + Calendly's) and made
+ *      users "switch" scroll targets. The parent card now stays visually
+ *      fixed and clipped (overflow-hidden, no scroll). Calendly handles
+ *      all internal scrolling for time slots and intake forms. Top crop
+ *      via negative margin hides Calendly's redundant top chrome. No
+ *      bottom mask — covering the iframe bottom risks hiding the submit
+ *      button on long form states, which we cannot patch through a
+ *      cross-origin iframe.
  */
 
 'use client'
@@ -37,19 +36,9 @@ const CALENDLY_VIEWPORT_HEIGHT = 620
 /* Negative top margin hides Calendly's redundant top chrome (event title +
  * timezone selector duplicate). */
 const TOP_CROP_PX = 70
-/* Iframe rendered height. Intentionally taller than the visible window so
- * Calendly's internal time-slot / intake form variants all have room to
- * render fully; the user scrolls our shell to reach the bottom. */
-const IFRAME_HEIGHT_PX = 1000
-/* Bottom spacer pushes Calendly's submit row above the fixed bottom mask
- * when the user scrolls to the end of the iframe. Without this the mask
- * permanently covers the last ~48px of the iframe, including the submit
- * button on long forms. */
-const SCROLL_PADDING_BOTTOM_PX = 160
-/* Bottom mask height — covers Calendly's cookie strip + faint shadow at
- * the iframe-top alignment. Smaller than before (was h-24/96px) so the
- * scroll-up move actually exposes the submit button. */
-const BOTTOM_MASK_HEIGHT_PX = 48
+/* Iframe height = visible viewport + the masked top chrome. Calendly's
+ * internal scroll handles any content taller than this. */
+const IFRAME_HEIGHT_PX = CALENDLY_VIEWPORT_HEIGHT + TOP_CROP_PX
 
 const UTM_KEYS = [
 	'utm_source',
@@ -76,22 +65,13 @@ export default function CalendlyEmbed() {
 
 	return (
 		<div
-			className='relative overflow-x-hidden overflow-y-auto'
-			style={{
-				height: `${CALENDLY_VIEWPORT_HEIGHT}px`,
-				maxHeight: `${CALENDLY_VIEWPORT_HEIGHT}px`,
-				overscrollBehavior: 'contain',
-			}}
+			className='relative overflow-hidden'
+			style={{ height: `${CALENDLY_VIEWPORT_HEIGHT}px` }}
 		>
 			{/* Side masks — vertical edges hide Calendly's white iframe border
 			    bleeding past the rounded shell corners. */}
 			<div className='pointer-events-none absolute inset-y-0 left-0 z-10 w-3' style={{ background: '#FAF9F7' }} />
 			<div className='pointer-events-none absolute inset-y-0 right-0 z-10 w-3' style={{ background: '#FAF9F7' }} />
-			{/* Bottom mask — small enough that the scroll-up move can clear it. */}
-			<div
-				className='pointer-events-none absolute inset-x-0 bottom-0 z-10'
-				style={{ height: `${BOTTOM_MASK_HEIGHT_PX}px`, background: '#FAF9F7' }}
-			/>
 
 			<div style={{ marginTop: `-${TOP_CROP_PX}px` }}>
 				<iframe
@@ -103,10 +83,6 @@ export default function CalendlyEmbed() {
 					title='Book a demo'
 				/>
 			</div>
-
-			{/* Bottom spacer — sits inside the scroll container so users can
-			    scroll the submit row above the fixed bottom mask. */}
-			<div style={{ height: `${SCROLL_PADDING_BOTTOM_PX}px` }} aria-hidden='true' />
 		</div>
 	)
 }
