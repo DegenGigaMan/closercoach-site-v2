@@ -28,7 +28,7 @@ const BULLETS = [
 const BENEFITS = [
 	{
 		lead: 'Train',
-		body: 'Reps practice with AI roleplays that sound like real buyers — real objections, real pressure, real stakes. Built for the calls your team actually makes, not generic scripts.',
+		body: 'Reps practice with AI roleplays that sound like real buyers. Real objections, real pressure, real stakes. Built for the calls your team actually makes, not generic scripts.',
 	},
 	{
 		lead: 'Score',
@@ -36,7 +36,7 @@ const BENEFITS = [
 	},
 	{
 		lead: 'Progress',
-		body: 'Track skill growth across your whole team. See who’s improving, who’s plateauing, and who needs you — before it shows up in the pipeline.',
+		body: 'Track skill growth across your whole team. See who’s improving, who’s plateauing, and who needs you, before it shows up in the pipeline.',
 	},
 ] as const
 
@@ -75,7 +75,7 @@ export default function SalesPage() {
 						className='text-pretty text-[15px] leading-relaxed md:text-base'
 						style={{ color: TEXT_SECONDARY }}
 					>
-						CloserCoach is the AI sales training platform that builds real skill through realistic practice, then proves it on every call. See exactly where each rep stands — and exactly how to get them to quota.
+						CloserCoach is the AI sales training platform that builds real skill through realistic practice, then proves it on every call. See exactly where each rep stands, and exactly how to get them to quota.
 					</p>
 				</div>
 
