@@ -1,3 +1,40 @@
+/** @fileoverview S5 Results — Floating Proof Composition per Figma 81:4377
+ * (recomposed master, Wave Q 2026-04-27; Wave Q.2 mobile pattern 2026-04-27).
+ *
+ * 7 designed proof components orbit the centered "Every call, scored. Every
+ * no, is now a yes." billboard on a warm surface (AL-017 copy swap, Alim
+ * 2026-05-01 AM Slack — italic emphasis moves from "improving" to the
+ * closer's transformation moment):
+ *
+ *   1. Camil Reese profile card (top-left, w 240) — Recent Performance bars
+ *      (Week 1 amber C, Week 8 emerald A with +2 trust badge), real headshot
+ *      from /images/prospects/camil-reese.webp
+ *   2. Performance Gains stats (top-center) — 7% Close Rate / 50% Faster Ramp
+ *      / 30% More Deals
+ *   3. C+ → A grade-up badge card (top-right) — +2 grades indicator
+ *   4. 16+ Industries pill (right mid)
+ *   5. 36,000+ closers + 3,000+ calls/day stack (left mid)
+ *   6. 7-Dimensions Scored radar (center bottom) — Discovery / Pitch /
+ *      Objection Handling / Closing / Tonality / Pace / Clarity heptagon
+ *   7. Coached vs Uncoached area chart (bottom-right) — 2x outcome delta
+ *
+ * Desktop (lg+): floating layout with absolute positioning matching the
+ * Figma 81:4377 frame coordinates. Container max-w-[1232px] mx-auto with
+ * generous height to fit headline + 7 floating cards.
+ *
+ * Mobile (<lg): Reflex AI floating-on-mobile pattern. Only 2 cards reveal —
+ * Camil Reese profile above the headline and Coached vs Uncoached chart
+ * below. Cards retain their native 240px width, slight horizontal offsets
+ * preserve the "floating, not gridded" feel. The other 5 cards stay defined
+ * as components (still invoked on desktop) but are not rendered on mobile.
+ *
+ * Color discipline: card surface #F2EDE5 (raw hex per Figma — no new token).
+ * Wave R FIX-03 (2026-04-27): every TEXT color use of emerald flips to
+ * #059669 (cc-accent-hover) for WCAG AA on the warm #F2EDE5 surface (raw
+ * #10B981 measures ~2.0:1, fails 3:1 even at large-text). Raw #10B981
+ * stays on DECORATIVE SVG fills only — radar polygon, chart strokes/fills,
+ * grade-ring arcs, legend dots, badge backgrounds. */
+
 'use client'
 
 import { useRef, type ReactElement } from 'react'
@@ -37,6 +74,9 @@ function Float({ children, delay = 0, className = '', style }: FloatProps): Reac
 			style={style}
 			initial={{ opacity: 0, y: 16 }}
 			animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+			/* Phase 8 (2026-05-01): cut 0.72 -> 0.5 + tightened margin so the
+			 * floating proof cards reveal as the section enters viewport, not
+			 * after the user scrolls past. */
 			transition={reduced ? { duration: 0 } : { duration: 0.5, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
 		>
 			{children}
@@ -51,6 +91,8 @@ const CARD_STYLE: React.CSSProperties = {
 	border: `1px solid ${CARD_BORDER}`,
 	boxShadow: CARD_SHADOW,
 }
+
+/* ─── 1. Camil Reese profile card (Figma 81:4380) ─── */
 
 function CamilReeseProfileCard(): ReactElement {
 	return (
@@ -95,7 +137,8 @@ function CamilReeseProfileCard(): ReactElement {
 					Recent Performance
 				</p>
 
-					<div className='flex w-full items-end justify-center gap-4'>
+				{/* Two bars: Week 1 (amber C, h-47) + Week 8 (emerald A, h-86 with +2 badge) */}
+				<div className='flex w-full items-end justify-center gap-4'>
 					<div className='flex flex-1 flex-col items-center gap-2'>
 						<div
 							className='flex h-[47px] w-full items-start rounded-tl-[12px] rounded-tr-[12px] px-[9px] py-[13px]'
@@ -365,6 +408,8 @@ function StatCard({ value, label, width = 200 }: StatCardProps): ReactElement {
 	)
 }
 
+/* ─── 6. 7-Dimensions Scored radar (Figma 81:4428) ─── */
+
 const RADAR_AXES = [
 	'Discovery',
 	'Pitch',
@@ -592,6 +637,8 @@ function CoachedVsUncoachedChart(): ReactElement {
 	)
 }
 
+/* ─── Headline (per Figma 81:4377 master, text-[80px] Lora Bold, leading 0.9) ─── */
+
 function ResultsHeadline(): ReactElement {
 	return (
 		<motion.h2
@@ -627,7 +674,13 @@ function ResultsHeadline(): ReactElement {
 export default function FloatingProofComposition(): ReactElement {
 	return (
 		<div className='relative mx-auto w-full max-w-[1232px] px-6 md:px-0'>
-				<div className='flex flex-col items-center gap-6 md:hidden'>
+			{/* Mobile (<md, <768): Reflex AI floating-on-mobile pattern.
+			 * Only Camil profile (above) and Coached vs Uncoached chart (below)
+			 * reveal. Headline stays the dominant centerpiece. Subtle horizontal
+			 * offsets preserve the floating feel. Wave R FIX-05 (2026-04-27):
+			 * trigger flipped from `lg:` to `md:` so tablets (768-1023) get the
+			 * full 7-card composition. */}
+			<div className='flex flex-col items-center gap-6 md:hidden'>
 				<Float delay={0} className='self-center -translate-x-3'>
 					<CamilReeseProfileCard />
 				</Float>
@@ -637,8 +690,40 @@ export default function FloatingProofComposition(): ReactElement {
 				</Float>
 			</div>
 
+			{/* Tablet + desktop floating layout (md+, 768+). Wave R FIX-05
+			 * (2026-04-27): the absolute-positioned coordinate map is preserved
+			 * at its native 1232px frame width and compressed via CSS scale on
+			 * narrower tablets so cards never overflow or collide. lg+ (1024+)
+			 * snaps back to native scale.
+			 *
+			 * Coordinate map per Figma 81:4377 master (frame ~1024×570). Mapped
+			 * to a 1232-wide container with proportional left percentages and
+			 * absolute top offsets. Headline is the gravity center (z-10), cards
+			 * float around (z-0).
+			 *
+			 *   - Camil Reese:        left  9%,  top   0px (top-left)
+			 *   - Performance Gains:  left 50%,  top 130px (translate-x-1/2 center)
+			 *   - Grade-up (C+ → A):  right 5%,  top  20px (top-right)
+			 *   - 16+ Industries:     right 0,   top 240px (mid-right)
+			 *   - 20k stack:          left -1%,  top 320px (mid-left, two cards)
+			 *   - 7-Dimensions Radar: left 50%,  top 460px (translate-x-1/2 center)
+			 *   - Coached chart:      right 0,   top 440px (bottom-right)
+			 */}
 			<div className='hidden md:block'>
-					<div className='relative h-[460px] overflow-visible lg:h-[640px] xl:h-[760px]'>
+				{/* Outer height tracks the scaled-down box so the section
+				 * preserves its vertical rhythm. 760 × 0.58 ≈ 441, × 0.82 ≈ 624.
+				 * Wave R FIX-05: scale chosen so the 1232 frame's edge-aligned
+				 * cards (left:-1%, right:0%) clear the md viewport (768) without
+				 * clipping.
+				 *
+				 * Wave R.2 FIX-01 (2026-04-27): outer-card positions tightened at
+				 * md so every card sits ≥24px from viewport edges. At md scale
+				 * 0.58 with translate-x(-50%) centering, edge-percentage offsets
+				 * inside the 1232 frame project to actual viewport gutters that
+				 * are too close to the edge. Per-card md overrides (Tailwind
+				 * arbitrary-value left-/right- prefixes) pull outer cards inward;
+				 * lg+ snaps back to the original Figma values. */}
+				<div className='relative h-[460px] overflow-visible lg:h-[640px] xl:h-[760px]'>
 					<div
 						className='absolute left-1/2 top-0 h-[760px] w-[1232px] origin-top -translate-x-1/2 scale-[0.58] lg:scale-[0.82] xl:scale-100'
 					>
@@ -681,7 +766,11 @@ export default function FloatingProofComposition(): ReactElement {
 						>
 							<SevenDimensionsRadar />
 						</Float>
-							<Float delay={0.28} className='absolute right-[3%] top-[420px] lg:right-[5%]'>
+						{/* H-24 (2026-05-04): right-0 at lg+ collided visually with
+						 * IndustriesPill (also right-0). Bumped to lg:right-[5%] so
+						 * the card sits within the GradeUp/IndustriesPill spacing
+						 * convention and stops feeling crammed against the edge. */}
+						<Float delay={0.28} className='absolute right-[3%] top-[420px] lg:right-[5%]'>
 							<CoachedVsUncoachedChart />
 						</Float>
 					</div>

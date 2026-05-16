@@ -1,3 +1,9 @@
+/** @fileoverview Shared content primitives for legal pages: Section, BulletList, Strong, KeyValueTable. */
+
+/**
+ * @description A legal document section with an anchor id, h2 heading, and body content.
+ * scroll-mt-32 ensures anchor link navigation clears the sticky header.
+ */
 export function Section({
 	id,
 	title,
@@ -17,6 +23,9 @@ export function Section({
 	)
 }
 
+/**
+ * @description Bulleted list with emerald dot markers aligned to body text.
+ */
 export function BulletList({ items }: { items: React.ReactNode[] }) {
 	return (
 		<ul className="mt-2 space-y-3 pl-0">
@@ -33,6 +42,9 @@ export function BulletList({ items }: { items: React.ReactNode[] }) {
 	)
 }
 
+/**
+ * @description Bolded inline legal term with warm-surface text color.
+ */
 export function Strong({ children }: { children: React.ReactNode }) {
 	return (
 		<strong className="font-semibold text-cc-text-primary-warm">{children}</strong>

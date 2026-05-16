@@ -1,3 +1,14 @@
+/** @fileoverview Card 5 visual -- 40+ Languages mic + flag orbit.
+ *
+ * Composition: centered emerald-glow mic button (3 concentric rings) with a
+ * symmetric waveform on both sides. 5 country-flag circles arranged around
+ * the mic to suggest orbit / global reach:
+ *   US top-left, Brazil top-right, Japan bottom-left, China bottom-center
+ *   (smaller / further), Mexico bottom-right.
+ *
+ * Mapped from Figma node 1:11470. Using Unicode flag emojis -- see
+ * build-deviations.md entry. */
+
 'use client'
 
 import type { ReactElement } from 'react'
@@ -14,6 +25,11 @@ const floatKeyframes = `
 }
 `
 
+/**
+ * @description Mirrored waveform strip. 18 bars per side, 3 zones (inner
+ * hot green, mid green, outer dim white). Heights mirror Figma to within
+ * 1px. Tighter bar spacing keeps the silhouette compact.
+ */
 function WaveformHalf({ mirrored }: { mirrored?: boolean }): ReactElement {
 	const bars = [
 		{ h: 19.6, c: 'rgba(16,208,120,0.18)' },

@@ -1,3 +1,11 @@
+/** @fileoverview S8 Final CTA -- dark atmospheric bookend to hero. Atmosphere CONTRACTS
+ * inward (inverse of hero expansion). Convergence composition: headline, subhead, body,
+ * QR museum exhibit, app store badges, WhatsApp community pill, live growth counter (G5),
+ * secondary CTA. Launch-realistic scope: 3 key atmospheric treatments (contraction gradient,
+ * concentric rings, AH ambient phone-proportion glow). AE three-beat, AF metallic sweep,
+ * AG particle logomark deferred to W13 coherence pass.
+ * Copy locked to lp-copy-deck-v5 Section 8. Alim verbatim headline. */
+
 'use client'
 
 import Image from 'next/image'
@@ -14,6 +22,13 @@ import MotionCTA from '@/components/shared/motion-cta'
 const QR_DESTINATION = 'https://closercoach.ai/download?source=qr-cta'
 const WHATSAPP_URL = 'https://chat.whatsapp.com/HkG7urngZAV4wV9Ufd02Z1'
 
+/**
+ * @description S8 Final CTA. Dark surface (cc-foundation) bookending hero. Atmosphere
+ * contracts toward center via tight radial gradient (40-60vw) -- inverse of hero's
+ * expansion. Two concentric emerald rings sit behind QR as sonar/breathing marker.
+ * Distant phone-proportion emerald glow (AH) whispers "your phone is waiting."
+ * Reduced-motion: rings static, pulse dot static, gradient non-animated.
+ */
 export default function SectionCTA() {
 	return (
 		<section
@@ -50,7 +65,8 @@ export default function SectionCTA() {
 			{/* Content */}
 			<div className='relative z-10 mx-auto max-w-2xl px-6'>
 				<ScrollReveal className='flex flex-col items-center gap-7 text-center'>
-						<h2 className='text-trim display-lg text-white md:display-xl'>
+					{/* Headline -- Alim verbatim, Lora Bold, italic emphasis on "actually losing" */}
+					<h2 className='text-trim display-lg text-white md:display-xl'>
 						Find out what&apos;s{' '}
 						<span className='italic text-cc-accent'>actually losing</span> you deals.
 					</h2>
@@ -59,6 +75,12 @@ export default function SectionCTA() {
 					<p className='text-lg text-cc-text-secondary md:text-xl'>
 						Download. Pick your industry. Start your first roleplay. Get your score. Done.
 					</p>
+
+					{/* Body confidence line — REMOVED Wave Y.12 (Alim 2026-04-28
+					 * Slack: 'remove the "3 days is plenty" QR call to action').
+					 * The QR museum exhibit + scan label below already frame the
+					 * download moment without a confidence boilerplate. The headline
+					 * + subhead carry the close. */}
 
 					{/* Primary CTA -- Book a Demo for Teams */}
 					<MotionCTA href='/sales' variant='primary' size='lg' className='w-full sm:w-auto'>
@@ -124,7 +146,8 @@ export default function SectionCTA() {
 						</Link>
 					</div>
 
-						<Link
+					{/* WhatsApp community pill (CY-1 + SP8) */}
+					<Link
 						href={WHATSAPP_URL}
 						target='_blank'
 						rel='noopener noreferrer'
@@ -136,7 +159,9 @@ export default function SectionCTA() {
 						</span>
 					</Link>
 
-						<div className='flex items-center gap-2 pt-2 font-mono text-sm text-cc-text-secondary'>
+					{/* Live growth counter (G5 real data, replaces fabricated 1,247).
+					    Pulse animation removed 2026-05-15 per AI-fingerprint reduction lock (Decision #27). */}
+					<div className='flex items-center gap-2 pt-2 font-mono text-sm text-cc-text-secondary'>
 						<span className='inline-flex h-2 w-2 rounded-full bg-cc-accent' aria-hidden='true' />
 						<span>
 							<span className='text-white'>1,003 closers</span> joined last week.

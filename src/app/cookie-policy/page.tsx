@@ -1,3 +1,5 @@
+/** @fileoverview Cookie Policy page. Warm editorial surface, cookie types tables, third-party disclosures, preference management. */
+
 import LegalPageLayout from '@/components/layout/LegalPageLayout'
 import { Section, BulletList, Strong } from '@/components/layout/LegalContent'
 import { BRAND } from '@/lib/constants'

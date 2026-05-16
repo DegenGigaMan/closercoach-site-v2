@@ -1,3 +1,24 @@
+/** @fileoverview Step 1 Plan mobile visual — derived from the new PlanVisual
+ * composition (desktop Figma 40:1192), condensed into a vertical stack.
+ *
+ * Not desktop parity. Carries forward the key beats of the desktop moment:
+ *   1. TODAY'S MEETINGS calendar block — Sarah Chen (active, emerald strip)
+ *      and Marcus Rivera (dim). Two cards stacked vertically; the same
+ *      meeting-card grammar the desktop uses.
+ *   2. Downward emerald connector dot-line-dot glyph, echoing the horizontal
+ *      Connector on desktop (pulled vertical for mobile flow).
+ *   3. AI Clone reveal card — header shows "CLONED 7/7" with 7-segment bar
+ *      that fills on viewport entry, then 4 short fields in a 2-col grid
+ *      (Job/Credit Score/HHI/Decision Maker) followed by 3 long-form rows
+ *      (Likely Objection/How to Handle/Buyer Signal). All values sourced
+ *      from `CLONE_CARD` constant for one-place editability.
+ *
+ * Width: fits inside 358px viewport (390 minus 16*2 padding) without overflow.
+ *
+ * Motion: card entrance fade-up, connector dash draws, clone card reveals
+ * after the meetings, progress bars fill in sequence. Reduced-motion
+ * collapses to the settled frame via transition.duration: 0. */
+
 'use client'
 
 import { useRef } from 'react'
@@ -117,6 +138,8 @@ function Connector({ inView, reduced }: { inView: boolean; reduced: boolean }) {
 	)
 }
 
+/* Mobile cloning header — fills 7/7 in sequence on viewport entry. Wave C
+ * (R-09) will refine the timing as part of the cinematic motion sequence. */
 function CloneHeader({ inView, reduced }: { inView: boolean; reduced: boolean }) {
 	const total = 7
 	return (
@@ -156,6 +179,8 @@ function CloneHeader({ inView, reduced }: { inView: boolean; reduced: boolean })
 	)
 }
 
+/* Short field — used in 2-col grid for the 4 short B2C values.
+ * H-32 (2026-05-04): bumped value font from 12px to 13px for better readability. */
 function FieldShort({ label, value }: { label: string; value: string }) {
 	return (
 		<div className='flex min-w-0 flex-col gap-1'>
@@ -167,6 +192,8 @@ function FieldShort({ label, value }: { label: string; value: string }) {
 	)
 }
 
+/* Long field — full-width row for sentence-length values.
+ * H-32 (2026-05-04): bumped value font from 11px to 13px with leading-relaxed. */
 function FieldLong({ label, value }: { label: string; value: string }) {
 	return (
 		<div className='flex flex-col gap-0.5'>
@@ -191,6 +218,10 @@ function ProofBadge() {
 
 function CloneCard({ inView, reduced }: { inView: boolean; reduced: boolean }) {
 	const shortFields = CLONE_CARD.fields.filter((f) => f.span === 'short')
+	/* H-32 (2026-05-04): mobile shows only the first 2 long fields (Likely
+	 * Objection + How to Handle = problem + solution) instead of all 3. The
+	 * "7 LAYERS OF PERSONALIZATION" badge below the card already communicates
+	 * the deeper depth; on mobile, density is the enemy of comprehension. */
 	const longFields = CLONE_CARD.fields.filter((f) => f.span === 'long').slice(0, 2)
 	return (
 		<motion.div

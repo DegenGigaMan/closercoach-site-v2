@@ -1,3 +1,7 @@
+/** @fileoverview Reusable split-text reveal animation. Splits text into words and
+ * animates each in on scroll with staggered timing. Uses Motion useInView for
+ * scroll-triggered entry. Respects prefers-reduced-motion via Motion defaults. */
+
 'use client'
 
 import { useRef } from 'react'
@@ -11,6 +15,11 @@ interface SplitTextRevealProps {
 	delay?: number
 }
 
+/**
+ * @description Splits children string into words, each wrapped in an overflow-hidden
+ * container. Words animate in from below with staggered 0.03s delay per word.
+ * Triggers once when 90% of element enters viewport.
+ */
 export default function SplitTextReveal({ children, className = '', delay = 0 }: SplitTextRevealProps) {
 	const ref = useRef(null)
 	const isInView = useInView(ref, { once: true, margin: '-10% 0px' })

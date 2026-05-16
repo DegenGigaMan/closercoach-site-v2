@@ -1,3 +1,28 @@
+/** @fileoverview S7 FAQ — restyled 2026-04-23 to Figma node 1:5217.
+ *
+ * Composition:
+ *   1. Centered header stack (gap-[15px]): emerald overline + Lora Bold title
+ *      at 48px / leading-[52.8px] + Inter subhead at 16px / leading-[24px].
+ *   2. 64px gap to accordion.
+ *   3. Accordion items rendered as rounded-[24px] pills with translucent card
+ *      fill rgba(30,34,48,0.15) and hairline border rgba(255,255,255,0.06).
+ *      12px gap between items. Max width 720px per Figma.
+ *   4. Open panel expands inline; a chevron rotates 180°.
+ *
+ * Styling ports verbatim from Figma; copy block is Figma's ("Questions,
+ * answered" / "Frequently asked questions" / "Everything you need to know
+ * before you download"). The 12 Q+A entries are preserved from the prior
+ * proof-dense v2 source.
+ *
+ * Dropped from the v2 original: billboard "FAQ" rotated corner label, the
+ * [01]-[12] numbered mono markers, the italic-emerald "honest" emphasis,
+ * and the horizontal rule separator model. These were replaced by the
+ * individual pill treatment shown in the Figma.
+ *
+ * Accordion: native <button> + aria-expanded + aria-controls + hidden panel.
+ * Single-open model. Keyboard a11y via button semantics. Motion: height +
+ * opacity on panel, spring. Stable initial props (F42 safe). */
+
 'use client'
 
 import { useState, useRef, useId, type ReactElement } from 'react'
@@ -96,6 +121,12 @@ type AccordionItemProps = {
 	onToggle: () => void
 }
 
+/**
+ * @description Single accordion pill. Figma 1:5223 contract: bg
+ * rgba(30,34,48,0.15), border rgba(255,255,255,0.06), rounded-[24px].
+ * Trigger is 66-68px tall; open panel grows inline with a height +
+ * opacity spring.
+ */
 function AccordionItem({ faq, isOpen, onToggle }: AccordionItemProps): ReactElement {
 	const prefersReducedMotion = useReducedMotion()
 	const panelId = useId()
@@ -162,6 +193,12 @@ function AccordionItem({ faq, isOpen, onToggle }: AccordionItemProps): ReactElem
 
 /* ── Main section ── */
 
+/**
+ * @description S7 FAQ. Figma-styled header (emerald overline + Lora Bold
+ * title + Inter subhead) over a column of translucent rounded-[24px]
+ * accordion pills. Single-open model. First question open by default to
+ * demonstrate answer depth.
+ */
 export default function SectionFAQ(): ReactElement {
 	const [openId, setOpenId] = useState<string | null>(FAQS[0].id)
 	const sectionRef = useRef<HTMLElement | null>(null)
@@ -228,8 +265,14 @@ export default function SectionFAQ(): ReactElement {
 				}}
 			/>
 
-					<div className='relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center gap-16 px-6'>
-					<motion.div
+			{/* Wave I FIX-08: bumped max-w-[720px] → max-w-4xl (~896px). The
+			    original Figma 720px spec assumed a sidebar of category filters
+			    that this FAQ doesn't carry. As an orphan single column at 1440,
+			    720px reads as a narrow strip. 896px keeps the editorial column
+			    rhythm without going wide enough to hurt accordion readability. */}
+			<div className='relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center gap-16 px-6'>
+				{/* ── Header (Figma 1:5218) ── */}
+				<motion.div
 					ref={headerRef}
 					initial={{ opacity: 0, y: 18 }}
 					animate={headerInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
@@ -238,6 +281,10 @@ export default function SectionFAQ(): ReactElement {
 							? { duration: 0 }
 							: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }
 					}
+					/* Q17 Wave D1-8 (Andy 2026-04-29 #21): label → heading →
+					 * subhead gap was 15px which Andy flagged as too tight.
+					 * Bumped to gap-8 (32px) so each line gets clear vertical
+					 * separation matching the step section header rhythm. */
 					className='flex flex-col items-center gap-8 text-center'
 				>
 					<p
@@ -274,7 +321,8 @@ export default function SectionFAQ(): ReactElement {
 					</p>
 				</motion.div>
 
-					<motion.div
+				{/* ── Accordion list (Figma 1:5222) ── */}
+				<motion.div
 					ref={listRef}
 					initial={{ opacity: 0, y: 12 }}
 					animate={listInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}

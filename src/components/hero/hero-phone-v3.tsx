@@ -1,3 +1,26 @@
+/** @fileoverview Hero Phone V3 — 6-state Family Values composite.
+ *
+ * Architecture: one mounted component, LayoutGroup at the root, AnimatePresence
+ * for state body swaps. Persistent identity carried via layoutId across phase
+ * boundaries (cc-logo-header, phone-progress-bar, prospect-camil-avatar,
+ * prospect-camil-name, stepper-active-dot).
+ *
+ * Native size: 340 × 696 (locked per Hero V3 motion brief, 2026-05-05). No CSS
+ * scale-up on desktop. Mobile constrains via max-w-full.
+ *
+ * Phase chrome map (from Figma 191:698 / 191:729 / 192:1101 / 191:606 /
+ * 193:1798 / 191:625):
+ *   1 Onboarding, 2 Setup, 3 Selection, 5 Live Call, 6 Complete — show CC logo
+ *     header, stepper, home indicator
+ *   4 Call Connecting — hides logo header + stepper, ramps inset emerald glow,
+ *     uses solid #0d0f14 screen bg (no radial)
+ *   6 Call Complete — uses emerald gradient screen bg (#042013 → #080a09)
+ *
+ * Step 1 scope (this commit): chrome + state-switcher cycling 1..6 with
+ * placeholder body slots. State implementations drop in across Steps 2-7.
+ *
+ * Reduced motion: cycling pauses; phase 1 shows as static settled state. */
+
 'use client'
 
 import { useEffect, useRef, useState, type ReactNode } from 'react'
@@ -42,6 +65,20 @@ const SPRING_PRESS = { type: 'spring' as const, stiffness: 600, damping: 28 }
 /* Lead-time before each state's dwell expires when CTA-press fires. */
 const PRESS_LEAD_MS = 320
 
+/* Per-state autoplay dwell. Calibrated post-Step-7 against each state's
+ * sub-state cascade so every animation lands before the cycle advances:
+ *   State 1 (3.4s): CTA enters at 1.05s; +2.3s settled hold for the URL
+ *     type-loop to read at least once.
+ *   State 2 (5.8s): pills cascade 0.75s apart; last flash ends ~4.3s; +1.5s breathing.
+ *   State 3 (3.6s): Camil card lands at 0.85s; +2.7s "select me" breathe.
+ *   State 4 (2.8s): cinematic — let the ring pulse breathe a beat.
+ *   State 5 (6.8s): chat cascade ends ~4.05s (last badge); +2.75s for
+ *     viewer to read the final exchange (slower cascade per S+ pass
+ *     2026-05-05 so each bubble reads one-by-one).
+ *   State 6 (4.6s): CTA at 2.7s; +1.9s for "A" + scorecard cascade.
+ * Cycle total ≈ 26.2s, in the 14-18s estimate from brief §7 once the
+ * loop fade is folded in. Brief §0: timing unrestricted, every state
+ * breathes. */
 const STATE_DWELL_MS: Record<HeroV3StateIndex, number> = {
 	0: 3400,
 	1: 5800,
@@ -83,6 +120,12 @@ function stepperDotForState(s: HeroV3StateIndex): number | null {
 	return 3
 }
 
+/* CC logo header is hidden during State 4 (Call Connecting cinematic) AND
+ * State 5 (Live Call — Figma 193:1798 puts the Camil header at the top
+ * with no CC logo). The brief §4 persistence-map originally chained CC
+ * logo through 5→6, but the Figma end-state for 5 has the Camil header
+ * occupying that slot. Following Figma per brief §10 (Figma = source of
+ * truth for end-state). */
 /* ─── Chrome subcomponents ───────────────────────────────────────── */
 
 function Stepper({ activeDot }: { activeDot: number | null }) {
@@ -133,6 +176,20 @@ function PlaceholderBody({ state }: { state: HeroV3StateIndex }) {
 	)
 }
 
+/* ─── State 1: Onboarding ────────────────────────────────────────
+ * Figma 191:698. Composed browser mock + heading + URL input + CTA.
+ * Browser mock is hand-built per locked decision #2 (CSS, not raw image),
+ * URL bar type-animates "yoursite.com/product", Copy tooltip pops with
+ * SPRING_CARD ~600ms after the type completes. */
+
+/* iOS Safari-style browser mock per Figma 191:698. Shows the
+ * "user copies their site URL" sequence:
+ *   T+0      — browser shell renders (image + placeholder bars)
+ *   T+0.2   — URL types into bottom URL bar ("yoursite.com/product")
+ *   T+1.6   — text selects (blue highlight + iOS handles wipe in)
+ *   T+2.0   — green Copy tooltip pops above with arrow pointing down
+ * NOT a macOS browser — no traffic-light dots. URL bar lives at the
+ * BOTTOM of the chrome (iOS pattern), not the top. */
 function BrowserMock({ reducedMotion }: { reducedMotion: boolean }) {
 	const [showSelection, setShowSelection] = useState(reducedMotion)
 	const [showCopy, setShowCopy] = useState(reducedMotion)
@@ -273,6 +330,18 @@ function BrowserMock({ reducedMotion }: { reducedMotion: boolean }) {
 	)
 }
 
+/* ─── State 2: Creating AI Customers ──────────────────────────────
+ * Figma 191:729. Title block + mint loading label + progress bar +
+ * 4 task pills cascade. Per brief §6 sub-states 2A-2E:
+ *   2A: title morphs in from below
+ *   2B: mint label + progress bar reveal
+ *   2C: 4 pills cascade (FIELD spring, 200ms stagger)
+ *   2D: each pill emerald-flashes as it "completes" (subtle, post-entrance)
+ *   2E: settled
+ * Progress bar persists from State 1's URL field via layoutId
+ * "phone-progress-bar" (wired at Step 8 loop pass; standalone State 2
+ * just renders it at the State-2 position). */
+
 const STATE2_PILLS: ReadonlyArray<{ icon: PhosphorIcon, label: string }> = [
 	{ icon: Binoculars, label: 'Analyzing Ideal Customer Profile' },
 	{ icon: UserSound, label: 'Configuring Realistic Voices' },
@@ -282,7 +351,8 @@ const STATE2_PILLS: ReadonlyArray<{ icon: PhosphorIcon, label: string }> = [
 function State2CreatingCustomers({ reducedMotion }: { reducedMotion: boolean }) {
 	return (
 		<div className='flex h-full flex-col items-center justify-center gap-10 px-4 pb-2 pt-4'>
-				<motion.h2
+			{/* Title block. Two-line layout per Figma 191:741. */}
+			<motion.h2
 				className='text-trim w-full text-center font-sans text-[28px] font-semibold leading-[1.15] text-white'
 				initial={{ opacity: 0, y: 14 }}
 				animate={{ opacity: 1, y: 0 }}
@@ -348,6 +418,25 @@ function State2CreatingCustomers({ reducedMotion }: { reducedMotion: boolean }) 
 		</div>
 	)
 }
+
+/* ─── State 3: Start Training (carousel) ─────────────────────────
+ * Figma 192:1101 + cards 200:196-200:237. Title block + 3-card prospect
+ * row with Camil center+taller as the focal hierarchy + Call Jose CTA.
+ *
+ * Layout per Figma: 3 cards in a flex row, gap-16, no rotations. Each
+ * card 250px wide; Brandon/Caleb 320px tall, Camil 370px tall (the
+ * height bump is the visual hierarchy cue). Order: Brandon | Camil |
+ * Caleb so Camil sits center and the side cards become slivers when
+ * the parent overflow-clips.
+ *
+ * Photo fills the entire card as a background; a blur-fade gradient
+ * sits above the photo at the bottom; name+role and quote+difficulty
+ * stack BELOW the fade with the card's `justify-end` pushing them to
+ * the bottom edge.
+ *
+ * Camil's card carries layoutId="prospect-camil-avatar" +
+ * "prospect-camil-name" which morph into State 4's brand circle and
+ * State 5's chat header. */
 
 type ProspectData = {
 	id: 'brandon' | 'caleb' | 'camil'
@@ -505,8 +594,42 @@ function ProspectCard({
 	)
 }
 
+/* ─── State 4: Call Connecting ─────────────────────────────────────
+ * Figma 191:606. Cinematic beat — phone bezel inset emerald glow
+ * (handled by shell's BezelInsetGlow when state === 3), CC header +
+ * stepper hidden, brand circle 133x133 centered, "Call Connecting..."
+ * label below.
+ *
+ * STRUCTURAL DEVIATION FROM FIGMA: the Figma frame renders the CC
+ * logomark inside the brand circle. The motion brief (§4 Persistence
+ * Map, locked 2026-05-05) places Camil's avatar inside the circle so
+ * the prospect-camil-avatar layoutId chain morphs cleanly across
+ * States 3 -> 4 -> 5. Following the brief because (a) the Camil-face
+ * persistence is the load-bearing motion grammar, (b) "you're calling
+ * Camil — his face appears as the call connects" is a stronger
+ * narrative beat than swapping to the app brand, (c) breaking
+ * persistence at State 4 would force State 5's header avatar to fresh-
+ * mount (no layoutId target), losing the "he answers" beat.
+ * Surfacing this for Andy at commit; can flip to the logomark with a
+ * one-line render swap if he prefers the Figma reading. */
+
+/* ─── State 6: Call Complete ────────────────────────────────────
+ * Figma 191:625. Verdict screen. Emerald gradient bg (handled by
+ * shell ScreenBackground when state===5), Top 35% trophy pill,
+ * 120px grade ring with "A" letter, AI Coach Suggests bubble,
+ * 3 scorecard cards (with bottom blur fade), Practice Again CTA.
+ *
+ * Per brief §6 sub-states 6A-6J. The "A" letter spring-bounce is
+ * THE delight moment of the loop — score-spring 300/18 with the
+ * heaviest stiffness/lowest damping in the system. Earn it. */
+
 const SPRING_SCORE = { type: 'spring' as const, stiffness: 300, damping: 18 }
 
+/* Per Figma 200:1191 (locked 2026-05-06 with Andy):
+ *   Card 1: Executive-Level Framing / Excellent
+ *   Card 2: Risk & ROI Exploration / Excellent       ← updated
+ *   Card 3: Clear Next Step Commitment / Repeatedly pushed for contract signing
+ * Card 3 is mostly hidden behind the bottom blur fade. */
 const STATE6_SCORECARDS: ReadonlyArray<{
 	title: string
 	desc: string
@@ -608,7 +731,12 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 
 	return (
 		<div className='relative flex h-full flex-col items-center gap-4 overflow-hidden px-4 pb-2 pt-8'>
-				<div className='flex w-full flex-col items-center'>
+			{/* Top 35% trophy pill + grade ring stack. Per Andy 2026-05-06 the
+			 * pill should sit ON the ring's top stroke (was floating above it
+			 * with a negative margin, now absolute-positioned over the ring
+			 * container so the pill's bottom edge aligns with the ring stroke
+			 * top — overlap per Figma reference Image #41). */}
+			<div className='flex w-full flex-col items-center'>
 				<div className='relative flex size-[120px] items-center justify-center'>
 					<svg
 						width='120'
@@ -674,7 +802,9 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 				</div>
 			</div>
 
-				<div className='flex w-full flex-col gap-3'>
+			{/* AI Coach Suggests label + bubble. Per Figma 200:1218: 40px avatar,
+			 * 14px label/bubble text, gap-3 between label and bubble. */}
+			<div className='flex w-full flex-col gap-3'>
 				<motion.span
 					className='text-trim font-sans text-[14px] font-semibold leading-[1.4] text-white'
 					initial={{ opacity: 0, y: 4 }}
@@ -711,7 +841,13 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 				</motion.div>
 			</div>
 
-				<div className='relative flex w-full min-h-0 flex-1 flex-col gap-2 overflow-hidden'>
+			{/* 3 scorecard cards with bottom blur fade. flex-1 + min-h-0 lets
+			 * the container shrink below content size so card 3's bottom
+			 * portion gets clipped instead of pushing the Practice Again CTA
+			 * out of the phone frame. The 80px backdrop-blur fade visually
+			 * obscures card 3 so it reads as "more cards available, scroll
+			 * to see" instead of "broken layout". */}
+			<div className='relative flex w-full min-h-0 flex-1 flex-col gap-2 overflow-hidden'>
 				{STATE6_SCORECARDS.map((card, i) => (
 					<ScorecardRow
 						key={i}
@@ -754,6 +890,21 @@ function State6CallComplete({ reducedMotion }: { reducedMotion: boolean }) {
 		</div>
 	)
 }
+
+/* ─── State 5: Live Call ────────────────────────────────────────
+ * Figma 193:1798. Densest screen of the loop:
+ *   - Header: Camil avatar (48px, layoutId="prospect-camil-avatar"
+ *     morphs from State 4's 133px brand circle), name + REC dot +
+ *     timer, divider line at bottom.
+ *   - 4 chat bubbles in alternating left (AI w/ 20px Camil avatar)
+ *     / right (user, blue #09f). User bubbles carry stamped badges:
+ *     "Great Response" emerald (lightning) on bubble #1, "Missed The
+ *     Mark" red (X-circle) on bubble #2.
+ *   - Mic bar at bottom: emerald-tinted shell, mic icon, label,
+ *     small waveform.
+ * Per brief §6 sub-states 5A-5J, body cascades with chat bubbles
+ * landing ~400-600ms apart and badges stamping after their parent
+ * bubble settles. Reduced motion = settled instantly. */
 
 /* Static-ish waveform: deterministic heights from a sin/cos pattern,
  * subtle breathing on opacity if pulse enabled. Used in State 5 mic bar. */
@@ -813,6 +964,10 @@ type ChatBubble = {
 	badge?: { kind: 'positive' | 'negative', label: string, delay: number }
 }
 
+/* Cascade timing tuned for readability (per Andy 2026-05-05 S+ pass): bubbles
+ * land ~1s apart so a viewer can follow each line one by one. Mic bar enters
+ * early (0.2s) as part of the screen UI, not mid-cascade. Badges stamp ~350ms
+ * after their parent bubble settles. Total cascade ≈ 4.0s + ~2s breathing. */
 const STATE5_BUBBLES: ReadonlyArray<ChatBubble> = [
 	{
 		id: 'ai-1',
@@ -851,6 +1006,9 @@ function ChatBubbleRow({
 }) {
 	const isAI = bubble.side === 'ai'
 	const fromX = isAI ? -10 : 10
+	/* Per Figma 200:282/200:293: user-bubble rows always have pt-[20px] for
+	 * badge clearance (badge sticks 19px above the bubble). AI rows have
+	 * pr-[24px] to keep the avatar+bubble from kissing the right edge. */
 	return (
 		<div
 			className={`flex w-full ${
@@ -879,7 +1037,11 @@ function ChatBubbleRow({
 						/>
 					</div>
 				)}
-					<div className='relative max-w-[260px]'>
+				{/* Bubble container caps at 260px so 1st/2nd/4th messages wrap
+				 * to 2 lines per Andy's reference (Image #39, 2026-05-06). The
+				 * 3rd bubble is the only one whose content forces 3 lines at
+				 * this width, which is the desired ratio. */}
+				<div className='relative max-w-[260px]'>
 					<div
 						className={
 							isAI
@@ -926,7 +1088,10 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 
 	return (
 		<div className='flex h-full flex-col gap-6 px-4 pb-2 pt-2'>
-				<div className='flex flex-col items-center justify-center gap-6 border-b border-white/[0.15] pb-4'>
+			{/* Header: Camil avatar (layoutId target from State 4 brand circle)
+			 * + name + REC dot + timer. Divider line beneath. Per Figma 200:244
+			 * the header uses gap-6 (24px) between avatar group and divider. */}
+			<div className='flex flex-col items-center justify-center gap-6 border-b border-white/[0.15] pb-4'>
 				<div className='flex flex-col items-center gap-2'>
 					<motion.div
 						layoutId='prospect-camil-avatar'
@@ -984,7 +1149,10 @@ function State5LiveCall({ reducedMotion }: { reducedMotion: boolean }) {
 				))}
 			</div>
 
-				<motion.div
+			{/* Mic bar with active waveform. Per Figma 200:304: 40px mic-icon
+			 * container, 24px Microphone icon, 14px label. Enters early at 0.2s
+			 * as persistent UI, not mid-cascade. */}
+			<motion.div
 				className='flex items-center gap-2 rounded-[24px] border border-cc-accent/60 bg-cc-accent/15 py-[5px] pl-[5px] pr-[9px] shadow-[0_0_20px_rgba(16,185,129,0.4)]'
 				initial={{ opacity: 0, y: 8 }}
 				animate={{ opacity: 1, y: 0 }}
@@ -1072,11 +1240,19 @@ function State4CallConnecting({ reducedMotion }: { reducedMotion: boolean }) {
 }
 
 function State3StartTraining({ reducedMotion, isPressed }: { reducedMotion: boolean; isPressed: boolean }) {
+	/* Motion order updated 2026-05-06 per Andy: Camil leads (focal card
+	 * entering first establishes the lead), then Brandon and Caleb slide
+	 * in from off-screen to flank her. Reading priority Camil → sides
+	 * matches the visual hierarchy Camil-taller-+-centered already
+	 * communicates. Side cards enter with an x-translate from the
+	 * direction they sit, so the slivers feel like they're sliding into
+	 * frame instead of fading from nothing. */
 	const cardConfig = {
 		camil: { delay: 0.4, fromX: 0 },
 		brandon: { delay: 0.55, fromX: -40 },
 		caleb: { delay: 0.7, fromX: 40 },
 	} as const
+
 
 	return (
 		<div className='flex h-full flex-col items-center justify-between gap-4 px-4 pb-2 pt-4'>
@@ -1143,7 +1319,14 @@ function State1Onboarding({ reducedMotion, isPressed }: { reducedMotion: boolean
 	return (
 		<div className='flex h-full flex-col items-center justify-between px-4 pb-2 pt-2'>
 			<div className='flex flex-1 w-full flex-col items-center justify-center gap-10'>
-					<motion.div
+				{/* L-02 (2026-05-09): heading + body now sit ABOVE the browser
+				 * mock so the title/heading copy lands first and the visual
+				 * follows. Prior order (BrowserMock above text) read as
+				 * "visual then explanation"; Andy wants "title sets the frame,
+				 * then visual answers it." Animation timings preserved -- text
+				 * fades in at SPRING_FIELD delay 0.6s, BrowserMock keeps its
+				 * own internal animation, Continue CTA still enters at 1.05s. */}
+				<motion.div
 					className='flex w-full flex-col items-center gap-6 text-center'
 					initial={{ opacity: 0, y: 12 }}
 					animate={{ opacity: 1, y: 0 }}
@@ -1187,6 +1370,7 @@ function State1Onboarding({ reducedMotion, isPressed }: { reducedMotion: boolean
 
 function ScreenBackground({ state }: { state: HeroV3StateIndex }) {
 	if (state === 5) {
+		/* State 6: emerald gradient (Figma 191:626) */
 		return (
 			<div
 				aria-hidden
@@ -1345,6 +1529,7 @@ export default function HeroPhoneV3({
 					<div className='relative z-10 flex h-[32px] shrink-0 items-start justify-center pt-[10px]'>
 						<div className='h-[22px] w-[100px] rounded-full bg-black' />
 					</div>
+
 
 					{/* State body. AnimatePresence drives directional swaps once
 					 * state implementations land. Step 1 placeholder uses simple

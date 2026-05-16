@@ -1,3 +1,7 @@
+/** @fileoverview Phone device frame with 4-state animated product flow.
+ * Cycles through Training → Roleplay → Annotation → Scorecard states
+ * with crossfade transitions via AnimatePresence. */
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -116,6 +120,11 @@ const STATES: PhoneState[] = [
 	{ label: 'scorecard', color: '#10B981', icon: Trophy, content: <ScorecardContent /> },
 ]
 
+/**
+ * @description Phone device frame with 4-state product animation.
+ * States cycle every 3s: Training AI → Roleplay Active → Missed The Mark → Score B+.
+ * Crossfade via AnimatePresence. Emerald 3-layer glow behind frame.
+ */
 export default function PhoneMockup() {
 	const [activeIndex, setActiveIndex] = useState(0)
 

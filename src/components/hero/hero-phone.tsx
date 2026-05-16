@@ -1,3 +1,8 @@
+/** @fileoverview Hero phone with 4-state product story.
+ * Anchor: phone frame (persistent). Content: crossfades between states.
+ * Floating badges: change per step with spring physics.
+ * Auto-cycles ~4s. Respects prefers-reduced-motion. */
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -103,6 +108,12 @@ function DotIndicator({ activeIndex }: { activeIndex: number }) {
 
 /* ─── Main Component ─────────────────────────────────────── */
 
+/**
+ * @description Hero phone device frame with 4-state product story.
+ * States auto-cycle every 4s: TRAIN → PRACTICE → RECORD → SCORE.
+ * Phone frame is the persistent anchor. Content crossfades.
+ * Floating badges change per step with spring physics.
+ */
 export default function HeroPhone() {
 	const [activeIndex, setActiveIndex] = useState(0)
 	const [reducedMotion, setReducedMotion] = useState(false)

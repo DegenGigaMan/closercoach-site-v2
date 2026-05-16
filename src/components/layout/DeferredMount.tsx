@@ -1,5 +1,25 @@
-/* Gates child rendering on requestIdleCallback so non-critical providers
- * (SmoothScroll, ScrollToTop, CookieConsent) don't compete with hero paint. */
+/**
+ * @fileoverview DeferredMount — gates child rendering on `requestIdleCallback`
+ * (with a setTimeout fallback for Safari, which still hasn't shipped the API
+ * as of 2026-Q1). Used to keep non-critical providers and overlays out of the
+ * first hydration pass so the LCP critical path doesn't pay for them.
+ *
+ * @description
+ * Why this exists: layout.tsx renders SmoothScroll (Lenis init), ScrollToTop
+ * (floating-back-to-top button), and CookieConsent (overlay banner) on every
+ * page. None of them need to mount before LCP — the user can't have scrolled
+ * yet, the back-to-top button is irrelevant pre-scroll, and the cookie banner
+ * showing 100-200ms later is acceptable. Mounting them in the first hydration
+ * pass adds parse + compile + useEffect cost that competes with hero paint.
+ *
+ * Per render-delay audit 2026-05-09 Patch 3 (~150-300ms mobile LCP saved).
+ *
+ * Usage:
+ *   <DeferredMount>
+ *     <SmoothScroll />
+ *     <ScrollToTop />
+ *   </DeferredMount>
+ */
 
 'use client'
 

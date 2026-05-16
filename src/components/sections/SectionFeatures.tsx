@@ -1,3 +1,46 @@
+/** @fileoverview S4 Feature Deep Dives (W15 + W16 bento per Image #22).
+ *
+ * Composition:
+ *   1. Billboard section headline (Lora Bold, clamp 2.5rem to 10rem at 10vw) with
+ *      Lora Bold ITALIC emerald span on "Operating System".
+ *   2. Scale callout beneath -- E4 "100+ scenarios across 16+ industries."
+ *   3. 5-card asymmetric bento (12-col desktop grid, 3 implicit rows):
+ *        Row 1: [01] cols 1-7 (wide hook card) | [02] cols 8-12
+ *        Row 2: [03] cols 1-4 row-span 2       | [04] cols 5-12 (compact)
+ *        Row 3: [03 continues]                 | [05] cols 5-12 (taller than 04)
+ *      Card heights vary: [03] is the tall left column; [04] is the compact
+ *      middle-right card; [05] is the wider bottom-right card. The grid's row
+ *      assignment drives each card's footprint, which matches the reference.
+ *      Mobile: independent single-column stack (not a shrunk desktop), natural
+ *      card heights.
+ *      Tablet: 2-col grid, card 1 spans both cols row 1.
+ *   4. Each card renders chapter marker [01]-[05] top-right (Geist Mono, emerald),
+ *      Phosphor icon (emerald, duotone where available), title, one-liner body,
+ *      and a DASHED-BOX placeholder reserving space for a per-card visual asset
+ *      that lands in a later wave.
+ *   5. Expert Methodology Strip (DB-1) below the grid -- PC7 expert names inline
+ *      with emerald hairline separators.
+ *   6. CTA below everything.
+ *
+ * Copy DEVIATES from lp-copy-deck-v5 §S4 (logged in build-deviations.md W15 entry).
+ * Card 1 title shifts from "Daily Roleplay Drills" to "Practice Against Realistic
+ * AI Customer Clones"; Card 3 replaces "Pre-Call Preparation" with "40+ Languages".
+ * Layout shifts from masonry to 7/5 + 4/4/4 bento. Source of truth for this wave
+ * is Image #20 reference; copy deck reconciliation deferred.
+ *
+ * Motion hooks (TODO only, no implementation this wave):
+ *   - Card 1: fan-out 3-card persona stack on hover
+ *   - Card 2: live waveform animation + session complete reveal on scroll
+ *   - Card 3: stat counter + chart draw-in on scroll
+ *   - Card 4: stacked flashcard hover fan
+ *   - Card 5: microphone pulse + flag orbit rotation
+ * Cards expose a `motionSlot` prop so a future wave can replace the dashed-box
+ * placeholder with the animated visual without restructuring layout.
+ *
+ * Hydration safety: no Math.random, Date.now, or window checks in render.
+ * All props stable across server + first client render. Section is static
+ * at rest -- no ambient animation yet. */
+
 'use client'
 
 import type { ComponentType, ReactElement, ReactNode } from 'react'
@@ -37,7 +80,7 @@ type Feature = {
 	 *    vertical stack (text top, visual below) at <md.
 	 *  - 'split-visual-right': text LEFT / visual RIGHT on md+, collapses to
 	 *    vertical stack (text top, visual below) at <md.
-	 */
+	 *  Per Image #24/#25/#26 reference confirmed by Andy 2026-04-21. */
 	layout: CardLayout
 }
 
@@ -86,6 +129,15 @@ type CardShellProps = {
 	slotWrapperClassName?: string
 }
 
+/**
+ * @description S4 bento card shell. Branches on `feature.layout` to render
+ * either a vertical stack (icon + title + body above, visual below) or a
+ * horizontal split that collapses to a vertical stack under md. In the split
+ * variant, DOM order is always text-first so mobile stacks text-then-visual;
+ * on md+ we use `flex-row-reverse` for 'split-visual-left' to put the visual
+ * on the left without reordering the DOM. A future wave replaces DashedSlot
+ * with the real motionSlot without restructuring layout.
+ */
 function CardShell({ feature, motionSlot, className = '', slotWrapperClassName = '' }: CardShellProps): ReactElement {
 	const { title, body, Icon, layout } = feature
 
@@ -134,16 +186,50 @@ function CardShell({ feature, motionSlot, className = '', slotWrapperClassName =
 
 /* ── Section ── */
 
+/**
+ * @description S4 Feature Deep Dives. Billboard headline + scale callout +
+ * 5-card bento (7/5 top row, 4/4/4 bottom row on desktop) + DB-1 methodology
+ * strip + CTA. Dark surface. Static at rest; per-card motion hooks reserved
+ * for a future wave via the motionSlot prop on CardShell.
+ */
 export default function SectionFeatures(): ReactElement {
 	return (
 		<section
 			id='features'
 			data-surface='dark-features'
+			/* Wave C1 (Alim batch #5): increased vertical padding for desktop
+			 * SELL billboard breathing room. H-35 (2026-05-04): tightened mobile
+			 * padding from py-32 to py-20 because the gap between SectionHowItWorks
+			 * end + ProofConnectorA + SectionFeatures top read as a layout dead-zone
+			 * on mobile (336px combined). Mobile now 80+48+80 = 208px (still
+			 * generous, no longer disorienting). Desktop md:py-40 preserved. */
 			className='relative overflow-hidden bg-cc-foundation py-20 sm:py-24 md:py-40'
 		>
-		<div className='relative z-10 mx-auto max-w-[1400px] px-6 2xl:max-w-[1440px]'>
-						<div className='mx-auto max-w-6xl'>
-						<h2
+			{/* Wave J.3 (FIX-04 P1, 2026-04-26): 2xl bump 1400 -> 1440 reclaims
+			 * the 320px-per-side rails at 1920 viewport. Mercury / Linear push
+			 * to 1440-1536 at 2xl. */}
+			<div className='relative z-10 mx-auto max-w-[1400px] px-6 2xl:max-w-[1440px]'>
+				{/* Billboard headline. Rewritten Wave P (2026-04-27), then again
+				    Wave Y.9 (Alim 2026-04-28: '"built for..." -> outcome-driven
+				    copy. built to win more deals'). The Wave P rewrite framed
+				    the audience surface ('Built for every kind of close.'); the
+				    Wave Y rewrite re-centers on the outcome ('win more deals')
+				    so the S4 bento + 5-card breadth read as a means-to-an-end
+				    rather than as capability marketing. Audience breadth is
+				    still implied by the eyebrow '100+ scenarios across 16+
+				    industries.' Lora Bold with italic emerald emphasis on
+				    'win more deals.' per VIS lock 2026-04-21. */}
+				{/* Wave I FIX-02: wrap billboard + callout in max-w-6xl mx-auto so the
+				    headline doesn't bleed to the viewport edges at 1440+. The parent
+				    max-w-[1400px] container is too wide for a centered editorial
+				    rhythm; Linear / Mercury both keep billboard text in a tighter
+				    centered column. */}
+				<div className='mx-auto max-w-6xl'>
+					{/* Q17 Wave D1-7 (Andy 2026-04-29 #18): heading was left-
+					    aligned (per F0B0VUURF89.png ref). Andy locked centered
+					    alignment to match the centered subhead below it.
+					    text-left → text-center. */}
+					<h2
 						className='text-trim mb-6 text-cc-text-primary text-balance text-center md:mb-8'
 						style={{
 							fontFamily: 'var(--font-heading)',
@@ -159,7 +245,7 @@ export default function SectionFeatures(): ReactElement {
 						</em>
 					</h2>
 
-					{/* Scale callout: single line, muted, sits directly under billboard. */}
+					{/* Scale callout (E4). Single line, muted, sits directly under billboard. */}
 					<p className='mb-16 text-center font-[family-name:var(--font-mono)] text-xs font-medium uppercase tracking-[0.22em] text-cc-text-muted md:mb-20 md:text-sm'>
 						100+ scenarios across 16+ industries
 					</p>

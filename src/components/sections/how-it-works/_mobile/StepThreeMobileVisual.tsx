@@ -1,3 +1,23 @@
+/** @fileoverview Step 3 Sell mobile visual. Simplified composition for <lg viewports.
+ *
+ * Not desktop parity. NO phone frame at mobile scale (stripped per R7 v3 D3
+ * pragmatic-mobile: the phone motif carries on desktop; mobile echoes via card).
+ * Mode toggle pair above a compact card that swaps between AI Phone Call and
+ * Record In-Person states on click (F2 per Alim feedback 2026-04-23). Two
+ * annotation chips render beside the card.
+ *
+ * Authority:
+ *   - Desktop reference: ../StepThreeVisual.tsx (vocabulary source, NOT replicated)
+ *   - Shared vocab: ../_shared/step-visual-defaults.ts
+ *   - R7 v3 D9: mobile is first-class, not a collapsed desktop
+ *
+ * Motion: entrance fade-up + staggered chip reveal. Mode swap uses AnimatePresence
+ * crossfade. F38/F39 stable-initial pattern. Reduced-motion collapses to the
+ * settled frame via transition.duration: 0.
+ *
+ * Replacement badge intentionally dropped from the mobile visual: left-column
+ * body copy already renders it (single source of truth). */
+
 'use client'
 
 import { AnimatePresence, motion, useInView, useReducedMotion } from 'motion/react'
@@ -15,6 +35,9 @@ export default function StepThreeMobileVisual() {
 	const ref = useRef<HTMLDivElement>(null)
 	const inView = useInView(ref, { amount: 0.4, once: true })
 
+	/* F2: user-clickable tab swap between AI Phone Call (mode A, live call card)
+	 * and Record In-Person (mode B, record card). Defaults to A on mobile -- the
+	 * mode with richer live content for an initial read. */
 	const [mode, setMode] = useState<Mode>('A')
 	const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
 
@@ -28,7 +51,13 @@ export default function StepThreeMobileVisual() {
 
 	return (
 		<div ref={ref} className="flex flex-col gap-3">
-				<motion.div
+			{/* H-33 (2026-05-04): tabs redesigned as a SEGMENTED CONTROL pattern.
+			 * Container is a single rounded-full pill holding two buttons; active
+			 * fills emerald with foundation-colored text, inactive is transparent.
+			 * Now visually distinct from the coaching badges below (which stay as
+			 * informational pills). Min tap target 44pt per Apple HIG. Text bumped
+			 * 9px → 11px for readability. */}
+			<motion.div
 				role="tablist"
 				aria-label="Call mode"
 				className="inline-flex w-fit items-center gap-1 self-start rounded-full border border-white/[0.08] bg-white/[0.03] p-1"

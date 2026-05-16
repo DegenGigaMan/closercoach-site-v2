@@ -1,3 +1,7 @@
+/** @fileoverview Dark footer with 4-column link grid, trust badges, and copyright line.
+ * Auto-switches to a minimal variant (logo + legal links + copyright only) on post-action
+ * pages like /thank-you per site-map. Rendered in root layout. */
+
 'use client'
 
 import Link from 'next/link'
@@ -5,6 +9,8 @@ import { usePathname } from 'next/navigation'
 import { BRAND, FOOTER_LINKS } from '@/lib/constants'
 import { track } from '@/lib/analytics'
 
+/* Trust badges — "Featured in Hypepotamus" links to the article (new tab),
+ * SOC2 and GDPR stay as static labels. Per Alim 2026-05-02. */
 const HYPEPOTAMUS_URL =
 	'https://hypepotamus.com/startup-news/prizepicks-alum-launches-closercoach-ai-sales-coaching-atlanta/'
 const TRUST_BADGES = [
@@ -13,6 +19,9 @@ const TRUST_BADGES = [
 	{ label: 'GDPR', href: null },
 ] as const
 
+/* LS-006 (2026-05-01): drop the Live Chat placeholder (href='#') from the
+ * Support column. Removing it at render time so the constants stay shared
+ * with any other consumer; the column collapses naturally. */
 const supportLinks = FOOTER_LINKS.support.filter((link) => link.href !== '#')
 
 const columns = [
@@ -25,6 +34,10 @@ const columns = [
 /** Routes that render the minimal footer (post-signup/post-action). */
 const MINIMAL_FOOTER_ROUTES = ['/thank-you'] as const
 
+/**
+ * @description Site footer. Default: 4-column link grid + trust badges. Minimal: wordmark + legal links + copyright only.
+ * Minimal variant used on /thank-you per site-map to reduce post-signup friction.
+ */
 export default function Footer() {
 	const pathname = usePathname()
 	const minimal = MINIMAL_FOOTER_ROUTES.some((r) => pathname === r)

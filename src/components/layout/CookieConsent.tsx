@@ -1,3 +1,24 @@
+/** @fileoverview Cookie consent banner.
+ *
+ *  L-01 (2026-05-09): visibility now anchored on a SINGLE IntersectionObserver
+ *  watching `#press-strip` (the third major LP section after Hero + SocialProof).
+ *  Once press-strip enters the viewport for the first time, the banner is
+ *  shown and the latch stays open — scrolling back up does NOT hide it. This
+ *  replaces the prior multi-trigger logic (scroll threshold + delay + primary
+ *  CTA observer) which produced the bug Andy flagged: the banner flashed
+ *  briefly while the user was still in or just past the hero (because the
+ *  hero's primary CTA temporarily left the viewport), vanished, then
+ *  reappeared persistently at section 3. The new logic shows it ONCE at the
+ *  intended moment and persists.
+ *
+ *  Mobile (<md): full-width bottom-CENTER slim bar (~52px), 44px tap targets.
+ *  Desktop (md+): wide center-aligned banner at bottom (max-w-2xl, longer copy).
+ *  Persisted choice in localStorage suppresses the banner permanently.
+ *
+ *  Falls back to the old `#how-it-works` anchor (section 4) if `#press-strip`
+ *  is not present in the DOM, so subpages that don't render the press strip
+ *  still get a deterministic show point. */
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -76,6 +97,13 @@ export default function CookieConsent() {
 
 	if (dismissed || !allowedToShow) return null
 
+	/* H-07 (2026-05-04):
+	 *   - Mobile (<md): full-width bottom bar from Wave J.1, 44px tap targets,
+	 *     short "Cookies?" copy (mobile real-estate is tight).
+	 *   - Desktop (md+): wider center-aligned banner with the longer
+	 *     "We use cookies to improve your experience. Learn more" copy.
+	 *     max-w-xl (~576px), bottom: 1rem, mx-auto, rounded-xl shell.
+	 */
 	return (
 		<aside
 			role='complementary'
@@ -109,7 +137,11 @@ export default function CookieConsent() {
 				</button>
 			</div>
 
-				<div className='mx-auto hidden max-w-2xl items-center justify-between gap-4 rounded-xl border border-cc-surface-border bg-cc-surface/95 px-5 py-3.5 shadow-2xl backdrop-blur-md md:flex'>
+			{/* Desktop banner (md+). H-07-FIX (2026-05-05): bumped max-width
+			 * xl→2xl and added whitespace-nowrap on the copy so the full
+			 * "We use cookies to improve your experience. Learn more" line
+			 * + Decline + Accept buttons all sit on a single row at md+. */}
+			<div className='mx-auto hidden max-w-2xl items-center justify-between gap-4 rounded-xl border border-cc-surface-border bg-cc-surface/95 px-5 py-3.5 shadow-2xl backdrop-blur-md md:flex'>
 				<p className='whitespace-nowrap text-sm text-cc-text-secondary'>
 					We use cookies to improve your experience.{' '}
 					<Link

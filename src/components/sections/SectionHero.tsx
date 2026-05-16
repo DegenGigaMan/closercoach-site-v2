@@ -1,3 +1,12 @@
+/** @fileoverview S1 Hero -- centered composition (v1 port with hero phone V3 slot).
+ * Atmosphere: L1 dual radial gradient (emerald, centered), L2 noise, L3 particles (desktop only),
+ * H11 bottom progressive blur.
+ * Stack: AnimatedBadge -> H1 -> subhead -> CTAs -> reassurance -> stars -> app badges -> phone.
+ * Phone is HeroPhoneV3 (self-cycling 6-state composite) wrapped in three-layer emerald glow.
+ * Perimeter is clean. HeroPhoneV3's internal product UI is the only chrome inside the frame.
+ * Entrance choreography: motion/react translation of v1's GSAP+SplitText timeline.
+ * Copy: lp-copy-deck-v5 Section 1 (verbatim). */
+
 'use client'
 
 import { useSyncExternalStore } from 'react'
@@ -41,6 +50,15 @@ export default function SectionHero() {
 	const phoneParallax = useTransform(scrollY, [0, 800], [0, -60])
 	const l1Parallax = useTransform(scrollY, [0, 800], [0, -15])
 
+	/* Shared entrance config. Initial state is stable across SSR/client to avoid
+	 * hydration mismatch (useReducedMotion returns null on server, boolean on client).
+	 * Reduced-motion users get duration 0 which snaps from initial to final instantly.
+	 *
+	 * Phase 8 (Andy 2026-05-01): preview review found the hero entrance
+	 * cascade still felt slow (Wave AA.2 fixed default duration but kept the
+	 * x2 delay multiplier, so calls like enter(0.95) actually delayed 1.9s).
+	 * Dropped the doubler and the default duration. Cascade ORDER preserved;
+	 * only per-step pace tightened. */
 	const enter = (delay: number, fromY = 12, duration = 0.55) => ({
 		initial: { opacity: 0, y: fromY },
 		animate: { opacity: 1, y: 0 },
@@ -72,10 +90,32 @@ export default function SectionHero() {
 				/>
 			</motion.div>
 
+			{/* L1.5 corner light rays REMOVED in Wave X.5 (2026-04-28) reduction
+			 * pass. Per Alim 'Improvement via reduction is the play' + 'okay
+			 * with LESS on the visuals'. The corner rays stacked 3 layered
+			 * backgrounds per side on top of L1 gradient + L2 noise + L3
+			 * particles + 3-layer phone glow -- 4 ambient layers competing
+			 * with the phone's product-as-light-source role per R7 v3 D8.
+			 * Removing the rays lets the phone be the singular emerald source.
+			 * If Andy wants the rays back, restore from main HEAD 06d0415
+			 * SectionHero.tsx lines 93-127. */}
+
 			{/* L2: Noise texture. */}
 			<AtmosphereNoise opacity={0.035} />
 
-			{/* Progressive blur on hero bottom edge -- soft transition to S2. */}
+			{/* L3: Particles REMOVED Wave Y.13 (Andy approved, Alim 2026-04-28
+			 * 'okay with LESS on the visuals' + Wave X.5 reduction surface).
+			 * Surfaced as medium-confidence reduction candidate B in Wave X.5:
+			 * decorative ornament without a story beat — sits on top of the
+			 * L1 emerald gradient, L2 noise, and the 3-layer phone glow,
+			 * adding an ambient layer that competes with the phone's
+			 * product-as-light-source role per R7 v3 D8.
+			 *
+			 * If Andy wants particles back, restore from main HEAD 06d0415:
+			 *   - Add `import ParticleCanvas from '@/components/atmosphere/particle-canvas'`
+			 *   - Insert `{isDesktop && <ParticleCanvas mode='ambient' />}` here. */}
+
+			{/* H11: Progressive blur on hero bottom edge -- soft transition to S2. */}
 			<div
 				className='pointer-events-none absolute bottom-0 left-0 right-0 z-[4] h-[120px]'
 				style={{
@@ -87,12 +127,31 @@ export default function SectionHero() {
 				aria-hidden='true'
 			/>
 
+			{/* Content layer -- centered vertical stack. Wave H.4 (2026-04-26):
+			 * top padding reduced (pt-28 md:pt-32 -> pt-16 md:pt-20) so the
+			 * phone composite reaches above-fold at 1440x900.
+			 * Wave J.3 (FIX-04 P1, 2026-04-26): 2xl bump from 1200 -> 1440
+			 * reclaims the 320px-per-side rails at 1920 viewport. Mercury /
+			 * Linear push to 1440-1536 at 2xl; prior ceiling read narrow on
+			 * wide canvas. */}
 			<div className='relative z-[5] mx-auto flex min-h-screen max-w-[1200px] flex-col items-center justify-center px-6 pb-16 pt-16 md:pt-20 2xl:max-w-[1440px]'>
 
+				{/* Announcement badge (AnimatedBadge replaces v1's static trust pill).
+				 * Wave AA.2 (2026-04-28): reverted to 0.5s per Andy hero-only revert. */}
 				<motion.div className='mb-8' {...enter(0, -8)}>
 					<AnimatedBadge text={`Join ${STATS.userCount} Sales Closers`} color='#10B981' />
 				</motion.div>
 
+				{/* H1 headline -- white with emerald italic accent. Plain element
+				 * so the LCP candidate paints with the SSR HTML at frame 1. The
+				 * inner italic span keeps a delayed color flourish (white -> emerald
+				 * at 1s) — that runs post-LCP and does not block paint. Per
+				 * render-delay audit 2026-05-09 (Patch 1, Option A): on-mount
+				 * clipPath entrance was 1.5-1.8s of mobile LCP because Motion
+				 * serialized initial={clipPath:inset(0 0 100% 0)} into the SSR HTML,
+				 * shipping the H1 fully clipped until hydration ran the entrance.
+				 * Desktop locked to 72px per Figma 62:3049; mobile collapses to
+				 * ~40px via the clamp ceiling. */}
 				<h1
 					className='max-w-[920px] text-center text-white'
 					style={{
@@ -113,10 +172,15 @@ export default function SectionHero() {
 					</motion.span>
 				</h1>
 
-			<p className='mt-6 max-w-[600px] text-center font-sans text-lg leading-relaxed text-cc-text-secondary'>
+				{/* Subheadline -- plain element so it paints with SSR at frame 1.
+				 * Entrance animation removed per render-delay audit Patch 1. */}
+				<p className='mt-6 max-w-[600px] text-center font-sans text-lg leading-relaxed text-cc-text-secondary'>
 					Practice closing deals. Record your meetings. Know exactly where you&rsquo;re losing deals. All from your phone.
 				</p>
 
+				{/* CTA cluster -- centered pair, stacked on mobile, row on sm+.
+				 * Plain element so CTAs paint with SSR at frame 1. Entrance
+				 * animation removed per render-delay audit Patch 1. */}
 				<div
 					className='mt-10 flex w-full max-w-[420px] flex-col items-center gap-3 sm:max-w-none sm:flex-row sm:justify-center sm:gap-4'
 				>
@@ -153,7 +217,11 @@ export default function SectionHero() {
 					</span>
 				</div>
 
-			<motion.div
+				{/* Platform availability row. iOS / Android / Web tags only. The
+				 * trailing "No annual contracts." value prop was killed 2026-04-26
+				 * per Andy (Wave F.1b) so the row reads as a clean three-tag
+				 * platform list per Figma 85:15957. */}
+				<motion.div
 					className='mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center font-sans text-sm text-cc-text-muted'
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
@@ -175,10 +243,17 @@ export default function SectionHero() {
 					</span>
 				</motion.div>
 
-			<motion.div
+				{/* Rating block — Figma 62:3128. Vertical stack: big 4.7 in Lora
+				 * Bold 38/-1.52, 5 amber stars at 16px, Apple wordmark + "App
+				 * Store" in Inter Regular 16. 8px gap between rows. */}
+				<motion.div
 					className='mt-8 flex flex-col items-center gap-2'
 					{...enter(0.6, 8)}
 				>
+					{/* Wave H.4 (2026-04-26): "(378+ reviews)" subline dropped to
+					 * reclaim ~20px of vertical density so phone reaches above-fold
+					 * at 1440x900. The 5-star strip + AppleLogo + "App Store"
+					 * wordmark below already imply the review context. */}
 					<div className='flex flex-col items-center gap-1'>
 						<span
 							className='text-trim text-white'
@@ -246,6 +321,20 @@ export default function SectionHero() {
 							transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.8, delay: 0.8, ease: EASE }}
 							style={isDesktop && !prefersReducedMotion ? { y: phoneParallax } : undefined}
 						>
+							{/* Scale wrapper: down-scale on small viewports so the 640px composite
+							 * fits 390px mobile without overflow. H-29 (2026-05-04) bumped
+							 * mobile/sm scales (was 0.58/0.72/0.85) so the hero phone reads
+							 * with more presence on mobile. body now has overflow-x: hidden
+							 * so any minor edge bleed gets clipped at the viewport. Negative
+							 * mb compensates for the scale-vs-layout gap.
+							 *
+							 * L-03 + L-11 (2026-05-09): bump mobile/sm scales again so the
+							 * hero phone reads at ~278-300px wide (340*0.82 = 278 at <sm,
+							 * 340*0.88 = 299 at sm). This pairs with L-11 mobile phone
+							 * consistency on Step 3 (w-[240px] -> w-[280px] at <lg) and
+							 * Step 4 (w-[340px] -> w-[280px] at <lg) so all three phones
+							 * land within ~280-300px wide on mobile. Negative mb retuned
+							 * to absorb the new scale gap. */}
 							<div className='origin-top scale-[0.82] sm:scale-[0.88] md:scale-[0.92] lg:scale-100 mb-[-130px] sm:mb-[-90px] md:mb-[-50px] lg:mb-0'>
 								<HeroPhoneV3 />
 							</div>
@@ -253,7 +342,14 @@ export default function SectionHero() {
 					</div>
 				</div>
 
-			<motion.div
+				{/* App Store + Google Play badges — beneath the phone composite.
+				 * R-02 spec; H-29 (2026-05-04): bumped top margin from 0 to mt-6
+				 * sm:mt-8 md:mt-10 so the badges breathe under the larger mobile
+				 * phone scale, and switched the badge row from flex-col → flex-row
+				 * default so App Store + Google Play sit side-by-side on every
+				 * viewport (was previously vertically stacked at <sm). Both badges
+				 * (126 + 142 + 16 gap = 284px) fit at 320px+ viewports comfortably. */}
+				<motion.div
 					className='mt-6 flex flex-col items-center gap-4 sm:mt-8 md:mt-10'
 					{...enter(0.95, 8)}
 				>

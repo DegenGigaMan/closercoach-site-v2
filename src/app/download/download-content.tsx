@@ -1,3 +1,6 @@
+/** @fileoverview /download client component. QR museum frame + badges + proof pills + trust strip.
+ * Mirrors S8 QR pattern (concentric rings + corner registration marks). Dark surface. */
+
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -250,7 +253,16 @@ export default function DownloadContent() {
 
 			</div>
 
-				<div className='relative z-10 mx-auto hidden w-full max-w-5xl px-6 pb-20 md:block md:pb-24'>
+			{/* Wave K.2 (FIX-CC-02 P2, 2026-04-26 / restructured 2026-05-02):
+			 * "60 second flow" mini-strip supporting trust + clarity at md+
+			 * only. Mobile (<md) keeps the dense single-column conversion
+			 * path — auto-redirect to store fires within 250ms there, so the
+			 * strip would be invisible churn. Pulled out of the centered
+			 * max-w-2xl Content container into a sibling with its own wider
+			 * mx-auto max-w-5xl wrapper so the 3 cards can be wide enough
+			 * for one-line heading + subheading text and stay equal width
+			 * via grid-cols-3 with no overflow contortion. */}
+			<div className='relative z-10 mx-auto hidden w-full max-w-5xl px-6 pb-20 md:block md:pb-24'>
 				<div
 					className='grid grid-cols-3 gap-4'
 					aria-label='Sixty second flow'

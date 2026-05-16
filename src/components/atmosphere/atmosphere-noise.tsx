@@ -1,3 +1,7 @@
+/** @fileoverview L2 noise texture overlay. SVG feTurbulence at configurable opacity.
+ * Fixed position, covers full viewport. Active on dark sections only.
+ * Per atmosphere-spec.md Section 4.1. */
+
 'use client'
 
 /** @description L2 noise overlay. Use INSIDE dark section containers (position: absolute).

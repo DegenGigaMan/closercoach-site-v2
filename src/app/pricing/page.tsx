@@ -1,3 +1,5 @@
+/** @fileoverview /pricing page server component. Exports metadata, renders PricingContent client component. */
+
 import { buildPageMetadata } from '@/lib/seo'
 import PricingContent from './pricing-content'
 

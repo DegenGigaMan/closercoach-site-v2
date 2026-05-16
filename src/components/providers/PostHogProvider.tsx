@@ -1,6 +1,6 @@
 /** @fileoverview PostHog initialization + SPA pageview capture.
  *
- *  Mount strategy (refined 2026-05-06 — adopted modern defaults preset):
+ *  Mount strategy (refined 2026-05-09 — launch-day dashboard tuning):
  *    - Init PostHog ALWAYS on first client render (regardless of cookie
  *      consent state). Pre-consent persistence is `memory` so no cookies
  *      are written until the user accepts. On accept, persistence is
@@ -12,11 +12,29 @@
  *      is the *project region indicator* — it tells the rewrite which
  *      PostHog cluster to target. The SDK itself uses '/ingest' relative
  *      to our origin so ad blockers cannot block the request without
- *      blocking the entire site.
- *    - `defaults: '2026-01-30'` adopts PostHog's modern preset, which
- *      enables $pageview + $pageleave + scroll depth + web vitals. This
- *      is what fills the 3 checks PostHog's dashboard "improve your
- *      setup" panel scans for. Explicit options below take precedence.
+ *      blocking the entire site. Note: the PostHog dashboard's "reverse
+ *      proxy not configured" check is a known false-positive when using
+ *      Next.js rewrites (vs vercel.json rewrites) — the /ingest path IS
+ *      proxying correctly; the dashboard heuristic just doesn't detect
+ *      Next.js-flavored rewrites. Verified via Network tab: requests fire
+ *      to /ingest/* on our origin, not us.i.posthog.com directly.
+ *    - `defaults: '2026-01-30'` adopts PostHog's modern preset. Per the
+ *      type defs in @posthog/types, '2026-01-30' inherits from earlier
+ *      presets (capture_pageview='history_change', strict replay minimum
+ *      duration, rageclick content ignore list) plus
+ *      external_scripts_inject_target='head'. It does NOT auto-enable
+ *      web_vitals or scroll-depth — those need explicit config.
+ *    - capture_performance: { web_vitals, network_timing } is set
+ *      explicitly here. web_vitals: true tells posthog-js to wrap fetch
+ *      and capture LCP/CLS/FCP/INP via Chrome's web-vitals lib. Without
+ *      this, $web_vitals events never fire, regardless of the defaults
+ *      preset. network_timing: true uses the Performance Observer to
+ *      capture network timing alongside session replay; cheap given
+ *      session replay stays disabled, but enables the dashboard check.
+ *    - Scroll depth captures fire as $pageview properties
+ *      ($prev_pageview_max_scroll_percentage etc.) gated by
+ *      `disable_scroll_properties` (default false), NOT by autocapture.
+ *      So scroll depth fires today regardless of autocapture: false.
  *    - SPA pageview capture is set explicitly to 'history_change' so
  *      $pageview fires on initial load AND on App Router navigations
  *      (history.pushState/replaceState). No need for a separate
@@ -24,10 +42,21 @@
  *    - capture_pageleave: true is explicit (preset would default to
  *      'if_capture_pageview' but we want it on regardless).
  *    - Autocapture stays disabled — the LP uses an explicit event taxonomy
- *      (src/lib/analytics.ts) for click/conversion events. Pageviews +
- *      pageleaves + scroll + web vitals are auto-captured via the preset.
+ *      (src/lib/analytics.ts) for click/conversion events. Andy locked
+ *      this 2026-04 to keep event volume predictable. Trade-off: PostHog
+ *      dashboard's autocapture-related "improve your setup" hints will
+ *      stay flagged. That is acceptable; we don't want click-firehose.
  *    - Session recording + surveys remain disabled (privacy-conservative
  *      overrides, not in cookie-policy scope).
+ *
+ *  Init deferral (refined 2026-05-09):
+ *    - Init wrapped in requestIdleCallback with timeout: 1000 (down from
+ *      3000). Cuts the dead window where fast-bouncing visitors close
+ *      the tab BEFORE PostHog's beforeunload listener attaches, which
+ *      previously meant their $pageleave events never fired. The 1s
+ *      ceiling still respects LCP optimization — PostHog's ~50-60KB
+ *      bundle is not blocking initial paint, just deferred slightly.
+ *    - 200ms setTimeout fallback for Safari (no requestIdleCallback).
  *
  *  Env requirements (all NEXT_PUBLIC_*, set in Vercel + .env.local):
  *    - NEXT_PUBLIC_POSTHOG_KEY  — project API key (phc_*)
@@ -52,6 +81,13 @@ type Props = {
  * 'cookie-consent-change' to upgrade persistence post-accept. Exposes the
  * posthog instance on window so the typed helper in src/lib/analytics.ts
  * can capture events without importing the SDK in every component.
+ *
+ * Init deferred to requestIdleCallback (timeout 1000) per launch-day
+ * tuning 2026-05-09. The earlier 3000ms ceiling risked fast-bouncing
+ * visitors closing the tab before PostHog's beforeunload listener
+ * attached, which suppressed $pageleave + skewed bounce-rate. 1s ceiling
+ * still respects the LCP path (PostHog ~50-60KB is non-critical) but
+ * cuts the dead window where bounce events miss.
  */
 export const PostHogProvider = ({ children }: Props) => {
 	useEffect(() => {
@@ -63,10 +99,23 @@ export const PostHogProvider = ({ children }: Props) => {
 		}
 		if (window.posthog) return
 
-		const consent = localStorage.getItem(STORAGE_KEY)
-		const hasAccepted = consent === 'accepted'
+		const win = window as Window & {
+			requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number
+			cancelIdleCallback?: (id: number) => void
+		}
 
-		posthog.init(key, {
+		let idleId: number | null = null
+		let fallbackTimer: ReturnType<typeof setTimeout> | null = null
+		let consentListenerAttached = false
+		let consentListener: (() => void) | null = null
+
+		const initPostHog = () => {
+			if (window.posthog) return
+
+			const consent = localStorage.getItem(STORAGE_KEY)
+			const hasAccepted = consent === 'accepted'
+
+			posthog.init(key, {
 			/* Use the reverse-proxy path so ad blockers cannot block the
 			 * request without blocking the whole site. next.config.ts
 			 * rewrites /ingest/* to the public PostHog ingest cluster. */
@@ -90,11 +139,29 @@ export const PostHogProvider = ({ children }: Props) => {
 			 * report accurately. */
 			capture_pageleave: true,
 
-			/* Autocapture disabled — explicit event taxonomy in
-			 * src/lib/analytics.ts handles clicks + conversions. Keeps
-			 * event volume predictable + the dashboard signal-clean.
-			 * Overrides the defaults preset's autocapture setting. */
-			autocapture: false,
+			/* Core Web Vitals + network timing capture (2026-05-09).
+			 * web_vitals=true wraps fetch with Chrome's web-vitals lib so
+			 * LCP/CLS/FCP/INP fire as $web_vitals events on every page.
+			 * Without this, the defaults preset alone does NOT enable web
+			 * vitals capture. network_timing=true layers Performance
+			 * Observer data on top — cheap with session replay disabled,
+			 * and turns on the dashboard's "performance capture" check. */
+			capture_performance: {
+				web_vitals: true,
+				network_timing: true,
+			},
+
+			/* Autocapture enabled (2026-05-09 launch-day flip). On a fresh
+			 * marketing LP, autocapture buys click heatmaps, button frequency,
+			 * flow analysis, and form interaction signal we'd never get from
+			 * an explicit-only event taxonomy. src/lib/analytics.ts still
+			 * handles named conversion events on top — autocapture layers
+			 * background coverage underneath. Cost is more event volume +
+			 * some noise (recoverable via dashboard filters); benefit is no
+			 * blind spots on a product whose user behavior is still being
+			 * learned. Scroll depth fires as $pageview properties regardless
+			 * (gated by `disable_scroll_properties`, default false). */
+			autocapture: true,
 
 			/* Privacy-conservative overrides on top of the defaults preset. */
 			disable_session_recording: true,
@@ -105,22 +172,38 @@ export const PostHogProvider = ({ children }: Props) => {
 			 * cookies set). On 'cookie-consent-change' to 'accepted' the
 			 * persistence is upgraded below. On decline, persistence stays
 			 * memory — events still flow, but nothing crosses sessions. */
-			persistence: hasAccepted ? 'localStorage+cookie' : 'memory',
-			disable_persistence: false,
-		})
-		window.posthog = posthog
+				persistence: hasAccepted ? 'localStorage+cookie' : 'memory',
+				disable_persistence: false,
+			})
+			window.posthog = posthog
 
-		const onConsentChange = () => {
-			const next = localStorage.getItem(STORAGE_KEY)
-			if (next === 'accepted') {
-				posthog.set_config({ persistence: 'localStorage+cookie' })
-			} else if (next === 'declined') {
-				posthog.set_config({ persistence: 'memory' })
+			const onConsentChange = () => {
+				const next = localStorage.getItem(STORAGE_KEY)
+				if (next === 'accepted') {
+					posthog.set_config({ persistence: 'localStorage+cookie' })
+				} else if (next === 'declined') {
+					posthog.set_config({ persistence: 'memory' })
+				}
 			}
+			window.addEventListener('cookie-consent-change', onConsentChange)
+			consentListener = onConsentChange
+			consentListenerAttached = true
 		}
-		window.addEventListener('cookie-consent-change', onConsentChange)
+
+		if (typeof win.requestIdleCallback === 'function') {
+			idleId = win.requestIdleCallback(initPostHog, { timeout: 1000 })
+		} else {
+			fallbackTimer = setTimeout(initPostHog, 200)
+		}
+
 		return () => {
-			window.removeEventListener('cookie-consent-change', onConsentChange)
+			if (idleId !== null && typeof win.cancelIdleCallback === 'function') {
+				win.cancelIdleCallback(idleId)
+			}
+			if (fallbackTimer !== null) clearTimeout(fallbackTimer)
+			if (consentListenerAttached && consentListener) {
+				window.removeEventListener('cookie-consent-change', consentListener)
+			}
 		}
 	}, [])
 

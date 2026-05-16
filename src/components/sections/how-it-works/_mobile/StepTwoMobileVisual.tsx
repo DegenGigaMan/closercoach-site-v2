@@ -1,3 +1,23 @@
+/** @fileoverview Step 2 Practice mobile visual — derived from the new
+ * StepTwoVisual composition (desktop Figma 40:1202), condensed into a
+ * vertical stack.
+ *
+ * Not desktop parity. Carries forward the key beats:
+ *   1. Compact AI Clone card — Sarah headshot + "CLOSING A DEAL" chip +
+ *      objection quote + Medium difficulty meter.
+ *   2. ROLEPLAY SESSION header with user icon + hairline.
+ *   3. Two chat bubbles (one AI, one user) with a "Great Response"
+ *      coaching chip over the user reply.
+ *   4. Bottom bar: 39% interest gauge + mic + audio waveform + 02:34 timer.
+ *
+ * The 4-bubble cascade from desktop is trimmed to 2 on mobile so the stack
+ * stays inside a reasonable fold. All vocabulary — colors, type scale, card
+ * recipes, coaching chip treatment — is lifted from StepTwoVisual.
+ *
+ * Motion: card entrance fade-up, bubbles stagger in, coaching chip pops,
+ * gauge fill animates, waveform bars breathe. Reduced-motion collapses to
+ * the settled frame via transition.duration: 0. */
+
 'use client'
 
 import { useRef } from 'react'

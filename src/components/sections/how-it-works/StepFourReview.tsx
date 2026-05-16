@@ -1,3 +1,24 @@
+/** @fileoverview S3 Step 4 Review — scorecard composite.
+ *
+ * Visual spec: Figma node 61:3023. Two-tier layout:
+ *   1. Top industry nav (pill row, 4 tabs): active uses dark bg #1E2230 with
+ *      border white/6; inactive tabs are opacity-50 outline pills. Gap-[16px].
+ *   2. Scorecard container (rounded-[24px], border white/8, bg rgba(30,34,48,
+ *      0.8), shadow + inset shadow). pl-[16px] pr-[32px] py-[16px], gap-[32px].
+ *      - Left sidebar (250px, border-r white/6): 5 dimension rows with icon +
+ *        label + colour-coded grade badge (32×21, rounded-[4px]). Active row
+ *        uses bg rgba(16,185,129,0.2) with border white/6; inactive rows are
+ *        opacity-50 (no bg).
+ *      - Right content (flex-1): title + 64×64 grade ring on the right,
+ *        "What you said" (red) and "What you should have said" (green)
+ *        sections — each with an icon tile + connecting hairline on the left,
+ *        mono-uppercase kicker, and a tinted panel with the quote. Footer
+ *        "Finding N/20" pill with prev/next carets.
+ *
+ * Copy: section intro is canvas-locked Step 4 body from lp-copy-deck-v5.md.
+ * SCORING_DATA (src/lib/constants.ts) supplies industry/dimension/example
+ * content. */
+
 'use client'
 
 import { useMemo, useState } from 'react'
@@ -28,6 +49,9 @@ type Example = {
 
 type ExamplesMap = Record<string, Record<string, Example>>
 
+/* Dimension icon mapping per Figma 61:3023's sidebar. Each dimension row uses
+ * a Phosphor icon at 14px inside a left-aligned row. Tonality uses SpeakerHigh
+ * as the closest equivalent to Figma's custom waveform glyph. */
 const DIMENSION_ICONS: Record<string, ComponentType<IconProps>> = {
 	Discovery: MagnifyingGlass,
 	Pitch: Megaphone,
@@ -67,6 +91,16 @@ const GRADE_TONE_STYLES: Record<GradeTone, { bg: string; border: string; text: s
 	},
 }
 
+/* Wave Y.6 (Alim 2026-04-28): findingIndex helper REMOVED with the Finding
+ * N/total pill. The function is no longer referenced anywhere; the sidebar
+ * dimension list + industry tabs are the canonical navigation surface. */
+
+/**
+ * @description Renders the S3 Step 4 Review section: kicker + headline + body
+ * + Figma-spec scorecard composite + bottom CTA. Industry and dimension state
+ * managed locally. The composite's prev/next buttons step through the 4×5
+ * example matrix in row-major order (dimensions rotate first, then industries).
+ */
 export default function StepFourReview() {
 	const industries = SCORING_DATA.industries as readonly string[]
 	const dimensions = SCORING_DATA.dimensions as readonly string[]
@@ -80,6 +114,9 @@ export default function StepFourReview() {
 		[examples, industry, dimension],
 	)
 	const activeGrade = gradeTone(active.grade)
+	/* Wave Y.6 (Alim 2026-04-28): total/finding/stepPrev/stepNext removed
+	 * with the Finding N/total pill. Industry tabs + sidebar dimension list
+	 * are the only navigation surface now. */
 
 	return (
 		<div className='mx-auto max-w-7xl px-6 pb-20 md:px-12 md:pb-32 lg:px-16 lg:pb-40'>
@@ -91,12 +128,22 @@ export default function StepFourReview() {
 						04 &middot; Win
 					</span>
 				</div>
-					<h3 className='mt-6 text-3xl leading-[1.15] text-white md:mt-10 md:text-4xl lg:text-[2.75rem]'>
+				{/* Q17 Wave D1-1 (Andy 2026-04-29 #11): Step 4 kicker pill →
+				    headline gap matches the other 3 steps' bumped rhythm. mt-6
+				    → mt-6 md:mt-10 (24px → 40px on desktop). */}
+				<h3 className='mt-6 text-3xl leading-[1.15] text-white md:mt-10 md:text-4xl lg:text-[2.75rem]'>
 					See <em className='text-cc-accent'>Exactly</em>{' '}What&rsquo;s Losing You Deals
 				</h3>
 			</div>
 
-				<div className='mx-auto mt-12 flex w-full max-w-[1100px] flex-col items-center gap-8'>
+			{/* Scorecard composite — Figma 61:3023. Top industry pill row, then
+			 * the framed scorecard (sidebar + content).
+			 *
+			 * Wave Z.3 P2-B (2026-04-28): widened from max-w-[800px] to
+			 * max-w-[1100px] so the composite no longer floats narrow against
+			 * the surrounding max-w-7xl Step rooms at 1440. DD R1 C2 / S+
+			 * Audit P2-B. */}
+			<div className='mx-auto mt-12 flex w-full max-w-[1100px] flex-col items-center gap-8'>
 				{/* Industry pill row */}
 				<div
 					role='tablist'
@@ -125,7 +172,14 @@ export default function StepFourReview() {
 					})}
 				</div>
 
-					<div
+				{/* Framed scorecard: sidebar + main content.
+				 * Wave R FIX-06 (2026-04-27): at <md viewport (where sidebar +
+				 * content side-by-side overflows the 390 frame and renders as a
+				 * ~28px peek of the next column), the layout stacks vertically
+				 * with the dimensions list collapsing to a horizontal scroll-snap
+				 * pill row above the card content. md+ keeps the side-by-side
+				 * Figma layout. */}
+				<div
 					className='relative flex w-full flex-col items-start gap-4 overflow-hidden rounded-[24px] border border-white/[0.08] p-4 md:flex-row md:gap-8 md:pl-4 md:pr-8 md:py-4'
 					style={{
 						boxShadow:
@@ -214,16 +268,26 @@ export default function StepFourReview() {
 								/>
 							</div>
 
-					</div>
+							{/* Wave Y.6 (Alim 2026-04-28): Finding N/total prev/next pill
+							 * REMOVED. Per 'See why you're losing deals — current too
+							 * complex' directive, reduce moving parts: sidebar dimension
+							 * list + industry tabs already provide the navigation
+							 * surface; the secondary Finding counter stacked another
+							 * paginator on top and read as chrome overhead. */}
+						</div>
 					</div>
 				</div>
 			</div>
 
-				<p className='mx-auto mt-12 max-w-3xl text-center text-base leading-relaxed text-cc-text-secondary md:text-lg'>
+			{/* Subhead beneath the visual — first paragraph from the canvas
+			 * v5 deck only (second paragraph dropped per Andy 2026-04-27). */}
+			<p className='mx-auto mt-12 max-w-3xl text-center text-base leading-relaxed text-cc-text-secondary md:text-lg'>
 				Every call gets scored A through F, with industry-tailored scorecards and word-for-word talk-tracks showing you exactly what you should have said.
 			</p>
 
-				<div className='mt-8 flex flex-col items-center gap-4'>
+			{/* Bottom CTA: button stacked on its own line, platform list below
+			 * (mirrors SectionHero pattern at line 222) per Andy 2026-04-27. */}
+			<div className='mt-8 flex flex-col items-center gap-4'>
 				<MotionCTA variant='primary' size='lg' href={CTA.tryFree.href}>
 					{CTA.tryFree.text}
 				</MotionCTA>
@@ -248,6 +312,9 @@ export default function StepFourReview() {
 	)
 }
 
+/* 64×64 grade ring matching Figma 47:2629 — an open arc that sweeps ~80% of
+ * the circle with a small gap at the top. The centre displays the grade in
+ * Lora SemiBold 24px coloured to match the arc. */
 function GradeRing({ grade, tone }: { grade: string; tone: GradeTone }) {
 	const color = GRADE_TONE_STYLES[tone].text
 	const radius = 28

@@ -1,3 +1,50 @@
+/** @fileoverview Founder Credibility Strip (W5). NEW section between S5 Results
+ * and whatever follows. Dark surface (contrast break after warm S5). Answers the
+ * enterprise-buyer question "who's behind this?" with F1-F7 founder credentials
+ * and G1/G2/G3 growth trajectory.
+ *
+ * Composition per section-blueprint v2 Founder Credibility Strip:
+ *   1. Geist Mono overline: "Built by founders who've done this before."
+ *   2. Billboard-adjacent headline (display-lg scale, smaller than S4/S5 billboards):
+ *      "Built to last. Built by operators." Lora Bold, "operators" italicized for
+ *      rhythm with S4/S5 per VIS S2 weight+italic lock.
+ *   3. Stat pills row (3 horizontal pills, centered):
+ *        - F2: $1.5B Founder Exit
+ *        - G1: $400K ARR in 16 Weeks
+ *        - F3: 2M+ Users at Last Company
+ *      Thin emerald-muted border, dark card bg, emerald-tinted glow.
+ *   4. Growth trajectory chart (CQ-1 style glow line SVG):
+ *        - G3 Jul 2025 -> $12K ARR
+ *        - G2 Mar 2026 -> $350K ARR
+ *        - G1 16 wks post-launch -> $400K ARR
+ *      Hand-authored SVG hockey-stick curve. Emerald stroke + area fill + glow.
+ *      Three labeled dots. Motion scroll-reveal is the only animation for W5 -- full
+ *      pathLength draw-on deferred to polish pass.
+ *   5. Two founder bio cards (2-col desktop, stack mobile):
+ *        - Alim Charaniya (CEO): F1, F2, F3, F5 credentials + AC duotone placeholder
+ *        - Taylor Martinez (COO): F7, F4, GTM lead credentials + TM duotone placeholder
+ *
+ * Surface transition: 80-100px gradient at the top edge from warm (#F5F0EB) into
+ * cc-foundation (#0D0F14) to avoid a hard line after S5.
+ *
+ * Headshot placeholders: /public/images/founders/alim.svg + taylor.svg. Circular
+ * frame, emerald ring, duotone gradient bg, initials "AC"/"TM" centered. Marked as
+ * placeholder -- swap when real professional photos land (P0 per proof-inventory).
+ *
+ * WCAG AA on dark:
+ *   - White (#F8FAFC) on #0D0F14 = 19.2:1 (headlines, primary text)
+ *   - Text-secondary (#94A3B8) on #0D0F14 = 7.8:1 (body + muted labels)
+ *   - Emerald #10B981 on #0D0F14 = 6.9:1 (stat numbers, links)
+ *   - Emerald-muted (#10B981 40% alpha) is decorative only (borders/glow)
+ *
+ * Hydration safety: all initial props are stable. No client-branched state in
+ * initial. Reduced-motion via useReducedMotion collapses transitions to 0s.
+ *
+ * Zero fabricated facts: F1 (PrizePicks #19), F2 ($1.5B exit), F3 (Ambitious Labs
+ * 2M+ RapidDev acquisition), F4 ($250K/mo 4x ROAS), F5 (3x founder), F7 (Wharton),
+ * G1 ($400K ARR 16wks), G2 ($350K Mar 2026), G3 ($12K Jul 2025) -- all V3P or V1P
+ * verified per proof-inventory. No unverified founder claims. */
+
 'use client'
 
 import { useRef, type ReactElement } from 'react'
@@ -15,6 +62,10 @@ type RevealProps = {
 	delay?: number
 }
 
+/**
+ * @description Local scroll-reveal wrapper. Stable initial props so server and
+ * client first-render match. Reduced motion collapses the transition to 0s.
+ */
 function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElement {
 	const prefersReducedMotion = useReducedMotion()
 	const ref = useRef<HTMLDivElement | null>(null)
@@ -33,11 +84,18 @@ function Reveal({ children, className = '', delay = 0 }: RevealProps): ReactElem
 	)
 }
 
+/* ── Stat pill (F2, G1, F3) ── */
+
 type StatPillProps = {
 	value: string
 	label: string
 }
 
+/**
+ * @description Stat pill. Mono-weight number + Inter label inside a rounded-full
+ * dark card with an emerald-muted border and a subtle emerald glow shadow. Reads
+ * as a single horizontal credential.
+ */
 function StatPill({ value, label }: StatPillProps): ReactElement {
 	return (
 		<div
@@ -66,7 +124,7 @@ function StatPill({ value, label }: StatPillProps): ReactElement {
 	)
 }
 
-/* ── Growth trajectory chart (hockey stick) ── */
+/* ── Growth trajectory chart (G3 -> G2 -> G1 hockey stick) ── */
 
 type ChartPoint = {
 	x: number
@@ -76,6 +134,20 @@ type ChartPoint = {
 	value: string
 }
 
+/**
+ * @description Growth trajectory SVG. Hand-authored hockey-stick path through 3
+ * verified points (G3 Jul 2025 $12K -> G2 Mar 2026 $350K -> G1 16wks $400K).
+ * Emerald glow via SVG filter + 12% area fill + 3 labeled dots. ViewBox 800x320
+ * for desktop, scales down responsively. The curve uses a smooth cubic Bezier
+ * with flat-to-steep progression to read as hockey stick at any size.
+ *
+ * Data math (explicit so the chart stays honest):
+ *   Y-axis range: $0 (bottom at y=280) -> $420K (top at y=40). 240px vertical span.
+ *   G3 $12K    -> y = 280 - (12/420 * 240)  = 273.14  (nearly floor)
+ *   G2 $350K   -> y = 280 - (350/420 * 240) = 80
+ *   G1 $400K   -> y = 280 - (400/420 * 240) = 51.43   (near top)
+ *   X positions evenly spaced across chart width 720 (with 40px margins).
+ */
 function GrowthChart(): ReactElement {
 	const points: ReadonlyArray<ChartPoint> = [
 		{ x: 100, y: 273, label: 'G3', date: 'Jul 2025', value: '$12K' },
@@ -83,7 +155,7 @@ function GrowthChart(): ReactElement {
 		{ x: 700, y: 51, label: 'G1', date: '16 wks post-launch', value: '$400K' },
 	]
 
-	/* Cubic path: flat rise early, steep ramp mid-chart, mild continuation to end.
+	/* Cubic path: flat rise from G3, steep ramp up to G2, mild continuation to G1.
 	   Control points are tuned to give a distinct hockey-stick shape. */
 	const path = `M ${points[0].x} ${points[0].y}
 		C ${points[0].x + 160} ${points[0].y + 10},
@@ -194,6 +266,12 @@ type FounderCardProps = {
 	credentials: ReadonlyArray<Credential>
 }
 
+/**
+ * @description Founder bio card. Duotone headshot placeholder (circular, 88px
+ * desktop / 80px mobile) + name (Lora Bold) + role (Geist Mono muted) + bulleted
+ * credentials with emerald dots. Card bg cc-surface-card with subtle emerald-tinted
+ * border. All copy traced to F1-F7 verified.
+ */
 function FounderCard({ name, role, initials, imageSrc, credentials }: FounderCardProps): ReactElement {
 	return (
 		<article
@@ -267,6 +345,12 @@ const TAYLOR_CREDENTIALS: ReadonlyArray<Credential> = [
 
 /* ── Section ── */
 
+/**
+ * @description Founder Credibility Strip. Dark surface institutional-trust anchor.
+ * Overline + headline + 3 stat pills + growth trajectory chart + 2 founder bio
+ * cards. Top edge gradient softens the transition from warm S5 into dark. All
+ * founder claims + growth numbers verbatim from proof-inventory (F1-F7, G1-G3).
+ */
 export default function SectionFounderStrip(): ReactElement {
 	return (
 		<section
@@ -337,7 +421,9 @@ export default function SectionFounderStrip(): ReactElement {
 
 				{/* Founder bio cards */}
 				<div className='mt-16 grid grid-cols-1 gap-5 md:mt-20 md:grid-cols-2 md:gap-6'>
-						<Reveal delay={0}>
+					{/* Pexels placeholder portraits — swap to real Alim + Taylor headshots
+					 * at launch (assets owed by Alim per F1-H2 + proof-inventory). */}
+					<Reveal delay={0}>
 						<FounderCard
 							name='Alim Charaniya'
 							role='Co-founder & CEO'

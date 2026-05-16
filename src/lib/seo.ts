@@ -1,3 +1,28 @@
+/**
+ * @fileoverview Centralized page metadata builder. Sets default
+ * Open Graph + Twitter card config so every page (current and future)
+ * inherits the same social preview image, site name, and locale.
+ *
+ * @description
+ * Why this exists: Next.js metadata inheritance does NOT deep-merge
+ * the openGraph object across layout/page boundaries. When a page
+ * exports `openGraph: { ... }` without an `images` array, the layout's
+ * images do not auto-inherit — the page's openGraph object replaces
+ * the parent's entirely on the openGraph slot. Same gotcha for twitter.
+ *
+ * The fix: every page calls `buildPageMetadata({ title, description, path })`,
+ * and the helper bakes the OG image + Twitter handles + canonical into
+ * a single Metadata object. Updating OG_IMAGE below propagates to every
+ * page in the site without touching individual page files.
+ *
+ * Usage:
+ *   import { buildPageMetadata } from '@/lib/seo'
+ *   export const metadata = buildPageMetadata({
+ *     title: 'Pricing',
+ *     description: 'CloserCoach pricing: $12.99/mo for Closer...',
+ *     path: '/pricing',
+ *   })
+ */
 
 import type { Metadata } from 'next'
 

@@ -1,3 +1,7 @@
+/** @fileoverview robots.txt exposed at /robots.txt. Allows indexing of public
+ * marketing surface, blocks /lab (internal explorations), /thank-you (no SEO
+ * value, also marked noindex per-page), and /book-demo (server redirect). */
+
 import type { MetadataRoute } from 'next'
 
 const SITE_URL = 'https://closercoach.ai'

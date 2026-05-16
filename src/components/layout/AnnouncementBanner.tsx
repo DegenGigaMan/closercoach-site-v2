@@ -1,3 +1,6 @@
+/** @fileoverview Sticky top announcement banner. Dismissable, persisted via localStorage.
+ *  Sits ABOVE the sticky Header. Sets --cc-banner-h on <html> so Header and main can offset. */
+
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
@@ -49,7 +52,18 @@ export default function AnnouncementBanner({
 			className='fixed left-0 right-0 top-0 z-[60] border-b border-cc-accent/20 bg-cc-surface'
 			style={{ height: BANNER_HEIGHT }}
 		>
-				{href ? (
+			{/* Wave R FIX-02: whole banner is a single Link so the entire horizontal
+			 * area is the tap target on mobile (was: small inline "Read more" link
+			 * that clipped past the 390 viewport edge via `truncate`). The dismiss
+			 * button sits OUTSIDE the Link so tapping the X dismisses without
+			 * navigating to the post.
+			 *
+			 * Wave R.2 FIX-03 (2026-04-27): ArrowRight caret sits OUTSIDE the
+			 * truncated <p> as a navigation affordance for narrow viewports
+			 * (390) where the inline "Read more" cue gets clipped by the
+			 * ellipsis. Caret is small (12px), emerald, and aria-hidden so
+			 * the existing aria-label on the Link still carries the semantics. */}
+			{href ? (
 				<Link
 					href={href}
 					aria-label={`${message}: ${linkLabel}`}

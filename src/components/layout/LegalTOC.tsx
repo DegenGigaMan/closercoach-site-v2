@@ -1,3 +1,5 @@
+/** @fileoverview Sticky Table of Contents for legal pages with IntersectionObserver scroll-spy and mobile accordion. */
+
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -5,6 +7,10 @@ import { CaretDown } from '@phosphor-icons/react'
 
 type TOCItem = { id: string, label: string }
 
+/**
+ * @description Renders a sticky (desktop) / collapsible accordion (mobile) TOC for legal pages.
+ * Uses IntersectionObserver to highlight the currently visible section.
+ */
 export default function LegalTOC({ items }: { items: readonly TOCItem[] }) {
 	const [activeId, setActiveId] = useState<string>(items[0]?.id ?? '')
 	const [mobileOpen, setMobileOpen] = useState(false)
