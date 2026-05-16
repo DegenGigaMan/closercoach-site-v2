@@ -120,14 +120,14 @@ function StatCell({
 		>
 			<div className='flex items-center gap-0.5'>
 				<span
-					className='font-[family-name:var(--font-heading)] text-[15px] font-bold leading-none'
+					className='whitespace-nowrap font-[family-name:var(--font-heading)] text-[15px] font-bold leading-none'
 					style={{ color: valueColor }}
 				>
 					{value}
 				</span>
 				{icon}
 			</div>
-			<span className='text-[8px] uppercase leading-none text-[#B3BECE]'>{label}</span>
+			<span className='whitespace-nowrap text-[8px] uppercase leading-none text-[#B3BECE]'>{label}</span>
 		</motion.div>
 	)
 }
@@ -302,7 +302,7 @@ export default function ProgressionVisual(): ReactElement {
 			ref={ref}
 			className='flex w-full flex-1 flex-col gap-4 rounded-2xl border border-white/[0.08] p-4 pt-6'
 			style={{
-				backgroundColor: 'rgba(26,29,38,0.7)',
+				backgroundColor: '#1e2130',
 				boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.6), 0px 0px 20px 0px rgba(16,185,129,0.05)',
 			}}
 			role='img'

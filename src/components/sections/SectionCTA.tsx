@@ -72,7 +72,7 @@ export default function SectionCTA() {
 					</h2>
 
 					{/* Subheadline */}
-					<p className='text-lg text-cc-text-secondary md:text-xl'>
+					<p className='text-balance text-lg text-cc-text-secondary md:text-xl'>
 						Download. Pick your industry. Start your first roleplay. Get your score. Done.
 					</p>
 
