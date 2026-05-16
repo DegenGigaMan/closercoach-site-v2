@@ -53,15 +53,10 @@ import {
 	type Icon as PhosphorIcon,
 } from '@phosphor-icons/react'
 
-const CC_LOGO = '/cc-logo.png'
-
 /* ─── Motion vocabulary (per brief §3) ───────────────────────────── */
 const SPRING_CARD = { type: 'spring' as const, stiffness: 250, damping: 22 }
 const SPRING_FIELD = { type: 'spring' as const, stiffness: 380, damping: 26 }
 const SPRING_LAYOUT = { type: 'spring' as const, stiffness: 200, damping: 30 }
-/* Snappy press feedback for state-driving CTAs. Higher stiffness, lower
- * mass-feel so the "click" lands fast (no spongey overshoot). */
-const SPRING_PRESS = { type: 'spring' as const, stiffness: 600, damping: 28 }
 /* Lead-time before each state's dwell expires when CTA-press fires. */
 const PRESS_LEAD_MS = 320
 

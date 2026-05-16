@@ -76,6 +76,7 @@ function CountUp({ to, revealed, reduced, duration = 1000 }: { to: number; revea
 	const start = useRef<number | null>(null)
 
 	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect -- RAF-driven counter; setState IS the synchronized side effect
 		if (!revealed || reduced) { setVal(to); return }
 		start.current = null
 		const step = (ts: number) => {
